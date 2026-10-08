@@ -438,6 +438,13 @@ const FIREBASE_CONFIG = {
   appId:"1:916682871542:web:974c6a2d8c49e3687352d7"
 };
 const ADMIN_EMAILS = ["nguyenduydien75@gmail.com"];
+/* Giọng Azure đi qua Cloudflare Worker (khóa nằm ở máy chủ, trình duyệt không thấy) */
+/* Chỉ bật khi Worker báo sẵn sàng (/api/health) - chưa cấu hình thì tự dùng giọng thiết bị/AI, không báo lỗi */
+if(/(^|\.)kk-edu\.(com|vn)$/.test(location.hostname)){
+  fetch("/api/health",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{
+    if(j&&j.tts) window.KKV_CFG=Object.assign({azEndpoint:"/api/tts"}, window.KKV_CFG||{});
+  }).catch(()=>{});
+}
 function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; s.async=true; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
 function applyFbUser(u){
   S.fbUser = u||null;
@@ -458,6 +465,8 @@ async function initFirebase(){
     await Promise.all([loadScript(B+"firebase-auth-compat.js"), loadScript(B+"firebase-firestore-compat.js")]);
     firebase.initializeApp(FIREBASE_CONFIG);
     S.fb = firebase;
+    // Bộ nhớ đệm ngoại tuyến: đọc lại dữ liệu đã có và XẾP HÀNG các lệnh ghi khi Firestore/mạng lỗi, tự đồng bộ khi có lại
+    try{ await firebase.firestore().enablePersistence({synchronizeTabs:true}); }catch(e){}
     S.caps.db = firebase.firestore();
     S.mode = "firebase";
     // chờ khôi phục phiên đăng nhập đầu tiên (nếu có)
@@ -1012,21 +1021,44 @@ async function gunzipBytes(u8){
   if(!window.pako) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js");
   return window.pako.ungzip(u8,{to:"string"});
 }
+function withTimeout(p,ms){ return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(Object.assign(new Error("timeout"),{code:"deadline-exceeded"})),ms))]); }
+function packFromMeta(meta,why){
+  // Chưa đủ quyền (chưa đăng nhập / sách chưa mở khóa): chỉ có mục lục + bài 1 học thử
+  const lessons=JSON.parse(meta.s||"[]").map(L=>Object.assign({_locked:true},L));
+  const t=meta.t?JSON.parse(meta.t):null; if(t&&lessons.length) lessons[0]=t;
+  return {schema:meta.schema, book:meta.book, ten:meta.ten, lessons, _partial:true, _why:why||"error"};
+}
+/* DỰ PHÒNG khi Firestore lỗi / quá hạn mức / mất kết nối:
+   Cloudflare Worker /api/pack đọc từ kho GitHub private (kk-edu-content), áp cùng chính sách quyền đọc */
+async function fetchPackCF(code){
+  let tok=null;
+  try{ const u=S.fb&&S.fb.auth().currentUser; if(u) tok=await withTimeout(u.getIdToken(),6000); }catch(e){}
+  const base="/api/pack/"+encodeURIComponent(code);
+  if(tok){
+    const r=await withTimeout(fetch(base,{headers:{authorization:"Bearer "+tok}}),20000);
+    if(r.ok){ const d=await r.json(); d._src="github"; return d; }
+    if(r.status!==401&&r.status!==403) throw Object.assign(new Error("cf "+r.status),{code:"unavailable"});
+  }
+  const t=await withTimeout(fetch(base+"?mode=trial"),15000);
+  if(!t.ok) throw Object.assign(new Error("cf trial "+t.status),{code:"unavailable"});
+  const p=packFromMeta(await t.json(), "permission-denied"); p._src="github"; return p;
+}
 async function fetchPackFS(code){
-  const db=S.caps.db;
-  const m=await db.doc("packs/"+code).get(); if(!m.exists) return null;
-  const meta=m.data()||{};
+  const db=S.caps.db; let meta;
   try{
-    const snaps=await Promise.all(Array.from({length:meta.nc||1},(_,k)=>db.doc("packs/"+code+"/c/"+k).get()));
-    if(snaps.some(s=>!s.exists)) throw new Error("missing");
+    const m=await withTimeout(db.doc("packs/"+code).get(),8000);
+    if(!m.exists) return await fetchPackCF(code);
+    meta=m.data()||{};
+  }catch(e){ return await fetchPackCF(code); }
+  try{
+    const snaps=await withTimeout(Promise.all(Array.from({length:meta.nc||1},(_,k)=>db.doc("packs/"+code+"/c/"+k).get())),15000);
+    if(snaps.some(s=>!s.exists)) throw Object.assign(new Error("missing"),{code:"not-found"});
     const parts=snaps.map(s=>s.data().z.toUint8Array());
     const u=new Uint8Array(parts.reduce((a,p)=>a+p.length,0)); let o=0; parts.forEach(p=>{ u.set(p,o); o+=p.length; });
     return JSON.parse(await gunzipBytes(u));
   }catch(e){
-    // Chưa đủ quyền (chưa đăng nhập / sách chưa mở khóa): chỉ có mục lục + bài 1 học thử
-    const lessons=JSON.parse(meta.s||"[]").map(L=>Object.assign({_locked:true},L));
-    const t=meta.t?JSON.parse(meta.t):null; if(t&&lessons.length) lessons[0]=t;
-    return {schema:meta.schema, book:meta.book, ten:meta.ten, lessons, _partial:true, _why:(e&&e.code)||"error"};
+    if(e&&e.code==="permission-denied") return packFromMeta(meta,"permission-denied");
+    try{ return await fetchPackCF(code); }catch(e2){ return packFromMeta(meta,(e&&e.code)||"error"); }
   }
 }
 async function loadPack(code){
@@ -2759,7 +2791,7 @@ function kkvPrewarm(){
 
 /* ---------------- Giọng nam Đám mây (Azure Neural, tùy chọn - quản trị nhập khóa một lần) ---------------- */
 function azCfg(){
-  try{ const s=(typeof S!=="undefined"&&S.settings)||{}; const ep=(window.KKV_CFG&&window.KKV_CFG.azEndpoint)||null; if((!s.azKey&&!ep)||KKV.cloudBad) return null; return {key:s.azKey||"",region:s.azRegion||"southeastasia",endpoint:ep}; }catch(e){ return null; }
+  try{ const s=(typeof S!=="undefined"&&S.settings)||{}; const ep=(window.KKV_CFG&&window.KKV_CFG.azEndpoint)||null; if((!s.azKey&&!ep)||KKV.cloudBad) return null; return {key:ep?"":(s.azKey||""),region:s.azRegion||"southeastasia",endpoint:ep}; }catch(e){ return null; }
 }
 function azHash(s){ let h1=5381,h2=52711; for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i); h1=((h1<<5)+h1)^c; h2=((h2<<5)+h2+c)|0; } return (h1>>>0).toString(36)+(h2>>>0).toString(36)+s.length; }
 function azXml(t){ return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
@@ -3897,7 +3929,21 @@ function adminSettings(el){
   <div class="note" style="margin:-4px 0 10px">Khi có khóa (hoặc proxy), trình duyệt nghe giọng nam thần kinh vi-VN-NamMinhNeural, kết quả được lưu đệm trên máy. Khóa được lưu riêng tư (settings/private - chỉ Quản trị viên đọc được), không còn lộ ra trình duyệt học viên. Học viên dùng giọng thiết bị / giọng AI; muốn học viên cũng nghe giọng Azure, cấu hình proxy KKV_CFG.azEndpoint (vd. Cloudflare Worker giữ khóa phía máy chủ).</div>
   <div class="fld"><label>Thông báo trên trang chủ (bỏ trống để ẩn)</label><textarea id="aAnn">${esc(s.announcement||"")}</textarea></div>
   <div class="mrow"><button class="btn pri" id="aSave">Lưu cài đặt</button></div>
+  <div class="card" style="margin-top:14px"><h3 style="margin-top:0">Sao lưu &amp; dự phòng</h3>
+  <div class="note">Dữ liệu lưu 2 nơi: Firestore (chính) và kho GitHub private <b>kk-edu-content</b> (dự phòng). Cloudflare Worker tự sao lưu Firestore → GitHub mỗi ngày; khi Firestore lỗi, bài học tự tải từ GitHub qua <code>/api/pack</code>.</div>
+  <div class="mrow"><button class="btn ghost" id="aHealth">Kiểm tra hệ thống</button><button class="btn ghost" id="aBackup">Sao lưu ngay</button></div><div id="aBkOut" class="note"></div></div>
   <div class="note" style="margin-top:8px">BIN + số tài khoản dùng để sinh mã VietQR động chuẩn EMVCo ngay trên trình duyệt người mua - không cần cổng trung gian.</div></div>`;
+  const bkOut=m=>{ const el=$("#aBkOut"); if(el) el.innerHTML=m; };
+  $("#aHealth").onclick=async()=>{ bkOut("Đang kiểm tra...");
+    try{ const r=await fetch("/api/health",{cache:"no-store"}); const j=await r.json();
+      const yn=b=>b?'<span class="badge ok">sẵn sàng</span>':'<span class="badge">chưa cấu hình</span>';
+      bkOut(`Worker: <span class="badge ok">hoạt động</span> · Giọng Azure: ${yn(j.tts)} · Dự phòng GitHub: ${yn(j.fallback)} · Sao lưu tự động: ${yn(j.backup)}`);
+    }catch(e){ bkOut("Không gọi được Worker /api/health - kiểm tra Cloudflare."); } };
+  $("#aBackup").onclick=async()=>{ bkOut("Đang sao lưu Firestore → GitHub...");
+    try{ const tok=await S.fb.auth().currentUser.getIdToken();
+      const r=await fetch("/api/backup/run",{method:"POST",headers:{authorization:"Bearer "+tok}}); const j=await r.json();
+      bkOut(r.ok?`✓ Đã sao lưu ${j.docCount} tài liệu (ngày ${esc(j.day)}, ${j.ms} ms).`:`Lỗi: ${esc(j.error||r.status)} ${esc(j.detail||"")}`);
+    }catch(e){ bkOut("Lỗi: "+esc(e&&e.message||"mạng")); } };
   $("#aSave").onclick=async()=>{
     Object.assign(S.settings,{siteName:$("#aSite").value.trim(),defaultPrice:Number($("#aPrice").value)||0,academicYear:Number($("#aAY").value)||2026,requireVerify:!!$("#aRV").value,sequential:$("#aSeq").value==="1",bankBin:$("#aBin").value.trim(),bankAccount:$("#aAcct").value.trim(),bankHolder:$("#aHolder").value.trim(),contactEmail:$("#aEmail").value.trim(),contactZalo:$("#aZalo").value.trim(),announcement:$("#aAnn").value.trim(),azKey:$("#aAzKey").value.trim(),azRegion:($("#aAzReg").value.trim()||"southeastasia")});
     if(S.caps.db){ try{
