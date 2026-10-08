@@ -1,0 +1,322 @@
+WEBVTT
+
+1
+00:00:05.000 --> 00:00:10.433
+Chào các em! Mình là trợ giảng AI của KK-EDU. Đây là bài một của môn Toán lớp bảy:
+
+2
+00:00:10.463 --> 00:00:12.010
+số hữu tỉ trên trục số.
+
+3
+00:00:12.690 --> 00:00:17.248
+Một sáng mùa đông, bản tin thời tiết báo: Sa Pa âm một phẩy năm độ C,
+
+4
+00:00:17.278 --> 00:00:20.580
+Mẫu Sơn âm hai độ C, còn Hà Nội chín phẩy năm độ C.
+
+5
+00:00:21.260 --> 00:00:26.590
+Những số này không phải là số tự nhiên. Có số là số âm, có số còn có phần thập phân.
+
+6
+00:00:27.270 --> 00:00:31.880
+Vậy chúng là số gì? Và nơi nào lạnh hơn: âm hai độ, hay âm một phẩy năm độ?
+
+7
+00:00:32.560 --> 00:00:36.454
+Muốn trả lời chính xác, ta cần một tập số rộng hơn số nguyên.
+
+8
+00:00:36.484 --> 00:00:38.610
+Đó chính là tập hợp các số hữu tỉ.
+
+9
+00:00:40.090 --> 00:00:42.620
+Sau bài học này, em sẽ làm được bốn việc.
+
+10
+00:00:43.300 --> 00:00:46.337
+Một: nhận biết số hữu tỉ và tập hợp các số hữu tỉ,
+
+11
+00:00:46.367 --> 00:00:48.790
+rồi dùng đúng kí hiệu thuộc và không thuộc.
+
+12
+00:00:49.470 --> 00:00:52.080
+Hai: biểu diễn một số hữu tỉ trên trục số.
+
+13
+00:00:52.760 --> 00:00:54.970
+Ba: tìm số đối của một số hữu tỉ.
+
+14
+00:00:55.650 --> 00:00:59.540
+Bốn: so sánh hai số hữu tỉ, và sắp xếp một dãy số theo thứ tự.
+
+15
+00:01:00.220 --> 00:01:03.630
+Em hãy chuẩn bị sẵn thước kẻ, giấy kẻ ô và bút màu nhé.
+
+16
+00:01:05.110 --> 00:01:07.000
+Phần một: số hữu tỉ là gì?
+
+17
+00:01:07.680 --> 00:01:13.202
+Số hữu tỉ là số viết được dưới dạng phân số a phần b, trong đó a và b là các số nguyên,
+
+18
+00:01:13.232 --> 00:01:14.690
+và b phải khác không.
+
+19
+00:01:15.370 --> 00:01:17.980
+Tập hợp các số hữu tỉ được kí hiệu bằng chữ Q.
+
+20
+00:01:18.660 --> 00:01:23.830
+Ta thử với số nguyên âm hai. Âm hai bằng âm hai phần một, nên âm hai là một số hữu tỉ.
+
+21
+00:01:24.510 --> 00:01:27.680
+Số thập phân không phẩy hai mươi lăm bằng một phần bốn.
+
+22
+00:01:27.710 --> 00:01:31.840
+Hỗn số một và một phần ba bằng bốn phần ba. Cả hai đều là số hữu tỉ.
+
+23
+00:01:32.520 --> 00:01:36.490
+Số thập phân âm một phẩy năm bằng âm ba phần hai, cũng là số hữu tỉ.
+
+24
+00:01:37.170 --> 00:01:41.405
+Vì thế, mọi số nguyên và mọi số thập phân hữu hạn đều là số hữu tỉ.
+
+25
+00:01:41.435 --> 00:01:46.500
+Tập số tự nhiên nằm trong tập số nguyên, và tập số nguyên nằm trong tập số hữu tỉ.
+
+26
+00:01:47.180 --> 00:01:51.550
+Chú ý: năm phần không không phải là số hữu tỉ, vì mẫu số không được bằng không.
+
+27
+00:01:52.230 --> 00:01:55.416
+Dùng kí hiệu cho gọn: âm năm không thuộc tập số tự nhiên,
+
+28
+00:01:55.446 --> 00:01:59.352
+nhưng âm năm thuộc tập số hữu tỉ. Hai phần ba không thuộc tập số nguyên,
+
+29
+00:01:59.382 --> 00:02:00.840
+nhưng thuộc tập số hữu tỉ.
+
+30
+00:02:02.320 --> 00:02:05.650
+Phần hai: biểu diễn số hữu tỉ trên trục số, và số đối.
+
+31
+00:02:06.330 --> 00:02:09.660
+Trên trục số, mỗi số hữu tỉ được biểu diễn bởi đúng một điểm.
+
+32
+00:02:10.340 --> 00:02:11.881
+Để biểu diễn âm ba phần tư,
+
+33
+00:02:11.911 --> 00:02:15.270
+ta chia đoạn thẳng từ không đến âm một thành bốn phần bằng nhau.
+
+34
+00:02:15.950 --> 00:02:18.880
+Rồi đếm ba phần, tính từ điểm không, sang bên trái.
+
+35
+00:02:19.560 --> 00:02:22.650
+Điểm vừa tìm được chính là điểm âm ba phần tư.
+
+36
+00:02:23.330 --> 00:02:26.630
+Còn ba phần tư nằm ở bên phải, cũng cách điểm không ba phần.
+
+37
+00:02:26.660 --> 00:02:30.340
+Hai điểm này nằm về hai phía của điểm không, và cách đều điểm không.
+
+38
+00:02:31.020 --> 00:02:34.881
+Ta gọi chúng là hai số đối nhau. Số đối của x kí hiệu là âm x.
+
+39
+00:02:34.911 --> 00:02:39.150
+Số đối của không là không, và số đối của số đối của x lại là chính x.
+
+40
+00:02:39.830 --> 00:02:43.160
+Ví dụ, số đối của hai phẩy năm là âm hai phẩy năm.
+
+41
+00:02:44.640 --> 00:02:46.930
+Phần ba: so sánh hai số hữu tỉ.
+
+42
+00:02:47.610 --> 00:02:53.980
+Với hai số hữu tỉ bất kì, ta luôn có đúng một trong ba trường hợp: nhỏ hơn, bằng nhau, hoặc lớn hơn.
+
+43
+00:02:54.660 --> 00:02:59.841
+Cách một: viết hai số dưới dạng phân số có cùng mẫu dương, rồi so sánh các tử số.
+
+44
+00:02:59.871 --> 00:03:03.750
+Cách hai: đổi ra số thập phân, rồi so sánh như ở lớp sáu.
+
+45
+00:03:04.430 --> 00:03:07.600
+Ví dụ: so sánh âm hai phần ba và âm ba phần năm.
+
+46
+00:03:08.280 --> 00:03:12.521
+Quy đồng mẫu số về mười lăm. Âm hai phần ba bằng âm mười phần mười lăm,
+
+47
+00:03:12.551 --> 00:03:15.210
+còn âm ba phần năm bằng âm chín phần mười lăm.
+
+48
+00:03:15.890 --> 00:03:20.100
+Vì âm mười nhỏ hơn âm chín, nên âm hai phần ba nhỏ hơn âm ba phần năm.
+
+49
+00:03:20.780 --> 00:03:24.350
+Trên trục số nằm ngang, số nhỏ hơn luôn nằm bên trái số lớn hơn.
+
+50
+00:03:25.030 --> 00:03:28.312
+Trở lại phần khởi động: âm hai nhỏ hơn âm một phẩy năm,
+
+51
+00:03:28.342 --> 00:03:32.440
+và âm một phẩy năm nhỏ hơn chín phẩy năm. Vậy Mẫu Sơn là nơi lạnh nhất.
+
+52
+00:03:33.120 --> 00:03:37.010
+Mẹo nhỏ: số âm luôn nhỏ hơn không, còn số dương luôn lớn hơn không.
+
+53
+00:03:38.490 --> 00:03:41.420
+Trước khi luyện tập, ta kiểm tra nhanh ba câu hỏi nhé.
+
+54
+00:03:42.100 --> 00:03:46.295
+Câu một. Số nào sau đây không phải là số hữu tỉ viết đúng dạng a phần b? A:
+
+55
+00:03:46.325 --> 00:03:49.910
+âm ba phần tư. B: năm phần không. C: không phần bảy.
+
+56
+00:03:55.590 --> 00:03:57.800
+Đáp án là B, vì mẫu số bằng không.
+
+57
+00:03:58.480 --> 00:04:03.495
+Câu hai. Số đối của âm hai phẩy năm là: A: hai phẩy năm. B: âm hai phẩy năm. C:
+
+58
+00:04:03.525 --> 00:04:04.690
+một phần hai phẩy năm.
+
+59
+00:04:10.370 --> 00:04:14.260
+Đáp án là A, hai phẩy năm. Hai số đối nhau nằm cách đều điểm không.
+
+60
+00:04:14.940 --> 00:04:19.423
+Câu ba. Khẳng định nào đúng? A: âm hai phần ba lớn hơn âm ba phần năm. B:
+
+61
+00:04:19.453 --> 00:04:22.830
+âm hai phần ba nhỏ hơn âm ba phần năm. C: hai số bằng nhau.
+
+62
+00:04:28.510 --> 00:04:33.520
+Đáp án là B, vì khi quy đồng, âm mười phần mười lăm nhỏ hơn âm chín phần mười lăm.
+
+63
+00:04:35.000 --> 00:04:39.587
+Đến lượt em luyện tập. Hãy sắp xếp năm số sau theo thứ tự tăng dần: không phẩy năm,
+
+64
+00:04:39.617 --> 00:04:42.650
+âm ba phần tư, hai phần ba, âm một, và không.
+
+65
+00:04:43.330 --> 00:04:46.180
+Tạm dừng video, và thử làm trong mười giây.
+
+66
+00:04:56.860 --> 00:05:01.470
+Hết giờ rồi! Mẹo là: xếp các số âm trước, rồi đến không, rồi đến các số dương.
+
+67
+00:05:02.150 --> 00:05:05.800
+Đáp án: âm một, âm ba phần tư, không, không phẩy năm, hai phần ba.
+
+68
+00:05:06.480 --> 00:05:09.890
+Em đã xếp đúng chưa? Nếu chưa, hãy xem lại phần so sánh nhé.
+
+69
+00:05:11.370 --> 00:05:13.260
+Nhiệm vụ của em sau video này.
+
+70
+00:05:13.940 --> 00:05:16.849
+Hãy ghi lại nhiệt độ thấp nhất trong năm ngày ở nơi em sống,
+
+71
+00:05:16.879 --> 00:05:20.150
+hoặc ở một địa phương vùng núi phía Bắc, qua bản tin thời tiết.
+
+72
+00:05:20.830 --> 00:05:25.181
+Sau đó, đặt các số liệu lên cùng một trục số, rồi chỉ ra ngày nào lạnh nhất,
+
+73
+00:05:25.211 --> 00:05:26.240
+ngày nào ấm nhất.
+
+74
+00:05:26.920 --> 00:05:30.010
+Đừng quên giải thích bằng cách so sánh các số hữu tỉ nhé!
+
+75
+00:05:31.490 --> 00:05:33.140
+Cùng ghi nhớ ba ý chính nhé.
+
+76
+00:05:33.820 --> 00:05:39.264
+Một: số hữu tỉ là số viết được dưới dạng a phần b, với a và b nguyên, b khác không.
+
+77
+00:05:39.294 --> 00:05:41.390
+Tập hợp các số hữu tỉ kí hiệu là Q.
+
+78
+00:05:42.070 --> 00:05:46.760
+Hai: mỗi số hữu tỉ ứng với một điểm trên trục số. Số đối của x là âm x.
+
+79
+00:05:47.440 --> 00:05:52.370
+Ba: để so sánh hai số hữu tỉ, ta quy đồng về mẫu dương, rồi so sánh các tử số.
+
+80
+00:05:53.050 --> 00:05:55.100
+Hẹn gặp lại các em ở bài tiếp theo!
+
