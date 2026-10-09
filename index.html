@@ -2163,11 +2163,11 @@ async function viewPlayer(v, code, i){
     updateVoiceBtn();
   };
   $("#ttsCfg").onclick=()=>openVoicePicker();
-  // Phóng to 2x: khung học chiếm toàn bộ bề ngang (lưu lựa chọn cho các bài sau)
+  // Phóng to 2x: khung học chiếm toàn bộ bề ngang - chỉ khi học viên bấm; mỗi lần mở bài luôn về tỉ lệ chuẩn
   const pl=v.querySelector(".player");
   const applyWide=(on)=>{ pl.classList.toggle("wide", !!on); const w=$("#wideBtn"); if(w){ w.textContent=on?"🔍 Thu nhỏ":"🔍 2x"; w.classList.toggle("on", !!on); } };
-  applyWide(LS.get("playerWide", true)); /* mặc định tập trung 1 khung lớn; cột phụ nằm dưới */
-  $("#wideBtn").onclick=()=>{ const on=!pl.classList.contains("wide"); applyWide(on); LS.set("playerWide", on); };
+  applyWide(false); /* mặc định: khung học + cột hoạt động bên phải; phóng to bằng tay */
+  $("#wideBtn").onclick=()=>{ const on=!pl.classList.contains("wide"); applyWide(on); };
   // Toàn màn hình thật (Fullscreen API) - tự thoát khi có câu hỏi/hộp thoại để không bị che
   $("#fsBtn").onclick=()=>{
     const sb=v.querySelector(".screenbox"); if(!sb) return;
@@ -2176,7 +2176,7 @@ async function viewPlayer(v, code, i){
       return;
     }
     const req=sb.requestFullscreen||sb.webkitRequestFullscreen;
-    const fallback=()=>{ applyWide(true); LS.set("playerWide",true); toast("Trình duyệt không cho toàn màn hình - đã bật chế độ 2x"); };
+    const fallback=()=>{ applyWide(true); toast("Trình duyệt không cho toàn màn hình - đã bật chế độ 2x"); };
     if(!req){ fallback(); return; }
     try{ const p=req.call(sb); if(p&&p.catch) p.catch(fallback); }catch(e){ fallback(); }
   };
@@ -3976,7 +3976,7 @@ function cbKB(){
   {id:"giongdoc", chip:"Giọng đọc AI", k:"giong doc ai nghe giang doc bai khong co tieng viet khong doc duoc am thanh loa tts chu chay giong nam firefox safari trinh duyet khong co giong",
    a:`Trong bài học bấm <b>🔊 Nghe giảng</b> - AI đọc tên bài, mục tiêu và toàn bộ lời giảng bằng giọng Việt - <b>tự động trên mọi trình duyệt, không cần cài gì</b>. Hệ thống dùng giọng tự nhiên tốt nhất của máy (Nam Minh, Hoài My, Google, Linh); máy nào chưa có giọng Việt sẽ tự chuyển sang <b>giọng nam AI KK</b> chạy ngay trong trình duyệt (lần đầu nạp khoảng 38 MB, sau đó mở ngay). Câu đang đọc hiện to trên màn hình, có nút tạm dừng và nhảy đoạn. Nút <b>⚙</b> để chọn giọng và tốc độ 0,8x-1,25x. Nếu mạng chặn, dùng <b>chế độ chữ chạy</b>.`},
   {id:"phongto", k:"phong to man hinh 2x toan man hinh fullscreen zoom nho qua xem to",
-   a:`Trong bài học có nút <b>🔍 2x</b> (khung học rộng gấp đôi, cột phụ xuống dưới - hệ thống nhớ lựa chọn) và nút <b>⛶</b> xem toàn màn hình (Esc để thoát). Trình đọc Sách PDF cũng có nút ⛶ Toàn màn hình riêng.`},
+   a:`Trong bài học có nút <b>🔍 2x</b> (khung học rộng gấp đôi, cột phụ xuống dưới; mỗi lần mở bài luôn về tỉ lệ chuẩn) và nút <b>⛶</b> xem toàn màn hình (Esc để thoát). Trình đọc Sách PDF cũng có nút ⛶ Toàn màn hình riêng.`},
   {id:"tocdo", k:"toc do video tua nhanh cham 1.5x 2x speed",
    a:`Nút <b>1x</b> trên thanh điều khiển chuyển vòng 1x → 1,5x → 2x. Giọng đọc AI chỉnh tốc độ riêng trong nút ⚙.`},
   {id:"aitutor", k:"tro giang ai hoi ai giai dap thac mac gia su",
