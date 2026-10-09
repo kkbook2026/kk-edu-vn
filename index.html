@@ -563,7 +563,13 @@ async function loadShared(){
     try{ const rg = await db.doc("regs/"+S.uid).get();
       if(rg.exists) Object.assign(S.myRegs, (rg.data()||{}).classes||{}); }catch(e){}
     try{ const pf = await db.doc("profiles/"+S.uid).get();
-      if(pf.exists) S.profile = pf.data(); }catch(e){}
+      if(pf.exists) S.profile = pf.data();
+      else { /* hồ sơ đã khai trên máy (lúc chưa đăng nhập) nhưng chưa có trên hệ thống → đồng bộ lên để Admin thấy */
+        const lp=LS.get("profile",null); if(lp&&lp.name&&lp.namSinh&&S.consent!=="browse"){ try{ await db.doc("profiles/"+S.uid).set(lp); S.profile=lp; }catch(e2){} } } }catch(e){}
+    /* Sổ thành viên: mỗi lần đăng nhập ghi email, tên, cách đăng nhập, ngày tạo, lần đăng nhập gần nhất (Admin xem đủ mọi tài khoản) */
+    try{ const u=S.fb&&S.fb.auth&&S.fb.auth().currentUser;
+      if(u){ const pr=(u.providerData&&u.providerData[0]&&u.providerData[0].providerId)||"password";
+        db.doc("members/"+S.uid).set({email:u.email||"",name:(u.displayName||S.name||"").slice(0,119),provider:pr,created:u.metadata&&u.metadata.creationTime?new Date(u.metadata.creationTime).toISOString():"",last:new Date().toISOString(),verified:!!u.emailVerified}).catch(()=>{}); } }catch(e){}
     try{ const rq = await db.doc("reqs/"+S.uid).get();
       if(rq.exists) S.myReq = rq.data(); }catch(e){}
   }
@@ -874,7 +880,7 @@ async function deleteAccount(){
     try{
       try{ const pg=await db.collection("data/users/"+uid).limit(500).get();
         for(const d of pg.docs){ if(d.exists) await db.doc("data/users/"+uid+"/"+d.id).delete(); } }catch(e){}
-      for(const c of ["profiles","reqs","regs","orders"]){ try{ await db.doc(c+"/"+uid).delete(); }catch(e){} }
+      for(const c of ["profiles","reqs","regs","orders","members"]){ try{ await db.doc(c+"/"+uid).delete(); }catch(e){} }
       try{ localStorage.clear(); }catch(e){}
       await S.fb.auth().currentUser.delete();
       closeModal(); toast("Đã xóa tài khoản và toàn bộ dữ liệu. Tạm biệt!");
@@ -4377,21 +4383,36 @@ function editContent(code, back){
 /* ----- Quản trị Học viên: hồ sơ độ tuổi + phê duyệt mở lớp ----- */
 async function adminStudents(el){
   el.innerHTML=`<div class="note">Đang tải hồ sơ học viên...</div>`;
-  let profiles=[], reqs=[], vcodes=[];
+  let profiles=[], reqs=[], vcodes=[], members={}, progU={}, srcErr=[];
   if(S.caps.db){
-    try{ const pf=await S.caps.db.collection("profiles").limit(1000).get();
-      profiles=pf.docs.filter(d=>d.exists).map(d=>Object.assign({uid:d.id}, d.data())); }catch(e){}
+    try{ const pf=await S.caps.db.collection("profiles").limit(5000).get();
+      profiles=pf.docs.filter(d=>d.exists).map(d=>Object.assign({uid:d.id}, d.data())); }catch(e){ srcErr.push("profiles"); }
+    try{ const mb=await S.caps.db.collection("members").limit(5000).get(); mb.docs.forEach(d=>{ if(d.exists) members[d.id]=d.data(); }); }catch(e){ srcErr.push("members"); }
+    try{ const gr=await S.caps.db.collection("grants").limit(5000).get(); gr.docs.forEach(d=>{ if(d.exists) S.grants[d.id]=d.data(); }); }catch(e){}
+    /* tài khoản đã có tiến độ học (kể cả chưa lập hồ sơ) - Worker đọc bằng tài khoản dịch vụ */
+    try{ const u=S.fb&&S.fb.auth().currentUser; const tok=u&&await u.getIdToken(); try{ await window.KK_API_READY; }catch(e){}
+      if(tok&&window.KK_API){ const rr=await withTimeout(fetch(window.KK_API+"/admin/members",{headers:{authorization:"Bearer "+tok}}),15000); if(rr.ok){ progU=(await rr.json()).users||{}; } else srcErr.push("worker "+rr.status); } }catch(e){ srcErr.push("worker"); }
     try{ const vc=await S.caps.db.collection("vcodes").limit(500).get();
       vcodes=vc.docs.filter(d=>d.exists).map(d=>Object.assign({hash:d.id}, d.data())).filter(c=>!c.revoked).sort((a,b)=>(b.at||"").localeCompare(a.at||"")); }catch(e){}
     try{ const vn=await S.caps.db.collection("vnotes").limit(500).get(); // ghi chú riêng tư (chỉ admin đọc được)
       const notes={}; vn.docs.forEach(d=>{ if(d.exists) notes[d.id]=(d.data()||{}).note; });
       vcodes.forEach(c=>{ if(notes[c.hash]) c.note=notes[c.hash]; }); }catch(e){}
-    try{ const rq=await S.caps.db.collection("reqs").limit(1000).get();
+    try{ const rq=await S.caps.db.collection("reqs").limit(5000).get();
       rq.docs.forEach(d=>{ if(!d.exists) return; const data=d.data();
         Object.entries((data||{}).items||{}).forEach(([key,x])=> reqs.push({uid:d.id, name:data.name||"", namSinh:data.namSinh, lop:data.lop||"", key, level:x.level, grade:x.grade, at:x.at, status:x.status})); }); }catch(e){}
   }
   const pending=reqs.filter(r=>r.status==="pending").sort((a,b)=>(a.at||"").localeCompare(b.at||""));
   const done=reqs.filter(r=>r.status!=="pending");
+  /* HỢP NHẤT mọi nguồn: sổ thành viên + hồ sơ + yêu cầu + quyền + tiến độ → không sót tài khoản nào */
+  const byUid={};
+  const U=uid=>(byUid[uid]=byUid[uid]||{uid});
+  Object.entries(members).forEach(([uid,m])=>Object.assign(U(uid),{email:m.email,mname:m.name,provider:m.provider,created:m.created,last:m.last}));
+  profiles.forEach(p=>Object.assign(U(p.uid),{name:p.name,namSinh:p.namSinh,guardian:p.guardian,pat:p.at,hasProfile:true}));
+  reqs.forEach(r=>{ const x=U(r.uid); x.name=x.name||r.name; x.namSinh=x.namSinh||r.namSinh; x.reqN=(x.reqN||0)+(r.status==="pending"?1:0); });
+  Object.keys(S.grants||{}).forEach(uid=>{ U(uid); });
+  Object.entries(progU).forEach(([uid,g])=>Object.assign(U(uid),{books:g.books||[],plast:g.last}));
+  const allU=Object.values(byUid).filter(x=>x.uid&&x.uid.length>8).sort((a,b)=>String(b.last||b.plast||b.pat||"").localeCompare(String(a.last||a.plast||a.pat||"")));
+  profiles=allU; // bảng chính dùng danh sách hợp nhất
   el.innerHTML=`
   <div class="sec" style="margin-top:0"><h2 style="margin:0">Yêu cầu mở lớp chờ duyệt (${pending.length})</h2></div>
   <div class="tbwrap"><table class="tb"><thead><tr><th>Thời gian</th><th>Học viên</th><th>Lớp theo tuổi</th><th>Xin mở</th><th></th></tr></thead><tbody>
@@ -4404,15 +4425,22 @@ async function adminStudents(el){
       <button class="btn sm ghost" data-no="${i}">Từ chối</button>
     </div></td></tr>`).join("")||`<tr><td colspan="5" class="note">Không có yêu cầu nào đang chờ. Yêu cầu xuất hiện khi học viên bấm "Gửi yêu cầu mở lớp" ở sách ngoài độ tuổi.</td></tr>`}
   </tbody></table></div>
-  <div class="sec"><h2 style="margin:0">Hồ sơ học viên (${profiles.length})</h2></div>
-  <div class="tbwrap"><table class="tb"><thead><tr><th>Học viên</th><th>Năm sinh</th><th>Lớp được xếp</th><th>Được duyệt thêm</th><th>Xác thực độ tuổi</th></tr></thead><tbody>
-  ${profiles.map((p,i)=>{const g=gradeFromBirthYear(p.namSinh); const gr=S.grants[p.uid]||{}; const ex=gr.grades||[];
+  <div class="sec"><h2 style="margin:0">Thành viên (${profiles.length})</h2>
+    <div class="rowline"><input id="mbQ" placeholder="Tìm tên, email, mã..." style="padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--bg2);color:var(--fg)">
+    <select id="mbF" style="padding:7px;border:1px solid var(--line);border-radius:9px;background:var(--bg2);color:var(--fg)"><option value="">Tất cả</option><option value="noprof">Chưa lập hồ sơ</option><option value="nover">Chưa xác thực</option><option value="req">Có yêu cầu chờ</option><option value="learn">Đang học</option></select>
+    <button class="btn sm ghost" id="mbCsv">⬇ Xuất CSV</button></div></div>
+  <div class="note" style="margin-bottom:6px">Gộp từ sổ đăng nhập, hồ sơ, yêu cầu mở lớp, quyền đã cấp và tiến độ học - không bỏ sót tài khoản. ${profiles.filter(p=>!p.hasProfile).length} tài khoản chưa lập hồ sơ năm sinh. ${srcErr.length?`<span style="color:#c0392b">Nguồn chưa đọc được: ${esc(srcErr.join(", "))}</span>`:""}</div>
+  <div class="tbwrap"><table class="tb" id="mbTb"><thead><tr><th>Thành viên</th><th>Năm sinh</th><th>Lớp được xếp</th><th>Được duyệt thêm</th><th>Xác thực độ tuổi</th></tr></thead><tbody>
+  ${profiles.map((p,i)=>{const g=p.namSinh?gradeFromBirthYear(p.namSinh):null; const gr=S.grants[p.uid]||{}; const ex=gr.grades||[];
     const ver=gr.verified&&Number(gr.verifiedYear)===Number(p.namSinh);
-    return `<tr><td><b>${esc(p.name||"")}</b><br><span class="note">${esc((p.uid||"").slice(0,10))} · ${p.at?fmtDate(p.at):""}</span></td>
-    <td>${esc(p.namSinh||"")}${p.guardian?' <span class="badge" title="Cha mẹ/người giám hộ đã xác nhận">PH ✓</span>':""}</td>
-    <td>${g?esc(g.label):"?"}</td><td>${ex.length?ex.map(esc).join(", "):"-"}</td>
-    <td>${ver?`<span class="badge free">✓ Đã xác thực</span><br><button class="btn sm ghost" data-unver="${i}" style="margin-top:6px">Hủy xác thực</button>`
-            :`<button class="btn sm pri" data-ver="${i}">✓ Xác thực</button>`}</td></tr>`;}).join("")||`<tr><td colspan="5" class="note">Chưa có học viên đăng nhập nào lập hồ sơ. Hồ sơ của Khách (không đăng nhập) lưu trên máy họ - cấp Mã xác thực bên dưới cho họ.</td></tr>`}
+    const nm=p.name||p.mname||(p.email?p.email.split("@")[0]:"(chưa có tên)");
+    const tags=[!p.hasProfile?'<span class="badge lock" title="Chưa khai năm sinh - chưa vào học đúng lớp được">Chưa hồ sơ</span>':"", p.reqN?`<span class="badge gold">${p.reqN} yêu cầu</span>`:"", (p.books&&p.books.length)?`<span class="badge ok" title="${esc(p.books.join(", "))}">${p.books.length} sách</span>`:"", p.provider==="google.com"?'<span class="badge">Google</span>':""].join(" ");
+    const filt=[!p.hasProfile?"noprof":"", !ver?"nover":"", p.reqN?"req":"", (p.books&&p.books.length)?"learn":""].join(" ");
+    return `<tr data-q="${esc((nm+" "+(p.email||"")+" "+p.uid).toLowerCase())}" data-f="${filt}"><td><b>${esc(nm)}</b> ${tags}<br><span class="note">${esc(p.email||"(email chưa ghi nhận - cập nhật khi đăng nhập lại)")}</span><br><span class="note">${esc((p.uid||"").slice(0,12))} · tạo ${p.created?fmtDate(p.created):(p.pat?fmtDate(p.pat):"?")} · gần nhất ${p.last?fmtDate(p.last):(p.plast?fmtDate(p.plast):"?")}</span></td>
+    <td>${esc(p.namSinh||"-")}${p.guardian?' <span class="badge" title="Cha mẹ/người giám hộ đã xác nhận">PH ✓</span>':""}</td>
+    <td>${g?esc(g.label):"-"}</td><td>${ex.length?ex.map(esc).join(", "):"-"}</td>
+    <td>${!p.namSinh?'<span class="note">Cần hồ sơ trước</span>':ver?`<span class="badge free">✓ Đã xác thực</span><br><button class="btn sm ghost" data-unver="${i}" style="margin-top:6px">Hủy xác thực</button>`
+            :`<button class="btn sm pri" data-ver="${i}">✓ Xác thực</button>`}</td></tr>`;}).join("")||`<tr><td colspan="5" class="note">Chưa có thành viên nào. Hồ sơ của Khách (không đăng nhập) lưu trên máy họ - cấp Mã xác thực bên dưới cho họ.</td></tr>`}
   </tbody></table></div>
   <div class="note" style="margin-top:8px">Bấm "✓ Xác thực" sau khi đã kiểm tra giấy tờ (giấy khai sinh / thẻ HS - xem qua Zalo/Email, không lưu ảnh lên hệ thống). Xác thực gắn với đúng năm sinh đã khai - học viên đổi năm sinh sẽ tự mất xác thực.</div>
 
@@ -4468,6 +4496,13 @@ async function adminStudents(el){
   };
   el.querySelectorAll("button[data-ver]").forEach(b=>b.onclick=()=>setVer(profiles[Number(b.dataset.ver)], true));
   el.querySelectorAll("button[data-unver]").forEach(b=>b.onclick=()=>setVer(profiles[Number(b.dataset.unver)], false));
+  const mbApply=()=>{ const q=($("#mbQ").value||"").toLowerCase().trim(), f=$("#mbF").value; let n=0;
+    el.querySelectorAll("#mbTb tbody tr[data-q]").forEach(tr=>{ const ok=(!q||tr.dataset.q.includes(q))&&(!f||tr.dataset.f.split(" ").includes(f)); tr.style.display=ok?"":"none"; if(ok) n++; }); };
+  if($("#mbQ")){ $("#mbQ").oninput=mbApply; $("#mbF").onchange=mbApply;
+    $("#mbCsv").onclick=()=>{ const rows=[["uid","ten","email","nam_sinh","lop","phu_huynh","xac_thuc","duoc_duyet_them","sach_dang_hoc","dang_nhap_bang","tao_luc","gan_nhat"]];
+      profiles.forEach(p=>{ const g=p.namSinh?gradeFromBirthYear(p.namSinh):null, gr=S.grants[p.uid]||{}; rows.push([p.uid,p.name||p.mname||"",p.email||"",p.namSinh||"",g?g.label:"",p.guardian?"co":"",(gr.verified&&Number(gr.verifiedYear)===Number(p.namSinh))?"co":"",(gr.grades||[]).join(" | "),(p.books||[]).join(" | "),p.provider||"",p.created||p.pat||"",p.last||p.plast||""]); });
+      const csv="\ufeff"+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(",")).join("\r\n");
+      const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})); a.download="kk-edu-thanh-vien-"+new Date().toISOString().slice(0,10)+".csv"; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }; }
   // Tạo / thu hồi Mã xác thực cho Khách
   const genBtn=$("#vcGen");
   if(genBtn) genBtn.onclick=async()=>{
