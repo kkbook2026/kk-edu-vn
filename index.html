@@ -190,13 +190,21 @@ nav.main button.on{background:var(--chip);color:var(--navy);font-weight:600;box-
 .screenbox{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .screen{position:relative;aspect-ratio:16/9;max-width:100%;background:linear-gradient(145deg,#0f2a4a,#16395f 55%,#1d4a7a);color:#f5efdd;display:flex;flex-direction:column;overflow:hidden}
 .screen video{width:100%;height:100%;object-fit:contain;background:#000}
-.scene{flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:22px 26px;min-width:0;overflow:auto}
+.scene{flex:1;display:flex;flex-direction:column;justify-content:safe center;gap:10px;padding:22px 26px;min-width:0;min-height:0;overflow:auto}
+.scene>*{flex-shrink:0}
 .scene .phan{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700}
 .scene .chu{font-family:var(--font-d);font-size:clamp(1.05rem,2.6vw,1.5rem);font-weight:700;color:#fff;text-wrap:balance}
 .scene .hinh{font-size:.84rem;color:#cfd9ea;font-style:italic;max-width:46em}
 .scene .loi{font-size:.98rem;color:#f5efdd;max-width:46em;border-left:3px solid var(--gold);padding-left:12px}
 .scene .sodo{background:#fff;border-radius:10px;padding:10px;max-height:260px;overflow:auto}
-.scene .sodo svg{max-width:100%;height:auto}
+.scene .sodo svg{max-width:100%;height:auto;display:block;margin:0 auto}
+/* Điện thoại: khung mô phỏng tự cao theo nội dung để sơ đồ + lời giảng không bị ép dẹt hoặc cắt chữ (video thật vẫn giữ 16:9) */
+@media (max-width:760px){
+  .screen:not(:has(video)){aspect-ratio:auto;min-height:56.25vw}
+  .scene{padding:16px 16px 18px;gap:8px;overflow:visible}
+  .scene .sodo{max-height:none;padding:8px}
+  .scene .loi{font-size:.95rem}
+}
 .wm{position:absolute;pointer-events:none;opacity:.3;color:#fff;font-size:11.5px;z-index:9;text-shadow:0 0 3px #000;user-select:none;white-space:nowrap;transition:top 1.2s ease,left 1.2s ease}
 .ctrls{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--line);flex-wrap:wrap}
 .ctrls .t{font-variant-numeric:tabular-nums;font-size:.82rem;color:var(--fg2);flex:none}
@@ -205,6 +213,10 @@ nav.main button.on{background:var(--chip);color:var(--navy);font-weight:600;box-
 .seek .fill{position:absolute;left:0;height:6px;border-radius:99px;background:var(--gold)}
 .seek .dot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--navy2);top:50%;transform:translate(-50%,-50%);z-index:2}
 .seek .dot.hit{background:var(--ok)}
+.seek .dot.multi{width:17px;height:17px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.seek .dot.multi b{font-size:9px;line-height:1;color:#fff;font-family:var(--font-b)}
+.seek .dot.part{background:linear-gradient(90deg,var(--ok) 50%,var(--navy2) 50%)}
+.seek .knob{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--gold);transform:translate(-50%,-50%);z-index:3;box-shadow:0 1px 4px rgba(0,0,0,.25);pointer-events:none}
 .iconbtn{border:0;background:var(--chip);color:var(--navy2);width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
 .iconbtn svg{width:18px;height:18px;fill:currentColor}
 .sidepanel{display:flex;flex-direction:column;gap:14px;min-width:0}
@@ -2032,6 +2044,12 @@ function recomputeBook(code){
   pg.pct = done/Math.max(1,pack.lessons.length); pg.ts=Date.now();
 }
 
+/* Gộp các điểm dừng sát nhau (cùng một mốc) thành MỘT chấm có số đếm - tránh chấm chồng lên nhau trên thanh thời gian */
+function seekClusters(points,dur){
+  const gap=Math.max(3,dur*0.025), out=[];
+  points.slice().sort((a,b)=>a.t-b.t).forEach(q=>{ const g=out[out.length-1]; if(g&&q.t-g[0].t<=gap) g.push(q); else out.push([q]); });
+  return out;
+}
 async function viewPlayer(v, code, i){
   const b = CATALOG.find(x=>x.code===code);
   v.innerHTML = `<div class="note" style="margin-top:30px">Đang tải bài học...</div>`;
@@ -2085,7 +2103,8 @@ async function viewPlayer(v, code, i){
           <button class="iconbtn" id="btnPlay" aria-label="Phát / tạm dừng"><svg viewBox="0 0 24 24"><path id="playIco" d="M8 5v14l11-7z"/></svg></button>
           <span class="t" id="tNow">0:00</span>
           <div class="seek" id="seek"><div class="rail"></div><div class="fill" id="seekFill" style="width:0"></div>
-            ${points.map(q=>`<span class="dot" data-id="${esc(q.id)}" style="left:${Math.min(99.5,q.t/dur*100)}%" title="${esc(q.loai)} · ${fmtTime(q.t)}"></span>`).join("")}
+            ${seekClusters(points,dur).map(g=>`<span class="dot${g.length>1?" multi":""}" data-ids="${esc(g.map(q=>q.id).join(","))}" data-t="${g[0].t}" style="left:${Math.min(99,Math.max(1,g[0].t/dur*100))}%" title="${esc(g.map(q=>fmtTime(q.t)+" · "+(q.hoi||q.loai)).join("\n"))}">${g.length>1?`<b>${g.length}</b>`:""}</span>`).join("")}
+            <span class="knob" id="seekKnob" style="left:0"></span>
           </div>
           <span class="t" id="tEnd">${fmtTime(dur)}</span>
           <button class="btn ghost sm" id="spdBtn">1x</button>
@@ -2219,7 +2238,7 @@ function seekTo(t){ if(!P) return; if(t<P.t-5){ P.st.replays=(P.st.replays||0)+1
 function tick(skipAdvance){
   if(!P) return;
   $("#tNow").textContent=fmtTime(P.t);
-  $("#seekFill").style.width=(P.t/P.dur*100)+"%";
+  $("#seekFill").style.width=(P.t/P.dur*100)+"%"; const kn=$("#seekKnob"); if(kn) kn.style.left=(P.t/P.dur*100)+"%";
   if(!P.video){ renderScene(); narrate(); }
   // kích hoạt điểm dừng
   for(const q of P.points){
@@ -2278,7 +2297,8 @@ function renderQList(){
   }).join("");
   box.querySelectorAll(".qrow").forEach(r=> r.onclick=()=>{ const q=P.points.find(x=>x.id===r.dataset.id); if(q){ pauseAll(); openPoint(q,true); } });
   // tô màu mốc trên thanh thời gian
-  document.querySelectorAll("#seek .dot").forEach(d=>{ const a=P.st.answers[d.dataset.id]; d.classList.toggle("hit", !!(a&&a.seen)); });
+  document.querySelectorAll("#seek .dot").forEach(d=>{ const ids=(d.dataset.ids||"").split(",").filter(Boolean); const n=ids.filter(id=>{ const a=P.st.answers[id]; return a&&a.seen; }).length;
+    d.classList.toggle("hit", n>0&&n===ids.length); d.classList.toggle("part", n>0&&n<ids.length); });
 }
 
 /* ================= BỘ MÁY CÂU HỎI & CHẤM ================= */
