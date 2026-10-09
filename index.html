@@ -188,21 +188,24 @@ nav.main button.on{background:var(--chip);color:var(--navy);font-weight:600;box-
 .screenbox:-webkit-full-screen{display:flex;flex-direction:column;background:#000}
 .screenbox:-webkit-full-screen .screen{flex:1;aspect-ratio:auto}
 .screenbox{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-.screen{position:relative;aspect-ratio:16/9;max-width:100%;background:linear-gradient(145deg,#0f2a4a,#16395f 55%,#1d4a7a);color:#f5efdd;display:flex;flex-direction:column;overflow:hidden}
+.screen{position:relative;container-type:inline-size;aspect-ratio:16/9;max-width:100%;background:linear-gradient(145deg,#0f2a4a,#16395f 55%,#1d4a7a);color:#f5efdd;display:flex;flex-direction:column;overflow:hidden}
 .screen video{width:100%;height:100%;object-fit:contain;background:#000}
 .scene{flex:1;display:flex;flex-direction:column;justify-content:safe center;gap:10px;padding:22px 26px;min-width:0;min-height:0;overflow:auto}
 .scene>*{flex-shrink:0}
-.scene .phan{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700}
-.scene .chu{font-family:var(--font-d);font-size:clamp(1.05rem,2.6vw,1.5rem);font-weight:700;color:#fff;text-wrap:balance}
-.scene .hinh{font-size:.84rem;color:#cfd9ea;font-style:italic;max-width:46em}
-.scene .loi{font-size:.98rem;color:#f5efdd;max-width:46em;border-left:3px solid var(--gold);padding-left:12px}
-.scene .sodo{background:#fff;border-radius:10px;padding:10px;max-height:260px;overflow:auto}
-.scene .sodo svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.scene .phan{font-size:max(.62rem,1.05cqw);letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.scene .chu{font-family:var(--font-d);font-size:max(1rem,2.5cqw);font-weight:700;color:#fff;text-wrap:balance}
+.scene .hinh{font-size:max(.8rem,1.35cqw);color:#cfd9ea;font-style:italic;max-width:46em}
+.scene .loi{font-size:max(.92rem,2.1cqw);color:#f5efdd;max-width:46em;border-left:3px solid var(--gold);padding-left:12px}
+/* Sơ đồ/bảng biểu tự co giãn VỪA KHÍT phần còn lại của khung (không cần kéo thanh cuộn), phóng to khung là sơ đồ + chữ to theo cùng tỉ lệ */
+.scene{padding:max(16px,2.6cqw) max(16px,3.2cqw);gap:max(8px,1.2cqw)}
+.scene .sodo{background:#fff;border-radius:10px;padding:max(6px,1cqw);flex:1 1 0;min-height:30%;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.scene .sodo svg{width:100%;height:100%;max-width:100%;max-height:100%;display:block;margin:0 auto}
 /* Điện thoại: khung mô phỏng tự cao theo nội dung để sơ đồ + lời giảng không bị ép dẹt hoặc cắt chữ (video thật vẫn giữ 16:9) */
 @media (max-width:760px){
   .screen:not(:has(video)){aspect-ratio:auto;min-height:56.25vw}
   .scene{padding:16px 16px 18px;gap:8px;overflow:visible}
-  .scene .sodo{max-height:none;padding:8px}
+  .scene .sodo{flex:none;min-height:0;padding:8px}
+  .scene .sodo svg{height:auto}
   .scene .loi{font-size:.95rem}
 }
 .wm{position:absolute;pointer-events:none;opacity:.3;color:#fff;font-size:11.5px;z-index:9;text-shadow:0 0 3px #000;user-select:none;white-space:nowrap;transition:top 1.2s ease,left 1.2s ease}
