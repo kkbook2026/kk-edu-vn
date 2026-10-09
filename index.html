@@ -449,11 +449,21 @@ const FIREBASE_CONFIG = {
 const ADMIN_EMAILS = ["nguyenduydien75@gmail.com"];
 /* Giọng Azure đi qua Cloudflare Worker (khóa nằm ở máy chủ, trình duyệt không thấy) */
 /* Chỉ bật khi Worker báo sẵn sàng (/api/health) - chưa cấu hình thì tự dùng giọng thiết bị/AI, không báo lỗi */
-if(/(^|\.)kk-edu\.(com|vn)$/.test(location.hostname)){
-  fetch("/api/health",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{
-    if(j&&j.tts) window.KKV_CFG=Object.assign({azEndpoint:"/api/tts"}, window.KKV_CFG||{});
-  }).catch(()=>{});
-}
+/* API: ưu tiên cùng tên miền (/api qua Cloudflare); nếu chưa có thì dùng địa chỉ dự phòng workers.dev */
+window.KK_API="/api";
+const KK_API_ALT="https://kk-edu-api.nguyenduydien75.workers.dev/api";
+window.KK_API_READY=(async()=>{
+  if(!/(^|\.)kk-edu\.(com|vn)$/.test(location.hostname)) return null;
+  for(const base of ["/api", KK_API_ALT]){
+    try{ const r=await fetch(base+"/health",{cache:"no-store"}); if(!r.ok) continue;
+      const j=await r.json(); if(!j||!j.ok) continue;
+      window.KK_API=base;
+      if(j.tts) window.KKV_CFG=Object.assign({azEndpoint:base+"/tts"}, window.KKV_CFG||{});
+      return j;
+    }catch(e){}
+  }
+  return null;
+})();
 function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; s.async=true; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
 function applyFbUser(u){
   S.fbUser = u||null;
@@ -1058,7 +1068,8 @@ function packFromMeta(meta,why){
 async function fetchPackCF(code){
   let tok=null;
   try{ const u=S.fb&&S.fb.auth().currentUser; if(u) tok=await withTimeout(u.getIdToken(),6000); }catch(e){}
-  const base="/api/pack/"+encodeURIComponent(code);
+  try{ await window.KK_API_READY; }catch(e){}
+  const base=window.KK_API+"/pack/"+encodeURIComponent(code);
   if(tok){
     const r=await withTimeout(fetch(base,{headers:{authorization:"Bearer "+tok}}),20000);
     if(r.ok){ const d=await r.json(); d._src="github"; return d; }
@@ -3960,13 +3971,13 @@ function adminSettings(el){
   <div class="note" style="margin-top:8px">BIN + số tài khoản dùng để sinh mã VietQR động chuẩn EMVCo ngay trên trình duyệt người mua - không cần cổng trung gian.</div></div>`;
   const bkOut=m=>{ const el=$("#aBkOut"); if(el) el.innerHTML=m; };
   $("#aHealth").onclick=async()=>{ bkOut("Đang kiểm tra...");
-    try{ const r=await fetch("/api/health",{cache:"no-store"}); const j=await r.json();
+    try{ const r=await fetch(window.KK_API+"/health",{cache:"no-store"}); const j=await r.json();
       const yn=b=>b?'<span class="badge ok">sẵn sàng</span>':'<span class="badge">chưa cấu hình</span>';
       bkOut(`Worker: <span class="badge ok">hoạt động</span> · Giọng Azure: ${yn(j.tts)} · Dự phòng GitHub: ${yn(j.fallback)} · Sao lưu tự động: ${yn(j.backup)}`);
     }catch(e){ bkOut("Không gọi được Worker /api/health - kiểm tra Cloudflare."); } };
   $("#aBackup").onclick=async()=>{ bkOut("Đang sao lưu Firestore → GitHub...");
     try{ const tok=await S.fb.auth().currentUser.getIdToken();
-      const r=await fetch("/api/backup/run",{method:"POST",headers:{authorization:"Bearer "+tok}}); const j=await r.json();
+      const r=await fetch(window.KK_API+"/backup/run",{method:"POST",headers:{authorization:"Bearer "+tok}}); const j=await r.json();
       bkOut(r.ok?`✓ Đã sao lưu ${j.docCount} tài liệu (ngày ${esc(j.day)}, ${j.ms} ms).`:`Lỗi: ${esc(j.error||r.status)} ${esc(j.detail||"")}`);
     }catch(e){ bkOut("Lỗi: "+esc(e&&e.message||"mạng")); } };
   $("#aSave").onclick=async()=>{
