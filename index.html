@@ -2018,17 +2018,19 @@ const TG=(()=>{
     const L=ix.L, T=String(text||"").trim();
     const ws=toks(T), words=T.split(/\s+/).filter(Boolean).length, ss=sents(T);
     const tset=new Set(content(T)); const bset=new Set(bigrams(content(T)));
-    const key=ix.terms.filter(t=>!t.includes("_")).slice(0,10), keyBi=ix.terms.filter(t=>t.includes("_")).slice(0,6);
-    const qk=content(q&&q.hoi||"").filter(t=>t.length>2);
+    const key=ix.terms.filter(t=>!t.includes("_")).slice(0,10);
+    const objBi=new Set(bigrams(content((L.muc_tieu||[]).join(". ")))); ix.terms.filter(t=>t.includes("_")).slice(0,16).forEach(t=>objBi.add(t));
+    const qk=[...new Set(content(q&&q.hoi||"").filter(t=>t.length>2))];
     const cov=key.length?key.filter(t=>tset.has(t)).length/key.length:0;
-    const covB=keyBi.length?keyBi.filter(t=>bset.has(t)).length/keyBi.length:0;
-    const kScore=Math.min(1,cov*1.15+covB*.35);
+    const hitBi=[...objBi].filter(t=>bset.has(t));
+    const qcov=qk.length?qk.filter(t=>tset.has(t)).length/qk.length:0;
+    const kScore=Math.min(1, hitBi.length*.2 + qcov*.4 + cov*.45);
     const lessonSents=ix.ps.filter(p=>p.type==="giang"||p.type==="muc_tieu").flatMap(p=>sents(p.text)).map(s=>new Set(content(s)));
     let copy=0; ss.forEach(s=>{ const c=content(s); if(c.length<5) return; const set=new Set(c); if(lessonSents.some(ls=>{ let m=0; set.forEach(t=>{ if(ls.has(t)) m++; }); return m/set.size>.8; })) copy++; });
     const copyRatio=ss.length?copy/ss.length:0;
     const flat=strip(T);
-    const hasEx=/\b(vi du|chang han|nhu la|tinh huong|hom qua|hom nay|o nha|o lop|khi em|em thay|em gap)\b/.test(flat);
-    const reasons=(flat.match(/\b(vi|boi vi|nen|do do|cho nen|vay|nghia la|tuc la|chinh vi|suy ra)\b/g)||[]).length;
+    const hasEx=/\b(vi du|chang han|nhu la|tinh huong|hom qua|hom nay|hom truoc|o nha|o lop|o truong|khi em|em thay|em gap|lan truoc|lan gan nhat|gan nhat|gan day|luc do|khi do|trong gio|em da|em tung|em thu|em lam|em do|em ghi|em quan sat|em chi|cua em|nha em|lop em|ban em|me em|bo em)\b/.test(flat);
+    const reasons=(flat.match(/\b(vi|boi vi|nen|do do|cho nen|vay|nghia la|tuc la|chinh vi|suy ra|de|roi moi|dang ly|le ra|phai|can|lan sau|se|neu|thi|ma)\b/g)||[]).length;
     const hasNum=/\d/.test(T);
     let r=0; if(hasEx) r++; if(reasons>=1) r++; if(reasons>=3) r+=.5; if(hasNum) r++; if(copyRatio<.5) r++; if(words>=30) r+=.5;
     const lvl=(v,th)=>v<th[0]?1:v<th[1]?2:v<th[2]?3:4;
@@ -2039,13 +2041,16 @@ const TG=(()=>{
     let lv=[L1,L2,L3];
     if(words<8) lv=[1,1,1];
     if(copyRatio>.7){ lv[1]=Math.min(lv[1],2); lv[0]=Math.min(lv[0],3); }
+    const offTopic=lv[0]===1; if(offTopic){ lv[1]=Math.min(lv[1],kScore<.1?1:2); lv[2]=Math.min(lv[2],2); } // lạc đề: ví dụ/diễn đạt không cứu được điểm
     const rb=L.tuong_tac.rubric||[];
     const nm=i=>(rb[i]&&rb[i].tieu_chi)||["Đúng kiến thức","Lập luận, ví dụ","Diễn đạt"][i];
-    const notes=[
-      [`Em dùng ${key.filter(t=>tset.has(t)).length}/${key.length} thuật ngữ trọng tâm của bài.`,kScore<.5?"Hãy dùng đúng các thuật ngữ chính của bài (xem mục tiêu bài học) trong câu trả lời.":"Kiến thức bám sát bài."],
-      [hasEx?"Có ví dụ/tình huống của riêng em.":"Chưa thấy ví dụ cụ thể.",(hasEx&&reasons>=1)?"Có lập luận nối ý (vì... nên...).":"Thêm một ví dụ cụ thể và dùng 'vì... nên...' để giải thích."],
-      [`${ss.length} câu, ${words} từ.`,(words<25?"Viết đủ 3-5 câu để ý rõ ràng hơn.":(copyRatio>.5?"Hãy diễn đạt bằng lời của em thay vì chép lời giảng.":"Diễn đạt rõ ràng."))]
+    const kn=hitBi.length+key.filter(t=>tset.has(t)).length;
+    const notes0=[
+      [`Em dùng ${kn} từ/cụm từ trọng tâm của bài, bám ${Math.round(qcov*100)}% ý câu hỏi.`,lv[0]>=3?"Kiến thức bám sát bài và đúng trọng tâm câu hỏi.":lv[0]===2?"Dùng thêm thuật ngữ chính của bài (xem mục tiêu bài học) và trả lời đủ các ý câu hỏi.":"Câu trả lời chưa bám nội dung bài - xem lại mục tiêu bài học rồi viết lại."],
+      [offTopic&&words>=8?"Ví dụ/lập luận chưa gắn với nội dung bài và câu hỏi.":hasEx?"Có ví dụ/trải nghiệm của riêng em.":"Chưa thấy ví dụ cụ thể của em.",offTopic&&words>=8?"Trả lời đúng điều câu hỏi hỏi, lấy ví dụ liên quan tới bài học.":lv[1]>=3?(hasEx?"Lập luận có ví dụ và nối ý rõ ràng.":"Lập luận tốt - thêm một ví dụ của riêng em sẽ thuyết phục hơn."):"Thêm một ví dụ cụ thể và dùng 'vì... nên...', 'lần sau em sẽ...' để giải thích."],
+      [`${ss.length} câu, ${words} từ.`,(words<25?"Viết đủ 3-5 câu để ý rõ ràng hơn.":(copyRatio>.5?"Hãy diễn đạt bằng lời của em thay vì chép lời giảng.":offTopic?"Câu văn ổn nhưng nội dung lạc đề.":lv[2]>=3?"Diễn đạt rõ ràng, mạch lạc.":"Chia thành câu ngắn, mở đầu viết hoa, kết thúc bằng dấu chấm."))]
     ];
+    const notes=notes0;
     const total=lv.reduce((a,x,i)=>a+((rb[i]?rb[i].trong_so:[.4,.35,.25][i])*((x-1)/3)),0);
     return {levels:lv,notes:notes.map((n,i)=>({tc:nm(i),a:n[0],b:n[1]})),total,copyRatio,words,sentences:ss.length,cov};
   }
@@ -2568,6 +2573,7 @@ function openReflect(q){
   const rb = P.L.tuong_tac.rubric||[];
   modal(`<div class="eyebrow">Câu suy ngẫm · tự luận 20% · chấm theo rubric</div><h3>${esc(q.hoi)}</h3>
   <textarea class="reflect" id="refTxt" placeholder="Viết câu trả lời của em...">${esc(st.reflectText||"")}</textarea>
+  <div id="refAIout"></div>
   <div id="rubricBox" style="margin-top:12px">${st.reflectText?rubricHTML(rb,st):""}</div>
   <div class="mrow">
     <button class="btn pri" id="refSave">Nộp bài</button>
@@ -2575,16 +2581,34 @@ function openReflect(q){
     ${S.caps.sample?`<button class="btn ghost sm" id="refAI">🤖 Nhờ AI chấm gợi ý</button>`:""}
     <button class="btn ghost sm" id="refClose">Đóng</button>
   </div>
-  <div class="note" style="margin-top:8px">Theo quy tắc KK-EDU 2.0: AI chỉ gợi ý - giáo viên hoặc phụ huynh xác nhận mức rubric bên trên.</div>
-  <div id="refAIout"></div>`,{lock:true});
+  <div class="note" style="margin-top:8px">Bấm <b>KK-Chấm</b> để xem điểm sơ bộ và góp ý trước khi nộp. Theo quy tắc KK-EDU 2.0: máy chỉ chấm tạm tính - giáo viên hoặc phụ huynh xác nhận mức rubric.</div>`,{lock:true});
   $("#refClose").onclick=resumePlay;
-  $("#refSave").onclick=()=>{ st.reflectText=$("#refTxt").value.trim(); if(!st.reflectText){toast("Hãy viết câu trả lời trước");return;} $("#rubricBox").innerHTML=rubricHTML(rb,st); bindRubric(rb,st); toast("Đã nộp - chọn mức rubric để tính điểm tự luận"); computeTotals(); renderScore(); saveProgress(P.code); };
+  $("#refSave").onclick=()=>{
+    const txt=$("#refTxt").value.trim();
+    if(txt.split(/\s+/).filter(Boolean).length<4){ toast("Hãy viết ít nhất một câu hoàn chỉnh trước khi nộp"); $("#refTxt").focus(); return; }
+    st.reflectText=txt; st.reflectAt=new Date().toISOString();
+    if(a){ a.done=true; a.seen=true; }
+    // Chưa có người hướng dẫn chọn đủ mức rubric -> KK-Chấm tạm tính để có điểm ngay (người hướng dẫn đổi lại được)
+    let sc=null; try{ sc=TG.scoreEssay(txt,q,TG.build(P.L)); }catch(e){}
+    const lv=st.rubricLevels||[]; const full=rb.length&&rb.every((_,i)=>lv[i]>=1&&lv[i]<=4);
+    if(sc&&rb.length&&(!full||st.rubricProv)){ st.rubricLevels=sc.levels.slice(0,rb.length); st.rubricProv=true; }
+    computeTotals(); renderScore(); saveProgress(P.code);
+    const pct=rb.length&&st.rubricLevels?Math.round(st.rubricLevels.reduce((s2,x,i)=>s2+(rb[i].trong_so||0)*((x-1)/3),0)*100):null;
+    const m=document.querySelector("#modalHost .modal");
+    if(m) m.innerHTML=`<div style="text-align:center;padding:18px 6px"><div style="font-size:3rem;line-height:1">✅</div><h3 style="margin:10px 0 6px">Đã nộp bài thành công!</h3>
+      <div class="note">${pct!=null?`Điểm tự luận ${st.rubricProv?"tạm tính (KK-Chấm)":"đã xác nhận"}: <b>${pct}%</b>. `:""}${st.rubricProv?"Giáo viên hoặc phụ huynh sẽ xác nhận mức rubric.":""}</div>
+      <div class="note" style="margin-top:6px">Bài học tiếp tục sau giây lát...</div></div>`;
+    toast("✅ Đã nộp bài thành công");
+    setTimeout(()=>{ if(document.querySelector("#modalHost .modal")) resumePlay(); }, 1800);
+  };
   bindRubric(rb,st);
   const lc=$("#refLocal"); if(lc) lc.onclick=()=>{
     const txt=$("#refTxt").value.trim(); if(txt.split(/\s+/).filter(Boolean).length<4){ toast("Hãy viết ít nhất một câu hoàn chỉnh trước"); return; }
     const r=TG.scoreEssay(txt,q,TG.build(P.L));
     const names=rb.map((x,i)=>`<tr><td>${esc(x.tieu_chi)}</td><td><b>${r.levels[i]||1}/4</b></td><td>${esc((r.notes[i]||{}).a||"")}<br><span class="note">${esc((r.notes[i]||{}).b||"")}</span></td></tr>`).join("");
-    $("#refAIout").innerHTML=`<div class="feedback hint"><b>KK-Chấm (sơ bộ, chấm tự động bằng từ khóa và cấu trúc, không hiểu sâu như giáo viên):</b><table class="kktab">${names}</table><button class="btn gold sm" id="refApply">Áp dụng gợi ý (tạm tính)</button> <span class="note">Giáo viên hoặc phụ huynh vẫn có thể đổi mức ở bảng rubric.</span></div>`;
+    const pct=Math.round(r.total*100);
+    $("#refAIout").innerHTML=`<div class="feedback hint" style="margin-top:10px"><b>🧮 KK-Chấm sơ bộ: ${pct}% (${r.levels.slice(0,rb.length||3).join(" - ")})</b><div class="note" style="margin:2px 0 6px">Chấm tự động theo rubric: thuật ngữ trọng tâm, bám câu hỏi, ví dụ riêng, lập luận, độ dài và cách diễn đạt. Máy không hiểu sâu như giáo viên.</div><table class="kktab">${names}</table><button class="btn gold sm" id="refApply">Áp dụng mức gợi ý (tạm tính)</button> <span class="note">Sửa bài rồi bấm KK-Chấm lại để cải thiện điểm.</span></div>`;
+    try{ $("#refAIout").scrollIntoView({behavior:"smooth",block:"nearest"}); }catch(e){}
     $("#refApply").onclick=()=>{ st.reflectText=txt; st.rubricLevels=r.levels.slice(0,rb.length); st.rubricProv=true; $("#rubricBox").innerHTML=rubricHTML(rb,st); bindRubric(rb,st); computeTotals(); renderScore(); saveProgress(P.code); toast("Đã áp dụng mức tạm tính"); };
   };
   const ai=$("#refAI"); if(ai) ai.onclick=async()=>{
