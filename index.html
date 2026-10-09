@@ -292,6 +292,15 @@ table.tb td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:
 .qrbox canvas,.qrbox img,.qrbox svg{max-width:220px}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:.9rem}
 .kv b{font-variant-numeric:tabular-nums}
+body:has(#modalHost .modalwrap) .consent{display:none}
+.cbox{display:flex;gap:12px;align-items:flex-start;margin:10px 0;padding:12px 14px;border:2px solid var(--gold);border-radius:12px;background:var(--bg2);cursor:pointer;font-size:.92rem;line-height:1.5;color:var(--fg)}
+.cbox:hover{border-color:var(--navy)}
+.cbox input[type=checkbox]{flex:none;width:24px;height:24px;margin:1px 0 0;accent-color:var(--navy,#0f2a4a);cursor:pointer}
+.cbox:has(input:checked){border-color:#2e9d62;background:rgba(46,157,98,.08)}
+.cbox.err{border-color:#c0392b;background:rgba(192,57,43,.08);animation:cbshake .45s}
+.cberr{color:#c0392b;font-weight:600;font-size:.88rem;margin:-4px 0 8px}
+.ferr{border-color:#c0392b!important;box-shadow:0 0 0 2px rgba(192,57,43,.2)}
+@keyframes cbshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:99px;font-size:.9rem;z-index:120;box-shadow:var(--shadow)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .toast{background:var(--gold2);color:#0c1a2c}}
 :root[data-theme="dark"] .toast{background:var(--gold2);color:#0c1a2c}
@@ -753,6 +762,22 @@ function openLogin(){
   };
   $("#lgReg").onclick=(e)=>{ e.preventDefault(); openRegister(); };
 }
+/* ---------- báo lỗi rõ ràng trong biểu mẫu (ô đồng ý, trường thiếu) ---------- */
+function needTick(id,msg){
+  const cb=$("#"+id); if(!cb){ toast(msg); return; }
+  const box=cb.closest(".cbox")||cb.parentNode;
+  box.classList.remove("err"); void box.offsetWidth; box.classList.add("err");
+  let m=box.nextElementSibling; if(!m||!m.classList.contains("cberr")){ m=document.createElement("div"); m.className="cberr"; box.after(m); }
+  m.textContent="⚠ "+msg;
+  try{ box.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){} cb.focus({preventScroll:true});
+  cb.addEventListener("change",()=>{ if(cb.checked){ box.classList.remove("err"); if(m&&m.parentNode) m.remove(); } });
+}
+function formErr(id,msg){
+  const f=$("#"+id); if(!f){ toast(msg); return; }
+  f.classList.add("ferr"); let m=f.parentNode.querySelector(".cberr"); if(!m){ m=document.createElement("div"); m.className="cberr"; f.after(m); }
+  m.textContent="⚠ "+msg; try{ f.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){} f.focus({preventScroll:true});
+  const clr=()=>{ f.classList.remove("ferr"); if(m&&m.parentNode) m.remove(); }; f.addEventListener("input",clr,{once:true}); f.addEventListener("change",clr,{once:true});
+}
 function openRegister(){
   const AY=academicYear();
   const years=[]; for(let y=AY-2;y>=AY-80;y--) years.push(y);
@@ -765,7 +790,7 @@ function openRegister(){
   </div>
   <div id="rgGrade" class="note" style="margin-bottom:6px"></div>
   <div id="rgGuard"></div>
-  <label class="note" style="display:flex;gap:8px;align-items:flex-start;margin:6px 0"><input type="checkbox" id="rgConsent" style="margin-top:3px">Tôi đồng ý để KK-EDU xử lý các dữ liệu tối thiểu (họ tên, năm sinh, email, tiến độ học) cho đúng mục đích học tập, theo Nghị định 13/2023/NĐ-CP. Dữ liệu không chia sẻ cho bên thứ ba; có thể tự xóa toàn bộ trong mục Học tập. <a href="#about" onclick="closeModal()">Xem chính sách</a>.</label>
+  <label class="cbox" id="rgConsentBox"><input type="checkbox" id="rgConsent"><span>Tôi đồng ý để KK-EDU xử lý các dữ liệu tối thiểu (họ tên, năm sinh, email, tiến độ học) cho đúng mục đích học tập, theo Nghị định 13/2023/NĐ-CP. Dữ liệu không chia sẻ cho bên thứ ba; có thể tự xóa toàn bộ trong mục Học tập. <a href="#about" onclick="closeModal()">Xem chính sách</a>.</span></label>
   <div class="note" style="margin-bottom:8px">Sang năm học mới, tài khoản <b>tự lên lớp theo năm sinh</b> - toàn bộ hồ sơ, xác thực và tiến độ được kế thừa, không phải đăng ký lại.</div>
   <div class="mrow"><button class="btn pri" id="rgOk">Tạo tài khoản</button><button class="btn" id="rgGg">Đăng ký nhanh với Google</button><button class="btn ghost" id="rgNo">Đóng</button></div>
   <div id="rgFb"></div>`,{lock:true});
@@ -773,7 +798,7 @@ function openRegister(){
     const y=Number($("#rgYear").value); const g=y?gradeFromBirthYear(y):null;
     $("#rgGrade").innerHTML=g?`→ Lớp được xếp (năm học ${AY}-${AY+1}): <b>${esc(g.label)}</b>`:"";
     const minor=y&&(AY-y)<16;
-    $("#rgGuard").innerHTML=minor?`<label class="note" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px"><input type="checkbox" id="rgGd" style="margin-top:3px">Tôi là cha mẹ / người giám hộ của người học, trực tiếp đăng ký và đồng ý cho con sử dụng KK-EDU (Điều 20, NĐ 13/2023/NĐ-CP về dữ liệu cá nhân của trẻ em).</label>`:"";
+    $("#rgGuard").innerHTML=minor?`<label class="cbox" id="rgGdBox"><input type="checkbox" id="rgGd"><span>Tôi là cha mẹ / người giám hộ của người học, trực tiếp đăng ký và đồng ý cho con sử dụng KK-EDU (Điều 20, NĐ 13/2023/NĐ-CP về dữ liệu cá nhân của trẻ em).</span></label>`:"";
   };
   $("#rgYear").onchange=upd; upd();
   $("#rgNo").onclick=closeModal;
@@ -784,11 +809,11 @@ function openRegister(){
   $("#rgOk").onclick=async()=>{
     const name=$("#rgName").value.trim(), y=Number($("#rgYear").value), em=$("#rgEmail").value.trim(), pw=$("#rgPass").value;
     const g=y?gradeFromBirthYear(y):null;
-    if(!name){ toast("Hãy nhập họ tên"); return; }
-    if(!g){ toast("Hãy chọn năm sinh hợp lệ"); return; }
-    if(pw.length<8){ toast("Mật khẩu cần tối thiểu 8 ký tự"); return; }
-    const gd=$("#rgGd"); if(gd&&!gd.checked){ toast("Người học dưới 16 tuổi cần cha mẹ/người giám hộ xác nhận"); return; }
-    if(!$("#rgConsent").checked){ toast("Hãy đọc và tích đồng ý xử lý dữ liệu (NĐ 13/2023)"); return; }
+    if(!name){ formErr("rgName","Hãy nhập họ tên người học."); return; }
+    if(!g){ formErr("rgYear","Hãy chọn năm sinh hợp lệ."); return; }
+    if(pw.length<8){ formErr("rgPass","Mật khẩu cần tối thiểu 8 ký tự."); return; }
+    const gd=$("#rgGd"); if(gd&&!gd.checked){ needTick("rgGd","Người học dưới 16 tuổi: cha mẹ / người giám hộ cần tích ô xác nhận này trước khi tạo tài khoản."); return; }
+    if(!$("#rgConsent").checked){ needTick("rgConsent","Bạn cần đọc và tích ô đồng ý xử lý dữ liệu (NĐ 13/2023) trước khi tạo tài khoản."); return; }
     try{
       const cred=await S.fb.auth().createUserWithEmailAndPassword(em, pw);
       try{ await cred.user.updateProfile({displayName:name}); }catch(e){}
@@ -802,9 +827,9 @@ function openRegister(){
   $("#rgGg").onclick=async()=>{
     const name=$("#rgName").value.trim(), y=Number($("#rgYear").value);
     const g=y?gradeFromBirthYear(y):null;
-    if(!g){ toast("Chọn năm sinh trước khi đăng ký với Google"); return; }
-    const gd=$("#rgGd"); if(gd&&!gd.checked){ toast("Người học dưới 16 tuổi cần cha mẹ/người giám hộ xác nhận"); return; }
-    if(!$("#rgConsent").checked){ toast("Hãy tích đồng ý xử lý dữ liệu (NĐ 13/2023)"); return; }
+    if(!g){ formErr("rgYear","Chọn năm sinh trước khi đăng ký với Google."); return; }
+    const gd=$("#rgGd"); if(gd&&!gd.checked){ needTick("rgGd","Người học dưới 16 tuổi: cha mẹ / người giám hộ cần tích ô xác nhận này trước khi tạo tài khoản."); return; }
+    if(!$("#rgConsent").checked){ needTick("rgConsent","Bạn cần đọc và tích ô đồng ý xử lý dữ liệu (NĐ 13/2023) trước khi đăng ký với Google."); return; }
     try{
       const cred=await S.fb.auth().signInWithPopup(new S.fb.auth.GoogleAuthProvider());
       applyFbUser(S.fb.auth().currentUser);
@@ -904,16 +929,16 @@ function openProfileForm(onDone){
     const y=Number($("#pfYear").value); const g=y?gradeFromBirthYear(y):null;
     $("#pfGrade").innerHTML=g?`→ Lớp được xếp: <b>${esc(g.label)}</b>`:"";
     const minor=y&&(AY-y)<16;
-    $("#pfGuard").innerHTML=minor?`<label class="note" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px"><input type="checkbox" id="pfGd" ${p.guardian?"checked":""} style="margin-top:3px">Tôi là cha mẹ / người giám hộ của người học và đồng ý cho con sử dụng KK-EDU, bao gồm việc lưu tiến độ học tập (Điều 20, Nghị định 13/2023/NĐ-CP về dữ liệu cá nhân của trẻ em).</label>`:"";
+    $("#pfGuard").innerHTML=minor?`<label class="cbox" id="pfGdBox"><input type="checkbox" id="pfGd" ${p.guardian?"checked":""}><span>Tôi là cha mẹ / người giám hộ của người học và đồng ý cho con sử dụng KK-EDU, bao gồm việc lưu tiến độ học tập (Điều 20, Nghị định 13/2023/NĐ-CP về dữ liệu cá nhân của trẻ em).</span></label>`:"";
   };
   $("#pfYear").onchange=upd; upd();
   $("#pfNo").onclick=closeModal;
   $("#pfSave").onclick=async()=>{
     const locked=(!S.isAdmin&&S.profile&&isVerified());
     const y=locked?Number(S.profile.namSinh):Number($("#pfYear").value); const g=y?gradeFromBirthYear(y):null;
-    if(!g){ toast("Hãy chọn năm sinh hợp lệ"); return; }
+    if(!g){ formErr("pfYear","Hãy chọn năm sinh hợp lệ."); return; }
     const gd=$("#pfGd");
-    if(gd&&!gd.checked){ toast("Người học dưới 16 tuổi cần cha mẹ/người giám hộ xác nhận đồng ý"); return; }
+    if(gd&&!gd.checked){ needTick("pfGd","Người học dưới 16 tuổi: cha mẹ / người giám hộ cần tích ô xác nhận này trước khi lưu."); return; }
     await saveProfile({name:$("#pfName").value.trim()||"Học viên", namSinh:y, guardian:!!gd, at:new Date().toISOString(), extraGrades:(S.profile&&S.profile.extraGrades)||[]});
     closeModal(); toast("Đã lưu hồ sơ - lớp của bạn: "+g.label);
     if(onDone) onDone(); else render();
