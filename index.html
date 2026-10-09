@@ -1088,7 +1088,11 @@ async function fetchPackFS(code){
     const u=new Uint8Array(parts.reduce((a,p)=>a+p.length,0)); let o=0; parts.forEach(p=>{ u.set(p,o); o+=p.length; });
     return JSON.parse(await gunzipBytes(u));
   }catch(e){
-    if(e&&e.code==="permission-denied") return packFromMeta(meta,"permission-denied");
+    if(e&&e.code==="permission-denied"){
+      // bài học thử (tt) chưa có trong Firestore -> lấy bản học thử 7 bài từ kho dự phòng qua Worker
+      if(!meta.tt){ try{ return await fetchPackCF(code); }catch(e3){} }
+      return packFromMeta(meta,"permission-denied");
+    }
     try{ return await fetchPackCF(code); }catch(e2){ return packFromMeta(meta,(e&&e.code)||"error"); }
   }
 }
