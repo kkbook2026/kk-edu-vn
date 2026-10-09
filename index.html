@@ -611,17 +611,7 @@ function bookDonePct(code, needLessons){
 function openBookViewer(b){
   const id=sachIdOf(b.code);
   if(!id){ toast("Sách này chưa gắn bản PDF"); return; }
-  if(!S.isAdmin){
-    if(!S.profile||!myGrade()){ openProfileForm(); return; }
-    if(!bookAllowed(b).ok){ openAgeGate(b); return; }
-    if(bookDonePct(b.code)<1){
-      modal(`<div class="eyebrow">Kho Sách PDF · Bộ A</div><h3>Hoàn thành bài học đầu tiên để mở sách</h3>
-      <p class="note">Theo quy tắc học tập của KK-EDU, bạn cần <b>hoàn thành ít nhất 1 bài học video</b> của cuốn này trước khi đọc Sách PDF - đọc sách hiệu quả nhất sau khi đã học qua bài giảng.</p>
-      <div class="mrow"><button class="btn pri" id="bvGo">Vào học bài 1 ngay</button><button class="btn ghost" id="bvNo">Đóng</button></div>`);
-      $("#bvNo").onclick=closeModal; $("#bvGo").onclick=()=>{ closeModal(); go({name:"hoc", code:b.code, i:0}); };
-      return;
-    }
-  }
+  /* Sách PDF hiển thị ngay - chỉ xem (không tải, không in, không sao chép), không cần đăng nhập */
   if(S.mode==="artifact"){ window.open("https://drive.google.com/file/d/"+id+"/preview","_blank","noopener"); return; }
   const host=$("#modalHost");
   host.innerHTML=`<div class="modalwrap" id="mw"><div class="modal" id="bvBox" style="max-width:min(960px,96vw);width:96vw;height:90vh;display:flex;flex-direction:column;padding:12px;background:var(--card)" oncontextmenu="return false">
@@ -659,8 +649,11 @@ function openBookViewer(b){
 }
 /* ---------- Học tuần tự: xong bài trước mới mở bài sau (Cài đặt bật/tắt, mặc định BẬT) ---------- */
 function seqOn(){ return S.settings.sequential!==false; }
+/* Học thử: N bài đầu mỗi sách (mặc định 7 - khớp tiến độ tháng 9-10 của năm học) mở cho mọi người, không cần đăng nhập/hồ sơ/khóa tuần tự */
+function trialN(){ const n=Number(S.settings&&S.settings.trialLessons); return n>0?Math.floor(n):7; }
+function isTrial(i){ return Number(i||0) < trialN(); }
 function seqBlocked(b, pack, i){
-  if(S.isAdmin||!seqOn()||!i) return false;
+  if(S.isAdmin||!seqOn()||!i||isTrial(i)) return false;
   if(b.level==="Mầm non") return false; // mầm non chơi mà học, không khóa tuần tự
   const prev=pack&&pack.lessons[i-1]; if(!prev) return false;
   const pr=(S.progress[b.code]||{}).lessons||{};
@@ -1036,6 +1029,7 @@ function openVerifyGate(){
 // Cổng kiểm tra trước khi vào học: trả true nếu được phép (lessonIndex để cho học thử bài 1)
 function learnGate(b, lessonIndex, pack){
   if(S.isAdmin) return true;
+  if(isTrial(lessonIndex)) return true; // học thử: ai cũng vào được
   if(!S.profile||!myGrade()){ openProfileForm(); return false; }
   const al=bookAllowed(b);
   if(!al.ok){ openAgeGate(b); return false; }
@@ -1061,6 +1055,7 @@ function packFromMeta(meta,why){
   // Chưa đủ quyền (chưa đăng nhập / sách chưa mở khóa): chỉ có mục lục + bài 1 học thử
   const lessons=JSON.parse(meta.s||"[]").map(L=>Object.assign({_locked:true},L));
   const t=meta.t?JSON.parse(meta.t):null; if(t&&lessons.length) lessons[0]=t;
+  try{ const tt=meta.tt?JSON.parse(meta.tt):null; if(Array.isArray(tt)) tt.forEach((L,k)=>{ if(L&&k<lessons.length) lessons[k]=L; }); }catch(e){}
   return {schema:meta.schema, book:meta.book, ten:meta.ten, lessons, _partial:true, _why:why||"error"};
 }
 /* DỰ PHÒNG khi Firestore lỗi / quá hạn mức / mất kết nối:
@@ -1383,16 +1378,16 @@ async function viewBook(v, code){
       <div style="margin-top:12px" id="bkProg"></div>
     </div>
   </div>
-  <div class="sec"><h2>Danh sách bài học</h2>${b.level!=="Mầm non"?`<button class="more" id="bkExam">🎓 Kiểm tra sách này →</button>`:""}</div>
+  <div class="sec"><h2>Danh sách bài học</h2><span class="note">🎁 ${trialN()} bài đầu học thử miễn phí, không cần đăng nhập</span>${b.level!=="Mầm non"?`<button class="more" id="bkExam">🎓 Kiểm tra sách này →</button>`:""}</div>
   <div id="lessBox" class="lesslist"><div class="note">Đang tải gói tương tác...</div></div>`;
   const bke=$("#bkExam"); if(bke) bke.onclick=()=>{ S.examBook=code; go({name:"thi"}); };
 
   // Liên kết tài liệu (Google Drive / OneDrive của tác giả)
   const links = [];
-  if(sachIdOf(code)) links.push(`<button class="btn" id="bkSach">📖 Đọc Sách PDF (Bộ A) 🔒</button>`);
+  if(sachIdOf(code)) links.push(`<button class="btn pri" id="bkSach">📖 Đọc Sách PDF ngay (chỉ xem)</button>`);
   if(c.scriptUrl) links.push(`<a class="btn" target="_blank" rel="noopener" href="${esc(c.scriptUrl)}">🎬 Kịch bản video (Bộ B)</a>`);
   if(c.videoUrl) links.push(`<a class="btn" target="_blank" rel="noopener" href="${esc(c.videoUrl)}">▶ Video bài giảng (thư mục)</a>`);
-  $("#bkLinks").innerHTML = links.join("") + (sachIdOf(code)?`<span class="note">Sách mở trong trình đọc bảo vệ: chỉ xem, không tải - không sao chép. Hoàn thành bài 1 để mở.</span>`:(S.isAdmin?`<span class="note">Chưa gắn link tài liệu - vào Quản trị → Nội dung.</span>`:""));
+  $("#bkLinks").innerHTML = links.join("") + (sachIdOf(code)?`<span class="note">Sách mở trong trình đọc bảo vệ: chỉ xem, không tải - không sao chép.</span>`:(S.isAdmin?`<span class="note">Chưa gắn link tài liệu - vào Quản trị → Nội dung.</span>`:""));
   const bs=$("#bkSach"); if(bs) bs.onclick=()=>openBookViewer(b);
 
   const pack = await loadPack(code);
@@ -1408,14 +1403,14 @@ async function viewBook(v, code){
     const locked = seqBlocked(b, pack, i);
     return `<div class="lessitem ${st.done?"done":""}" data-i="${i}" style="${locked?"opacity:.55":""}">
       <div class="num">${st.done?"✓":(locked?"🔒":i+1)}</div>
-      <div class="ti">${esc(L.bai)}${hasRealVideo?' <span class="badge gold">video thật</span>':""}${locked?' <span class="note">· mở khi xong bài trước</span>':""}</div>
+      <div class="ti">${esc(L.bai)}${isTrial(i)&&!S.isAdmin?' <span class="badge ok">Học thử</span>':""}${hasRealVideo?' <span class="badge gold">video thật</span>':""}${locked?' <span class="note">· mở khi xong bài trước</span>':""}</div>
       <div class="st">${score?score+" · ":""}${dur}</div>
     </div>`;
   }).join("");
   box.querySelectorAll(".lessitem").forEach(el=> el.onclick=()=>{
     const li=Number(el.dataset.i);
     if(!learnGate(b, li, pack)) return; // hồ sơ + phê duyệt + xác thực + học tuần tự
-    if(!unlocked && li>0){ openBuy(code); return; } // bài 1 luôn học thử được
+    if(!unlocked && !isTrial(li)){ openBuy(code); return; } // N bài đầu luôn học thử được
     go({name:"hoc", code, i:li});
   });
   const bb=$("#buyBtn"); if(bb) bb.onclick=()=>openBuy(code);
@@ -1595,7 +1590,7 @@ function viewAbout(v){
   <div class="card" style="max-width:56em">
     <h3 style="margin-top:0">Bắt đầu học trong 5 bước</h3>
     <p><b>Bước 1 - Đăng ký thành viên (khuyên dùng) hoặc lập Hồ sơ Khách.</b> Bấm menu tài khoản ở góc trên bên phải → <b>Đăng ký thành viên</b>: nhập họ tên, <b>năm sinh</b>, email và mật khẩu (hoặc Đăng ký nhanh với Google). Năm sinh quyết định lớp: sinh ${AY-12} học Lớp 7, sinh ${AY-6} học Lớp 1, từ 18 tuổi học khối Đại học trở lên. Dưới 16 tuổi cần cha mẹ/người giám hộ đăng ký và tích ô xác nhận. Thành viên được: lưu đám mây, học đa thiết bị, gửi yêu cầu mở lớp trực tuyến, thi lấy học bạ, tự lên lớp mỗi năm học mới.</p>
-    <p><b>Bước 2 - Vào đúng lớp của mình.</b> Ở Video Online, sách đúng lớp có nhãn "Đúng lớp của bạn". Bài 1 của mọi sách luôn học thử miễn phí. Muốn học lớp khác? Gửi "Yêu cầu mở lớp" để Quản trị viên phê duyệt.</p>
+    <p><b>Bước 2 - Vào đúng lớp của mình.</b> Ở Video Online, sách đúng lớp có nhãn "Đúng lớp của bạn". 7 bài đầu của mọi sách luôn học thử miễn phí, không cần đăng nhập. Muốn học lớp khác? Gửi "Yêu cầu mở lớp" để Quản trị viên phê duyệt.</p>
     <p><b>Bước 3 - Học lần lượt từng bài.</b> Video tự dừng ở các mốc để hỏi; sai lần 1 nhận gợi ý, còn 1 lần làm (hệ số 0,8); nút "Xem lại đoạn" nhảy đúng giây liên quan, không bị trừ điểm. Xong video làm 4 câu Thành thạo + câu Suy ngẫm. <b>Học tuần tự:</b> hoàn thành bài này thì bài sau mới mở khóa 🔒. Kẹt ở đâu hỏi Trợ giảng AI ở cột phải.</p>
     <p><b>Bước 4 - Nghe giảng và đọc sách.</b> Trong bài học, bấm <b>🔊 Nghe giảng</b> để AI đọc to mục tiêu và toàn bộ lời giảng bằng giọng Việt. <b>Tự động trên mọi trình duyệt, không cần cài gì</b>: hệ thống dùng giọng tự nhiên tốt nhất của thiết bị (Microsoft Nam Minh, Hoài My, Google, Linh...); máy nào chưa có giọng Việt sẽ tự chuyển sang <b>giọng nam AI KK chạy ngay trong trình duyệt</b> (nạp một lần ~38 MB, lần sau mở ngay). Số, thuật ngữ IT và ký hiệu toán được đọc thành lời tự nhiên; câu đang đọc hiện to trên màn hình, có nút tạm dừng và nhảy đoạn. Nút ⚙ để chọn giọng và tốc độ 0,8x-1,25x; còn có <b>chế độ chữ chạy</b> dự phòng. Hoàn thành bài 1 là mở được <b>Sách PDF (Bộ A)</b> ở trang sách - đọc ngay trên trang, chỉ xem, không tải.</p>
     <p><b>Bước 5 - Kiểm tra và theo dõi.</b> Học đủ 70% phạm vi là vào được bài kiểm tra Cuối chương / Giữa năm / Cuối năm ở mục <b>🎓 Kiểm tra</b> (xem tab "Kiểm tra &amp; Học bạ"). Mục <b>Học tập</b> có điểm từng bài, Học bạ năm học, nút tải xuống hoặc xóa toàn bộ dữ liệu.</p>
@@ -1624,7 +1619,7 @@ function viewAbout(v){
     <p><b>Lớp 3 - Xác thực danh tính (khi Quản trị bật chế độ bắt buộc).</b> Hai cách, chọn một:</p>
     <p style="padding-left:14px">• <b>Gửi giấy tờ:</b> chụp giấy khai sinh / thẻ học sinh / CCCD (che dãy số) gửi Quản trị viên qua ${esc(S.settings.contactZalo?("Zalo "+S.settings.contactZalo):(S.settings.contactEmail||"kênh liên hệ ở cuối trang"))}. Quản trị viên đối chiếu và bấm Xác thực - nhãn "✓ Đã xác thực" gắn vào tài khoản, chỉ Quản trị viên gỡ được.</p>
     <p style="padding-left:14px">• <b>Mã xác thực một lần:</b> Quản trị viên cấp mã dạng <b>KX-năm sinh-6 ký tự</b> gắn cố định với năm sinh của bạn. Nhập mã sai năm sinh là bị từ chối; mã lưu trên hệ thống dưới dạng băm SHA-256 nên không ai đọc trộm được.</p>
-    <p class="note">Khi chưa xác thực (và chế độ bắt buộc đang bật), bạn vẫn học thử bài 1 của đúng lớp mình. Trạng thái xác thực hiện ở mục Học tập.</p>
+    <p class="note">Khi chưa xác thực (và chế độ bắt buộc đang bật), bạn vẫn học thử 7 bài đầu của mọi sách. Trạng thái xác thực hiện ở mục Học tập.</p>
   </div>`;
   C.ph=`
   <div class="card" style="max-width:56em">
@@ -1999,13 +1994,13 @@ async function viewPlayer(v, code, i){
   if(!b||!pack||!pack.lessons[i]){ v.innerHTML="<p style='margin-top:30px'>Không tìm thấy bài học.</p>"; return; }
   if(pack.lessons[i]._locked){
     if(!S.uid){
-      v.innerHTML=`<div class="card" style="margin-top:30px;max-width:34em"><h3>🔐 Đăng nhập để học tiếp</h3><div class="note">Bạn đã học thử bài 1. Đăng nhập miễn phí (Google hoặc email) để học tiếp ${pack.lessons.length-1} bài còn lại của sách và lưu tiến độ trên mọi thiết bị.</div><div class="mrow"><button class="btn pri" id="lkLogin">Đăng nhập</button><button class="btn ghost" id="lkBack">Về trang sách</button></div></div>`;
+      v.innerHTML=`<div class="card" style="margin-top:30px;max-width:34em"><h3>🔐 Đăng nhập để học tiếp</h3><div class="note">Bạn đã học thử ${Math.min(trialN(),pack.lessons.length)} bài đầu. Đăng nhập miễn phí (Google hoặc email) để học tiếp ${Math.max(0,pack.lessons.length-trialN())} bài còn lại của sách và lưu tiến độ trên mọi thiết bị.</div><div class="mrow"><button class="btn pri" id="lkLogin">Đăng nhập</button><button class="btn ghost" id="lkBack">Về trang sách</button></div></div>`;
       $("#lkLogin").onclick=()=>openLogin(); $("#lkBack").onclick=()=>go({name:"book",code}); return;
     }
     if(pack._why!=="permission-denied"){ delete S.goiCache[code]; v.innerHTML=`<div class="card" style="margin-top:30px;max-width:34em"><h3>Chưa tải được bài học</h3><div class="note">Kết nối mạng chập chờn. Bấm thử lại.</div><div class="mrow"><button class="btn pri" id="lkRetry">Thử lại</button></div></div>`; $("#lkRetry").onclick=()=>viewPlayer(v,code,i); return; }
     v.innerHTML="<p style='margin-top:30px'>Bài này cần mở khóa.</p>"; openBuy(code); return;
   }
-  if(!S.isAdmin){
+  if(!S.isAdmin && !isTrial(i)){
     if(!S.profile||!myGrade()){ v.innerHTML=`<div class="card" style="margin-top:30px;max-width:34em"><h3>Cần hồ sơ học viên</h3><div class="note">Đăng ký năm sinh để hệ thống xếp đúng lớp trước khi vào học.</div></div>`; openProfileForm(()=>viewPlayer(v,code,i)); return; }
     const al=bookAllowed(b);
     if(!al.ok){ v.innerHTML=`<div class="card" style="margin-top:30px;max-width:34em"><h3>🔒 Ngoài lớp của bạn</h3><div class="note">Sách ${esc(b.subject)} thuộc <b>${esc(b.grade||b.level)}</b>; lớp của bạn là <b>${esc(myGrade().label)}</b>. Cần Quản trị viên phê duyệt.</div><div class="mrow"><button class="btn pri" id="agOpen">Gửi yêu cầu mở lớp</button><button class="btn ghost" id="agBack">Về trang sách</button></div></div>`;
@@ -2017,7 +2012,7 @@ async function viewPlayer(v, code, i){
       v.innerHTML=`<div class="card" style="margin-top:30px;max-width:34em"><h3>Cần xác thực độ tuổi</h3><div class="note">Bạn học thử được bài 1; để học các bài tiếp theo cần xác thực (gửi giấy tờ cho Quản trị viên hoặc nhập Mã xác thực).</div><div class="mrow"><button class="btn pri" id="vgOpen">Xác thực ngay</button><button class="btn ghost" id="vgBack">Về trang sách</button></div></div>`;
       $("#vgOpen").onclick=openVerifyGate; $("#vgBack").onclick=()=>go({name:"book",code}); return; }
   }
-  if(!isUnlocked(code) && i>0){ v.innerHTML="<p style='margin-top:30px'>Bài này cần mở khóa.</p>"; openBuy(code); return; }
+  if(!isUnlocked(code) && !isTrial(i)){ v.innerHTML="<p style='margin-top:30px'>Bài này cần mở khóa.</p>"; openBuy(code); return; }
   const L = pack.lessons[i];
   const mn = b.level==="Mầm non" || (L.tuong_tac&&L.tuong_tac.che_do==="nguoi_lon_ho_tro");
   const dur = L._dur || (L.thoi_luong_phut?L.thoi_luong_phut*60:300);
@@ -3633,7 +3628,7 @@ function cbKB(){
    acts:[{l:"Mở cổng xác thực", fn:"verify"}]},
   // ===== HỌC =====
   {id:"hocthu", chip:"Học thử miễn phí", k:"hoc thu mien phi bai 1 free dung thu co mat tien khong gia bao nhieu",
-   a:`<b>Bài 1 của mọi sách luôn học thử miễn phí</b>, kể cả chưa đăng nhập. Giai đoạn thử nghiệm hiện tại toàn bộ nội dung đang <b>miễn phí</b>.`,
+   a:`<b>7 bài đầu của mọi sách luôn học thử miễn phí</b> (khớp tiến độ đầu năm học), kể cả chưa đăng nhập; Sách PDF xem ngay (chỉ xem). Giai đoạn thử nghiệm hiện tại toàn bộ nội dung đang <b>miễn phí</b>.`,
    acts:[{l:"Học thử bài demo", go:"hoc_CS-TOAN-7_0"},{l:"Vào Video Online", go:"video"}]},
   {id:"tuantu", chip:"Vì sao bài sau bị khóa?", k:"bai sau bi khoa hoc tuan tu khong mo duoc bai 2 bai tiep theo khoa 🔒 mo khoa bai",
    a:`KK-EDU học <b>tuần tự</b>: hoàn thành bài trước (đạt mốc hoàn thành) thì bài sau và Sách PDF mới mở - kiến thức nối mạch, không hổng. Mầm non được miễn quy tắc này.`,
@@ -4331,11 +4326,11 @@ function adminHelp(el){
   <ol style="padding-left:20px;line-height:1.9">
     <li><b>Cài đặt thanh toán:</b> nhập BIN + số tài khoản + chủ TK ở thẻ Cài đặt. Mã VietQR động sẽ sinh tự động cho từng đơn.</li>
     <li><b>Gắn tài liệu:</b> trên Google Drive / OneDrive, bấm Chia sẻ → "Bất kỳ ai có liên kết" → dán link vào thẻ Nội dung (từng sách hoặc nhập hàng loạt JSON).</li>
-    <li><b>Đặt giá:</b> giá mặc định 0 = toàn bộ miễn phí để chạy thử; đặt giá riêng từng sách khi bắt đầu bán. Bài 1 của mọi sách luôn học thử được.</li>
+    <li><b>Đặt giá:</b> giá mặc định 0 = toàn bộ miễn phí để chạy thử; đặt giá riêng từng sách khi bắt đầu bán. 7 bài đầu của mọi sách luôn học thử được (đổi số bài: trường <code>trialLessons</code> trong settings/main).</li>
     <li><b>Duyệt đơn:</b> người mua quét QR → bấm "Tôi đã chuyển khoản" → đơn hiện ở thẻ Đơn hàng → bạn đối soát app ngân hàng → Xác nhận. Người mua không đăng nhập thì cấp Mã mở khóa (đặt trong phần Sửa sách).</li>
     <li><b>Phân quyền:</b> ai mở trang bằng tài khoản được bạn chia sẻ quyền Biên tập đều là Quản trị; thành viên tổ chức là Học viên đồng bộ đám mây; khách công khai học ở chế độ lưu trên máy.</li>
     <li><b>Kiểm soát độ tuổi:</b> người học phải đăng ký hồ sơ năm sinh trước khi vào học; hệ thống tự xếp lớp theo năm học (sinh ${academicYear()-12} học Lớp 7). Học sinh chỉ học đúng lớp mình; yêu cầu mở lớp khác hiện ở thẻ "Học viên & Phê duyệt" để bạn duyệt/từ chối. Dưới 16 tuổi bắt buộc cha mẹ xác nhận đồng ý (NĐ 13/2023).</li>
-    <li><b>Xác thực độ tuổi (3 lớp):</b> mặc định TẮT khi thí điểm. Khi bật ở "Cài đặt" (Bắt buộc xác thực), học viên chỉ học thử bài 1; từ bài 2 cần ADMIN bấm "✓ Xác thực" trên hồ sơ (sau khi xem giấy khai sinh/thẻ HS qua Zalo-Email) hoặc nhập Mã xác thực KX-... bạn cấp ở thẻ "Học viên & Phê duyệt". Xác thực gắn với năm sinh - đổi năm sinh là mất xác thực.</li>
+    <li><b>Xác thực độ tuổi (3 lớp):</b> mặc định TẮT khi thí điểm. Khi bật ở "Cài đặt" (Bắt buộc xác thực), học viên chỉ học thử 7 bài đầu; từ bài 8 cần ADMIN bấm "✓ Xác thực" trên hồ sơ (sau khi xem giấy khai sinh/thẻ HS qua Zalo-Email) hoặc nhập Mã xác thực KX-... bạn cấp ở thẻ "Học viên & Phê duyệt". Xác thực gắn với năm sinh - đổi năm sinh là mất xác thực.</li>
     <li><b>Kho PDF bài học (Bộ A):</b> thư mục gom sẵn <code>FINAL_2.0\\_UPLOAD-GDRIVE\\SACH</code> trên máy bạn - kéo thả 1 lần vào Google Drive cá nhân, bấm Chia sẻ thư mục → "Bất kỳ ai có liên kết", rồi nhờ Claude "quét Drive gắn link sách" - 220 link được gắn tự động.</li>
   </ol>
   <h3>Giới hạn bản miễn phí & lộ trình lên server lớn</h3>
