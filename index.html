@@ -1154,8 +1154,84 @@ function go(route){
   render();
   window.scrollTo({top:0});
 }
+/* ---------- MÃ QR TRONG SÁCH: "KK-EDU|<mã bài>|<mã video>" hoặc link ?bai=<mã bài> -> mở đúng bài (qua đủ cổng tuổi/lớp/học thử) ---------- */
+function kkQRParse(txt){
+  txt=String(txt||"").trim(); if(!txt) return null;
+  let m=txt.match(/[?&#]bai=([A-Za-z0-9.\-]+)/); if(m) txt=m[1];
+  m=txt.match(/#hoc_(.+)_(\d+)$/); if(m) return {code:m[1], i:Number(m[2])};
+  const parts=txt.split("|").map(x=>x.trim()).filter(Boolean);
+  for(const t of parts.length>1?parts.slice(1).concat(parts):parts){
+    let k=t.toUpperCase().match(/^([A-Z0-9][A-Z0-9-]*?)\.C\d+\.B(\d+)$/);
+    if(k&&CATALOG.find(b=>b.code===k[1])) return {code:k[1], i:Math.max(0,Number(k[2])-1)};
+    k=t.toUpperCase().match(/^V-([A-Z0-9][A-Z0-9-]*?)-(\d+)$/);
+    if(k&&CATALOG.find(b=>b.code===k[1])) return {code:k[1], i:Math.max(0,Number(k[2])-1)};
+  }
+  return null;
+}
+function qrOpenLesson(txt){
+  const q=kkQRParse(txt);
+  if(!q){ toast("Mã không phải mã bài học KK-EDU"); return false; }
+  const b=CATALOG.find(x=>x.code===q.code);
+  if(b&&b.lessons&&q.i>=b.lessons){ toast("Sách "+b.code+" không có bài "+(q.i+1)); return false; }
+  closeModal(); go({name:"hoc", code:q.code, i:q.i}); return true;
+}
+function openQRScan(){
+  modal(`<div class="eyebrow">Mã QR trong sách</div><h3>📷 Quét mã bài học</h3>
+  <p class="note">Đưa mã QR in cạnh bảng "Học cùng video tương tác" vào khung hình. Hệ thống mở đúng bài; quyền xem vẫn theo đúng lớp/độ tuổi của bạn.</p>
+  <div id="qsBox" style="position:relative;background:#111;border-radius:12px;overflow:hidden;aspect-ratio:4/3;max-height:52vh;display:none">
+    <video id="qsVid" playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
+    <div style="position:absolute;inset:18%;border:3px solid rgba(255,214,102,.9);border-radius:14px;pointer-events:none"></div></div>
+  <div class="note" id="qsMsg" style="margin:8px 0"></div>
+  <div class="mrow" style="flex-wrap:wrap;gap:8px">
+    <button class="btn pri" id="qsCam">📷 Bật camera</button>
+    <label class="btn ghost" style="cursor:pointer">🖼 Chọn ảnh chụp mã<input type="file" id="qsFile" accept="image/*" style="display:none"></label></div>
+  <div class="mrow" style="margin-top:10px;gap:8px"><input type="text" id="qsTxt" placeholder="Hoặc nhập mã bài, ví dụ NC-MN.C01.B003 hoặc V-NC-MN-003" style="flex:1;min-width:0">
+    <button class="btn" id="qsGo">Mở bài</button></div>
+  <div class="mrow"><button class="btn ghost" id="qsClose">Đóng</button></div>`);
+  let stream=null, raf=0, alive=true, det=null;
+  const msg=t=>{ const e=$("#qsMsg"); if(e) e.textContent=t; };
+  const stop=()=>{ alive=false; cancelAnimationFrame(raf); try{ stream&&stream.getTracks().forEach(t=>t.stop()); }catch(e){} };
+  const done=txt=>{ if(kkQRParse(txt)){ stop(); qrOpenLesson(txt); return true; } msg("Đã đọc được mã nhưng không phải mã bài học KK-EDU: "+String(txt).slice(0,60)); return false; };
+  const host=$("#modalHost");
+  const obs=new MutationObserver(()=>{ if(!$("#qsBox")){ stop(); obs.disconnect(); } }); obs.observe(host,{childList:true});
+  $("#qsClose").onclick=()=>{ stop(); closeModal(); };
+  $("#qsGo").onclick=()=>{ const t=$("#qsTxt").value; if(!qrOpenLesson(t)) msg("Không nhận ra mã. Mã bài có dạng NC-MN.C01.B003."); };
+  $("#qsTxt").onkeydown=e=>{ if(e.key==="Enter") $("#qsGo").click(); };
+  async function decoder(){
+    if(det) return det;
+    if("BarcodeDetector" in window){ try{ const f=await BarcodeDetector.getSupportedFormats(); if(f.includes("qr_code")){ const bd=new BarcodeDetector({formats:["qr_code"]}); det=async src=>{ const r=await bd.detect(src); return r[0]&&r[0].rawValue; }; return det; } }catch(e){} }
+    if(!window.jsQR) await loadScript("https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js");
+    const cv=document.createElement("canvas"), cx=cv.getContext("2d",{willReadFrequently:true});
+    det=async src=>{ const w=src.videoWidth||src.naturalWidth||src.width, h=src.videoHeight||src.naturalHeight||src.height; if(!w||!h) return null;
+      const sc=Math.min(1,960/Math.max(w,h)); cv.width=Math.round(w*sc); cv.height=Math.round(h*sc); cx.drawImage(src,0,0,cv.width,cv.height);
+      const d=cx.getImageData(0,0,cv.width,cv.height); const r=window.jsQR(d.data,cv.width,cv.height,{inversionAttempts:"attemptBoth"}); return r&&r.data; };
+    return det;
+  }
+  $("#qsCam").onclick=async()=>{
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ msg("Trình duyệt không mở được camera - hãy dùng nút Chọn ảnh chụp mã."); return; }
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});
+      const vd=$("#qsVid"); if(!vd){ stop(); return; } $("#qsBox").style.display="block"; vd.srcObject=stream; await vd.play();
+      const dec=await decoder(); msg("Đang tìm mã QR...");
+      let busy=false, last=0;
+      const tick=async ts=>{ if(!alive) return; raf=requestAnimationFrame(tick); if(busy||ts-last<250) return; last=ts; busy=true;
+        try{ const t=await dec(vd); if(t&&done(t)) return; }catch(e){} busy=false; };
+      raf=requestAnimationFrame(tick);
+    }catch(e){ msg(e&&e.name==="NotAllowedError"?"Bạn chưa cho phép dùng camera. Bấm biểu tượng ổ khóa trên thanh địa chỉ để cho phép, hoặc dùng Chọn ảnh chụp mã.":"Không mở được camera - hãy dùng nút Chọn ảnh chụp mã."); }
+  };
+  $("#qsFile").onchange=async e=>{
+    const f=e.target.files&&e.target.files[0]; if(!f) return; msg("Đang đọc ảnh...");
+    try{ const img=new Image(); img.src=URL.createObjectURL(f); await img.decode(); const dec=await decoder(); const t=await dec(img); URL.revokeObjectURL(img.src);
+      if(!t){ msg("Không thấy mã QR trong ảnh. Chụp gần hơn, đủ sáng, mã nằm trọn trong ảnh."); return; } done(t);
+    }catch(err){ msg("Không đọc được ảnh này."); }
+  };
+}
 function parseHash(){
+  try{ const qb=new URLSearchParams(location.search).get("bai"); if(qb){ const q=kkQRParse("?bai="+qb);
+    const u=new URLSearchParams(location.search); u.delete("bai"); const qs=u.toString();
+    if(q){ history.replaceState(null,"",location.pathname+(qs?"?"+qs:"")+"#hoc_"+q.code+"_"+q.i); return {name:"hoc", code:q.code, i:q.i}; } } }catch(e){}
   const h = (location.hash||"").replace(/^#/,""); if(!h) return {name:"home"};
+  if(/^bai=/.test(h)){ const q=kkQRParse("#"+h); if(q) return {name:"hoc", code:q.code, i:q.i}; }
   const p = h.split("_");
   if(p[0]==="book" && p[1]) return {name:"book", code:p.slice(1).join("_")};
   if(p[0]==="hoc" && p.length>=3){ const i=Number(p[p.length-1]); return {name:"hoc", code:p.slice(1,-1).join("_"), i:isNaN(i)?0:i}; }
@@ -1375,11 +1451,13 @@ function viewCatalog(v){
     <select id="fType"><option value="">Chuẩn + Nâng cao</option><option ${f.type==="Chuẩn"?"selected":""} value="Chuẩn">Bộ chuẩn</option><option ${f.type==="NC"?"selected":""} value="NC">Bộ Nâng cao</option></select>
     <input type="search" id="fQ" placeholder="Tìm môn học, mã sách..." value="${esc(f.q)}">
     ${mineBtnHTML(f,"fMine")}
+    <button class="btn sm ghost" id="fQR" title="Quét mã QR in trong sách để mở đúng bài">📷 Quét mã QR</button>
   </div>
   <div class="grid bk">${list.map(bookCard).join("")||`<div class="note">Không tìm thấy sách phù hợp.</div>`}</div>`;
   $("#fLevel").onchange=e=>{f.level=e.target.value; f.grade=""; f.mine=false; viewCatalog(v);};
   $("#fGrade").onchange=e=>{f.grade=e.target.value; f.mine=false; if(f.grade&&!f.level){ const b0=CATALOG.find(b=>b.grade===f.grade); if(b0) f.level=b0.level; } viewCatalog(v);};
   bindMineBtn(f,"fMine",()=>viewCatalog(v));
+  $("#fQR").onclick=openQRScan;
   $("#fType").onchange=e=>{f.type=e.target.value; viewCatalog(v);};
   let qt; $("#fQ").oninput=e=>{clearTimeout(qt); qt=setTimeout(()=>{f.q=e.target.value; viewCatalog(v); const el=$("#fQ"); el.focus(); el.setSelectionRange(el.value.length,el.value.length);},300);};
   v.querySelectorAll(".bkcard").forEach(c=> c.onclick=()=>go({name:"book", code:c.dataset.code}));
@@ -1547,6 +1625,7 @@ function viewTaiLieu(v){
     ${gradeSelectHTML(f,"tlGrade")}
     <input type="search" id="tlQ" placeholder="Tìm môn học, mã sách..." value="${esc(f.q)}">
     ${mineBtnHTML(f,"tlMine")}
+    <button class="btn sm ghost" id="tlQR" title="Quét mã QR in trong sách để mở đúng bài">📷 Quét mã QR</button>
   </div>
   <div class="tbwrap"><table class="tb"><thead><tr><th>Tài liệu</th><th>Cấp / Lớp</th><th>Quy mô</th><th>Mở tài liệu</th></tr></thead><tbody>
   ${list.map(b=>{const c=S.content[b.code]||{}; const lk=!S.isAdmin&&myGrade()&&!bookAllowed(b).ok;
@@ -1563,6 +1642,7 @@ function viewTaiLieu(v){
   $("#tlLevel").onchange=e=>{f.level=e.target.value; f.grade=""; f.mine=false; viewTaiLieu(v);};
   $("#tlGrade").onchange=e=>{f.grade=e.target.value; f.mine=false; if(f.grade&&!f.level){ const b0=CATALOG.find(b=>b.grade===f.grade); if(b0) f.level=b0.level; } viewTaiLieu(v);};
   bindMineBtn(f,"tlMine",()=>viewTaiLieu(v));
+  $("#tlQR").onclick=openQRScan;
   v.querySelectorAll("button[data-pdf]").forEach(x=>x.onclick=()=>{ const b=CATALOG.find(y=>y.code===x.dataset.pdf); if(b) openBookViewer(b); });
   v.querySelectorAll("button[data-kb]").forEach(x=>x.onclick=()=>{ const b=CATALOG.find(y=>y.code===x.dataset.kb); if(!b) return;
     if(!S.isAdmin){ if(!S.profile||!myGrade()){ openProfileForm(); return; } if(!bookAllowed(b).ok){ openAgeGate(b); return; } }
@@ -3975,6 +4055,8 @@ function cbKB(){
    a:`Mỗi câu tối đa 2 lần làm (hệ số 1 và 0,8). Xem gợi ý nhẹ trừ 10%, gợi ý rõ trừ tổng 25%; xem lại video không bị trừ. Điểm bài = Trong video 40% + Thành thạo 40% + Tự luận 20%. Đạt từ 70%, Nâng cao từ 90%.`},
   {id:"giongdoc", chip:"Giọng đọc AI", k:"giong doc ai nghe giang doc bai khong co tieng viet khong doc duoc am thanh loa tts chu chay giong nam firefox safari trinh duyet khong co giong",
    a:`Trong bài học bấm <b>🔊 Nghe giảng</b> - AI đọc tên bài, mục tiêu và toàn bộ lời giảng bằng giọng Việt - <b>tự động trên mọi trình duyệt, không cần cài gì</b>. Hệ thống dùng giọng tự nhiên tốt nhất của máy (Nam Minh, Hoài My, Google, Linh); máy nào chưa có giọng Việt sẽ tự chuyển sang <b>giọng nam AI KK</b> chạy ngay trong trình duyệt (lần đầu nạp khoảng 38 MB, sau đó mở ngay). Câu đang đọc hiện to trên màn hình, có nút tạm dừng và nhảy đoạn. Nút <b>⚙</b> để chọn giọng và tốc độ 0,8x-1,25x. Nếu mạng chặn, dùng <b>chế độ chữ chạy</b>.`},
+  {id:"quetqr", chip:"Quét mã QR trong sách", k:"quet ma qr sach pdf ma vach camera quet de mo bai kk-edu player ma bai v-",
+   a:`Mỗi bài trong sách có mã QR "Quét để mở bài trong KK-EDU Player". Vào <b>Video Online</b> hoặc <b>Tài liệu</b> → bấm <b>📷 Quét mã QR</b> → bật camera (hoặc chọn ảnh chụp mã, hoặc gõ mã bài như NC-MN.C01.B003) → hệ thống mở đúng bài. Quyền xem vẫn theo đúng lớp/độ tuổi; 7 bài đầu học thử ngay. Link trực tiếp dạng <b>kk-edu.com/?bai=NC-MN.C01.B003</b>.`},
   {id:"phongto", k:"phong to man hinh 2x toan man hinh fullscreen zoom nho qua xem to",
    a:`Trong bài học có nút <b>🔍 2x</b> (khung học rộng gấp đôi, cột phụ xuống dưới; mỗi lần mở bài luôn về tỉ lệ chuẩn) và nút <b>⛶</b> xem toàn màn hình (Esc để thoát). Trình đọc Sách PDF cũng có nút ⛶ Toàn màn hình riêng.`},
   {id:"tocdo", k:"toc do video tua nhanh cham 1.5x 2x speed",
