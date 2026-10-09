@@ -1316,12 +1316,33 @@ function viewHome(v){
   $("#zoneLV").onclick=()=>go({name:"live"});
 }
 
+/* ---------- Bộ lọc lớp / độ tuổi / chương trình dùng chung cho MỌI cấp (Video Online + Kho tài liệu) ---------- */
+function gradeSelectHTML(f,id){
+  const lv=f.level, isMN=lv==="Mầm non", isHigher=["Đại học","Thạc sĩ","Tiến sĩ"].includes(lv);
+  const head=!lv?"Mọi lớp / độ tuổi / chương trình":isMN?"Mọi độ tuổi":isHigher?"Mọi chương trình đào tạo":"Mọi lớp";
+  const groups=LEVELS.filter(L=>!lv||L.key===lv).map(L=>{
+    const gs=[...new Set(CATALOG.filter(b=>b.level===L.key).map(b=>b.grade).filter(Boolean))].sort((a,b)=>gradeOrder(a)-gradeOrder(b)||a.localeCompare(b,"vi"));
+    const opts=gs.map(g=>`<option ${f.grade===g?"selected":""} value="${esc(g)}">${esc(g)}</option>`).join("");
+    return lv?opts:`<optgroup label="${esc(L.icon+" "+L.short)}">${opts}</optgroup>`;
+  }).join("");
+  return `<select id="${id}" aria-label="Lọc theo lớp / độ tuổi / chương trình"><option value="">${head}</option>${groups}</select>`;
+}
+function mineBtnHTML(f,id){
+  if(S.isAdmin) return "";
+  const g=myGrade();
+  return g?`<button class="btn sm ${f.mine?"pri":"ghost"}" id="${id}" title="Chỉ hiện sách đúng lớp theo năm sinh">🎯 Lớp của tôi (${esc(g.label)})</button>`
+          :`<button class="btn sm ghost" id="${id}">🎯 Khai năm sinh để lọc đúng lớp</button>`;
+}
+function bindMineBtn(f,id,rerender){
+  const b=$("#"+id); if(!b) return;
+  b.onclick=()=>{ if(!myGrade()){ openProfileForm(()=>{ f.mine=true; f.level=""; f.grade=""; rerender(); }); return; } f.mine=!f.mine; if(f.mine){ f.level=""; f.grade=""; } rerender(); };
+}
+const passMine=(f,b)=>!f.mine||S.isAdmin||!myGrade()||bookAllowed(b).ok;
 /* ================= THƯ VIỆN ================= */
-const catalogFilter = {level:"", grade:"", q:"", type:""};
+const catalogFilter = {level:"", grade:"", q:"", type:"", mine:false};
 function viewCatalog(v){
   const f = catalogFilter;
-  const grades = [...new Set(CATALOG.filter(b=>!f.level||b.level===f.level).map(b=>b.grade).filter(Boolean))].sort((a,b)=>gradeOrder(a)-gradeOrder(b));
-  let list = CATALOG.filter(b=>
+  let list = CATALOG.filter(b=> passMine(f,b) &&
     (!f.level||b.level===f.level) && (!f.grade||b.grade===f.grade) && (!f.type||b.type===f.type) &&
     (!f.q || (b.subject+" "+b.code+" "+(b.grade||"")).toLowerCase().includes(f.q.toLowerCase())));
   list = list.slice().sort((a,b)=> (LEVELS.findIndex(l=>l.key===a.level)-LEVELS.findIndex(l=>l.key===b.level)) || (gradeOrder(a.grade)-gradeOrder(b.grade)) || a.subject.localeCompare(b.subject,"vi"));
@@ -1329,13 +1350,15 @@ function viewCatalog(v){
   <div class="sec" style="margin-top:26px"><div><div class="eyebrow">Phân hệ 2 · Video Online</div><h2 style="margin:0">${f.level?esc(f.level):"Toàn bộ"} · ${list.length} sách video tương tác</h2></div></div>
   <div class="controls">
     <select id="fLevel"><option value="">Mọi cấp học</option>${LEVELS.map(L=>`<option ${f.level===L.key?"selected":""} value="${esc(L.key)}">${esc(L.short)}</option>`).join("")}</select>
-    <select id="fGrade"><option value="">Mọi lớp</option>${grades.map(g=>`<option ${f.grade===g?"selected":""} value="${esc(g)}">${esc(g)}</option>`).join("")}</select>
+    ${gradeSelectHTML(f,"fGrade")}
     <select id="fType"><option value="">Chuẩn + Nâng cao</option><option ${f.type==="Chuẩn"?"selected":""} value="Chuẩn">Bộ chuẩn</option><option ${f.type==="NC"?"selected":""} value="NC">Bộ Nâng cao</option></select>
     <input type="search" id="fQ" placeholder="Tìm môn học, mã sách..." value="${esc(f.q)}">
+    ${mineBtnHTML(f,"fMine")}
   </div>
   <div class="grid bk">${list.map(bookCard).join("")||`<div class="note">Không tìm thấy sách phù hợp.</div>`}</div>`;
-  $("#fLevel").onchange=e=>{f.level=e.target.value; f.grade=""; viewCatalog(v);};
-  $("#fGrade").onchange=e=>{f.grade=e.target.value; viewCatalog(v);};
+  $("#fLevel").onchange=e=>{f.level=e.target.value; f.grade=""; f.mine=false; viewCatalog(v);};
+  $("#fGrade").onchange=e=>{f.grade=e.target.value; f.mine=false; if(f.grade&&!f.level){ const b0=CATALOG.find(b=>b.grade===f.grade); if(b0) f.level=b0.level; } viewCatalog(v);};
+  bindMineBtn(f,"fMine",()=>viewCatalog(v));
   $("#fType").onchange=e=>{f.type=e.target.value; viewCatalog(v);};
   let qt; $("#fQ").oninput=e=>{clearTimeout(qt); qt=setTimeout(()=>{f.q=e.target.value; viewCatalog(v); const el=$("#fQ"); el.focus(); el.setSelectionRange(el.value.length,el.value.length);},300);};
   v.querySelectorAll(".bkcard").forEach(c=> c.onclick=()=>go({name:"book", code:c.dataset.code}));
@@ -1489,24 +1512,26 @@ function viewDash(v){
 }
 
 /* ================= PHÂN HỆ 1: KHO TÀI LIỆU ================= */
-const tlFilter={level:"",q:""};
+const tlFilter={level:"",grade:"",q:"",mine:false};
 function viewTaiLieu(v){
   const f=tlFilter;
-  let list=CATALOG.filter(b=>(!f.level||b.level===f.level)&&(!f.q||(b.subject+" "+b.code+" "+(b.grade||"")).toLowerCase().includes(f.q.toLowerCase())));
+  let list=CATALOG.filter(b=>passMine(f,b)&&(!f.level||b.level===f.level)&&(!f.grade||b.grade===f.grade)&&(!f.q||(b.subject+" "+b.code+" "+(b.grade||"")).toLowerCase().includes(f.q.toLowerCase())));
   list=list.slice().sort((a,b)=>(LEVELS.findIndex(l=>l.key===a.level)-LEVELS.findIndex(l=>l.key===b.level))||(gradeOrder(a.grade)-gradeOrder(b.grade))||a.subject.localeCompare(b.subject,"vi"));
-  const nLinked=CATALOG.filter(b=>{const c=S.content[b.code]||{};return c.sachUrl||c.scriptUrl;}).length;
+  const nLinked=CATALOG.filter(b=>{const c=S.content[b.code]||{};return sachIdOf(b.code)||c.sachUrl||c.scriptUrl;}).length;
   v.innerHTML=`
   <div class="sec" style="margin-top:26px"><div><div class="eyebrow">Phân hệ 1 · Kho tài liệu</div><h2 style="margin:0">Sách và kịch bản video · ${list.length} đầu sách</h2></div></div>
-  <p class="note" style="max-width:46em">Mỗi đầu sách gồm <b>Sách PDF (Bộ A)</b> và <b>Kịch bản video có minh họa (Bộ B)</b>. Tài liệu được lưu trên Google Drive / OneDrive của tác giả - bấm nút để mở trong thẻ mới.${nLinked?"":" <b>Quản trị viên chưa gắn link</b> - vào Quản trị → Nội dung để dán link chia sẻ."}</p>
+  <p class="note" style="max-width:46em">Mỗi đầu sách gồm <b>Sách PDF (Bộ A)</b> và <b>Kịch bản video có minh họa (Bộ B)</b>. Sách PDF mở ngay trong trình đọc bảo vệ (chỉ xem, không tải); mỗi học viên xem tài liệu <b>đúng lớp theo năm sinh</b>, lớp khác bấm để gửi yêu cầu Quản trị viên.${nLinked?"":" <b>Quản trị viên chưa gắn link</b> - vào Quản trị → Nội dung để dán link chia sẻ."}</p>
   <div class="controls">
     <select id="tlLevel"><option value="">Mọi cấp học</option>${LEVELS.map(L=>`<option ${f.level===L.key?"selected":""} value="${esc(L.key)}">${esc(L.short)}</option>`).join("")}</select>
+    ${gradeSelectHTML(f,"tlGrade")}
     <input type="search" id="tlQ" placeholder="Tìm môn học, mã sách..." value="${esc(f.q)}">
+    ${mineBtnHTML(f,"tlMine")}
   </div>
   <div class="tbwrap"><table class="tb"><thead><tr><th>Tài liệu</th><th>Cấp / Lớp</th><th>Quy mô</th><th>Mở tài liệu</th></tr></thead><tbody>
-  ${list.map(b=>{const c=S.content[b.code]||{};
+  ${list.map(b=>{const c=S.content[b.code]||{}; const lk=!S.isAdmin&&myGrade()&&!bookAllowed(b).ok;
     const btns=[
-      c.sachUrl?`<a class="btn sm" style="text-decoration:none" target="_blank" rel="noopener" href="${esc(c.sachUrl)}">📖 Sách PDF</a>`:"",
-      c.scriptUrl?`<a class="btn sm" style="text-decoration:none" target="_blank" rel="noopener" href="${esc(c.scriptUrl)}">🎬 Kịch bản</a>`:"",
+      sachIdOf(b.code)?`<button class="btn sm" data-pdf="${esc(b.code)}">📖 Sách PDF${lk?" 🔒":""}</button>`:"",
+      c.scriptUrl?`<button class="btn sm" data-kb="${esc(b.code)}">🎬 Kịch bản${lk?" 🔒":""}</button>`:"",
       `<button class="btn sm ghost" data-code="${esc(b.code)}">Trang sách →</button>`
     ].filter(Boolean).join(" ");
     return `<tr><td><b>${esc(b.subject)}</b>${b.type==="NC"?' <span class="badge gold">NC</span>':""}<br><span class="note">${esc(b.code)}</span></td>
@@ -1514,7 +1539,13 @@ function viewTaiLieu(v){
     <td class="note">${b.lessons} bài · ${b.diagrams} sơ đồ</td>
     <td><div class="rowline">${btns}</div></td></tr>`;}).join("")}
   </tbody></table></div>`;
-  $("#tlLevel").onchange=e=>{f.level=e.target.value;viewTaiLieu(v);};
+  $("#tlLevel").onchange=e=>{f.level=e.target.value; f.grade=""; f.mine=false; viewTaiLieu(v);};
+  $("#tlGrade").onchange=e=>{f.grade=e.target.value; f.mine=false; if(f.grade&&!f.level){ const b0=CATALOG.find(b=>b.grade===f.grade); if(b0) f.level=b0.level; } viewTaiLieu(v);};
+  bindMineBtn(f,"tlMine",()=>viewTaiLieu(v));
+  v.querySelectorAll("button[data-pdf]").forEach(x=>x.onclick=()=>{ const b=CATALOG.find(y=>y.code===x.dataset.pdf); if(b) openBookViewer(b); });
+  v.querySelectorAll("button[data-kb]").forEach(x=>x.onclick=()=>{ const b=CATALOG.find(y=>y.code===x.dataset.kb); if(!b) return;
+    if(!S.isAdmin){ if(!S.profile||!myGrade()){ openProfileForm(); return; } if(!bookAllowed(b).ok){ openAgeGate(b); return; } }
+    const c=S.content[b.code]||{}; if(c.scriptUrl) window.open(c.scriptUrl,"_blank","noopener"); });
   let t;$("#tlQ").oninput=e=>{clearTimeout(t);t=setTimeout(()=>{f.q=e.target.value;viewTaiLieu(v);const x=$("#tlQ");x.focus();x.setSelectionRange(x.value.length,x.value.length);},300);};
   v.querySelectorAll("button[data-code]").forEach(b=>b.onclick=()=>go({name:"book",code:b.dataset.code}));
 }
