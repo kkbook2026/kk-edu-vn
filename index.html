@@ -328,6 +328,11 @@ body:has(#modalHost .modalwrap) .consent{display:none}
 
 footer.ft{border-top:1px solid var(--line);margin-top:56px;padding-block:26px;color:var(--fg2);font-size:.84rem}
 footer.ft .in{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+footer.ft .ftv{display:flex;justify-content:flex-end;margin-top:14px;font-size:.8rem;color:var(--fg2);font-variant-numeric:tabular-nums}
+footer.ft .ftv:empty{display:none}
+footer.ft .ftv span{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--card,#fff)}
+footer.ft .ftv b{color:var(--navy);font-weight:700}
+:root[data-theme="dark"] footer.ft .ftv b{color:var(--gold)}
 footer.ft .in span:last-child{margin-left:auto;font-style:italic}
 @media(max-width:600px){footer.ft .in span:last-child{margin-left:0}}
 
@@ -391,7 +396,7 @@ footer.ft .in span:last-child{margin-left:auto;font-style:italic}
   <span>© 2026 KK-EDU - Học liệu bổ trợ, mô hình thí điểm. Không thay thế sách giáo khoa được phê duyệt. <a href="#about" style="color:inherit">Giới thiệu & pháp lý</a></span>
   <span id="ftContact"></span>
   <span>Tác giả : Nguyễn Duy Điển (KK-2026)</span>
-</div></footer>
+</div><div class="wrap ftv" id="ftVisits" aria-live="polite"></div></footer>
 
 <div id="modalHost"></div>
 <div id="toastHost"></div>
@@ -496,6 +501,22 @@ async function reloadUserData(){
   S.profile=null; S.myReq=null; S.grants={}; S.enroll={}; S.myRegs={}; S.progress={};
   S.goiCache={}; S.packLoading={};   // quyền đọc gói phụ thuộc người dùng - tải lại sau khi đổi tài khoản
   await loadShared(); loadLocal();
+}
+/* ---------- Bộ đếm lượt truy cập: mỗi phiên trình duyệt +1 (stats/visits tổng, stats/d-YYYY-MM-DD theo ngày giờ VN), hiện góc phải cuối trang ---------- */
+async function countVisit(){
+  const db=S.caps&&S.caps.db; const box=$("#ftVisits"); if(!db||!box||!S.fb||!S.fb.firestore) return;
+  const day=new Date(Date.now()+7*3600e3).toISOString().slice(0,10); // ngày theo giờ Việt Nam
+  const FV=S.fb.firestore.FieldValue;
+  let first=false; try{ first=!sessionStorage.getItem("kkVisit"); sessionStorage.setItem("kkVisit",day); }catch(e){ first=false; }
+  if(first&&!/bot|crawl|spider|headless|lighthouse/i.test(navigator.userAgent||"")){
+    try{ await Promise.all([db.doc("stats/visits").set({n:FV.increment(1)},{merge:true}), db.doc("stats/d-"+day).set({n:FV.increment(1)},{merge:true})]); }catch(e){}
+  }
+  try{
+    const [t,d]=await Promise.all([db.doc("stats/visits").get(),db.doc("stats/d-"+day).get()]);
+    const nf=x=>Number(x||0).toLocaleString("vi-VN");
+    const tot=t.exists?t.data().n:0, td=d.exists?d.data().n:0;
+    if(tot) box.innerHTML=`<span title="Số lượt truy cập website (mỗi phiên trình duyệt tính 1 lượt)">👁 Lượt truy cập: <b>${nf(tot)}</b> · Hôm nay: <b>${nf(td)}</b></span>`;
+  }catch(e){}
 }
 async function initFirebase(){
   try{
@@ -4894,6 +4915,7 @@ fitBrand(); window.addEventListener("resize",()=>{ clearTimeout(window._fbT); wi
   let capsDone; S.capsReady=new Promise(r=>capsDone=r);
   render();                 // vẽ ngay, không chờ capabilities
   try{ await initCaps(); } finally { capsDone(); }
+  countVisit();
   await loadShared();
   render();                 // vẽ lại với dữ liệu chia sẻ + vai trò
   maybeConsent();
