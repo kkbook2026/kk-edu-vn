@@ -71,9 +71,9 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;backgroun
 .brand{display:flex;align-items:center;gap:16px;cursor:pointer;user-select:none}
 .brand .logo{width:108px;height:108px;flex:none;filter:drop-shadow(0 3px 9px rgba(15,42,74,.28))}
 .brand b{font-family:var(--font-d);font-size:2.5rem;line-height:1.02;letter-spacing:.5px;color:var(--navy)}
-.brand small{display:block;font-size:1.02rem;font-weight:700;color:var(--gold2,#b8902c);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;white-space:nowrap}
-.brand .brandtx{display:flex;flex-direction:column;justify-content:center;width:max-content}
-.brand .brandtx b{white-space:nowrap;display:block}
+.brand small{display:block;font-size:.98rem;font-weight:700;color:var(--gold2,#b8902c);letter-spacing:.07em;text-transform:uppercase;margin-top:4px;white-space:nowrap}
+.brand .brandtx{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;width:max-content}
+.brand .brandtx b{white-space:nowrap;display:block;line-height:1}
 :root[data-theme="dark"] .brand small{color:var(--gold)}
 @media(max-width:900px){ .brand .logo{width:84px;height:84px} .brand b{font-size:2rem} .brand small{font-size:.84rem} }
 @media(max-width:640px){ .brand .logo{width:66px;height:66px} .brand b{font-size:1.55rem} .brand small{font-size:.66rem} }
@@ -92,7 +92,7 @@ nav.main button.on{background:var(--chip);color:var(--navy);font-weight:600;box-
 /* Mobile header gọn: logo + tài khoản cùng 1 hàng, menu 1 hàng cuộn ngang (header sticky không chiếm quá 1/5 màn hình) */
 @media(max-width:640px){
   .topbar{gap:8px;padding-block:8px}
-  .brand{order:1;gap:10px} .brand .logo{width:48px;height:48px} .brand b{font-size:1.3rem} .brand small{font-size:.6rem;letter-spacing:.08em}
+  .brand{order:1;gap:10px} .brand .logo{width:48px;height:48px} .brand b{font-size:1.3rem} .brand small{font-size:.6rem;letter-spacing:.05em}
   .userbox{order:2}
   nav.main{order:3;flex:1 0 100%;flex-wrap:nowrap;overflow-x:auto;margin-left:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;scroll-snap-type:x proximity;mask-image:linear-gradient(90deg,#000 92%,transparent)}
   nav.main::-webkit-scrollbar{display:none}
@@ -4799,10 +4799,13 @@ $("#brandHome").onclick=()=>go({name:"home"});
 /* Cân đối logo chữ: "KK-EDU" và "MÔ HÌNH GIÁO DỤC SỐ THỬ NGHIỆM" cùng bề rộng (giãn chữ theo kích thước thật sau khi tải font) */
 function fitBrand(){
   const t=document.querySelector(".brandtx b"), m=document.querySelector(".brandtx small"); if(!t||!m) return;
-  t.style.letterSpacing=t.style.marginRight=m.style.letterSpacing=m.style.marginRight="";
-  const lsM=parseFloat(getComputedStyle(m).letterSpacing)||0;
-  const tInk=t.getBoundingClientRect().width, mInk=m.getBoundingClientRect().width-lsM, nt=t.textContent.length, nm=m.textContent.length;
+  t.style.fontSize=t.style.letterSpacing=t.style.marginRight=m.style.letterSpacing=m.style.marginRight="";
+  const lsM=parseFloat(getComputedStyle(m).letterSpacing)||0, f0=parseFloat(getComputedStyle(t).fontSize)||40;
+  const w=e=>e.getBoundingClientRect().width;
+  let tInk=w(t); const mInk=w(m)-lsM, nt=t.textContent.length, nm=m.textContent.length;
   if(!tInk||!mInk||nt<2||nm<2) return;
+  /* phóng cỡ chữ KK-EDU (tối đa 1,9 lần) cho gần bằng dòng phụ, phần lệch còn lại bù bằng giãn chữ nhẹ */
+  const f=Math.min(f0*1.9, f0*mInk/tInk*0.95); if(f>f0){ t.style.fontSize=f+"px"; tInk=w(t); }
   if(mInk>tInk){ const x=(mInk-tInk)/(nt-1); t.style.letterSpacing=x+"px"; t.style.marginRight=(-x)+"px"; m.style.marginRight=(-lsM)+"px"; }
   else { const x=lsM+(tInk-mInk)/(nm-1); m.style.letterSpacing=x+"px"; m.style.marginRight=(-x)+"px"; }
 }
