@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{--navy:#0f2a4a;--teal:#0E8F8A;--gold:#d4af37;--gold2:#a9871f;--bg:#f5f7fb;--card:#ffffff;--ink:#14213d;--mute:#5B6B7F;--line:#d8e0ea;--light:#EAF5F4;--bad:#B3261E;--good:#1B7F3B;--warn:#8a5a00;--warnbg:#FFF4D6;--font-d:"Fraunces","Noto Serif",Georgia,serif;--font:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0b1626;--card:#132238;--ink:#e6edf5;--mute:#9FB0C3;--line:#2b3a4d;--light:#13303a;--navy:#dbe7f5;--warnbg:#3a2f12}}
@@ -107,15 +107,18 @@ footer{text-align:center;color:var(--mute);font-size:12px;padding:16px}
 .radar{width:320px;height:320px}
 
 /* KK-EDU 3.0 shell */
-.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--navy)}
+.topbar{display:flex;align-items:center;gap:14px;min-width:0;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.brand{display:flex;flex:none;align-items:center;gap:10px;text-decoration:none;color:var(--navy)}
 .brand .logo{width:44px;height:44px;flex:none;filter:drop-shadow(0 2px 6px rgba(15,42,74,.25))}
 .brand b{font-family:var(--font-d);font-size:1.35rem;line-height:1;font-weight:700}
 .brand small{display:block;font-size:.7rem;font-weight:600;color:var(--gold2);margin-top:3px;white-space:nowrap}
-.crumb{display:flex;gap:6px;align-items:center;font-size:.86rem;color:var(--mute);white-space:nowrap}
+.crumb{display:flex;flex:1 1 auto;min-width:0;overflow:hidden;gap:6px;align-items:center;font-size:.86rem;color:var(--mute);white-space:nowrap}
 .crumb a{color:var(--navy);text-decoration:none;font-weight:600}
 .crumb a:hover{text-decoration:underline}
-.user{margin-left:auto;display:flex;gap:8px;align-items:center;font-size:13px;color:var(--mute)}
+.user{margin-left:auto;flex:none;display:flex;gap:8px;align-items:center;font-size:13px;color:var(--mute);white-space:nowrap}
+.user.logged label[for=uname],.user.logged #uname{display:none}
+.user .who{font-weight:600;color:var(--navy);max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.user .who small{font-weight:500;color:var(--mute)}
 .user input,.user select{padding:7px 9px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:var(--font);font-size:13px}
 .user input{min-width:150px}
 .hero{background:linear-gradient(135deg,#0f2a4a,#1e4472);color:#fff;padding:22px 16px;border-bottom:3px solid var(--gold)}
@@ -134,7 +137,8 @@ body{overflow-x:clip}
 
 /* tài khoản */
 #kkUser{display:flex;align-items:center;gap:8px;white-space:nowrap}
-@media(min-width:761px) and (max-width:1100px){.crumb{display:none}}
+@media(min-width:761px) and (max-width:1180px){.crumb{display:none}}
+@media(max-width:1320px){.brand small{display:none}}
 #kkUser .who{font-weight:600;color:var(--navy)} #kkUser .who small{color:var(--mute);font-weight:400}
 #kkUser .lnk{background:none;border:0;color:var(--mute);cursor:pointer;font-family:var(--font);font-size:12.5px;text-decoration:underline}
 a.btn,.btn.sm{display:inline-block;text-decoration:none;font-weight:600;background:var(--navy);color:#fff;border:0;border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:var(--font)}
@@ -231,12 +235,28 @@ window.KK_API_READY=(async()=>{
 <script>
 /* KK-EDU IELTS - Luyện thi và thi thử IELTS. Tác giả : Nguyễn Duy Điển (KK-2026). Dữ liệu nạp từ API KK-EDU (gói nội dung v1.0, repo riêng). */
 const D = {};
-const IELTS_FILES = ["skills","materials","videos","bank_listening","bank_reading","bank_writing","bank_speaking","grading","feedback","certificate"];
+/* Nạp dữ liệu theo nhu cầu: lúc mở trang chỉ tải phần lõi (~60 KB); kho video/tài liệu đầy đủ và kho đề tải khi chặng cần.
+   URL có ?v=<sha nội dung> (từ /api/ielts/manifest) nên trình duyệt đệm dài mà vẫn tự cập nhật khi nội dung đổi. */
+const KKD = { man:null, base:null, loaded:{}, pending:{} };
+const IELTS_CORE = ["skills","grading","feedback","certificate","videos_index","materials_index"];
+const KK_BANKS = { lis:["bank_listening","sections"], rd:["bank_reading","passages"], wr:["bank_writing",null], sp:["bank_speaking","sets"] };
+function kkDUrl(n, item){ const key = item ? n.split("/")[0]+"s" : n.replace(/_index$/,""); const v = KKD.man && KKD.man.files && KKD.man.files[key]; return [KKD.base+"/ielts/"+n+(v?"?v="+v:""), v?"force-cache":"default"]; }
+async function kkDGet(n, item){ const [u,c] = kkDUrl(n, item); const r = await fetch(u, {cache:c}); if(!r.ok) throw new Error(n+" "+r.status); return r.json(); }
 async function loadData(){
-  const base = (await (window.KK_API_READY||Promise.resolve(null))) || window.KK_API || "/api";
-  const get = async n => { const r = await fetch(base+"/ielts/"+n, {cache:"force-cache"}); if(!r.ok) throw new Error(n+" "+r.status); return r.json(); };
-  const [skills, materials, videos, lis, rd, wr, sp, grading, feedback, cert] = await Promise.all(IELTS_FILES.map(get));
-  Object.assign(D, {skills, materials: materials.materials, videos: videos.videos, lis: lis.sections, rd: rd.passages, wr, sp: sp.sets, grading, feedback, cert});
+  KKD.base = (await (window.KK_API_READY||Promise.resolve(null))) || window.KK_API || "/api";
+  try{ const r = await fetch(KKD.base+"/ielts/manifest"); KKD.man = r.ok ? await r.json() : null; }catch(e){ KKD.man = null; }
+  const [skills, grading, feedback, cert, vi, mi] = await Promise.all(IELTS_CORE.map(n=>kkDGet(n)));
+  Object.assign(D, {skills, grading, feedback, cert, videos: vi.videos, materials: mi.materials}); D.lis=D.lis||[]; D.rd=D.rd||[]; D.wr=D.wr||{task1:[],task2:[]}; D.sp=D.sp||[];
+}
+const kkHas = what => !!KKD.loaded[what];
+function kkNeed(what){
+  if(KKD.pending[what]) return KKD.pending[what];
+  let p;
+  if(what==="banks"){ p = Promise.all(Object.entries(KK_BANKS).map(async ([k,[f,key]])=>{ const j = await kkDGet(f); D[k] = key ? j[key] : j; })); }
+  else { const [kind,id] = what.split(":"); const it = (kind==="video"?D.videos:D.materials).find(x=>x.id===id);
+    p = !it ? Promise.resolve() : kkDGet(kind+"/"+encodeURIComponent(id), true).then(full=>{ Object.assign(it, full); }); }
+  p = p.then(()=>{ KKD.loaded[what]=true; }, e=>{ delete KKD.pending[what]; throw e; });
+  KKD.pending[what] = p; return p;
 }
 const STEPS = ['Kỹ năng','Tài liệu','Video học','Thi thử','Chấm điểm','Tổng hợp','Chứng chỉ'];
 const SKN = {LIS:'Listening',RD:'Reading',WR:'Writing',SP:'Speaking',GEN:'Tổng quan'};
@@ -325,11 +345,11 @@ function blocksHTML(blocks){
 }
 function renderMaterials(m){
   const list = D.materials.filter(x=>x.skill===S.skill);
-  const cur = D.materials.find(x=>x.id===S.mat) || list[0];
+  const cur = D.materials.find(x=>x.id===S.mat && x.blocks);
   m.innerHTML = `<div class="card"><h1>Bước 2. Tài liệu ôn tập - ${SKN[S.skill]}</h1><p class="mute">Nguồn: Tập 1 Tài liệu ôn tập chuẩn IELTS Academic (KK-EDU). Mỗi mục có mã và video liên quan.</p>
   <div class="row">${D.skills.map(s=>`<button class="btn ${S.skill===s.id?'':'sec'}" onclick="S.skill='${s.id}';S.mat=null;save();render()">${s.name}</button>`).join('')}</div></div>
   <div class="two"><div class="card"><div class="list">${list.map(x=>`<div class="item" onclick="S.mat='${x.id}';save();render()"><span class="code">${x.id}</span><span>${esc(x.title)}</span></div>`).join('')}</div></div>
-  <div class="card doc" id="matview">${cur?`<h2>${esc(cur.title)}</h2><p class="mute">${cur.id} | Video: ${cur.video_ids.map(v=>`<a href="#" onclick="S.vid='${v}';go(2);return false">${v}</a>`).join(', ')||'-'}</p>${blocksHTML(cur.blocks)}<div class="row"><button class="btn" onclick="S.vid='${cur.video_ids[0]||''}';go(2)">Xem video liên quan</button></div>`:''}</div></div>`;
+  <div class="card doc" id="matview">${cur?`<h2>${esc(cur.title)}</h2><p class="mute">${cur.id} | Video: ${cur.video_ids.map(v=>`<a href="#" onclick="S.vid='${v}';go(2);return false">${v}</a>`).join(', ')||'-'}</p>${blocksHTML(cur.blocks)}<div class="row"><button class="btn" onclick="S.vid='${cur.video_ids[0]||''}';go(2)">Xem video liên quan</button></div>`:'<p class="mute">Chọn một mục trong danh sách để đọc.</p>'}</div></div>`;
 }
 
 /* ---------- 3. Videos ---------- */
@@ -614,8 +634,8 @@ function kkSyncCloud(){
 }
 function kkRenderUser(){
   const box=$("#kkUser"); if(!box) return;
-  if(KK.user){ box.innerHTML=`<span class="who" title="${esc(KK.user.email||"")}">${esc(S.name||"Thành viên")}${KK.age!=null?` <small>(${KK.age} tuổi)</small>`:""}</span><button class="lnk" onclick="KK.fb.auth().signOut()">Đăng xuất</button>`; const i=$("#uname"); if(i){ i.readOnly=true; i.title="Họ tên lấy từ hồ sơ KK-EDU"; } }
-  else { box.innerHTML=`<a class="btn sm" href="${kkLoginUrl()}">Đăng nhập KK-EDU</a>`; const i=$("#uname"); if(i) i.readOnly=false; }
+  if(KK.user){ box.innerHTML=`<span class="who" title="${esc(KK.user.email||"")}">${esc(S.name||"Thành viên")}${KK.age!=null?` <small>(${KK.age} tuổi)</small>`:""}</span><button class="lnk" onclick="KK.fb.auth().signOut()">Đăng xuất</button>`; const i=$("#uname"); if(i){ i.readOnly=true; i.title="Họ tên lấy từ hồ sơ KK-EDU"; } box.closest(".user").classList.add("logged"); }
+  else { box.innerHTML=`<a class="btn sm" href="${kkLoginUrl()}">Đăng nhập KK-EDU</a>`; const i=$("#uname"); if(i) i.readOnly=false; box.closest(".user").classList.remove("logged"); }
 }
 function kkAgeGate(){
   if(!KK.user) return `<div class="warnbox"><b>Thi thử cần tài khoản KK-EDU.</b> Tài khoản dùng chung cho mọi phân hệ: tiến độ, điểm thi và chứng chỉ được lưu trên đám mây. <a href="${kkLoginUrl()}">Đăng nhập hoặc đăng ký miễn phí</a>. Tài liệu và video học vẫn mở tự do.</div>`;
@@ -638,7 +658,7 @@ const VN_SYL=/^(?:ch|gh|gi|kh|ngh|ng|nh|ph|qu|th|tr|[bcdghklmnpqrstvx])?[aeiouy]
 const EN_SURE=new Set("the and of is are was were you your we they this that with for have has not will can could should would from into than then there their about which what when where".split(" "));
 const VI_PLAIN=new Set("ta ba hai nam con ai do di ma la va cho khi nha anh em ong ngay nay nhu hay can cau bai lam noi xem cua bao nhieu tren gia so ten viet thi ra vao len nen ban tu toi cai cac chi minh phan luc trong ngoai mot muoi tram nghin ty".split(" "));
 const LEX={en:new Set(), vi:new Set()};   // từ điển không dấu rà soát từ gói nội dung (nạp từ API, dùng cho giọng dự phòng)
-(async()=>{ try{ const base=await kkApiBase(); const r=await fetch(base+"/ielts/lexicon",{cache:"force-cache"}); if(r.ok){ const j=await r.json(); LEX.en=new Set(j.en||[]); LEX.vi=new Set(j.vi||[]); } }catch(e){} })();
+(async()=>{ try{ const base=await kkApiBase(); const r=await fetch(base+"/ielts/lexicon",{cache:"default"}); if(r.ok){ const j=await r.json(); LEX.en=new Set(j.en||[]); LEX.vi=new Set(j.vi||[]); } }catch(e){} })();
 /* Cùng thuật toán với Worker (splitLang) - dùng khi phải đọc bằng giọng thiết bị */
 function kkSplitLang(text){
   const toks=String(text||"").replace(/\s+/g," ").trim().split(" ").filter(Boolean);
@@ -870,7 +890,7 @@ const isAdminUser = () => !!(KK.user && KK.user.email === "nguyenduydien75@gmail
 const target = () => parseFloat(S.target||"6.5");
 
 /* ---------- 1. Dữ liệu lộ trình + trạng thái tiến độ ---------- */
-async function loadPlan(){ const base=await kkApiBase(); const r=await fetch(base+"/ielts/plan",{cache:"force-cache"}); if(!r.ok) throw new Error("plan "+r.status); J.plan=await r.json(); }
+async function loadPlan(){ const base=await kkApiBase(); const r=await fetch(base+"/ielts/plan",{cache:"default"}); if(!r.ok) throw new Error("plan "+r.status); J.plan=await r.json(); }
 function itemKey(it){ return it.type+":"+(it.id||it.bank||it.skill||it.label); }
 function itemDone(it, w){
   const j=S.journey;
@@ -1121,6 +1141,25 @@ kkAi = function(task, prompt){ const p=phaseNow(); const pre = p>=3 ? "Respond e
   const lb=document.createElement("span"); lb.id="kkLang"; lb.className="pill lang"; const hero=document.querySelector(".hero .tags"); if(hero) hero.prepend(lb);
   render();
 })();
+
+/* ---------- 9. Cổng nạp dữ liệu theo nhu cầu (chạy sau mọi lớp render) ---------- */
+const _renderLazy0 = render;
+function kkNeeds(){
+  const n = [];
+  if(S.vid) n.push("video:"+S.vid);
+  if(S.mat) n.push("material:"+S.mat);
+  if([3,4,5].includes(S.step) || (typeof J!=="undefined" && J.pr) || S.test) n.push("banks");
+  return n.filter(x=>!kkHas(x));
+}
+render = function(){
+  if(!D.videos) return;   // lõi chưa nạp xong: boot() sẽ render sau
+  const need = kkNeeds();
+  if(!need.length){ _renderLazy0(); return; }
+  const m = $("#main");
+  if(!m.querySelector(".kkload")){ try{ renderNav(); }catch(e){} m.innerHTML = `<div class="card kkload"><h1>Đang tải ${need.includes("banks")?"kho đề":"nội dung"}...</h1><div class="bar big"><i class="kkbar" style="width:15%"></i></div><p class="mute">Chỉ tải một lần; những lần sau mở ngay.</p></div>`; }
+  let w = 15; const tm = setInterval(()=>{ w = Math.min(90, w+9); const b = m.querySelector(".kkbar"); if(b) b.style.width = w+"%"; }, 250);
+  Promise.all(need.map(kkNeed)).then(()=>{ clearInterval(tm); render(); }).catch(e=>{ clearInterval(tm); m.innerHTML = `<div class="card"><h1>Chưa tải được nội dung</h1><p class="mute">Máy chủ nội dung tạm thời không phản hồi (${esc(String(e.message||e))}). Hãy thử lại sau ít phút.</p><p><button class="btn" onclick="render()">Thử lại</button></p></div>`; });
+};
 
 </script>
 </body>
