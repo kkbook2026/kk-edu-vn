@@ -91,6 +91,25 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;backgroun
 :root[data-theme="dark"] .brand small{color:var(--gold)}
 nav.main{display:flex;gap:2px;flex-wrap:nowrap;margin-left:auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
 nav.main::-webkit-scrollbar{display:none}
+
+nav.main button.hasmenu{display:inline-flex;align-items:center;gap:3px;padding-right:9px}
+nav.main button .car{width:14px;height:14px;opacity:.7;transition:transform .15s}
+nav.main button[aria-expanded="true"] .car{transform:rotate(180deg)}
+.kkmenu{position:fixed;z-index:60;background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:0 14px 40px rgba(15,42,74,.18);padding:8px;animation:kkpop .14s ease-out}
+@keyframes kkpop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.kkmenu .grp{padding:6px 6px 4px}
+.kkmenu .grp+.grp{border-top:1px solid var(--line)}
+.kkmenu .gh{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold2);display:flex;align-items:center;gap:8px;padding:4px 6px}
+.kkmenu .grp.soon .gh{color:var(--fg2)}
+.kkmenu .badge{font-size:.68rem;letter-spacing:0;text-transform:none;font-weight:600;background:var(--chip);color:var(--fg2);border-radius:999px;padding:1px 8px}
+.kkmenu a{display:block;text-decoration:none;color:var(--fg);padding:8px 10px;border-radius:8px}
+.kkmenu a:hover,.kkmenu a:focus-visible{background:var(--chip);outline:none}
+.kkmenu a b{display:block;font-weight:600;font-size:.95rem}
+.kkmenu a small{display:block;color:var(--fg2);font-size:.8rem;margin-top:2px}
+.kkmenu a.all{margin-top:4px;border-top:1px solid var(--line);border-radius:0 0 8px 8px;font-size:.86rem;color:var(--navy);font-weight:600;text-align:center}
+.zone.soon{opacity:.72;cursor:default}
+.zone .badge{font-size:.7rem;font-weight:600;background:var(--chip);color:var(--fg2);border-radius:999px;padding:2px 8px;vertical-align:middle;margin-left:4px}
+.zone a.go{text-decoration:none}
 @media(max-width:1400px){nav.main button{padding:8px 9px;font-size:.87rem}}
 @media(max-width:1400px){.brand small{display:none}}
 nav.main button{background:none;border:0;padding:9px 12px;white-space:nowrap;border-radius:999px;color:var(--fg2);font-size:.92rem;font-weight:500;cursor:pointer;transition:background .15s,color .15s}
@@ -1325,6 +1344,11 @@ const NAV = [
   {id:"video", label:"Video Online"},
   {id:"live", label:"Dạy Online"},
   {id:"thi", label:"Kiểm tra"},
+  {id:"ngoaingu", label:"Ngoại ngữ", menu:[
+    {label:"Tiếng Anh", items:[{label:"Luyện thi và thi thử IELTS", href:"/ielts/", note:"4 kỹ năng, đề ngẫu nhiên, chấm tự động"}]},
+    {label:"Tiếng Trung", soon:true},
+    {label:"Tiếng Nhật", soon:true}
+  ]},
   {id:"dash", label:"Học tập"},
   {id:"about", label:"Giới thiệu"},
 ];
@@ -1451,16 +1475,53 @@ function parseHash(){
   if(p[0]==="book" && p[1]) return {name:"book", code:p.slice(1).join("_")};
   if(p[0]==="hoc" && p.length>=3){ const i=Number(p[p.length-1]); return {name:"hoc", code:p.slice(1,-1).join("_"), i:isNaN(i)?0:i}; }
   if(p[0]==="catalog") return {name:"video"};
-  if(["video","tailieu","live","dash","admin","about","thi"].includes(p[0])) return {name:p[0]};
+  if(["video","tailieu","live","dash","admin","about","thi","ngoaingu"].includes(p[0])) return {name:p[0]};
   return {name:"home"};
 }
 function renderNav(){
   const nav = $("#mainNav");
   const items = NAV.concat(S.isAdmin?[{id:"admin",label:"Quản trị"}]:[]);
-  nav.innerHTML = items.map(n=>`<button data-r="${n.id}" class="${S.route.name===n.id||(n.id==="video"&&["book","hoc"].includes(S.route.name))?"on":""}">${n.label}</button>`).join("");
-  nav.querySelectorAll("button").forEach(b=> b.onclick=()=>go({name:b.dataset.r}));
+  nav.innerHTML = items.map(n=>`<button data-r="${n.id}" class="${S.route.name===n.id||(n.id==="video"&&["book","hoc"].includes(S.route.name))?"on":""}${n.menu?" hasmenu":""}" ${n.menu?'aria-haspopup="true" aria-expanded="false"':''}>${n.label}${n.menu?'<svg class="car" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</button>`).join("");
+  nav.querySelectorAll("button").forEach(b=>{ const n=items.find(x=>x.id===b.dataset.r); b.onclick=(e)=>{ if(n&&n.menu){ e.stopPropagation(); kkMenuToggle(b, n); } else go({name:b.dataset.r}); }; });
   nav.setAttribute("aria-label","Điều hướng chính");
   const on=nav.querySelector("button.on"); if(on){ on.setAttribute("aria-current","page"); if(nav.scrollWidth>nav.clientWidth) nav.scrollLeft=Math.max(0,on.offsetLeft-nav.offsetLeft-16); }
+}
+/* ---------- Menu sổ xuống (Ngoại ngữ): popover cố định, đóng khi bấm ngoài/Esc ---------- */
+function kkMenuClose(){ const m=$("#kkMenu"); if(m) m.remove(); document.querySelectorAll('nav.main button[aria-expanded="true"]').forEach(b=>b.setAttribute("aria-expanded","false")); }
+function kkMenuToggle(btn, n){
+  if($("#kkMenu")){ kkMenuClose(); return; }
+  const m=document.createElement("div"); m.id="kkMenu"; m.className="kkmenu"; m.setAttribute("role","menu");
+  m.innerHTML = n.menu.map(g=>`<div class="grp${g.soon?" soon":""}">
+      <div class="gh">${esc(g.label)}${g.soon?'<span class="badge">Sắp ra mắt</span>':''}</div>
+      ${(g.items||[]).map(it=>`<a role="menuitem" href="${esc(it.href)}"><b>${esc(it.label)}</b>${it.note?`<small>${esc(it.note)}</small>`:''}</a>`).join("")}
+    </div>`).join("") + `<a class="all" href="#ngoaingu" role="menuitem">Xem trang Ngoại ngữ</a>`;
+  document.body.appendChild(m);
+  const r=btn.getBoundingClientRect(); const w=Math.min(340, innerWidth-24);
+  m.style.left=Math.max(12, Math.min(r.left, innerWidth-w-12))+"px"; m.style.top=(r.bottom+8)+"px"; m.style.width=w+"px";
+  btn.setAttribute("aria-expanded","true");
+  m.querySelectorAll("a").forEach(a=>a.onclick=(e)=>{ kkMenuClose(); if(a.getAttribute("href")==="#ngoaingu"){ e.preventDefault(); go({name:"ngoaingu"}); } else { kkTrack("ngoaingu_chon", {muc:a.querySelector("b")?a.querySelector("b").textContent:a.textContent}); } });
+  setTimeout(()=>{ document.addEventListener("click", kkMenuClose, {once:true}); },0);
+  document.addEventListener("keydown", function esc(e){ if(e.key==="Escape"){ kkMenuClose(); document.removeEventListener("keydown", esc); } });
+  const first=m.querySelector("a"); if(first) first.focus();
+}
+window.addEventListener("resize", kkMenuClose);
+
+/* ================= NGOẠI NGỮ ================= */
+function viewNgoaiNgu(v){
+  const LANGS=[
+    {id:"en", name:"Tiếng Anh", ico:"abc", desc:"Luyện thi và thi thử IELTS: 4 kỹ năng, tài liệu chuẩn, 52 kịch bản video tương tác, đề ngẫu nhiên, chấm tự động, chứng chỉ KK-EDU thử nghiệm.", items:[{label:"Luyện thi và thi thử IELTS", href:"/ielts/"}]},
+    {id:"zh", name:"Tiếng Trung", ico:"open", desc:"Lộ trình HSK từ nền tảng đến HSK 4: chữ Hán, phát âm, giao tiếp và luyện đề.", soon:true},
+    {id:"ja", name:"Tiếng Nhật", ico:"compass", desc:"Lộ trình JLPT N5 → N3: bảng chữ, ngữ pháp, nghe hiểu và luyện đề.", soon:true}
+  ];
+  v.innerHTML=`
+  <div class="sec" style="margin-top:26px"><div><div class="eyebrow">Phân hệ 5 · Ngoại ngữ</div><h2 style="margin:0">Ngoại ngữ trên KK-EDU</h2></div></div>
+  <p class="note" style="max-width:52em">Cùng phương pháp 2.0: tài liệu chuẩn, video dừng để hỏi, thi thử đề ngẫu nhiên và chấm tự động. Tiếng Anh mở trước với phân hệ IELTS; Tiếng Trung và Tiếng Nhật đang biên soạn.</p>
+  <div class="zones" style="margin-top:14px">${LANGS.map(l=>`<div class="zone${l.soon?' soon':''}" ${l.soon?'':'role="button" tabindex="0" data-href="'+esc(l.items[0].href)+'"'}>
+      <div class="zi">${ICO[l.ico]||ICO.book}</div><h3>${esc(l.name)}${l.soon?' <span class="badge">Sắp ra mắt</span>':''}</h3>
+      <div class="meta">${esc(l.desc)}</div>
+      ${l.soon?'<span class="go" style="opacity:.55">Đang biên soạn</span>':l.items.map(it=>`<a class="go" href="${esc(it.href)}">${esc(it.label)}</a>`).join("")}
+    </div>`).join("")}</div>`;
+  v.querySelectorAll(".zone[data-href]").forEach(z=>{ const open=()=>{ kkTrack("ngoaingu_chon",{muc:z.querySelector("h3").textContent.trim()}); location.href=z.dataset.href; }; z.onclick=e=>{ if(e.target.tagName!=="A") open(); }; z.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } }; });
 }
 function render(){
   renderNav();
@@ -1476,6 +1537,7 @@ function render(){
   if(r.name==="admin") return viewAdmin(v);
   if(r.name==="about") return viewAbout(v);
   if(r.name==="thi") return viewExams(v);
+  if(r.name==="ngoaingu") return viewNgoaiNgu(v);
   viewHome(v);
 }
 
