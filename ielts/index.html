@@ -620,7 +620,7 @@ function kkSplitLang(text){
   const ends=t=>/[.!?:;]["')\]]?$/.test(t); const n=toks.length, out=lang.slice();
   for(let i=0;i<n;i++){ if(out[i]==null&&/[a-z]\/[a-z]/i.test(toks[i])){ const parts=clean(toks[i]).split("/").map(x=>x.replace(/'s$/,"")); const en=parts.filter(x=>LEX.en.has(x)||EN_SURE.has(x)).length; const vi=parts.filter(x=>VI_DIACRITIC.test(x)||LEX.vi.has(x)).length; if(en+vi) out[i]=en>=vi?"en":"vi"; } }
   for(let i=0;i<n;i++){ if(out[i]!=null) continue; const t=toks[i]; if(!/^[A-Z][a-z'-]+[.,;:!?]*$/.test(t)) continue; const sos=i===0||ends(toks[i-1]); const nearVi=[toks[i-1],toks[i+1]].some(x=>x&&/^[A-ZÀ-Ỹ]/.test(x)&&VI_DIACRITIC.test(x)); if(!sos&&!nearVi) out[i]="en"; }
-  for(let i=0;i<n;i++){ if(out[i]) continue; let f=null; for(let j=i+1;j<n;j++){ if(out[j]){f=out[j];break;} if(ends(toks[j])) break; } if(!f) for(let j=i-1;j>=0;j--){ if(out[j]){f=out[j];break;} if(ends(toks[j])) break; } if(!f) for(let j=i-1;j>=0;j--){ if(out[j]){f=out[j];break;} } out[i]=f||"vi"; }
+  for(let i=0;i<n;i++){ if(out[i]) continue; let f=null; if(/^\d/.test(toks[i])&&i>0&&out[i-1]&&!ends(toks[i-1])) f=out[i-1]; if(!f) for(let j=i+1;j<n;j++){ if(out[j]){f=out[j];break;} if(ends(toks[j])) break; } if(!f) for(let j=i-1;j>=0;j--){ if(out[j]){f=out[j];break;} if(ends(toks[j])) break; } if(!f) for(let j=i-1;j>=0;j--){ if(out[j]){f=out[j];break;} } out[i]=f||"vi"; }
   const runs=[]; toks.forEach((t,i)=>{ const l=out[i]; const last=runs[runs.length-1]; if(last&&last.lang===l) last.words.push(t); else runs.push({lang:l,words:[t]}); });
   return runs.map(r=>({lang:r.lang,text:r.words.join(" ")})).filter(r=>r.text.trim());
 }
