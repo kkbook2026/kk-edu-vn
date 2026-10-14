@@ -1148,7 +1148,7 @@ function kkNeeds(){
   const n = [];
   if(S.vid) n.push("video:"+S.vid);
   if(S.mat) n.push("material:"+S.mat);
-  if([3,4,5].includes(S.step) || (typeof J!=="undefined" && J.pr) || S.test) n.push("banks");
+  if([3,4,5].includes(S.step) || (typeof J!=="undefined" && J.pr) || (S.test && S.test.running)) n.push("banks");
   return n.filter(x=>!kkHas(x));
 }
 render = function(){
