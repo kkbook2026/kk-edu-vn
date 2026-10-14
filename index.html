@@ -84,11 +84,11 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;backgroun
 @media(max-width:640px){.topbar{flex-wrap:wrap}}
 .brand{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
 .brand .logo{width:52px;height:52px;flex:none;filter:drop-shadow(0 2px 6px rgba(15,42,74,.25))}
-.brand b{font-family:var(--font-d);font-size:1.6rem;line-height:1;letter-spacing:.01em;color:var(--navy);font-weight:700;font-variation-settings:"opsz" 72}
-.brand small{display:block;width:max-content;font-size:.6rem;font-weight:700;color:var(--gold2);letter-spacing:.02em;margin-top:4px;white-space:nowrap;text-transform:uppercase}
+.brand b{font-family:var(--font-d);font-size:2rem;line-height:1;letter-spacing:.01em;color:var(--navy);font-weight:700;font-variation-settings:"opsz" 72}
+.brand .tagline{display:block;width:0;min-width:100%;height:auto;margin-top:4px;fill:var(--gold2);font-family:var(--font);font-weight:700}
 .brand .brandtx{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;width:max-content}
 .brand .brandtx b{white-space:nowrap;display:block;line-height:1}
-:root[data-theme="dark"] .brand small{color:var(--gold)}
+:root[data-theme="dark"] .brand .tagline{fill:var(--gold)}
 nav.main{display:flex;gap:2px;flex-wrap:nowrap;margin-left:auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
 nav.main::-webkit-scrollbar{display:none}
 
@@ -128,7 +128,7 @@ nav.main button.on{background:var(--navy);color:#fff;font-weight:600}
 @media(max-width:900px){ nav.main button{padding:8px 11px;font-size:.88rem} }
 @media(max-width:640px){
   .topbar{gap:8px;padding-block:8px}
-  .brand{order:1;gap:9px} .brand .logo{width:42px;height:42px} .brand b{font-size:1.25rem} .brand small{font-size:.48rem}
+  .brand{order:1;gap:9px} .brand .logo{width:44px;height:44px} .brand b{font-size:1.5rem}
   .userbox{order:2;margin-left:auto}
   nav.main{order:3;flex:1 0 100%;flex-wrap:nowrap;overflow-x:auto;margin-left:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;scroll-snap-type:x proximity;mask-image:linear-gradient(90deg,#000 92%,transparent)}
   nav.main::-webkit-scrollbar{display:none}
@@ -504,7 +504,7 @@ footer.ft .in span:last-child{margin-left:auto;font-style:italic}
       <path transform="translate(15 -2.2)" d="M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z" fill="url(#kkSg)"/>
       <path transform="translate(10.4 0)" d="M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z" fill="url(#kkGg)" stroke="#0f2a4a" stroke-width="1.2" stroke-linejoin="round" paint-order="stroke"/>
     </svg>
-    <div class="brandtx"><b>KK-EDU</b><small>GIÁO DỤC SỐ - THỬ NGHIỆM</small></div>
+    <div class="brandtx"><b>KK-EDU</b><svg class="tagline" viewBox="0 0 200 15" aria-label="Giáo dục số - Thử nghiệm" role="img"><text x="0" y="12.6" textLength="200" lengthAdjust="spacingAndGlyphs" font-size="13.5">GIÁO DỤC SỐ - THỬ NGHIỆM</text></svg></div>
   </div>
   <nav class="main" id="mainNav"></nav>
   <div class="userbox" id="userBox"></div>
@@ -5177,8 +5177,5 @@ fitBrand(); window.addEventListener("resize",()=>{ clearTimeout(window._fbT); wi
   try{ const q=new URLSearchParams(location.search); if(q.get("login")==="1"){ S.loginNext=q.get("next")||"/"; history.replaceState(null,"",location.pathname+location.hash); if(S.uid){ if(S.profile) location.href=S.loginNext; else openProfileForm(()=>{ location.href=S.loginNext; }); } else if(S.fb) openLogin(); } }catch(e){}
 })();
 </script>
-<script>/* căn khẩu hiệu dưới logo bằng đúng chiều dài chữ KK-EDU */
-function kkBrandFit(){ document.querySelectorAll('.brand small').forEach(s=>{ const b=s.parentElement.querySelector('b'); if(!b) return; s.style.letterSpacing='0px'; s.style.fontSize=''; const w=b.getBoundingClientRect().width, n=(s.textContent||'').length; if(!w||n<2) return; let sw=s.getBoundingClientRect().width; if(sw>w){ const fs=parseFloat(getComputedStyle(s).fontSize); s.style.fontSize=(fs*w/sw*0.985).toFixed(2)+'px'; sw=s.getBoundingClientRect().width; } s.style.letterSpacing=Math.max(0,(w-sw)/(n-1)).toFixed(2)+'px'; }); }
-(document.fonts?document.fonts.ready:Promise.resolve()).then(kkBrandFit); addEventListener('resize',kkBrandFit); addEventListener('load',kkBrandFit);</script>
 </body>
 </html>
