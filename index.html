@@ -89,7 +89,10 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;backgroun
 .brand .brandtx{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;width:max-content}
 .brand .brandtx b{white-space:nowrap;display:block;line-height:1}
 :root[data-theme="dark"] .brand small{color:var(--gold)}
-nav.main{display:flex;gap:2px;flex-wrap:nowrap;margin-left:auto;overflow:hidden}
+nav.main{display:flex;gap:2px;flex-wrap:nowrap;margin-left:auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+nav.main::-webkit-scrollbar{display:none}
+@media(max-width:1400px){nav.main button{padding:8px 9px;font-size:.87rem}}
+@media(max-width:1180px){.brand small{display:none}}
 nav.main button{background:none;border:0;padding:9px 12px;white-space:nowrap;border-radius:999px;color:var(--fg2);font-size:.92rem;font-weight:500;cursor:pointer;transition:background .15s,color .15s}
 nav.main button:hover{background:var(--chip);color:var(--fg)}
 nav.main button.on{background:var(--navy);color:#fff;font-weight:600}
