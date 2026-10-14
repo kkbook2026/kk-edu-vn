@@ -166,6 +166,33 @@ a.btn,.btn.sm{display:inline-block;text-decoration:none;font-weight:600;backgrou
 #vpText{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
 #vpText .s{opacity:.55;transition:opacity .2s} #vpText .s.on{opacity:1;background:var(--light);border-radius:6px;padding:4px 6px;margin:4px -6px}
 @media(max-width:760px){.vp .stage{min-height:160px;padding:12px}.vp .scene .vis{font-size:1rem}}
+
+/* lộ trình 7 chặng */
+nav.steps button{position:relative;display:inline-flex;flex-direction:column;align-items:center;gap:1px;line-height:1.2}
+nav.steps button small{font-size:10px;opacity:.7;font-weight:500}
+nav.steps button.locked{opacity:.5;cursor:not-allowed;border-style:dashed}
+nav.steps button.done .n{background:var(--good);color:#fff}
+.pill.lang{background:var(--gold);color:#14213d;font-weight:600}
+.jmap{display:flex;gap:6px;align-items:stretch;overflow-x:auto;padding:6px 0;scrollbar-width:none}
+.jw{flex:1;min-width:76px;border:1px solid var(--line);border-radius:10px;padding:8px 6px;text-align:center;cursor:pointer;background:var(--card);font-size:11.5px}
+.jw:hover{border-color:var(--navy)} .jw.now{border-color:var(--navy);box-shadow:0 0 0 2px var(--navy) inset} .jw.done{background:#e9f7ee;border-color:var(--good)} .jw.lock{opacity:.45;cursor:not-allowed}
+.jw .wn{font-family:var(--font-d);font-size:1.05rem;color:var(--navy)} .jw .wp{font-weight:600;color:var(--navy)} .jw .wl{color:var(--mute);font-size:10px;white-space:nowrap}
+.jgate{align-self:center;font-size:20px;color:var(--mute)} .jgate.open{color:var(--good)}
+.bar{height:6px;background:var(--line);border-radius:999px;overflow:hidden;margin:6px 0} .bar i{display:block;height:100%;background:var(--navy)} .bar.big{height:10px}
+.wtabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px} .chip.done{border-color:var(--good);color:var(--good)}
+.wlist{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.witem{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--card)}
+.witem.done{background:#f3faf5;border-color:#bfe3c8} .witem .ic{width:28px;text-align:center;font-size:16px} .witem .tx{flex:1;min-width:0} .witem .tx b{display:block;font-weight:600;font-size:.95rem} .witem .tx small{color:var(--mute)}
+.badge{display:inline-block;font-size:.72rem;border-radius:999px;padding:2px 8px;background:var(--light);color:var(--mute);vertical-align:middle} .badge.ok{background:#e9f7ee;color:var(--good)}
+.chot{border-left:4px solid var(--gold)} .chot .eyebrow{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold2);font-weight:700}
+.qwrap{position:relative} .qwrap.right .q{border-color:var(--good);background:#f3faf5} .qwrap.wrong .q{border-color:var(--bad);background:#fdf3f2}
+.qwrap .ex{font-size:13px;color:var(--mute);margin:-2px 0 8px 10px} .qwrap .stuck{margin:-4px 0 6px 10px}
+.lnk{background:none;border:0;color:var(--navy);text-decoration:underline;cursor:pointer;font-family:var(--font);font-size:12.5px;padding:0}
+.heat td{text-align:center} .heat td.h1{background:#fff4d6} .heat td.h2{background:#ffe0a3} .heat td.h3{background:#f7b7b0;font-weight:700}
+.prog{width:100%;max-width:640px;height:220px}
+#kkToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:all .2s;z-index:99;max-width:90vw}
+#kkToast.show{opacity:1;transform:translateX(-50%)}
+@media(max-width:760px){nav.steps button{min-width:96px}.jw{min-width:64px}}
 </style>
 </head>
 <body>
@@ -186,7 +213,7 @@ a.btn,.btn.sm{display:inline-block;text-decoration:none;font-weight:600;backgrou
   <div class="crumb"><a href="/">Trang chủ</a><span>›</span><span>Ngoại ngữ</span><span>›</span><span>Tiếng Anh</span><span>›</span><b>Luyện thi và thi thử IELTS</b></div>
   <div class="user"><span id="kkUser"></span><label for="uname">Học viên</label><input id="uname" placeholder="Họ và tên" autocomplete="name"><label for="utarget">Mục tiêu</label><select id="utarget"><option>5.5</option><option>6.0</option><option selected>6.5</option><option>7.0</option><option>7.5</option><option>8.0</option></select></div>
 </div>
-<div class="hero"><div class="in"><div><div class="kick">Phân hệ Ngoại ngữ · bản thử nghiệm</div><h1>Luyện thi và thi thử <em>IELTS</em></h1><p>Kỹ năng → Tài liệu → Video tương tác → Thi thử đề ngẫu nhiên → Chấm tự động → Tổng hợp → Chứng chỉ KK-EDU thử nghiệm. Bài làm tự lưu trên trình duyệt này.</p></div><div class="tags"><span class="tag">Listening</span><span class="tag">Reading</span><span class="tag">Writing</span><span class="tag">Speaking</span></div></div></div>
+<div class="hero"><div class="in"><div><div class="kick">Phân hệ Ngoại ngữ · bản thử nghiệm</div><h1>Luyện thi và thi thử <em>IELTS</em></h1><p>Lộ trình 12 tuần, 3 giai đoạn: Xây nền (Việt 50 / Anh 50) → Kỹ năng (30 / 70) → Luyện đề và Thi thử (100% tiếng Anh). Mỗi giai đoạn có cổng ra; tiến độ lưu theo tài khoản KK-EDU.</p></div><div class="tags"><span class="tag">Listening</span><span class="tag">Reading</span><span class="tag">Writing</span><span class="tag">Speaking</span></div></div></div>
 <nav class="steps" id="steps" aria-label="Các bước"></nav>
 <main id="main"><div class="card"><h1>Đang tải dữ liệu IELTS…</h1><p class="mute">Ngân hàng đề, tài liệu và kịch bản video được nạp từ máy chủ KK-EDU.</p></div></main>
 <footer>Tác giả: Nguyễn Duy Điển (KK-2026) · <a href="/">www.kk-edu.com</a> · Học liệu bổ trợ, mô hình thí điểm. IELTS là nhãn hiệu của British Council, IDP và Cambridge; hệ thống này không liên kết với các tổ chức đó. AI gợi ý, con người quyết định.</footer>
@@ -356,7 +383,7 @@ function renderTest(m){
     <div class="row"><button class="btn gold" onclick="S.test=genTest('FULL');save();render()">Thi thử đủ 4 kỹ năng (2 giờ 44 phút + Speaking)</button>${['LIS','RD','WR','SP'].map(k=>`<button class="btn sec" onclick="S.test=genTest('${k}');save();render()">Chỉ ${SKN[k]}</button>`).join('')}</div>
     <div class="warnbox" style="margin-top:12px">Quy định phòng thi ảo: không rời màn hình quá 3 lần, không dán văn bản vào ô viết, không tra cứu. Vi phạm sẽ được ghi nhận trong báo cáo. Microphone cần được cấp quyền cho phần Speaking.</div></div>
     ${S.history.length?`<div class="card"><h2>Lịch sử thi thử</h2><table class="doc" style="width:100%"><tr><th>Ngày</th><th>Chế độ</th><th>L</th><th>R</th><th>W</th><th>S</th><th>Overall</th></tr>${S.history.map(h=>`<tr><td>${h.date}</td><td>${h.mode}</td><td>${h.bands.LIS??'-'}</td><td>${h.bands.RD??'-'}</td><td>${h.bands.WR??'-'}</td><td>${h.bands.SP??'-'}</td><td>${h.overall??'-'}</td></tr>`).join('')}</table></div>`:''}`; return; }
-  if(t.order.every(k=>t.done[k])){ m.innerHTML = `<div class="card"><h1>Đã nộp đủ các phần</h1><p>Chuyển sang bước 5 để xem kết quả chấm từng phần.</p><button class="btn" onclick="go(4)">Xem chấm điểm</button> <button class="btn sec" onclick="if(confirm('Hủy bài thi này?')){S.test=null;save();render()}">Hủy bài</button></div>`; return; }
+  if(t.order.every(k=>t.done[k])){ m.innerHTML = `<div class="card"><h1>Đã nộp đủ các phần</h1><p>Chuyển sang bước 5 để xem kết quả chấm từng phần.</p><button class="btn" onclick="go(5)">Xem chấm điểm</button> <button class="btn sec" onclick="if(confirm('Hủy bài thi này?')){S.test=null;save();render()}">Hủy bài</button></div>`; return; }
   const k = t.cur;
   const head = `<div class="sticky"><b>Thi thử (seed ${t.seed})</b> ${t.order.map(x=>`<span class="pill" style="${x===k?'background:var(--teal);color:#fff':''}">${SKN[x]}${t.done[x]?' (đã nộp)':''}</span>`).join('')}<span style="margin-left:auto">Thời gian còn lại: <span id="timer" class="timer">${fmtT(t.timeLeft[k])}</span></span>${t.running?`<button class="btn gold" onclick="if(confirm('Nộp phần ${SKN[k]}?'))submitPart('${k}')">Nộp phần ${SKN[k]}</button>`:`<button class="btn" onclick="S.test.running=true;S.test.startedAt['${k}']=Date.now();save();startTimer();render()">Bắt đầu ${SKN[k]}</button>`}</div>`;
   let body = '';
@@ -829,6 +856,271 @@ document.addEventListener("visibilitychange", ()=>{ if(document.hidden && VP.pla
 
 /* ---------- 5. Khởi động lớp tích hợp ---------- */
 (async()=>{ await kkInitAuth(); })();
+
+</script>
+<script>
+/* ===== KK-EDU IELTS - Lộ trình 7 chặng, 12 tuần, 3 giai đoạn (lang_mix 50 -> 70 -> 100) ===== */
+/* Lớp này ghi đè điều hướng của app.js: chặng thay cho bước, cổng giai đoạn, Chốt lỗi, Tôi kẹt. Tác giả : Nguyễn Duy Điển (KK-2026) */
+
+const J = { plan:null, pr:null };
+S.journey = Object.assign({diag:null, read:{}, practice:{}, writing:{}, speaking:{}, ticks:{}, stuck:{}, start:null, override:false}, S.journey||{});
+const STAGE_NAMES = ["Chẩn đoán","Xây nền","Kỹ năng","Luyện đề","Thi thử","Kết quả","Chứng chỉ"];
+STEPS.length = 0; STAGE_NAMES.forEach(x=>STEPS.push(x));
+const isAdminUser = () => !!(KK.user && KK.user.email === "nguyenduydien75@gmail.com" && KK.user.emailVerified);
+const target = () => parseFloat(S.target||"6.5");
+
+/* ---------- 1. Dữ liệu lộ trình + trạng thái tiến độ ---------- */
+async function loadPlan(){ const base=await kkApiBase(); const r=await fetch(base+"/ielts/plan",{cache:"force-cache"}); if(!r.ok) throw new Error("plan "+r.status); J.plan=await r.json(); }
+function itemKey(it){ return it.type+":"+(it.id||it.bank||it.skill||it.label); }
+function itemDone(it, w){
+  const j=S.journey;
+  if(it.type==="video") return !!(S.progress[it.id]&&S.progress[it.id].done);
+  if(it.type==="material") return !!j.read[it.id];
+  if(it.type==="practice") return !!j.practice[it.bank];
+  if(it.type==="writing") return !!j.writing[it.bank];
+  if(it.type==="speaking") return !!j.speaking[it.bank];
+  if(it.type==="timed") return S.history.some(h=>h.mode===it.skill||(h.mode==="FULL"&&h.bands[it.skill]!=null));
+  if(it.type==="mock") return S.history.filter(h=>h.mode==="FULL").length >= (w.items.filter(x=>x.type==="mock").indexOf(it)+1) + (w.week===12?2:0);
+  return !!j.ticks[w.week+":"+itemKey(it)];
+}
+function weekProgress(w){ const n=w.items.length; const d=w.items.filter(it=>itemDone(it,w)).length; return {n, d, pct: n?Math.round(100*d/n):0}; }
+/* Cổng giai đoạn */
+function gate1(){
+  const P=J.plan.phases["1"].gate; const vids=D.videos.filter(v=>v.skill==="GEN"&&S.progress[v.id]&&S.progress[v.id].done).length;
+  const pr=S.journey.practice; const ok2=["BANK-LIS-P1-001","BANK-RD-P1-001"].filter(b=>pr[b]&&pr[b].pct>=P.practice_min).length;
+  return {ok: vids>=P.videos_done && ok2>=2, parts:[["Video nền hoàn thành", vids, P.videos_done],["Bài làm quen đạt "+P.practice_min+"%", ok2, 2]]};
+}
+function lastBands(skill, n){ return S.history.filter(h=>h.bands&&h.bands[skill]!=null).slice(-n).map(h=>h.bands[skill]); }
+function repeatedCodes(days){ const since=Date.now()-days*864e5; const c={}; (S.errorLog||[]).forEach(e=>{ if(new Date(e.date).getTime()>=since) c[e.code]=(c[e.code]||0)+(e.count||1); }); return Object.entries(c).filter(([k,v])=>v>=3&&!/^CP-/.test(k)).map(([k])=>k); }
+function gate2(){
+  const P=J.plan.phases["2"].gate; const need=target()-P.band_margin; const parts=[];
+  let ok=true; ["LIS","RD","WR","SP"].forEach(k=>{ const b=lastBands(k,2); const good=b.length>=2&&b.every(x=>x>=need); parts.push([SKN[k]+" 2 bài gần nhất ≥ "+need.toFixed(1), b.length?b.map(x=>x.toFixed(1)).join(", "):"-", good?"đạt":"chưa"]); if(!good) ok=false; });
+  const rep=repeatedCodes(14); parts.push(["Mã lỗi lặp 3 lần (14 ngày)", rep.length?rep.join(" "):"không", rep.length?"chưa":"đạt"]); if(rep.length) ok=false;
+  return {ok, parts};
+}
+function gate3(){
+  const full=S.history.filter(h=>h.mode==="FULL").slice(-2); const t=target();
+  const ok=full.length>=2&&full.every(h=>h.overall>=t&&Object.values(h.bands).every(b=>b>=t-1));
+  return {ok, parts:[["Full Mock gần nhất", full.map(h=>h.overall).join(", ")||"-", ok?"đạt":"chưa"]]};
+}
+function phaseNow(){ if(!S.journey.diag) return 0; if(!gate1().ok) return 1; if(!gate2().ok) return 2; return 3; }
+function langMix(){ const p=phaseNow(); return p<=1?50:p===2?70:100; }
+function stageUnlocked(i){
+  if(isAdminUser()||S.journey.override) return true;
+  const p=phaseNow();
+  if(i===0||i===6) return true;
+  if(i===1) return p>=1; if(i===2) return p>=2; if(i===3||i===4) return p>=3; if(i===5) return S.history.length>0 || !!S.lastResult;
+  return false;
+}
+function stageLockNote(i){
+  if(i===1) return "Làm bài chẩn đoán trước";
+  if(i===2) return "Qua cổng Xây nền: "+J.plan.phases["1"].gate.note;
+  if(i===3||i===4) return "Qua cổng Kỹ năng: "+J.plan.phases["2"].gate.note;
+  if(i===5) return "Có kết quả thi thử trước";
+  return "";
+}
+function currentWeek(){ const p=phaseNow(); const ws=J.plan.weeks.filter(w=>w.phase===Math.max(1,p)); for(const w of ws){ if(weekProgress(w).pct<100) return w.week; } return ws.length?ws[ws.length-1].week:1; }
+
+/* ---------- 2. Điều hướng: thanh chặng + go ---------- */
+go = function(i){
+  if(S.test && S.test.running && i!==3 && i!==4 && !confirm("Bài thi đang chạy. Rời trang sẽ tạm dừng đồng hồ nhưng không mất bài. Tiếp tục?")) return;
+  if(i===2 && !stageUnlocked(2) && (S.vid||S.mat)) i=1;   // mở video/tài liệu từ liên kết khi chặng Kỹ năng còn khóa
+  if(!stageUnlocked(i)){ kkToast("Chặng khóa - "+stageLockNote(i)); return; }
+  S.step=i; save(); render(); window.scrollTo(0,0);
+};
+function kkToast(msg){ let t=$("#kkToast"); if(!t){ t=document.createElement("div"); t.id="kkToast"; document.body.appendChild(t); } t.textContent=msg; t.className="show"; clearTimeout(t._h); t._h=setTimeout(()=>t.className="",3500); }
+renderNav = function(){
+  if(!J.plan){ $("#steps").innerHTML = STAGE_NAMES.map((s,i)=>`<button class="${i===S.step?'active':''}"><span class="n">${i}</span>${s}</button>`).join(""); return; }
+  const p=phaseNow(); const lm=langMix();
+  $("#steps").innerHTML = STAGE_NAMES.map((s,i)=>{ const un=stageUnlocked(i); const done = (i===0&&S.journey.diag)||(i===1&&p>=2)||(i===2&&p>=3)||(i===4&&gate3().ok); const st=J.plan.stages[i];
+    return `<button class="${i===S.step?'active':''} ${un?'':'locked'} ${done?'done':''}" ${un?'':'aria-disabled="true"'} title="${un?esc(st.name_en):esc(stageLockNote(i))}" onclick="go(${i})"><span class="n">${done?'✓':i}</span>${s}<small>${esc(st.lang)}</small></button>`; }).join("");
+  const b=$("#kkLang"); if(b) b.innerHTML=`Giai đoạn ${p||1} · Việt ${100-lm} / Anh ${lm}`;
+};
+const _renderJ0 = render;
+render = function(){
+  if(VP.vid && ((S.step!==1&&S.step!==2) || S.vid!==VP.vid)){ kkVpStop(); VP.vid=null; }
+  if(![1,2,3,4].includes(S.step)) kkStop();
+  if(!J.plan){ _renderJ0(); return; }
+  renderNav(); const m=$("#main");
+  if(!stageUnlocked(S.step)){ S.step=0; }
+  [viewDiag, m=>viewPhase(m,1), m=>viewPhase(m,2), viewIntensive, viewMock, viewReview, viewPortfolio][S.step](m);
+  try{ if(window.zaraz) zaraz.track("ielts_chang",{chang:STAGE_NAMES[S.step], giai_doan:phaseNow()}); }catch(e){}
+};
+
+/* ---------- 3. Chặng 0: Chẩn đoán ---------- */
+function viewDiag(m){
+  const d=S.journey.diag; const gate=kkAgeGate();
+  if(J.pr && J.pr.diag){ return practiceView(m); }
+  m.innerHTML=`<div class="card"><h1>Chặng 0. Chẩn đoán đầu vào</h1><p class="mute">45 phút: 1 phần Listening (10 câu), 1 bài Reading (13 câu); Writing và Speaking được ước tính ban đầu rồi cập nhật sau bài viết, bài nói đầu tiên. Kết quả tạo ra band ước tính, khoảng cách tới mục tiêu và lịch 12 tuần cá nhân.</p>
+  ${gate||`${d?`<div class="bands">${Object.entries(d.bands).map(([k,b])=>`<div class="band"><div class="v">${b.toFixed(1)}</div>${SKN[k]}</div>`).join("")}<div class="band ov"><div class="v">${d.overall.toFixed(1)}</div>Ước tính</div></div>
+    <p>Mục tiêu <b>${target().toFixed(1)}</b> - khoảng cách <b>${Math.max(0,target()-d.overall).toFixed(1)}</b> band. Ngày chẩn đoán: ${d.date}. ${d.overall<4?'<span class="warnbox">Dưới 4.0: hệ thống khuyên nhánh Foundation Plus (thêm 4 tuần ở 50/50) trước khi vào Kỹ năng.</span>':''}</p>
+    <div class="row"><button class="btn" onclick="go(1)">Vào Xây nền</button><button class="btn sec" onclick="startDiag()">Làm lại chẩn đoán</button></div>`
+    :`<div class="row"><button class="btn gold" onclick="startDiag()">Bắt đầu chẩn đoán 45 phút</button></div>`}`}
+  </div>
+  <div class="card"><h2>Lộ trình 12 tuần</h2>${journeyMapHTML()}</div>`;
+}
+function startDiag(){ const dg=J.plan.diagnostic; openPractice({type:"practice", skill:"LIS", bank:dg.lis, label:"Chẩn đoán - Listening"}, null, {diag:true, chain:{type:"practice", skill:"RD", bank:dg.rd, label:"Chẩn đoán - Reading"}}); }
+function finishDiag(){
+  const pr=S.journey.practice; const L=pr[J.plan.diagnostic.lis], R=pr[J.plan.diagnostic.rd]; if(!L||!R) return;
+  const bL=bandLR(Math.round(L.raw/L.total*40)), bR=bandLR(Math.round(R.raw/R.total*40)); const est=Math.max(1,floorHalf(Math.min(bL,bR)-0.5));
+  const bands={LIS:bL, RD:bR, WR:est, SP:est}; const overall=overallBand(Object.values(bands));
+  S.journey.diag={date:TODAY(), bands, overall, estimated:["WR","SP"]}; S.journey.start=S.journey.start||TODAY(); save();
+  kkTrackIelts("ielts_chan_doan",{overall}); S.step=0; render();
+}
+
+/* ---------- 4. Bản đồ lộ trình ---------- */
+function journeyMapHTML(){
+  const cw=currentWeek(); const p=phaseNow();
+  return `<div class="jmap">${J.plan.weeks.map(w=>{ const pr=weekProgress(w); const ph=J.plan.phases[String(w.phase)]; const locked = !(isAdminUser()||S.journey.override) && (p===0 || w.phase>Math.max(1,p)); const cls=(w.week===cw?' now':'')+(pr.pct===100?' done':'')+(locked?' lock':''); const gateAfter=[4,10,12].includes(w.week);
+    return `<div class="jw${cls}" ${locked?'':`onclick="openWeek(${w.week})"`} title="${esc(w.title)}"><div class="wn">T${w.week}</div><div class="bar"><i style="width:${pr.pct}%"></i></div><div class="wp">${pr.pct}%</div><div class="wl">${esc(ph.name_en)} · ${ph.lang_mix}% EN</div></div>${gateAfter?`<div class="jgate ${(w.week===4&&p>=2)||(w.week===10&&p>=3)||(w.week===12&&gate3().ok)?'open':''}" title="Cổng ra giai đoạn">⛩</div>`:''}`; }).join("")}</div>`;
+}
+function openWeek(n){ const w=J.plan.weeks.find(x=>x.week===n); if(!w) return; S.journey.weekView=n; S.vid=null; S.mat=null; J.pr=null; go(w.phase>=3?3:w.phase); }
+
+/* ---------- 5. Chặng 1-2: tuần học, video, tài liệu, bài luyện ---------- */
+function viewPhase(m, ph){
+  const P=J.plan.phases[String(ph)]; const lm=P.lang_mix;
+  if(S.vid){ const v=D.videos.find(x=>x.id===S.vid); if(v){ m.innerHTML=videoPlayer(v); return; } S.vid=null; }
+  if(S.mat){ const cur=D.materials.find(x=>x.id===S.mat); if(cur){ S.journey.read[cur.id]={date:TODAY()}; save(); m.innerHTML=`<div class="card"><div class="row"><button class="btn sec" onclick="S.mat=null;render()">Về tuần học</button><span class="pill">Tài liệu · ${esc(cur.id)}</span></div></div><div class="card doc"><h2>${esc(cur.title)}</h2><p class="mute">Video liên quan: ${cur.video_ids.map(v=>`<a href="#" onclick="S.vid='${v}';render();return false">${v}</a>`).join(", ")||"-"}</p>${blocksHTML(cur.blocks)}<div class="row"><button class="btn" onclick="S.mat=null;render()">Đã đọc xong</button></div></div>`; return; } S.mat=null; }
+  if(J.pr){ return practiceView(m); }
+  const weeks=J.plan.weeks.filter(w=>w.phase===ph); const cw=currentWeek(); let wv=S.journey.weekView; if(!weeks.some(w=>w.week===wv)) wv=weeks.some(w=>w.week===cw)?cw:weeks[0].week; const w=weeks.find(x=>x.week===wv); const pr=weekProgress(w);
+  const g = ph===1?gate1():gate2();
+  m.innerHTML=`<div class="card"><div class="row"><h1 style="margin:0">Chặng ${ph}. ${esc(P.name)} <span class="pill">${esc(P.name_en)}</span></h1><span class="pill lang">Việt ${100-lm} / Anh ${lm}</span></div>
+    <p class="mute">${ph===1?"Lời giảng tiếng Việt, mọi ví dụ và thuật ngữ bằng tiếng Anh. Mục tiêu: hiểu kỳ thi, 12 dạng câu hỏi, từ vựng và ngữ pháp nền.":"Bài học bằng tiếng Anh; tiếng Việt chỉ còn ở khối Chốt lỗi cuối bài và nút Tôi kẹt. Mục tiêu: mỗi kỹ năng tăng 0,5-1,0 band bằng cách luyện theo dạng câu hỏi."}</p>
+    <div class="wtabs">${weeks.map(x=>{ const q=weekProgress(x); return `<button class="chip ${x.week===wv?'on':''} ${q.pct===100?'done':''}" onclick="S.journey.weekView=${x.week};save();render()">Tuần ${x.week} <small>${q.pct}%</small></button>`; }).join("")}</div></div>
+  <div class="card"><div class="eyebrow">Tuần ${w.week} · ${esc(w.title)}</div><p><b>Mục tiêu tuần:</b> ${esc(w.goal)}</p><div class="bar big"><i style="width:${pr.pct}%"></i></div><p class="mute">${pr.d}/${pr.n} mục hoàn thành${S.journey.stuck[w.week]?` · bấm "Tôi kẹt" ${S.journey.stuck[w.week]} lần`:""}</p>
+    <div class="wlist">${w.items.map((it,i)=>itemRow(it,w,i)).join("")}</div></div>
+  <div class="card"><h2>Cổng ra giai đoạn ${ph} ${g.ok?'<span class="badge ok">Đã mở</span>':'<span class="badge">Chưa đạt</span>'}</h2><p class="mute">${esc(P.gate.note)}</p>
+    <table class="doc" style="width:100%"><tr><th>Điều kiện</th><th>Hiện tại</th><th>Cần</th></tr>${g.parts.map(r=>`<tr><td>${esc(String(r[0]))}</td><td>${esc(String(r[1]))}</td><td>${esc(String(r[2]))}</td></tr>`).join("")}</table>
+    ${g.ok?`<div class="row" style="margin-top:10px"><button class="btn gold" onclick="go(${ph===1?2:3})">Sang chặng ${ph===1?'Kỹ năng':'Luyện đề'}</button></div>`:''}</div>
+  <div class="card"><h2>Lộ trình 12 tuần</h2>${journeyMapHTML()}</div>
+  <details class="card"><summary><b>Kho đầy đủ: tất cả video và tài liệu theo kỹ năng</b></summary><div id="kho"></div></details>`;
+  const kho=$("#kho"); if(kho){ const d=document.createElement("div"); renderMaterials(d); const d2=document.createElement("div"); renderVideos(d2); kho.appendChild(d); kho.appendChild(d2); }
+}
+function itemRow(it, w, i){
+  const done=itemDone(it,w); const ico={video:"▶",material:"📄",practice:"✎",writing:"✍",speaking:"🎙",timed:"⏱",mock:"🏁",review:"↻",checklist:"☑"}[it.type]||"•";
+  let label=it.label||"", sub="";
+  if(it.type==="video"){ const v=D.videos.find(x=>x.id===it.id); label=v?v.title:it.id; sub=v?`${v.id} · ${v.duration}`:""; }
+  if(it.type==="material"){ const mt=D.materials.find(x=>x.id===it.id); label=mt?mt.title:it.id; sub=it.id; }
+  if(it.type==="practice"){ const p=S.journey.practice[it.bank]; sub=`${SKN[it.skill]} · ${it.n} câu${p?` · đạt ${p.pct}%`:""}`; }
+  if(it.type==="writing"){ const p=S.journey.writing[it.bank]; sub=`Writing${p&&p.band?` · band ${p.band}`:""}`; }
+  if(it.type==="speaking"){ const p=S.journey.speaking[it.bank]; sub=`Speaking${p&&p.self?` · tự chấm ${p.self}`:""}`; }
+  if(it.type==="timed"){ const b=lastBands(it.skill,1); sub=`${SKN[it.skill]} đúng giờ${b.length?` · band ${b[0].toFixed(1)}`:""}`; }
+  const act = { video:`S.vid='${it.id}';S.skill='${(D.videos.find(x=>x.id===it.id)||{}).skill||S.skill}';save();render()`, material:`S.mat='${it.id}';save();render()`, practice:`openPractice(J.plan.weeks[${w.week-1}].items[${i}],${w.week})`, writing:`openPractice(J.plan.weeks[${w.week-1}].items[${i}],${w.week})`, speaking:`openPractice(J.plan.weeks[${w.week-1}].items[${i}],${w.week})`, timed:`S.test=genTest('${it.skill}');save();go(3)`, mock:`S.test=genTest('FULL');save();go(4)`, review:`openReview(${w.week})`, checklist:`tickItem(${w.week},'${itemKey(it)}')` }[it.type];
+  return `<div class="witem ${done?'done':''}"><span class="ic">${ico}</span><div class="tx"><b>${esc(label)}</b><small>${esc(sub)}</small></div><button class="btn sm ${done?'sec':''}" onclick="${act}">${done?'Làm lại':'Bắt đầu'}</button></div>`;
+}
+function tickItem(week,key){ S.journey.ticks[week+":"+key]=TODAY(); save(); render(); }
+function openReview(week){ const codes=repeatedCodes(28); const F=D.feedback; const vids=new Set(); codes.forEach(c=>{ const e=F.error_codes[c]; if(e) e.video_ids.forEach(v=>vids.add(v)); }); S.journey.ticks[week+":review:Ôn theo mã lỗi của tôi"]=TODAY(); save();
+  const m=$("#main"); m.innerHTML=`<div class="card"><div class="row"><button class="btn sec" onclick="render()">Về tuần học</button></div><h1>Ôn theo mã lỗi của tôi</h1>${codes.length?`<p>Mã lỗi lặp trong 4 tuần: ${codes.map(c=>`<span class="tag">${c}</span>`).join(" ")}</p><div class="list">${[...vids].map(v=>{ const x=D.videos.find(y=>y.id===v); return x?`<div class="item" onclick="S.vid='${v}';S.skill='${x.skill}';save();render()"><span class="code">${v}</span><span>${esc(x.title)}</span></div>`:""; }).join("")}</div>`:`<p>Không có mã lỗi lặp - bạn có thể dùng tuần này để làm các bài luyện nâng cao bên dưới.</p>`}</div>`; }
+
+/* ---------- 6. Bài luyện (practice) - 10 câu, chấm ngay, Chốt lỗi, Tôi kẹt ---------- */
+const qInputP = new Function("mcChoices","mcStem","esc","return "+qInput.toString().replace(/S\.test\.answers/g,"J.pr.answers"))(mcChoices, mcStem, esc);
+function openPractice(it, week, opts){
+  kkStop(); J.pr=Object.assign({it, week, answers:{}, graded:null, started:Date.now(), stuckShown:{}}, opts||{}); S.vid=null; S.mat=null; render(); window.scrollTo(0,0);
+}
+function practiceView(m){
+  const pr=J.pr, it=pr.it; const ph=phaseNow(); const vi = ph<=2 && !pr.diag;
+  const back=`<div class="row"><button class="btn sec" onclick="J.pr=null;kkStop();render()">${pr.diag?'Hủy chẩn đoán':'Về tuần học'}</button><span class="pill">${esc(it.label||'')}</span>${pr.diag?'':`<span class="pill lang">Việt ${100-langMix()} / Anh ${langMix()}</span>`}</div>`;
+  if(it.type==="practice"){
+    const u = it.skill==="LIS" ? D.lis.find(s=>s.id===it.bank) : D.rd.find(p=>p.id===it.bank); if(!u){ m.innerHTML=back+"<p>Không tìm thấy đề.</p>"; return; }
+    if(it.skill==="RD") u.question_groups.forEach(g=>g._labels=u.paragraphs.map(x=>x.label));
+    let n=0; const G=pr.graded;
+    const qs = u.question_groups.map(g=>groupHead(g)+g.questions.map(q=>{ n++; const key=it.skill+":"+u.id+":"+q.n; const item=G&&G.items.find(x=>x.q===q); const st=item?(item.correct?"right":"wrong"):"";
+      return `<div class="qwrap ${st}">${qInputP(key,g,q,n)}${G?`<div class="ex"><b>${item.correct?'Đúng':'Sai'}.</b> Evidence: <i>${esc(q.evidence||'')}</i>${(vi||!item.correct&&ph<=2)?`<br>${esc(q.explanation||'')}`:''} <span class="tag">${esc(q.error_code||'')}</span></div>`:(vi?`<div class="stuck">${pr.stuckShown[key]?`<div class="ex">${esc(q.explanation||'')}<br><i>${esc(q.evidence||'')}</i></div>`:`<button class="lnk" onclick="stuck('${key}')">Tôi kẹt</button>`}</div>`:'')}</div>`; }).join("")).join("");
+    const audio = it.skill==="LIS" ? `<div class="row noprint"><button class="btn ${pr.played?'sec':''}" ${pr.played?'disabled':''} onclick="playPractice('${u.id}')">${pr.played?'Đã phát (1 lần)':'Phát audio Part '+u.part}</button><button class="btn sec" onclick="kkStop()">Dừng</button><span class="mute">${esc(u.intro||'')}</span></div>` : "";
+    const passage = it.skill==="RD" ? `<div class="card passage"><h2>${esc(u.title)}</h2>${u.paragraphs.map(x=>`<p><b>${x.label}</b> ${esc(x.text)}</p>`).join("")}<p class="note">${esc(u.note||'')}</p></div>` : "";
+    m.innerHTML=`<div class="card">${back}<h1>${esc(it.label)}</h1>${audio}</div><div class="${it.skill==='RD'?'two':''}">${passage}<div class="card passage">${qs}${G?'':`<div class="row" style="margin-top:12px"><button class="btn gold" onclick="gradePractice()">Nộp và chấm</button></div>`}</div></div>${G?chotLoiHTML(G, it):''}`;
+    return;
+  }
+  if(it.type==="writing"){
+    const t1=D.wr.task1.find(x=>x.id===it.bank), t2=D.wr.task2.find(x=>x.id===it.bank); const task=t1||t2; const isT1=!!t1; const saved=S.journey.writing[it.bank]||{};
+    const txt=pr.text!=null?pr.text:(saved.text||""); const wc=(txt.trim().match(/[A-Za-z0-9'-]+/g)||[]).length;
+    m.innerHTML=`<div class="card">${back}<h1>${isT1?'Writing Task 1':'Writing Task 2'} <span class="pill">khuyên ${task.time_minutes} phút · tối thiểu ${task.min_words} từ</span></h1><p>${esc(task.prompt)}</p>${isT1&&task.data?`<p class="mute">${esc(task.data.description||'')}</p>${chartSVG(task.data)}`:''}</div>
+    <div class="card"><textarea class="noPaste" style="min-height:300px" oninput="J.pr.text=this.value;document.getElementById('pwc').textContent=(this.value.trim().match(/[A-Za-z0-9'-]+/g)||[]).length" spellcheck="false">${esc(txt)}</textarea><p class="mute">Số từ: <b id="pwc">${wc}</b> / ${task.min_words}</p>
+      <div class="row">${KK.user?`<button class="btn gold" onclick="gradeWriting()">Chấm bằng AI theo 4 tiêu chí</button>`:`<a class="btn" href="${kkLoginUrl()}">Đăng nhập để chấm bằng AI</a>`}<button class="btn sec" onclick="J.pr.showPlan=!J.pr.showPlan;render()">Dàn ý gợi ý</button></div>
+      ${pr.showPlan?`<div class="box"><b class="t">Dàn ý</b><ol>${(task.plan||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ol>${task.analysis?`<p>${esc(task.analysis)}</p>`:''}</div>`:''}<div id="pwout">${pr.wrOut||''}</div></div>
+    ${(pr.graded||saved.band)?`<div class="two"><div class="card doc"><h2>Bài của bạn</h2><p>${esc((pr.text!=null?pr.text:saved.text)||'')}</p></div><div class="card doc"><h2>Bài mẫu band 8</h2><p>${esc(task.band8_sample||'')}</p><p class="note">${esc(task.band8_notes||'')}</p></div></div>`:''}`;
+    return;
+  }
+  if(it.type==="speaking"){
+    const s=D.sp.find(x=>x.id===it.bank); const saved=S.journey.speaking[it.bank]||{}; const qs=[]; s.part1.forEach(tp=>tp.questions.forEach(q=>qs.push({part:1,q}))); qs.push({part:2,q:s.part2.cue+" You should say: "+s.part2.prompts.join("; ")+".", sample:s.part2.sample_band7_5, notes:s.part2.sample_notes}); s.part3.forEach(x=>qs.push({part:3,q:x.question, sample:x.sample_band7_5, tech:x.technique}));
+    m.innerHTML=`<div class="card">${back}<h1>Speaking - ${esc(s.theme)}</h1><p class="mute">Nghe câu hỏi bằng giọng giám khảo, trả lời thành tiếng (ghi âm bằng điện thoại nếu muốn), rồi mở bài mẫu 7.5 để so sánh. Tự chấm cuối bài.</p></div>
+    <div class="card">${qs.map((x,i)=>`<div class="q"><b>Part ${x.part}.</b> ${esc(x.q)} <button class="btn sm sec" onclick="kkSpeak(${JSON.stringify(x.q).replace(/"/g,'&quot;')},{lang:'en'})">Nghe</button>${x.sample?` <button class="btn sm sec" onclick="J.pr['s${i}']=!J.pr['s${i}'];render()">Bài mẫu 7.5</button>${pr['s'+i]?`<div class="ex en">${esc(x.sample)}${x.notes?`<br><i>${esc(x.notes)}</i>`:''}</div>`:''}`:''}</div>`).join("")}
+      <h3>Tự chấm (theo rubric)</h3>${D.grading.speaking.criteria.map(c=>`<label class="mute" style="display:block">${c}: <select onchange="J.pr.self=J.pr.self||{};J.pr.self['${c}']=Number(this.value)">${[5,6,7,8].map(b=>`<option ${((pr.self&&pr.self[c])||(saved.selfBy&&saved.selfBy[c]))==b?'selected':''}>${b}</option>`).join("")}</select></label>`).join("")}
+      <div class="row" style="margin-top:10px"><button class="btn gold" onclick="finishSpeaking()">Ghi nhận hoàn thành</button></div></div>`;
+    return;
+  }
+  m.innerHTML=back;
+}
+function stuck(key){ J.pr.stuckShown[key]=true; const w=J.pr.week||currentWeek(); S.journey.stuck[w]=(S.journey.stuck[w]||0)+1; save(); kkTrackIelts("ielts_toi_ket",{tuan:w}); render(); }
+function playPractice(id){ const s=D.lis.find(x=>x.id===id); J.pr.played=true; kkStop(); let i=0; const next=()=>{ if(!J.pr||i>=s.transcript.length) return; const line=s.transcript[i++]; const spk=Math.max(0,s.speakers.indexOf(line.speaker)); kkSpeak(line.text,{lang:"en",voiceEn:KK_SPK_VOICES[spk%KK_SPK_VOICES.length],rate:1}).done.then(next); }; next(); render(); }
+function gradePractice(){
+  const pr=J.pr, it=pr.it; const t={parts:{[it.skill]:[it.bank]}, answers:pr.answers}; const G=gradeLR(it.skill, t); pr.graded=G;
+  const pct=Math.round(100*G.raw/G.total); S.journey.practice[it.bank]={date:TODAY(), raw:G.raw, total:G.total, pct, codes:G.codes, week:pr.week};
+  Object.entries(G.codes).forEach(([c,n])=>(S.errorLog=S.errorLog||[]).push({date:TODAY(), code:c, count:n, source:"practice:"+it.bank}));
+  save(); kkTrackIelts("ielts_bai_luyen",{ky_nang:it.skill, pct});
+  if(pr.diag){ if(pr.chain){ const nx=pr.chain; J.pr=null; openPractice(nx, null, {diag:true}); return; } J.pr=null; finishDiag(); return; }
+  render(); window.scrollTo(0,0);
+}
+function chotLoiHTML(G, it){
+  const ph=phaseNow(); const F=D.feedback; const codes=Object.entries(G.codes).sort((a,b)=>b[1]-a[1]);
+  const head=`<div class="card chot"><div class="eyebrow">${ph>=3?'Review':'Chốt lỗi'}</div><h2>${G.raw}/${G.total} đúng (${Math.round(100*G.raw/G.total)}%)</h2>`;
+  if(!codes.length) return head+`<p>${ph>=3?'No systematic error in this set. Move on.':'Không có lỗi hệ thống trong bài này. Tiếp tục mục kế tiếp.'}</p><div class="row"><button class="btn" onclick="J.pr=null;render()">${ph>=3?'Continue':'Tiếp tục'}</button></div></div>`;
+  if(ph>=3) return head+`<p>Error codes: ${codes.map(([c,n])=>`<span class="tag">${c} x${n}</span>`).join(" ")}. Re-read the evidence lines above; no Vietnamese explanation at this stage.</p><div class="row"><button class="btn" onclick="J.pr=null;render()">Continue</button></div></div>`;
+  return head+`<p class="mute">${ph===2?'Tiếng Việt chỉ dùng ở đây để chốt lỗi cốt lõi.':'Giải thích cơ chế lỗi bằng tiếng Việt, trích dẫn bằng tiếng Anh.'}</p>${codes.slice(0,3).map(([c,n])=>{ const e=F.error_codes[c]||{}; return `<div class="q"><b>${c} - ${esc(e.name_vi||'')}</b> <span class="pill">x${n}</span><br><span class="mute">${esc(e.diagnosis||'')}</span><br><b>Cách sửa:</b> ${esc(e.advice||'')}<br>${(e.video_ids||[]).map(v=>`<a href="#" onclick="J.pr=null;S.vid='${v}';S.skill='${v.split('-')[2]}';save();render();return false"><span class="tag">${v}</span></a>`).join("")}${(e.material_ids||[]).map(x=>`<a href="#" onclick="J.pr=null;S.mat='${x}';save();render();return false"><span class="tag">${x}</span></a>`).join("")}</div>`; }).join("")}<div class="row"><button class="btn" onclick="J.pr=null;render()">Tiếp tục</button></div></div>`;
+}
+async function gradeWriting(){
+  const pr=J.pr; const it=pr.it; const t1=D.wr.task1.find(x=>x.id===it.bank); const task=t1||D.wr.task2.find(x=>x.id===it.bank); const text=pr.text!=null?pr.text:((S.journey.writing[it.bank]||{}).text||"");
+  const words=(text.trim().match(/[A-Za-z0-9'-]+/g)||[]).length; if(words<50){ kkToast("Hãy viết ít nhất 50 từ trước khi chấm."); return; }
+  const out=$("#pwout"); out.innerHTML='<p class="mute">AI đang chấm (15-40 giây)...</p>';
+  const tpl = t1 ? D.grading.writing.ai_prompt_task1 : D.grading.writing.ai_prompt_task2;
+  const prompt = tpl.replace("{prompt}",task.prompt).replace("{data}",JSON.stringify(task.data||{})).replace("{words}",words).replace("{minutes}","-").replace("{essay}",text);
+  try{ const j=await kkAi("grade_wr", prompt); const b=j.json&&j.json.bands; if(!b) throw new Error("AI chưa trả về điểm hợp lệ, hãy thử lại.");
+    const band=floorHalf(Object.values(b).reduce((a,x)=>a+Number(x),0)/Object.keys(b).length);
+    S.journey.writing[it.bank]={date:TODAY(), text, words, bands:b, band, week:pr.week}; (j.json.top_errors||[]).forEach(e=>{ if(e.code) (S.errorLog=S.errorLog||[]).push({date:TODAY(), code:String(e.code).split(/[-,\s]/)[0], count:1, source:"writing:"+it.bank}); });
+    pr.graded=true; pr.wrOut=`<div class="bands">${Object.entries(b).map(([k,v])=>`<div class="band"><div class="v">${Number(v).toFixed(1)}</div>${k}</div>`).join("")}<div class="band ov"><div class="v">${band.toFixed(1)}</div>Task band</div></div>${(j.json.top_errors||[]).map(e=>`<div class="q"><b>${esc(e.code||'')}</b> "${esc(e.quote||'')}" → ${esc(e.fix||'')}</div>`).join("")}${j.json.rewrite_band8?`<div class="box"><b class="t">Weakest paragraph rewritten at Band 8</b><p>${esc(j.json.rewrite_band8)}</p></div>`:''}${phaseNow()<=2&&j.json.comment_vi?`<div class="chot"><div class="eyebrow">Chốt lỗi</div><p>${esc(j.json.comment_vi)}</p></div>`:''}`;
+    save(); kkTrackIelts("ielts_writing_ai",{band}); render();
+  }catch(e){ out.innerHTML=`<p class="warnbox">${esc(e.message)}</p>`; }
+}
+function finishSpeaking(){ const pr=J.pr; const self=pr.self||{}; const vals=Object.values(self); const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null; S.journey.speaking[pr.it.bank]={date:TODAY(), selfBy:self, self:avg?avg.toFixed(1):"-", week:pr.week}; save(); J.pr=null; render(); }
+
+/* ---------- 7. Chặng 3-6: Luyện đề, Thi thử, Kết quả, Hồ sơ ---------- */
+function viewIntensive(m){
+  if(S.test && S.test.practice) S.test=null;
+  renderTest(m);
+  if(!S.test){ const gold=m.querySelector(".btn.gold"); if(gold) gold.style.display="none"; const h=m.querySelector("h1"); if(h) h.textContent="Stage 3. Intensive - timed section practice"; const p=m.querySelector("h1+p"); if(p) p.innerHTML="English only from here. Pick one skill, sit the section under exam timing, then review every error with its evidence. Two consecutive sections at your target band unlock the Mock stage."; const cw=document.createElement("div"); cw.className="card"; cw.innerHTML=`<h2>Clinics (weeks 11-12)</h2><div class="wlist">${J.plan.weeks.filter(w=>w.phase===3).flatMap(w=>w.items.filter(it=>["writing","speaking","checklist"].includes(it.type)).map((it)=>itemRow(it,w,w.items.indexOf(it)))).join("")}</div>`; m.appendChild(cw); }
+}
+function viewMock(m){
+  if(S.test && S.test.practice) S.test=null;
+  renderTest(m);
+  if(!S.test){ m.querySelectorAll(".row .btn.sec").forEach(b=>{ if(/^Chỉ /.test(b.textContent)) b.style.display="none"; }); const h=m.querySelector("h1"); if(h) h.textContent="Stage 4. Full Mock Test"; const p=m.querySelector("h1+p"); if(p) p.innerHTML="Listening 30+2 min, Reading 60, Writing 60, Speaking 11-14 min with the AI examiner. Random paper, no repeats of your last 60 items. Two consecutive mocks at target band earn the KK-EDU trial certificate."; const g=gate3(); const c=document.createElement("div"); c.className="card"; c.innerHTML=`<h2>Certificate gate ${g.ok?'<span class="badge ok">open</span>':'<span class="badge">not yet</span>'}</h2><p class="mute">${esc(J.plan.phases["3"].gate.note)}</p>`; m.appendChild(c); }
+}
+function viewReview(m){
+  const t=S.test; const done=t&&t.order&&t.order.every(k=>t.done[k]);
+  if(done){ renderGrading(m); const extra=document.createElement("div"); renderSummary(extra); while(extra.firstChild) m.appendChild(extra.firstChild); return; }
+  renderSummary(m);
+}
+function viewPortfolio(m){
+  const d=S.journey.diag; const H=S.history;
+  const chart = H.length?`<svg viewBox="0 0 640 220" class="prog"><line x1="40" y1="190" x2="620" y2="190" stroke="#c9d6e2"/>${[4,5,6,7,8,9].map(b=>`<text x="30" y="${194-(b-3)*28}" font-size="11" text-anchor="end" fill="#5b6b7f">${b}.0</text><line x1="40" x2="620" y1="${190-(b-3)*28}" y2="${190-(b-3)*28}" stroke="#eef2f7"/>`).join("")}<line x1="40" x2="620" y1="${190-(target()-3)*28}" y2="${190-(target()-3)*28}" stroke="#d4af37" stroke-dasharray="4 4"/><text x="615" y="${186-(target()-3)*28}" font-size="11" text-anchor="end" fill="#a9871f">target ${target().toFixed(1)}</text>${(()=>{ const pts=H.filter(h=>h.overall!=null).map((h,i,a)=>[40+(a.length>1?i*580/(a.length-1):290), 190-(h.overall-3)*28]); return `<polyline points="${pts.map(p=>p.join(",")).join(" ")}" fill="none" stroke="#0f2a4a" stroke-width="2.5"/>${pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#0f2a4a"/>`).join("")}`; })()}</svg>`:'<p class="mute">Chưa có bài thi để vẽ đường tiến bộ.</p>';
+  m.innerHTML=`<div class="card"><h1>Chặng 6. Chứng chỉ và hồ sơ học tập</h1>${d?`<p>Chẩn đoán ${d.date}: Overall ${d.overall.toFixed(1)} → hiện tại ${H.length?H[H.length-1].overall??'-':'-'} · mục tiêu ${target().toFixed(1)}</p>`:''}${chart}</div>
+  ${H.length?`<div class="card"><h2>Lịch sử thi thử</h2><table class="doc" style="width:100%"><tr><th>Ngày</th><th>Chế độ</th><th>L</th><th>R</th><th>W</th><th>S</th><th>Overall</th></tr>${H.slice().reverse().map(h=>`<tr><td>${h.date}</td><td>${h.mode}</td><td>${h.bands.LIS??'-'}</td><td>${h.bands.RD??'-'}</td><td>${h.bands.WR??'-'}</td><td>${h.bands.SP??'-'}</td><td>${h.overall??'-'}</td></tr>`).join("")}</table></div>`:''}
+  <div class="card"><h2>Nhật ký lỗi (4 tuần)</h2>${errorHeatHTML()}</div><div id="certHost"></div>`;
+  const ch=$("#certHost"); const d2=document.createElement("div"); renderCert(d2); ch.appendChild(d2);
+}
+function errorHeatHTML(){ const E=S.errorLog||[]; if(!E.length) return '<p class="mute">Chưa có dữ liệu.</p>'; const since=Date.now()-28*864e5; const byCode={}; E.forEach(e=>{ const t=new Date(e.date).getTime(); if(t<since) return; const wk=Math.floor((Date.now()-t)/(7*864e5)); byCode[e.code]=byCode[e.code]||[0,0,0,0]; byCode[e.code][3-wk]+=(e.count||1); }); const rows=Object.entries(byCode).sort((a,b)=>b[1].reduce((x,y)=>x+y,0)-a[1].reduce((x,y)=>x+y,0)).slice(0,12); return `<table class="doc heat"><tr><th>Mã</th><th>Tên</th><th>-3 tuần</th><th>-2</th><th>-1</th><th>Tuần này</th></tr>${rows.map(([c,v])=>`<tr><td><b>${c}</b></td><td>${esc((D.feedback.error_codes[c]||{}).name_vi||'')}</td>${v.map(n=>`<td class="h${Math.min(3,n)}">${n||''}</td>`).join("")}</tr>`).join("")}</table>`; }
+
+/* ---------- 8. AI theo giai đoạn ---------- */
+const _kkAi0 = kkAi;
+kkAi = function(task, prompt){ const p=phaseNow(); const pre = p>=3 ? "Respond entirely in English. " : p===2 ? "Respond in English; end with a two-sentence Vietnamese summary. " : "Explain in Vietnamese; keep all exam material, examples and quotations in English. "; return _kkAi0(task, pre+prompt); };
+
+/* ---------- 9. Khởi động ---------- */
+(async()=>{
+  try{ await loadPlan(); }catch(e){ console.warn("plan",e); return; }
+  // bản cũ lưu S.step theo 7 bước cũ: đưa về chặng phù hợp
+  if(!S.journey.migrated){ S.journey.migrated=true; S.step=S.journey.diag?Math.min(S.step,2):0; save(); }
+  const lb=document.createElement("span"); lb.id="kkLang"; lb.className="pill lang"; const hero=document.querySelector(".hero .tags"); if(hero) hero.prepend(lb);
+  render();
+})();
 
 </script>
 </body>
