@@ -965,7 +965,10 @@ function fbErr(e){
 async function afterLogin(){
   closeModal();
   await reloadUserData();
-  if(!S.profile){ openProfileForm(()=>render()); } else render();
+  // Đăng nhập từ phân hệ khác (vd. /ielts/): quay về đúng trang đó sau khi xong hồ sơ
+  const nx=S.loginNext; S.loginNext=null;
+  const back=()=>{ if(nx && /^\/[A-Za-z0-9_\-\/.#?=&]*$/.test(nx)) location.href=nx; else render(); };
+  if(!S.profile){ openProfileForm(()=>back()); } else back();
 }
 function openLogin(){
   modal(`<div class="eyebrow">Thành viên KK-EDU</div><h3>Đăng nhập</h3>
@@ -5170,6 +5173,8 @@ fitBrand(); window.addEventListener("resize",()=>{ clearTimeout(window._fbT); wi
   await loadShared();
   render();                 // vẽ lại với dữ liệu chia sẻ + vai trò
   maybeConsent();
+  // ?login=1&next=/ielts/ : mở hộp đăng nhập ngay (tài khoản dùng chung cho mọi phân hệ)
+  try{ const q=new URLSearchParams(location.search); if(q.get("login")==="1"){ S.loginNext=q.get("next")||"/"; history.replaceState(null,"",location.pathname+location.hash); if(S.uid){ if(S.profile) location.href=S.loginNext; else openProfileForm(()=>{ location.href=S.loginNext; }); } else if(S.fb) openLogin(); } }catch(e){}
 })();
 </script>
 </body>

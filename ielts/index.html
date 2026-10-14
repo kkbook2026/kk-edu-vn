@@ -131,6 +131,40 @@ footer a{color:var(--navy)}
 nav.steps{overflow-x:auto}
 body{overflow-x:clip}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* tài khoản */
+#kkUser{display:flex;align-items:center;gap:8px}
+#kkUser .who{font-weight:600;color:var(--navy)} #kkUser .who small{color:var(--mute);font-weight:400}
+#kkUser .lnk{background:none;border:0;color:var(--mute);cursor:pointer;font-family:var(--font);font-size:12.5px;text-decoration:underline}
+a.btn,.btn.sm{display:inline-block;text-decoration:none;font-weight:600;background:var(--navy);color:#fff;border:0;border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:var(--font)}
+/* AI tích hợp */
+.aibox{border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:10px 12px;margin:10px 0;background:var(--card)}
+.aibox .t{color:var(--navy)} .aibox .out{margin-top:8px} .aibox pre{white-space:pre-wrap;font-size:12px}
+/* video liền mạch */
+.vp{margin-top:10px}
+.vp .stage{position:relative;background:linear-gradient(135deg,#0f2a4a,#1e4472);color:#fff;border-radius:12px;padding:14px 16px 18px;min-height:220px;border-bottom:3px solid var(--gold)}
+.vp .shead{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px} .vp .shead .pill{background:rgba(255,255,255,.12);color:#fff}
+.vp .scene .vis{font-family:var(--font-d);font-size:1.15rem;line-height:1.35;margin:6px 0;padding-left:12px;border-left:3px solid var(--gold)}
+.vp .scene .box{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25);color:#fff} .vp .scene .box b.t{color:var(--gold)}
+.vp .scene .en{border-left-color:var(--gold);color:#fff} .vp .scene table{color:#fff} .vp .scene th{background:rgba(255,255,255,.15);color:#fff} .vp .scene td{border-color:rgba(255,255,255,.25)}
+.vp .scene .aibox{background:rgba(255,255,255,.95);color:var(--ink)} .vp .scene .aibox .t{color:#0f2a4a}
+.vp .scene details.box summary{cursor:pointer}
+.vp .cpov{position:absolute;inset:0;background:rgba(10,22,38,.86);border-radius:12px;display:grid;place-items:center;padding:14px;backdrop-filter:blur(2px)}
+.vp .cpbox{background:var(--card);color:var(--ink);border-radius:12px;padding:16px 18px;max-width:640px;width:100%;max-height:100%;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.vp .cpbox .eyebrow{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold2);font-weight:700}
+.vp .bar{position:relative;height:10px;background:var(--line);border-radius:999px;margin:12px 0 8px;cursor:pointer}
+.vp .fill{height:100%;background:linear-gradient(90deg,var(--navy),#1e4472);border-radius:999px;width:0;transition:width .25s linear}
+.vp .mk{position:absolute;top:-4px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--gold);border:2px solid var(--card);box-shadow:0 0 0 1px var(--gold2)}
+.vp .mk.done{background:var(--good)}
+.vp .bd{position:absolute;top:0;bottom:0;width:1px;background:var(--card)}
+.vp .ctr{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.vp .ctr select{padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
+.vp .chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.vp .chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:4px 10px;font-size:12.5px;cursor:pointer;font-family:var(--font)}
+.vp .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)} .vp .chip:disabled{opacity:.45;cursor:not-allowed}
+#vpText{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+#vpText .s{opacity:.55;transition:opacity .2s} #vpText .s.on{opacity:1;background:var(--light);border-radius:6px;padding:4px 6px;margin:4px -6px}
+@media(max-width:760px){.vp .stage{min-height:160px;padding:12px}.vp .scene .vis{font-size:1rem}}
 </style>
 </head>
 <body>
@@ -149,7 +183,7 @@ body{overflow-x:clip}
       <path transform="translate(10.4 0)" d="M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z" fill="url(#kkGg)" stroke="#0f2a4a" stroke-width="1.2" stroke-linejoin="round" paint-order="stroke"/>
     </svg><span><b>KK-EDU</b><small>Ngoại ngữ · Tiếng Anh</small></span></a>
   <div class="crumb"><a href="/">Trang chủ</a><span>›</span><span>Ngoại ngữ</span><span>›</span><span>Tiếng Anh</span><span>›</span><b>Luyện thi và thi thử IELTS</b></div>
-  <div class="user"><label for="uname">Học viên</label><input id="uname" placeholder="Họ và tên" autocomplete="name"><label for="utarget">Mục tiêu</label><select id="utarget"><option>5.5</option><option>6.0</option><option selected>6.5</option><option>7.0</option><option>7.5</option><option>8.0</option></select></div>
+  <div class="user"><span id="kkUser"></span><label for="uname">Học viên</label><input id="uname" placeholder="Họ và tên" autocomplete="name"><label for="utarget">Mục tiêu</label><select id="utarget"><option>5.5</option><option>6.0</option><option selected>6.5</option><option>7.0</option><option>7.5</option><option>8.0</option></select></div>
 </div>
 <div class="hero"><div class="in"><div><div class="kick">Phân hệ Ngoại ngữ · bản thử nghiệm</div><h1>Luyện thi và thi thử <em>IELTS</em></h1><p>Kỹ năng → Tài liệu → Video tương tác → Thi thử đề ngẫu nhiên → Chấm tự động → Tổng hợp → Chứng chỉ KK-EDU thử nghiệm. Bài làm tự lưu trên trình duyệt này.</p></div><div class="tags"><span class="tag">Listening</span><span class="tag">Reading</span><span class="tag">Writing</span><span class="tag">Speaking</span></div></div></div>
 <nav class="steps" id="steps" aria-label="Các bước"></nav>
@@ -502,6 +536,294 @@ render();
 
 }
 boot();
+
+</script>
+<script>
+/* ===== KK-EDU lớp tích hợp cho phân hệ IELTS: tài khoản dùng chung, giọng Azure đa ngôn ngữ, video liền mạch, AI tích hợp ===== */
+/* Ghi đè một số hàm của app.js (khai báo sau sẽ thắng). Tác giả : Nguyễn Duy Điển (KK-2026) */
+
+const KK = { fb:null, user:null, profile:null, age:null, db:null, cloudLoaded:false, syncTimer:null, api:null };
+const KK_FIREBASE = { apiKey:"AIzaSyAL1bb3SQAabsWNB4Xyx-b_TzQdTvbyA8c", authDomain:"kk-edu.firebaseapp.com", projectId:"kk-edu", storageBucket:"kk-edu.firebasestorage.app", messagingSenderId:"916682871542", appId:"1:916682871542:web:974c6a2d8c49e3687352d7" };
+const KK_MIN_AGE = 14;
+const kkLoginUrl = () => "/?login=1&next=" + encodeURIComponent("/ielts/" + (location.hash||""));
+function kkLoadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; s.async=true; s.onload=res; s.onerror=()=>rej(new Error("script "+src)); document.head.appendChild(s); }); }
+async function kkApiBase(){ if(KK.api) return KK.api; KK.api = (await (window.KK_API_READY||Promise.resolve(null))) || window.KK_API || "/api"; return KK.api; }
+async function kkIdToken(){ try{ return KK.user ? await KK.user.getIdToken() : null; }catch(e){ return null; } }
+
+/* ---------- 1. Tài khoản KK-EDU dùng chung ---------- */
+async function kkInitAuth(){
+  try{
+    const V="10.14.1", B="https://www.gstatic.com/firebasejs/"+V+"/";
+    await kkLoadScript(B+"firebase-app-compat.js");
+    await Promise.all([kkLoadScript(B+"firebase-auth-compat.js"), kkLoadScript(B+"firebase-firestore-compat.js")]);
+    firebase.initializeApp(KK_FIREBASE); KK.fb=firebase; KK.db=firebase.firestore();
+    try{ await KK.db.enablePersistence({synchronizeTabs:true}); }catch(e){}
+    await new Promise(res=>{ const un=firebase.auth().onAuthStateChanged(()=>{ un(); res(); }); });
+    firebase.auth().onAuthStateChanged(async u=>{ await kkApplyUser(u); kkRenderUser(); render(); });
+    await kkApplyUser(firebase.auth().currentUser);
+  }catch(e){ console.warn("auth", e); }
+  kkRenderUser();
+}
+async function kkApplyUser(u){
+  KK.user=u||null; KK.profile=null; KK.age=null; KK.cloudLoaded=false;
+  if(!u) return;
+  try{ const d=await KK.db.doc("profiles/"+u.uid).get(); if(d.exists) KK.profile=d.data(); }catch(e){}
+  const name = (KK.profile&&KK.profile.name) || u.displayName || (u.email||"").split("@")[0];
+  if(name){ S.name=name; const i=$("#uname"); if(i) i.value=name; }
+  if(KK.profile&&KK.profile.namSinh){ KK.age = new Date().getFullYear() - Number(KK.profile.namSinh); }
+  // Tiến độ trên đám mây (ưu tiên bản mới hơn)
+  try{ const d=await KK.db.doc(`data/users/${u.uid}/ielts-state`).get();
+    if(d.exists){ const c=d.data(); if(c && c.state && (c.updatedAt||0) > (S._updatedAt||0)){ const st=JSON.parse(c.state); ["progress","history","errorLog","lastResult","target","test"].forEach(k=>{ if(st[k]!==undefined) S[k]=st[k]; }); S._updatedAt=c.updatedAt; } }
+  }catch(e){}
+  KK.cloudLoaded=true; save();
+}
+const _save0 = save;
+save = function(){ S._updatedAt = Date.now(); _save0(); kkSyncCloud(); };
+function kkSyncCloud(){
+  if(!KK.user||!KK.db||!KK.cloudLoaded) return;
+  clearTimeout(KK.syncTimer);
+  KK.syncTimer=setTimeout(async()=>{ try{ const st={progress:S.progress,history:S.history,errorLog:S.errorLog,lastResult:S.lastResult,target:S.target,test:S.test}; await KK.db.doc(`data/users/${KK.user.uid}/ielts-state`).set({state:JSON.stringify(st), updatedAt:S._updatedAt||Date.now()}); }catch(e){} }, 1500);
+}
+function kkRenderUser(){
+  const box=$("#kkUser"); if(!box) return;
+  if(KK.user){ box.innerHTML=`<span class="who" title="${esc(KK.user.email||"")}">${esc(S.name||"Thành viên")}${KK.age!=null?` <small>(${KK.age} tuổi)</small>`:""}</span><button class="lnk" onclick="KK.fb.auth().signOut()">Đăng xuất</button>`; const i=$("#uname"); if(i){ i.readOnly=true; i.title="Họ tên lấy từ hồ sơ KK-EDU"; } }
+  else { box.innerHTML=`<a class="btn sm" href="${kkLoginUrl()}">Đăng nhập KK-EDU</a>`; const i=$("#uname"); if(i) i.readOnly=false; }
+}
+function kkAgeGate(){
+  if(!KK.user) return `<div class="warnbox"><b>Thi thử cần tài khoản KK-EDU.</b> Tài khoản dùng chung cho mọi phân hệ: tiến độ, điểm thi và chứng chỉ được lưu trên đám mây. <a href="${kkLoginUrl()}">Đăng nhập hoặc đăng ký miễn phí</a>. Tài liệu và video học vẫn mở tự do.</div>`;
+  if(KK.age!=null && KK.age < KK_MIN_AGE) return `<div class="warnbox"><b>Khuyến nghị từ ${KK_MIN_AGE} tuổi.</b> Luyện thi và thi thử IELTS dành cho học viên từ ${KK_MIN_AGE} tuổi (theo năm sinh trong hồ sơ: ${KK.age} tuổi). Bạn vẫn có thể học tài liệu và video; phần thi thử sẽ mở khi đủ tuổi.</div>`;
+  return "";
+}
+const _renderTest0 = renderTest;
+renderTest = function(m){
+  const gate=kkAgeGate();
+  if(gate && !S.test){ m.innerHTML=`<div class="card"><h1>Bước 4. Thi thử với đề ngẫu nhiên</h1>${gate}</div>`; return; }
+  _renderTest0(m);
+};
+const _renderCert0 = renderCert;
+renderCert = function(m){ const gate=kkAgeGate(); if(gate){ m.innerHTML=`<div class="card"><h1>Bước 7. Chứng chỉ KK-EDU Thử nghiệm</h1>${gate}</div>`; return; } _renderCert0(m); };
+
+/* ---------- 2. Giọng đọc: Azure qua API, tách tiếng Việt/tiếng Anh, có dự phòng giọng thiết bị ---------- */
+const KKV = { cache:new Map(), cur:null, voiceVi:"vi-VN-NamMinhNeural", voiceEn:"en-GB-RyanNeural", rate:1, ok:null };
+const VI_DIACRITIC=/[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+const VN_SYL=/^(?:ch|gh|gi|kh|ngh|ng|nh|ph|qu|th|tr|[bcdghklmnpqrstvx])?[aeiouy]{1,3}(?:ch|ng|nh|[cmnpt])?$/;
+const EN_SURE=new Set("the and of is are was were you your we they this that with for have has not will can could should would from into than then there their about which what when where".split(" "));
+const VI_PLAIN=new Set("ta ba hai nam con ai do di ma la va cho khi nha anh em ong ngay nay nhu hay can cau bai lam noi xem cua bao nhieu tren gia so ten viet thi ra vao len nen ban tu toi cai cac chi minh phan luc trong ngoai mot muoi tram nghin ty".split(" "));
+function kkSplitLang(text){
+  const toks=String(text||"").replace(/\s+/g," ").trim().split(" ").filter(Boolean);
+  const clean=t=>t.toLowerCase().replace(/^[^a-zà-ỹ0-9]+|[^a-zà-ỹ0-9]+$/gi,"");
+  const lang=toks.map(t=>{ const w=clean(t); if(!w) return null; if(VI_DIACRITIC.test(w)) return "vi"; if(!/^[a-z][a-z'-]*$/.test(w)) return null; if(EN_SURE.has(w)) return "en"; if(VI_PLAIN.has(w)) return "vi"; if(/^[A-Z]{2,}$/.test(t.replace(/[^A-Za-z]/g,""))) return null; return VN_SYL.test(w)&&w.length<=7?null:"en"; });
+  const ends=t=>/[.!?:;]["')\]]?$/.test(t); const n=toks.length, out=lang.slice();
+  for(let i=0;i<n;i++){ if(out[i]) continue; let f=null; for(let j=i+1;j<n;j++){ if(lang[j]){f=lang[j];break;} if(ends(toks[j])) break; } if(!f) for(let j=i-1;j>=0;j--){ if(lang[j]){f=lang[j];break;} if(ends(toks[j])) break; } if(!f) for(let j=i-1;j>=0;j--){ if(lang[j]){f=lang[j];break;} } out[i]=f||"vi"; }
+  const runs=[]; toks.forEach((t,i)=>{ const l=out[i]; const last=runs[runs.length-1]; if(last&&last.lang===l) last.words.push(t); else runs.push({lang:l,words:[t]}); });
+  runs.forEach(r=>{ if(r.lang==="en"&&r.words.length<=2&&runs.length>1) r.lang="vi"; });
+  const m=[]; runs.forEach(r=>{ const last=m[m.length-1]; if(last&&last.lang===r.lang) last.words.push(...r.words); else m.push({lang:r.lang,words:r.words.slice()}); });
+  return m.map(r=>({lang:r.lang,text:r.words.join(" ")})).filter(r=>r.text.trim());
+}
+function kkStop(){ if(KKV.cur){ try{ KKV.cur.stop(); }catch(e){} KKV.cur=null; } try{ speechSynthesis.cancel(); }catch(e){} }
+/** Đọc một đoạn. opts: {lang:'auto'|'en'|'vi', voiceEn, rate, onend, onprogress(frac)} -> {stop, done:Promise} */
+function kkSpeak(text, opts={}){
+  kkStop();
+  const lang=opts.lang||"auto"; const rate=opts.rate||KKV.rate; const voiceEn=opts.voiceEn||KKV.voiceEn;
+  const segs = lang==="auto" ? kkSplitLang(text) : [{lang, text:String(text).replace(/\s+/g," ").trim()}];
+  let stopped=false; let audio=null; let utter=null;
+  const done = new Promise(async(resolve)=>{
+    const finish=()=>{ if(KKV.cur===ctl) KKV.cur=null; if(opts.onend) opts.onend(); resolve(); };
+    // 1) Azure qua API (đa giọng trong một file)
+    try{
+      const base=await kkApiBase();
+      if(KKV.ok!==false && (/(^|\.)kk-edu\.(com|vn)$/.test(location.hostname) || /^(localhost|127\.0\.0\.1)$/.test(location.hostname))){
+        const key=JSON.stringify([segs,voiceEn,rate]);
+        let url=KKV.cache.get(key);
+        if(!url){
+          const r=await fetch(base+"/tts",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({segments:segs, voiceVi:KKV.voiceVi, voiceEn, rate})});
+          if(!r.ok) throw new Error("tts "+r.status);
+          url=URL.createObjectURL(await r.blob()); KKV.cache.set(key,url); if(KKV.cache.size>120){ const k0=KKV.cache.keys().next().value; URL.revokeObjectURL(KKV.cache.get(k0)); KKV.cache.delete(k0); }
+        }
+        if(stopped) return resolve();
+        KKV.ok=true; audio=new Audio(url); audio.playbackRate=1;
+        audio.ontimeupdate=()=>{ if(opts.onprogress&&audio.duration) opts.onprogress(audio.currentTime/audio.duration, audio.currentTime, audio.duration); };
+        audio.onended=finish; audio.onerror=finish;
+        await audio.play(); return;
+      }
+    }catch(e){ if(!/NotAllowedError/.test(String(e))) KKV.ok = KKV.ok===true ? true : false; }
+    if(stopped) return resolve();
+    // 2) Dự phòng: giọng thiết bị, đổi ngôn ngữ theo từng cụm
+    try{ speechSynthesis.cancel(); let i=0; const vs=speechSynthesis.getVoices();
+      const pick=l=>{ const c=vs.filter(v=>v.lang&&v.lang.toLowerCase().startsWith(l==="en"?"en":"vi")); return c.find(v=>/natural|neural|google|microsoft/i.test(v.name))||c[0]||null; };
+      const next=()=>{ if(stopped||i>=segs.length) return finish(); const sg=segs[i++]; utter=new SpeechSynthesisUtterance(sg.text); utter.lang=sg.lang==="en"?"en-GB":"vi-VN"; const v=pick(sg.lang); if(v) utter.voice=v; utter.rate=rate; utter.onend=next; utter.onerror=next; speechSynthesis.speak(utter); };
+      next();
+    }catch(e){ finish(); }
+  });
+  const ctl={ stop(){ stopped=true; if(audio){ audio.onended=null; audio.pause(); audio.src=""; } try{ speechSynthesis.cancel(); }catch(e){} }, pause(){ if(audio) audio.pause(); else try{ speechSynthesis.pause(); }catch(e){} }, resume(){ if(audio) audio.play(); else try{ speechSynthesis.resume(); }catch(e){} }, done };
+  KKV.cur=ctl; return ctl;
+}
+// Ghi đè các hàm đọc của app.js
+speak = function(t){ kkSpeak(t,{lang:"auto"}); };
+speakEN = function(t, cb){ const c=kkSpeak(t,{lang:"en"}); c.done.then(()=>{ if(cb) cb(); }); return c; };
+const KK_SPK_VOICES=["en-GB-RyanNeural","en-GB-SoniaNeural","en-US-GuyNeural","en-US-JennyNeural"];
+playSection = function(id){
+  const s=D.lis.find(x=>x.id===id); S.test.played=S.test.played||{}; if(S.test.played[id]) return; S.test.played[id]=true; save();
+  kkStop(); let i=0;
+  const next=()=>{ if(i>=s.transcript.length||!S.test||!S.test.running) return; const line=s.transcript[i++]; const spk=Math.max(0,s.speakers.indexOf(line.speaker)); kkSpeak(line.text,{lang:"en", voiceEn:KK_SPK_VOICES[spk%KK_SPK_VOICES.length], rate:1}).done.then(next); };
+  next(); render();
+};
+
+/* ---------- 3. AI tích hợp (Workers AI qua /api/ielts/ai) thay cho "sao chép prompt" ---------- */
+async function kkAi(task, prompt){
+  if(!KK.user) throw new Error("Cần đăng nhập KK-EDU để dùng AI.");
+  const base=await kkApiBase(); const tok=await kkIdToken();
+  const r=await fetch(base+"/ielts/ai",{method:"POST",headers:{"content-type":"application/json","authorization":"Bearer "+tok},body:JSON.stringify({task,prompt})});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(j.error==="ai-not-configured"?"AI chưa được bật trên máy chủ.":j.error==="auth"?"Phiên đăng nhập hết hạn, hãy đăng nhập lại.":("Lỗi AI: "+(j.error||r.status)));
+  return j;
+}
+function kkMd(t){ return esc(t).replace(/\n{2,}/g,"</p><p>").replace(/\n/g,"<br>").replace(/\*\*(.+?)\*\*/g,"<b>$1</b>"); }
+let kkAiSeq=0; const KK_PROMPTS={};
+function kkAiBlock(prompt, title){
+  const id="kkai"+(++kkAiSeq); KK_PROMPTS[id]=prompt;
+  const need = !KK.user ? `<a class="btn sm" href="${kkLoginUrl()}">Đăng nhập để dùng AI</a>` : `<button class="btn sm" onclick="kkAiRun('${id}')">Tạo bài luyện bằng AI</button>`;
+  return `<div class="aibox" id="${id}"><div class="row"><b class="t">${esc(title||"Bài luyện do AI tạo theo yêu cầu của bài học")}</b>${need}<span class="mute">Kết quả hiện ngay tại đây; mỗi lần bấm là một bài mới.</span></div><div class="out"></div><details class="mute"><summary>Xem yêu cầu gửi AI (dành cho giáo viên)</summary><pre>${esc(prompt)}</pre></details></div>`;
+}
+async function kkAiRun(id){
+  const box=document.getElementById(id); if(!box) return; const out=box.querySelector(".out"); const btn=box.querySelector("button");
+  btn.disabled=true; out.innerHTML='<p class="mute">AI đang soạn bài (10-30 giây)...</p>';
+  try{ const j=await kkAi("generate", KK_PROMPTS[id]); out.innerHTML=`<div class="doc"><p>${kkMd(j.text)}</p></div><p class="mute">Nguồn: AI KK-EDU (${esc(j.model.split("/").pop())}) - AI gợi ý, con người quyết định.</p>`; kkTrackIelts("ai_tao_bai"); }
+  catch(e){ out.innerHTML=`<p class="warnbox">${esc(e.message)}</p>`; }
+  btn.disabled=false;
+}
+function kkTrackIelts(ev, p){ try{ if(window.zaraz) zaraz.track(ev, p||{}); }catch(e){} }
+// Tài liệu: khối 'code' (prompt) -> khối AI
+const _blocksHTML0 = blocksHTML;
+blocksHTML = function(blocks){
+  return blocks.map(b=>{ if(b[0]==="code" && /you are|task:|write|create|assess|generate|prompt/i.test(String(b[1]))) return kkAiBlock(b[1]); return _blocksHTML0([b]); }).join("");
+};
+// Chấm Writing/Speaking: nút "Chấm bằng AI" thay cho sao chép prompt
+const _renderGrading0 = renderGrading;
+renderGrading = function(m){
+  _renderGrading0(m);
+  m.querySelectorAll("details").forEach(d=>{
+    const ta=d.querySelector("textarea[id^=ai_]"); const pre=d.querySelector("pre"); if(!ta||!pre) return;
+    const key=ta.id.replace("ai_",""); const prompt=pre.textContent;
+    const wrap=document.createElement("div"); wrap.className="aibox";
+    wrap.innerHTML = KK.user
+      ? `<div class="row"><b class="t">Chấm bằng AI KK-EDU</b><button class="btn sm">Chấm ngay theo 4 tiêu chí</button><span class="mute">Kết quả tự điền vào bảng điểm; giáo viên có thể duyệt lại.</span></div><div class="out"></div>`
+      : `<div class="row"><b class="t">Chấm bằng AI KK-EDU</b><a class="btn sm" href="${kkLoginUrl()}">Đăng nhập để chấm bằng AI</a></div>`;
+    d.parentNode.insertBefore(wrap, d); d.querySelector("summary").textContent="Cách thủ công: sao chép yêu cầu, dán JSON trả về";
+    const btn=wrap.querySelector("button"); if(!btn) return;
+    btn.onclick=async()=>{ const out=wrap.querySelector(".out"); btn.disabled=true; out.innerHTML='<p class="mute">AI đang chấm (15-40 giây)...</p>';
+      try{ const j=await kkAi(key==="sp"?"grade_sp":"grade_wr", prompt); if(!j.json||!j.json.bands) throw new Error("AI chưa trả về điểm hợp lệ, hãy thử lại."); ta.value=JSON.stringify(j.json); out.innerHTML=`<p class="mute">Band: ${Object.entries(j.json.bands).map(([k,v])=>k+" "+v).join(" · ")}</p>`; kkTrackIelts("ai_cham_bai",{phan:key}); applyAI(key); }
+      catch(e){ out.innerHTML=`<p class="warnbox">${esc(e.message)}</p>`; btn.disabled=false; } };
+  });
+};
+
+/* ---------- 4. Video liền mạch: thời gian, thanh tiến trình, điểm dừng bắt buộc ---------- */
+const VP = { vid:null, seg:0, sent:0, playing:false, started:false, t:0, total:0, segs:[], await:null, cp:{}, quiz:{}, ctl:null, tick:null, maxSeg:0, showText:true };
+function kkParseTime(s){ const m=/^(\d+):(\d+)\s*-\s*(\d+):(\d+)/.exec(s||""); if(!m) return null; return [Number(m[1])*60+Number(m[2]), Number(m[3])*60+Number(m[4])]; }
+function kkSentences(p){ const parts=String(p).match(/[^.!?]+[.!?]+["')\]]?|[^.!?]+$/g)||[String(p)]; const out=[]; let cur=""; parts.forEach(x=>{ if((cur+x).length>700&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+function kkVpInit(v){
+  if(VP.vid===v.id) return;
+  kkVpStop(); let t0=0;
+  VP.vid=v.id; VP.seg=0; VP.sent=0; VP.playing=false; VP.started=false; VP.t=0; VP.await=null; VP.cp={}; VP.quiz={}; VP.maxSeg=0; VP.finished=false;
+  VP.segs=v.segments.map((s,i)=>{ let tm=kkParseTime(s.time); if(!tm){ tm=[t0,t0+90]; } t0=tm[1]; const sents=s.narration.flatMap(kkSentences); return {i, start:tm[0], end:tm[1], len:Math.max(10,tm[1]-tm[0]), sents, cps:s.extra.filter(e=>e.type==="checkpoint").map(e=>e.index), extra:s.extra}; });
+  VP.total=VP.segs[VP.segs.length-1].end;
+  const pr=S.progress[v.id]; if(pr&&pr.cp) VP.cp=Object.assign({},pr.cp);
+}
+function kkVpStop(){ VP.playing=false; if(VP.ctl){ VP.ctl.stop(); VP.ctl=null; } clearInterval(VP.tick); }
+function kkVpTime(frac){ const sg=VP.segs[VP.seg]; if(!sg) return 0; const per=sg.len/Math.max(1,sg.sents.length); return sg.start + VP.sent*per + (frac||0)*per; }
+function kkVpUpdateUI(){
+  const bar=$("#vpFill"), tm=$("#vpTime"), st=$("#vpState"); if(bar) bar.style.width=(100*Math.min(1,VP.t/VP.total)).toFixed(2)+"%"; if(tm) tm.textContent=fmtT(VP.t)+" / "+fmtT(VP.total);
+  if(st) st.textContent = VP.await!=null ? "Đang chờ bạn trả lời điểm dừng" : VP.finished ? "Hết video - làm bài kiểm tra bên dưới" : VP.playing ? "Đang phát" : VP.started ? "Tạm dừng" : "Sẵn sàng";
+  const pb=$("#vpPlay"); if(pb) pb.textContent = VP.playing ? "Tạm dừng" : (VP.started ? "Tiếp tục" : "Bắt đầu video");
+  document.querySelectorAll("#vpText .s").forEach((el,i)=>el.classList.toggle("on", i===VP.sent));
+  const cur=document.querySelector("#vpText .s.on"); if(cur&&VP.playing) cur.scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function kkVpPlay(v){
+  if(VP.await!=null) return;
+  if(VP.finished){ return; }
+  VP.playing=true; VP.started=true; kkVpUpdateUI();
+  const sg=VP.segs[VP.seg];
+  if(VP.sent>=sg.sents.length){ return kkVpSegmentEnd(v); }
+  const text=sg.sents[VP.sent];
+  VP.ctl=kkSpeak(text,{lang:"auto", rate:KKV.rate, onprogress:(f)=>{ VP.t=kkVpTime(f); kkVpUpdateUI(); }});
+  const my=VP.ctl;
+  my.done.then(()=>{ if(VP.ctl!==my||!VP.playing) return; VP.sent++; VP.t=kkVpTime(0); if(VP.sent>=sg.sents.length) kkVpSegmentEnd(v); else kkVpPlay(v); });
+}
+function kkVpSegmentEnd(v){
+  const sg=VP.segs[VP.seg];
+  // Điểm dừng bắt buộc (chưa trả lời) -> dừng, hiện câu hỏi
+  const pending=sg.cps.find(ci=>v.checkpoints[ci] && v.checkpoints[ci].options.length && !VP.cp[ci]);
+  if(pending!=null){ VP.playing=false; VP.await=pending; VP.t=sg.end; kkVpRender(v); return; }
+  if(VP.seg>=VP.segs.length-1){ VP.playing=false; VP.finished=true; VP.t=VP.total; kkVpRender(v); return; }
+  VP.seg++; VP.sent=0; VP.maxSeg=Math.max(VP.maxSeg,VP.seg); VP.t=VP.segs[VP.seg].start; kkVpRender(v); kkVpPlay(v);
+}
+function kkVpPause(){ VP.playing=false; if(VP.ctl){ VP.ctl.stop(); VP.ctl=null; } kkVpUpdateUI(); }
+function kkVpToggle(){ const v=D.videos.find(x=>x.id===VP.vid); if(!v) return; if(VP.playing) kkVpPause(); else kkVpPlay(v); }
+function kkVpJump(i){ const v=D.videos.find(x=>x.id===VP.vid); if(!v||VP.await!=null) return; if(i>VP.maxSeg+0) i=Math.min(i,VP.maxSeg); kkVpPause(); VP.seg=i; VP.sent=0; VP.t=VP.segs[i].start; VP.finished=false; kkVpRender(v); kkVpPlay(v); }
+function kkVpAnswer(v, ci, key){
+  const c=v.checkpoints[ci]; VP.cp[ci]=key;
+  S.progress[v.id]=Object.assign({},S.progress[v.id]||{},{cp:VP.cp}); save();
+  if(key!==c.answer){ (S.errorLog=S.errorLog||[]).push({date:TODAY(), code:"CP-"+v.id+"-"+ci, count:1, source:"video"}); }
+  kkTrackIelts("video_diem_dung",{video:v.id, dung:key===c.answer?1:0});
+  kkVpRender(v);
+}
+function kkVpContinue(v){ VP.await=null; const sg=VP.segs[VP.seg]; VP.sent=sg.sents.length; kkVpRender(v); kkVpSegmentEnd(v); }
+function kkExtraHTML(e, v){
+  if(e.type==="checkpoint"){ const c=v.checkpoints[e.index]; if(!c||c.options.length) return ""; return `<details class="box"><summary><b>${esc(c.title)}</b> - bài luyện: tự làm rồi mở đáp án</summary>${c.raw.map(x=>`<p>${rich(x)}</p>`).join("")}</details>`; }
+  if(e.type==="code") return kkAiBlock(e.content, "Bài luyện do AI tạo (phần ACTION)");
+  if(e.type==="en"||e.type==="p") return `<p class="en">${rich(e.content)}</p>`;
+  if(e.type==="box") return `<div class="box"><b class="t">${rich(e.title)}</b>${(e.lines||[]).map(x=>`<p>${rich(x)}</p>`).join("")}</div>`;
+  if(e.type==="table") return `<table><tr>${e.content.header.map(h=>`<th>${rich(h)}</th>`).join("")}</tr>${e.content.rows.map(r=>`<tr>${r.map(c=>`<td>${rich(c)}</td>`).join("")}</tr>`).join("")}</table>`;
+  if(e.type==="ul") return `<ul>${e.content.map(x=>`<li>${rich(x)}</li>`).join("")}</ul>`;
+  if(e.type==="h3") return `<h3>${rich(e.content)}</h3>`;
+  return "";
+}
+function kkVpRender(v){
+  const host=$("#vpHost"); if(!host) return;
+  const sg=VP.segs[VP.seg]; const seg=v.segments[VP.seg];
+  const markers=VP.segs.flatMap(s=>s.cps.map(ci=>`<span class="mk ${VP.cp[ci]?'done':''}" style="left:${(100*s.end/VP.total).toFixed(2)}%" title="Điểm dừng tương tác"></span>`)).join("");
+  const bounds=VP.segs.slice(1).map(s=>`<span class="bd" style="left:${(100*s.start/VP.total).toFixed(2)}%"></span>`).join("");
+  const cpi=VP.await; const c=cpi!=null?v.checkpoints[cpi]:null; const chosen=c?VP.cp[cpi]:null;
+  host.innerHTML=`
+  <div class="vp">
+    <div class="stage">
+      <div class="shead"><span class="pill">${seg.n}/${v.segments.length} · ${esc(seg.name)}</span><span class="pill">${esc(seg.time)}</span><span class="pill">Giọng: ${KKV.ok===false?"thiết bị":"AI KK-EDU"}</span></div>
+      <div class="scene">${seg.visual.map(x=>`<div class="vis">${rich(x)}</div>`).join("")}${seg.extra.filter(e=>e.type!=="checkpoint").map(e=>kkExtraHTML(e,v)).join("")}</div>
+      ${c?`<div class="cpov"><div class="cpbox"><div class="eyebrow">Điểm dừng tương tác · bắt buộc</div><b>${esc(c.title)}</b><p>${rich(c.question)}</p>
+        ${c.options.map(o=>`<button class="opt ${chosen?(o.key===c.answer?'ok':(o.key===chosen?'ko':'')):''}" ${chosen?'disabled':''} onclick="kkVpAnswer(D.videos.find(x=>x.id==='${v.id}'),${cpi},'${o.key}')">${o.key}. ${rich(o.text)}</button>`).join("")}
+        ${chosen?`<div class="fb"><b>Phản hồi ${chosen}:</b> ${rich(c.feedback[chosen]||"")}${chosen!==c.answer?`<br><b>Đáp án đúng ${c.answer}:</b> ${rich(c.feedback[c.answer]||"")}`:""}</div><div class="row"><button class="btn" onclick="kkVpContinue(D.videos.find(x=>x.id==='${v.id}'))">Tiếp tục video</button></div>`:`<p class="mute">Video tạm dừng. Chọn một phương án để tiếp tục.</p>`}
+      </div></div>`:""}
+    </div>
+    <div class="bar" onclick="kkVpSeek(event)"><div class="fill" id="vpFill"></div>${bounds}${markers}</div>
+    <div class="ctr">
+      <button class="btn" id="vpPlay" onclick="kkVpToggle()" ${VP.await!=null||VP.finished?'disabled':''}>${VP.playing?"Tạm dừng":(VP.started?"Tiếp tục":"Bắt đầu video")}</button>
+      <span class="timer" id="vpTime">${fmtT(VP.t)} / ${fmtT(VP.total)}</span>
+      <span class="mute" id="vpState"></span>
+      <span style="flex:1"></span>
+      <label class="mute">Tốc độ <select onchange="KKV.rate=Number(this.value)">${[0.9,1,1.15,1.3].map(r=>`<option value="${r}" ${KKV.rate===r?'selected':''}>${r}x</option>`).join("")}</select></label>
+      <label class="mute"><input type="checkbox" ${VP.showText?'checked':''} onchange="VP.showText=this.checked;kkVpRender(D.videos.find(x=>x.id==='${v.id}'))"> Lời thoại</label>
+    </div>
+    <div class="chips">${v.segments.map((s,i)=>`<button class="chip ${i===VP.seg?'on':''}" ${i>VP.maxSeg?'disabled':''} onclick="kkVpJump(${i})">${s.n}. ${esc(s.name)}</button>`).join("")}</div>
+    ${VP.showText?`<div class="doc" id="vpText">${sg.sents.map((t,i)=>`<p class="s ${i===VP.sent?'on':''}">${rich(t)}</p>`).join("")}</div>`:""}
+  </div>`;
+  kkVpUpdateUI();
+}
+function kkVpSeek(ev){ const v=D.videos.find(x=>x.id===VP.vid); if(!v||VP.await!=null) return; const bar=ev.currentTarget; const f=(ev.clientX-bar.getBoundingClientRect().left)/bar.offsetWidth; const t=f*VP.total; const i=VP.segs.findIndex(s=>t>=s.start&&t<s.end); if(i>=0) kkVpJump(i); }
+document.addEventListener("keydown", e=>{ if(e.code==="Space" && VP.vid && $("#vpHost") && !/input|textarea|select|button/i.test(e.target.tagName)){ e.preventDefault(); kkVpToggle(); } });
+videoPlayer = function(v){
+  kkVpInit(v);
+  const last = VP.finished;
+  const quizHTML = last?`<div class="card doc"><h2>Kiểm tra sau video</h2>${v.quiz.map((q,i)=>`<div class="q"><b>${i+1}. ${rich(q.q)}</b><br>${['A','B','C'].map(k=>`<button class="opt ${VP.quiz[i]?(k===q.answer?'ok':(k===VP.quiz[i]?'ko':'')):''}" onclick="VP.quiz[${i}]='${k}';render()">${k}. ${rich(q.options[k])}</button>`).join('')}${VP.quiz[i]?`<div class="ex">${rich(q.explain)}</div>`:''}</div>`).join('')}
+    ${Object.keys(VP.quiz).length===v.quiz.length?(()=>{ const ok=v.quiz.filter((q,i)=>VP.quiz[i]===q.answer).length; const pass=ok>=Math.ceil(v.quiz.length*0.75); return `<p><b>Kết quả: ${ok}/${v.quiz.length}</b> ${pass?'- Đạt. Video được ghi nhận hoàn thành.':'- Chưa đạt 75%. Xem lại phần CORE rồi làm lại.'}</p>${pass?`<button class="btn" onclick="S.progress['${v.id}']=Object.assign({},S.progress['${v.id}']||{},{done:true,date:TODAY()});save();kkVpStop();VP.vid=null;S.vid=null;render()">Ghi nhận hoàn thành và quay lại danh sách</button>`:`<button class="btn sec" onclick="VP.quiz={};VP.finished=false;kkVpJump(2)">Xem lại CORE</button>`}`; })():''}</div>`:'';
+  setTimeout(()=>{ const vv=D.videos.find(x=>x.id===VP.vid); if(vv) kkVpRender(vv); },0);
+  return `<div class="card doc"><div class="row"><button class="btn sec" onclick="kkVpStop();VP.vid=null;S.vid=null;render()">Danh sách</button><span class="code" style="color:var(--gold2)">${v.id}</span><span class="pill">${esc(v.duration)}</span><span class="pill">${v.checkpoints.filter(c=>c.options.length).length} điểm dừng bắt buộc</span></div><h2>${esc(v.title)}</h2><p class="mute"><b>Mục tiêu:</b> ${esc(v.objective)} | Tài liệu: ${v.material_ids.join(', ')}</p><div id="vpHost"></div></div>${quizHTML}`;
+};
+const _render0 = render;
+render = function(){ if(VP.vid && (S.step!==2 || S.vid!==VP.vid)){ kkVpStop(); VP.vid=null; } if(S.step!==2 && S.step!==3) kkStop(); _render0(); };
+document.addEventListener("visibilitychange", ()=>{ if(document.hidden && VP.playing) kkVpPause(); });
+
+/* ---------- 5. Khởi động lớp tích hợp ---------- */
+(async()=>{ await kkInitAuth(); })();
 
 </script>
 </body>
