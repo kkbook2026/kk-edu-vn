@@ -109,9 +109,9 @@ footer{text-align:center;color:var(--mute);font-size:12px;padding:16px}
 /* KK-EDU 3.0 shell */
 .topbar{display:flex;align-items:center;gap:14px;min-width:0;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
 .brand{display:flex;flex:none;align-items:center;gap:10px;text-decoration:none;color:var(--navy)}
-.brand .logo{width:44px;height:44px;flex:none;filter:drop-shadow(0 2px 6px rgba(15,42,74,.25))}
-.brand b{font-family:var(--font-d);font-size:1.35rem;line-height:1;font-weight:700}
-.brand small{display:block;font-size:.7rem;font-weight:600;color:var(--gold2);margin-top:3px;white-space:nowrap}
+.brand .logo{width:50px;height:50px;flex:none;filter:drop-shadow(0 2px 6px rgba(15,42,74,.25))}
+.brand b{font-family:var(--font-d);font-size:1.6rem;line-height:1;font-weight:700}
+.brand small{display:block;width:max-content;font-size:.6rem;font-weight:700;color:var(--gold2);margin-top:4px;white-space:nowrap;text-transform:uppercase}
 .crumb{display:flex;flex:1 1 auto;min-width:0;overflow:hidden;gap:6px;align-items:center;font-size:.86rem;color:var(--mute);white-space:nowrap}
 .crumb a{color:var(--navy);text-decoration:none;font-weight:600}
 .crumb a:hover{text-decoration:underline}
@@ -130,7 +130,7 @@ footer{text-align:center;color:var(--mute);font-size:12px;padding:16px}
 .hero .tags{display:flex;gap:6px;flex-wrap:wrap}
 .hero .tag{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25)}
 footer a{color:var(--navy)}
-@media(max-width:760px){.topbar{flex-wrap:wrap;gap:8px 10px}.crumb{display:none}.user{width:100%;margin-left:0;flex-wrap:nowrap}.user input{flex:1;min-width:0}.user label{white-space:nowrap}.brand small{display:none}}
+@media(max-width:760px){.topbar{flex-wrap:wrap;gap:8px 10px}.crumb{display:none}.user{width:100%;margin-left:0;flex-wrap:nowrap}.user input{flex:1;min-width:0}.user label{white-space:nowrap}}
 nav.steps{overflow-x:auto}
 body{overflow-x:clip}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -138,7 +138,7 @@ body{overflow-x:clip}
 /* tài khoản */
 #kkUser{display:flex;align-items:center;gap:8px;white-space:nowrap}
 @media(min-width:761px) and (max-width:1180px){.crumb{display:none}}
-@media(max-width:1320px){.brand small{display:none}}
+
 #kkUser .who{font-weight:600;color:var(--navy)} #kkUser .who small{color:var(--mute);font-weight:400}
 #kkUser .lnk{background:none;border:0;color:var(--mute);cursor:pointer;font-family:var(--font);font-size:12.5px;text-decoration:underline}
 a.btn,.btn.sm{display:inline-block;text-decoration:none;font-weight:600;background:var(--navy);color:#fff;border:0;border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:var(--font)}
@@ -213,10 +213,13 @@ nav.steps button.done .n{background:var(--good);color:#fff}
       <!-- 2 chữ K lồng nhau như hình với bóng: K vàng (hình) + K xanh (bóng) -->
       <path transform="translate(15 -2.2)" d="M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z" fill="url(#kkSg)"/>
       <path transform="translate(10.4 0)" d="M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z" fill="url(#kkGg)" stroke="#0f2a4a" stroke-width="1.2" stroke-linejoin="round" paint-order="stroke"/>
-    </svg><span><b>KK-EDU</b><small>Ngoại ngữ · Tiếng Anh</small></span></a>
+    </svg><span><b>KK-EDU</b><small>GIÁO DỤC SỐ - THỬ NGHIỆM</small></span></a>
   <div class="crumb"><a href="/">Trang chủ</a><span>›</span><span>Ngoại ngữ</span><span>›</span><span>Tiếng Anh</span><span>›</span><b>Luyện thi và thi thử IELTS</b></div>
   <div class="user"><span id="kkUser"></span><label for="uname">Học viên</label><input id="uname" placeholder="Họ và tên" autocomplete="name"><label for="utarget">Mục tiêu</label><select id="utarget"><option>5.5</option><option>6.0</option><option selected>6.5</option><option>7.0</option><option>7.5</option><option>8.0</option></select></div>
 </div>
+<script>/* căn khẩu hiệu dưới logo bằng đúng chiều dài chữ KK-EDU */
+function kkBrandFit(){ document.querySelectorAll('.brand small').forEach(s=>{ const b=s.parentElement.querySelector('b'); if(!b) return; s.style.letterSpacing='0px'; s.style.fontSize=''; const w=b.getBoundingClientRect().width, n=(s.textContent||'').length; if(!w||n<2) return; let sw=s.getBoundingClientRect().width; if(sw>w){ const fs=parseFloat(getComputedStyle(s).fontSize); s.style.fontSize=(fs*w/sw*0.985).toFixed(2)+'px'; sw=s.getBoundingClientRect().width; } s.style.letterSpacing=Math.max(0,(w-sw)/(n-1)).toFixed(2)+'px'; }); }
+(document.fonts?document.fonts.ready:Promise.resolve()).then(kkBrandFit); addEventListener('resize',kkBrandFit); addEventListener('load',kkBrandFit);</script>
 <div class="hero"><div class="in"><div><div class="kick">Phân hệ Ngoại ngữ · bản thử nghiệm</div><h1>Luyện thi và thi thử <em>IELTS</em></h1><p>Lộ trình 12 tuần, 3 giai đoạn: Xây nền (Việt 50 / Anh 50) → Kỹ năng (30 / 70) → Luyện đề và Thi thử (100% tiếng Anh). Mỗi giai đoạn có cổng ra; tiến độ lưu theo tài khoản KK-EDU.</p></div><div class="tags"><span class="tag">Listening</span><span class="tag">Reading</span><span class="tag">Writing</span><span class="tag">Speaking</span></div></div></div>
 <nav class="steps" id="steps" aria-label="Các bước"></nav>
 <main id="main"><div class="card"><h1>Đang tải dữ liệu IELTS…</h1><p class="mute">Ngân hàng đề, tài liệu và kịch bản video được nạp từ máy chủ KK-EDU.</p></div></main>
