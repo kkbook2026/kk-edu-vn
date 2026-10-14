@@ -1015,6 +1015,7 @@ function openRegister(){
     if(!$("#rgConsent").checked){ needTick("rgConsent","Bạn cần đọc và tích ô đồng ý xử lý dữ liệu (NĐ 13/2023) trước khi tạo tài khoản."); return; }
     try{
       const cred=await S.fb.auth().createUserWithEmailAndPassword(em, pw);
+      kkTrack("dang_ky_thanh_cong", {lop:(g&&g.label)||""});
       try{ await cred.user.updateProfile({displayName:name}); }catch(e){}
       try{ await cred.user.sendEmailVerification(); }catch(e){}
       applyFbUser(S.fb.auth().currentUser);
@@ -1318,8 +1319,17 @@ const NAV = [
   {id:"dash", label:"Học tập"},
   {id:"about", label:"Giới thiệu"},
 ];
+/* ---------- Đo lường (Cloudflare Zaraz -> GA4): không PII, không chặn trang ---------- */
+function kkTrack(ev, props){
+  try{
+    const p=Object.assign({}, props||{});
+    if(window.zaraz && typeof zaraz.track==="function") zaraz.track(ev, p);
+    else if(typeof window.gtag==="function") gtag("event", ev, p);
+  }catch(e){}
+}
 function go(route){
   S.route = route;
+  try{ const k=route.name+"_"+(route.code||"")+"_"+(route.i??""); if(S._lastRoute!==k){ S._lastRoute=k; kkTrack("xem_trang", {trang:route.name, ma_sach:route.code||"", bai:route.i==null?"":String(route.i+1)}); } }catch(e){}
   try{ const h = route.name==="home" ? "" : "#"+[route.name,route.code,route.i].filter(x=>x!=null).join("_").replace(/[^A-Za-z0-9._~-]/g,"-"); history.replaceState(null,"",h||location.pathname+location.search); }catch(e){}
   stopPlayerLoop();
   render();
@@ -1624,10 +1634,10 @@ function viewHome(v){
   </section>`;
   const goLv=c=>{ catalogFilter.level=c.dataset.lv; catalogFilter.grade=""; go({name:"video"}); };
   v.querySelectorAll(".lvcard").forEach(c=>{ c.onclick=()=>goLv(c); c.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); goLv(c); } }; });
-  const demo=()=>go({name:"hoc", code:"CS-TOAN-7", i:0});
-  $("#hExplore").onclick=()=>go({name:"video"});
-  $("#hDemo").onclick=demo; $("#hDemo2").onclick=demo;
-  const hd=$("#heroDemo"); if(hd) hd.onclick=demo;
+  const demo=(vt)=>{ kkTrack("hoc_thu", {vi_tri:vt, ma_sach:"CS-TOAN-7"}); go({name:"hoc", code:"CS-TOAN-7", i:0}); };
+  $("#hExplore").onclick=()=>{ kkTrack("vao_video_online", {vi_tri:"hero"}); go({name:"video"}); };
+  $("#hDemo").onclick=()=>demo("hero"); $("#hDemo2").onclick=()=>demo("cta_cuoi_trang");
+  const hd=$("#heroDemo"); if(hd) hd.onclick=()=>demo("demo_song");
   startHeroDemo();
   const zones={zoneTL:"tailieu", zoneVD:"video", zoneLV:"live"};
   Object.entries(zones).forEach(([id,name])=>{ const z=$("#"+id); if(!z) return; z.onclick=()=>go({name}); z.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go({name}); } }; });
