@@ -30,179 +30,262 @@
 <link rel="dns-prefetch" href="https://firestore.googleapis.com">
 <link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "EducationalOrganization", "name": "KK-EDU", "url": "https://www.kk-edu.com/", "description": "KK-EDU - mô hình giáo dục số thử nghiệm: học bằng video tương tác từ Nhà trẻ đến Tiến sĩ. 220 đầu sách bám sát Chương trình GDPT 2018, 6.872 bài học, kiểm tra thành thạo và trợ giảng AI.", "founder": {"@type": "Person", "name": "Nguyễn Duy Điển"}, "inLanguage": "vi-VN"}</script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: cổng tri thức - header điều hướng cố định, nội dung 1 cột tối đa 1100px, player 2 cột desktop */
+/* ============================================================
+   KK-EDU - Hệ thống giao diện 3.0 "Bảng lớp & vở ô ly"
+   Chất liệu: bảng navy (hero), giấy ô ly (thân trang), hoa điểm mười (vàng)
+   Chữ: Fraunces (tiêu đề) + Be Vietnam Pro (thân, thiết kế cho tiếng Việt)
+   ============================================================ */
 :root{
-  --bg:#faf6ec; --bg2:#f2ecdc; --card:#ffffff; --fg:#1d2733; --fg2:#5b6878;
-  --navy:#0f2a4a; --navy2:#16395f; --gold:#d4af37; --gold2:#b8952a;
-  --line:#e3dcc8; --ok:#1e7d4f; --warn:#b26a00; --bad:#b3362b;
-  --chip:#eef3f9; --shadow:0 10px 30px rgba(15,42,74,.08);
-  --font-d:"Playfair Display",Georgia,serif;
-  --font-b:"Be Vietnam Pro",system-ui,Segoe UI,Arial,sans-serif;
+  --bg:#f5f7fb; --bg2:#eaeff6; --card:#ffffff; --fg:#14213d; --fg2:#4f5d73;
+  --navy:#0f2a4a; --navy2:#16395f; --gold:#d4af37; --gold2:#a9871f;
+  --line:#d8e0ea; --grid:#e9eef5; --ok:#1e7d4f; --warn:#a85f00; --bad:#b3362b;
+  --chip:#e9eff8; --chalk:#f3e9c9;
+  --shadow:0 12px 32px rgba(15,42,74,.10);
+  --r-s:8px; --r-m:12px; --r-l:18px;
+  --font-d:"Fraunces","Noto Serif",Georgia,serif;
+  --font-b:"Be Vietnam Pro",system-ui,"Segoe UI",Arial,sans-serif;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#0c1a2c; --bg2:#0f2238; --card:#132a44; --fg:#edf1f7; --fg2:#9fb0c3;
-  --navy:#edf1f7; --navy2:#d9e2ee; --gold:#e3c45c; --gold2:#d4af37;
-  --line:#23405f; --ok:#4cc08a; --warn:#e0a94f; --bad:#e07a6e;
-  --chip:#1a3350; --shadow:0 10px 30px rgba(0,0,0,.35); color-scheme:dark;
+  --bg:#0b1626; --bg2:#101f33; --card:#132540; --fg:#eef2f8; --fg2:#a3b2c6;
+  --navy:#eef2f8; --navy2:#d7e1ef; --gold:#e6c75f; --gold2:#d4af37;
+  --line:#243b58; --grid:#15273f; --ok:#4cc08a; --warn:#e0a94f; --bad:#e07a6e;
+  --chip:#1a2f4b; --shadow:0 12px 32px rgba(0,0,0,.4); color-scheme:dark;
 }}
 :root[data-theme="dark"]{
-  --bg:#0c1a2c; --bg2:#0f2238; --card:#132a44; --fg:#edf1f7; --fg2:#9fb0c3;
-  --navy:#edf1f7; --navy2:#d9e2ee; --gold:#e3c45c; --gold2:#d4af37;
-  --line:#23405f; --ok:#4cc08a; --warn:#e0a94f; --bad:#e07a6e;
-  --chip:#1a3350; --shadow:0 10px 30px rgba(0,0,0,.35); color-scheme:dark;
+  --bg:#0b1626; --bg2:#101f33; --card:#132540; --fg:#eef2f8; --fg2:#a3b2c6;
+  --navy:#eef2f8; --navy2:#d7e1ef; --gold:#e6c75f; --gold2:#d4af37;
+  --line:#243b58; --grid:#15273f; --ok:#4cc08a; --warn:#e0a94f; --bad:#e07a6e;
+  --chip:#1a2f4b; --shadow:0 12px 32px rgba(0,0,0,.4); color-scheme:dark;
 }
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font-family:var(--font-b);margin:0;font-size:15.5px;line-height:1.6}
-h1,h2,h3{font-family:var(--font-d);color:var(--navy);line-height:1.25;text-wrap:balance;margin:0 0 .5em}
-h1{font-size:2rem}h2{font-size:1.45rem}h3{font-size:1.12rem}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+body{margin:0;overflow-x:clip;background:var(--bg);color:var(--fg);font-family:var(--font-b);font-size:15.5px;line-height:1.65;
+  /* vở ô ly: lưới mờ 24px */
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;background-position:center top}
+h1,h2,h3{font-family:var(--font-d);color:var(--navy);line-height:1.18;text-wrap:balance;margin:0 0 .45em;font-weight:600;letter-spacing:-.01em}
+h1{font-size:2.3rem;font-variation-settings:"opsz" 120}
+h2{font-size:1.6rem;font-variation-settings:"opsz" 72}
+h3{font-size:1.14rem;font-variation-settings:"opsz" 36}
 a{color:inherit}
 button{font-family:var(--font-b)}
-.wrap{max-width:1100px;margin:0 auto;padding-inline:16px}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px}
 .hidden{display:none!important}
-/* Chống tràn ngang: select/ảnh/video không vượt khung chứa (lỗi #thi tràn 1180px do tên sách dài) */
 select,input,textarea{max-width:100%;min-width:0}
 img,video,iframe,svg{max-width:100%}
 
-/* Header */
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--bg);border-bottom:1px solid var(--line)}
-.topbar{display:flex;align-items:center;gap:14px;padding-block:10px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:16px;cursor:pointer;user-select:none}
-.brand .logo{width:108px;height:108px;flex:none;filter:drop-shadow(0 3px 9px rgba(15,42,74,.28))}
-.brand b{font-family:var(--font-d);font-size:2.5rem;line-height:1.02;letter-spacing:.5px;color:var(--navy)}
-.brand small{display:block;font-size:.98rem;font-weight:700;color:var(--gold2,#b8902c);letter-spacing:.07em;text-transform:uppercase;margin-top:4px;white-space:nowrap}
+/* ---------- Header: thanh điều hướng trắng nổi trên bảng ---------- */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar{display:flex;align-items:center;gap:14px;padding-block:10px;flex-wrap:nowrap}
+@media(max-width:640px){.topbar{flex-wrap:wrap}}
+.brand{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+.brand .logo{width:52px;height:52px;flex:none;filter:drop-shadow(0 2px 6px rgba(15,42,74,.25))}
+.brand b{font-family:var(--font-d);font-size:1.6rem;line-height:1;letter-spacing:.01em;color:var(--navy);font-weight:700;font-variation-settings:"opsz" 72}
+.brand small{display:block;font-size:.72rem;font-weight:600;color:var(--gold2);letter-spacing:.02em;margin-top:3px;white-space:nowrap}
 .brand .brandtx{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;width:max-content}
 .brand .brandtx b{white-space:nowrap;display:block;line-height:1}
 :root[data-theme="dark"] .brand small{color:var(--gold)}
-@media(max-width:900px){ .brand .logo{width:84px;height:84px} .brand b{font-size:2rem} .brand small{font-size:.84rem} }
-@media(max-width:640px){ .brand .logo{width:66px;height:66px} .brand b{font-size:1.55rem} .brand small{font-size:.66rem} }
-nav.main{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
-nav.main button{background:none;border:0;padding:8px 12px;border-radius:9px;color:var(--fg2);font-size:.92rem;font-weight:500;cursor:pointer}
+nav.main{display:flex;gap:2px;flex-wrap:nowrap;margin-left:auto;overflow:hidden}
+nav.main button{background:none;border:0;padding:9px 12px;white-space:nowrap;border-radius:999px;color:var(--fg2);font-size:.92rem;font-weight:500;cursor:pointer;transition:background .15s,color .15s}
 nav.main button:hover{background:var(--chip);color:var(--fg)}
-nav.main button.on{background:var(--chip);color:var(--navy);font-weight:600;box-shadow:inset 0 -2px 0 var(--gold)}
-.userbox{position:relative;margin-left:auto;font-size:.85rem;color:var(--fg2)}
+nav.main button.on{background:var(--navy);color:#fff;font-weight:600}
+:root[data-theme="dark"] nav.main button.on{background:var(--gold2);color:#0b1626}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.main button.on{background:var(--gold2);color:#0b1626}}
+.userbox{position:relative;font-size:.85rem;color:var(--fg2);flex:none}
 .userbox .ava{width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex:none}
 :root[data-theme="dark"] .userbox .ava, .dkava{background:var(--gold2);color:#0c1a2c}
-.avabtn{display:flex;align-items:center;gap:8px;background:var(--card,#fff);border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 4px;cursor:pointer;color:var(--fg);font:inherit;font-size:.85rem}
-.avabtn:hover{border-color:var(--gold2,#b8902c)}
+.avabtn{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 4px;cursor:pointer;color:var(--fg);font:inherit;font-size:.85rem}
+.avabtn:hover{border-color:var(--gold2)}
 .avabtn .caret{font-size:.7rem;color:var(--fg2)}
 .avabtn .avatxt{font-weight:600}
 @media(max-width:520px){ .avabtn .avatxt{display:none} }
-/* Mobile header gọn: logo + tài khoản cùng 1 hàng, menu 1 hàng cuộn ngang (header sticky không chiếm quá 1/5 màn hình) */
+@media(max-width:900px){ nav.main button{padding:8px 11px;font-size:.88rem} }
 @media(max-width:640px){
   .topbar{gap:8px;padding-block:8px}
-  .brand{order:1;gap:10px} .brand .logo{width:48px;height:48px} .brand b{font-size:1.3rem} .brand small{font-size:.6rem;letter-spacing:.05em}
-  .userbox{order:2}
+  .brand{order:1;gap:9px} .brand .logo{width:42px;height:42px} .brand b{font-size:1.25rem} .brand small{font-size:.6rem}
+  .userbox{order:2;margin-left:auto}
   nav.main{order:3;flex:1 0 100%;flex-wrap:nowrap;overflow-x:auto;margin-left:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;scroll-snap-type:x proximity;mask-image:linear-gradient(90deg,#000 92%,transparent)}
   nav.main::-webkit-scrollbar{display:none}
-  nav.main button{flex:none;white-space:nowrap;padding:7px 10px;font-size:.88rem;scroll-snap-align:start}
+  nav.main button{flex:none;white-space:nowrap;padding:7px 11px;font-size:.86rem;scroll-snap-align:start}
 }
-.umenu{position:absolute;right:0;top:calc(100% + 8px);min-width:260px;max-width:88vw;background:var(--card,#fff);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 40px rgba(10,20,40,.18);padding:8px;z-index:60}
+.umenu{position:absolute;right:0;top:calc(100% + 8px);min-width:260px;max-width:88vw;background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:0 14px 40px rgba(10,20,40,.18);padding:8px;z-index:60}
 .umenu .uhead{padding:8px 10px 10px;border-bottom:1px solid var(--line);margin-bottom:6px}
 .umenu .uhead b{display:block;color:var(--fg)}
 .umenu .uhead span{display:block;font-size:.78rem;color:var(--fg2);margin-top:2px;word-break:break-all}
-.umenu .uhead .uwarn{color:#a66b00}
-.umenu button{display:block;width:100%;text-align:left;background:none;border:0;padding:9px 10px;border-radius:9px;cursor:pointer;color:var(--fg);font:inherit;font-size:.9rem}
+.umenu .uhead .uwarn{color:var(--warn)}
+.umenu button{display:block;width:100%;text-align:left;background:none;border:0;padding:9px 10px;border-radius:var(--r-s);cursor:pointer;color:var(--fg);font:inherit;font-size:.9rem}
 .umenu button:hover{background:var(--chip)}
 .umenu button.upri{background:var(--navy);color:#fff;font-weight:600;margin-bottom:4px}
-.umenu button.upri:hover{background:#17395f}
+.umenu button.upri:hover{background:var(--navy2)}
 .umenu .unote{font-size:.76rem;color:var(--fg2);padding:8px 10px 4px;line-height:1.5;border-top:1px solid var(--line);margin-top:6px}
 :root[data-theme="dark"] .umenu button.upri{background:var(--gold2);color:#0c1a2c}
 #ttsBtn.on{background:var(--gold);color:#1d2733;border-color:var(--gold)}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .umenu button.upri{background:var(--gold2);color:#0c1a2c} :root:not([data-theme="light"]) .userbox .ava{background:var(--gold2);color:#0c1a2c} }
 
-/* Hero */
-.hero{padding-block:40px 30px;display:grid;grid-template-columns:1.25fr .9fr;gap:30px;align-items:center}
-.hero h1{font-size:2.5rem;margin-bottom:.4em}
-.hero .gold{color:var(--gold2)}
+/* ---------- Hero: bảng lớp navy tràn viền ---------- */
+.board{position:relative;margin:0 calc(50% - 50vw);width:100vw;background:#0f2a4a;color:var(--chalk);overflow:hidden;isolation:isolate}
+.board::before{content:"";position:absolute;inset:0;z-index:-1;background:
+  radial-gradient(ellipse 60% 70% at 85% 20%,rgba(212,175,55,.18),transparent 60%),
+  radial-gradient(ellipse 50% 60% at 10% 100%,rgba(109,147,191,.22),transparent 60%),
+  linear-gradient(160deg,#102c4e 0%,#0f2a4a 45%,#0b1f38 100%)}
+.board::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--gold),#e8c861 40%,var(--gold))}
+.hero{padding-block:52px 48px;display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+.hero h1{font-size:clamp(2rem,4.2vw,3.1rem);color:#fff;margin-bottom:.45em;font-weight:600;line-height:1.12}
+.hero .gold{color:var(--gold)}
 :root[data-theme="dark"] .hero .gold{color:var(--gold)}
-.hero p.lead{color:var(--fg2);font-size:1.05rem;max-width:34em}
-.hero-art{min-width:0}
-.statrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 16px;min-width:108px}
-.stat b{display:block;font-size:1.35rem;font-family:var(--font-d);color:var(--navy);font-variant-numeric:tabular-nums}
-.stat span{font-size:.78rem;color:var(--fg2)}
-@media(max-width:760px){.hero{grid-template-columns:1fr;padding-block:24px}.hero h1{font-size:1.9rem}.hero-art{display:none}}
+.hero p.lead{color:#cfdbea;font-size:1.08rem;max-width:32em;margin:0 0 20px}
+.hero .kicker{display:inline-flex;align-items:center;gap:8px;font-size:.84rem;font-weight:600;color:var(--gold);margin-bottom:14px}
+.hero .kicker i{display:inline-block;width:26px;height:2px;background:var(--gold);border-radius:2px}
+.hero .btn.pri{background:var(--gold);color:#14213d}
+.hero .btn.pri:hover{background:#e3c558}
+.hero .btn.ghost{border-color:rgba(255,255,255,.35);color:#fff}
+.hero .btn.ghost:hover{background:rgba(255,255,255,.08)}
+.hero-art{min-width:0;position:relative}
+.hero-art svg{display:block;filter:drop-shadow(0 20px 40px rgba(0,0,0,.35))}
+.statrow{display:flex;gap:0;flex-wrap:wrap;margin-top:26px;border-top:1px solid rgba(255,255,255,.14);padding-top:18px}
+.stat{background:none;border:0;border-right:1px solid rgba(255,255,255,.14);padding:2px 22px 2px 0;margin-right:22px;min-width:0}
+.stat:last-child{border-right:0;margin-right:0}
+.stat b{display:block;font-size:1.55rem;font-family:var(--font-d);color:#fff;font-variant-numeric:tabular-nums;line-height:1.1;font-weight:600}
+.stat span{font-size:.78rem;color:#aebdd0}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding-block:34px 36px;gap:26px}.hero-art{max-width:520px}}
+@media(max-width:640px){.statrow{display:grid;grid-template-columns:1fr 1fr;gap:12px 0}.stat{padding-right:12px;margin-right:12px;border-right:0}.stat:nth-child(odd){border-right:1px solid rgba(255,255,255,.14)}.stat b{font-size:1.3rem}}
 
-/* Cards & grid */
+/* ---------- Trang chủ: các khối ---------- */
+.home-sec{margin-top:56px}
+.home-sec .sec{margin:0 0 18px}
+.sec-lead{color:var(--fg2);max-width:46em;margin:-6px 0 18px}
+/* Ba phân hệ: 3 cột, chia bằng đường kẻ */
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:var(--r-l);background:var(--card);overflow:hidden}
+.zone{padding:26px 24px 24px;cursor:pointer;position:relative;border-right:1px solid var(--line);transition:background .15s}
+.zone:last-child{border-right:0}
+.zone:hover{background:var(--bg2)}
+.zone .zi{width:46px;height:46px;color:var(--navy);margin-bottom:14px}
+.zone h3{margin:0 0 6px;font-size:1.22rem}
+.zone .meta{font-size:.9rem;color:var(--fg2);line-height:1.55}
+.zone .go{display:inline-block;margin-top:14px;font-weight:600;color:var(--navy);border-bottom:2px solid var(--gold);padding-bottom:1px;font-size:.92rem}
+:root[data-theme="dark"] .zone .zi,:root[data-theme="dark"] .zone .go{color:var(--gold)}
+@media(max-width:860px){.zones{grid-template-columns:1fr}.zone{border-right:0;border-bottom:1px solid var(--line)}.zone:last-child{border-bottom:0}}
+/* Bậc thang học vấn: 7 cấp, nền tăng dần */
+.ladder{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;align-items:stretch}
+.step{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);padding:14px 14px 12px;cursor:pointer;min-width:0;position:relative;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column}
+.step:hover{border-color:var(--gold);box-shadow:var(--shadow)}
+.step .si{width:30px;height:30px;color:var(--navy);margin-bottom:8px}
+.step .sn{font-size:.72rem;color:var(--fg2);font-variant-numeric:tabular-nums;margin-bottom:3px}
+.step h3{font-size:1.02rem;margin:0 0 4px}
+.step .meta{font-size:.78rem;color:var(--fg2);line-height:1.45;flex:1}
+.step .cnt{margin-top:10px;font-size:.8rem;font-weight:600;color:var(--navy)}
+.step .cnt b{font-family:var(--font-d);font-size:1.15rem;font-weight:600;margin-right:3px}
+.step::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:var(--gold);transform:scaleX(0);transition:transform .2s;transform-origin:left}
+.step:hover::after{transform:scaleX(1)}
+:root[data-theme="dark"] .step .si,:root[data-theme="dark"] .step .cnt{color:var(--gold)}
+@media(max-width:1000px){.ladder{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:640px){.ladder{grid-template-columns:repeat(2,1fr);gap:8px}.step{padding:12px}}
+/* Phương pháp 2.0: 4 bước có đường nối */
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;position:relative;counter-reset:fl}
+.flow::before{content:"";position:absolute;left:24px;right:24px;top:22px;height:2px;background:repeating-linear-gradient(90deg,var(--gold) 0 8px,transparent 8px 14px);z-index:0}
+.fstep{position:relative;z-index:1}
+.fstep .fn{width:44px;height:44px;border-radius:50%;background:var(--navy);color:var(--gold);font-family:var(--font-d);font-weight:600;font-size:1.15rem;display:flex;align-items:center;justify-content:center;border:3px solid var(--bg);box-shadow:0 0 0 1px var(--line);margin-bottom:12px}
+.fstep h3{font-size:1.08rem;margin:0 0 5px}
+.fstep .meta{font-size:.88rem;color:var(--fg2);line-height:1.55}
+:root[data-theme="dark"] .fstep .fn{background:var(--gold2);color:#0b1626}
+@media(max-width:860px){.flow{grid-template-columns:1fr 1fr}.flow::before{display:none}}
+@media(max-width:520px){.flow{grid-template-columns:1fr}}
+/* Lời kết / CTA cuối trang chủ */
+.cta-band{margin-top:60px;background:var(--navy);color:#fff;border-radius:var(--r-l);padding:34px 36px;display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center;position:relative;overflow:hidden}
+.cta-band::after{content:"";position:absolute;right:-60px;top:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.35),transparent 70%)}
+.cta-band h2{color:#fff;margin:0 0 6px}
+.cta-band p{margin:0;color:#cfdbea;max-width:40em}
+.cta-band .btn.pri{background:var(--gold);color:#14213d;position:relative;z-index:1}
+:root[data-theme="dark"] .cta-band{background:#132540;border:1px solid var(--line)}
+@media(max-width:700px){.cta-band{grid-template-columns:1fr;padding:26px 22px}}
+
+/* ---------- Thẻ & lưới (dùng toàn trang) ---------- */
 .grid{display:grid;gap:14px}
 .grid.lv{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
 .grid.bk{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
-.card.click{cursor:pointer;transition:transform .12s,box-shadow .12s}
-.card.click:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);padding:16px;min-width:0}
+.card.click{cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.card.click:hover{border-color:var(--gold);box-shadow:var(--shadow)}
 .lvicon{width:42px;height:42px;margin-bottom:8px}
-.card .meta{font-size:.78rem;color:var(--fg2)}
-.bkcard{display:flex;flex-direction:column;gap:6px}
-.bkcard .sub{font-weight:600;color:var(--navy);line-height:1.35}
-.bkcard .code{font-size:.72rem;color:var(--fg2);letter-spacing:.06em}
-.badge{display:inline-block;font-size:.7rem;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--chip);color:var(--navy2)}
+.card .meta{font-size:.8rem;color:var(--fg2)}
+.bkcard{display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--navy)}
+.bkcard .sub{font-weight:600;color:var(--navy);line-height:1.35;font-size:1.02rem}
+.bkcard .code{font-size:.72rem;color:var(--fg2);letter-spacing:.04em}
+:root[data-theme="dark"] .bkcard{border-top-color:var(--gold2)}
+.badge{display:inline-block;font-size:.7rem;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--chip);color:var(--navy2);line-height:1.6}
 .badge.gold{background:var(--gold);color:#19233a}
-.badge.ok{background:var(--ok);color:#fff}
+.badge.ok{background:color-mix(in srgb,var(--ok) 14%,var(--card));color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 40%,transparent)}
 .badge.free{background:var(--ok);color:#fff}
 .badge.lock{background:var(--bad);color:#fff}
 .rowline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .pbar{height:7px;border-radius:99px;background:var(--bg2);overflow:hidden;border:1px solid var(--line)}
 .pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:99px}
 
-/* Section titles */
-.sec{display:flex;align-items:baseline;gap:12px;margin:34px 0 14px}
-.sec h2{margin:0}
-.sec .more{margin-left:auto;font-size:.85rem;color:var(--fg2);background:none;border:0;cursor:pointer;text-decoration:underline}
-.eyebrow{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2);font-weight:700}
+/* ---------- Tiêu đề mục ---------- */
+.sec{display:flex;align-items:baseline;gap:12px;margin:34px 0 14px;flex-wrap:wrap}
+.sec h2{margin:0;position:relative;padding-left:14px}
+.sec h2::before{content:"";position:absolute;left:0;top:.18em;bottom:.12em;width:4px;border-radius:2px;background:var(--gold)}
+.sec .more{margin-left:auto;font-size:.88rem;color:var(--navy);background:none;border:0;cursor:pointer;font-weight:600;border-bottom:2px solid var(--gold);padding:0 0 1px;font-family:var(--font-b)}
+.eyebrow{font-size:.82rem;color:var(--gold2);font-weight:600;letter-spacing:0;text-transform:none}
 :root[data-theme="dark"] .eyebrow{color:var(--gold)}
 
-/* Controls */
-.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+/* ---------- Điều khiển ---------- */
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;align-items:center}
 .controls select,.controls input[type=search],.fld input,.fld select,.fld textarea{
-  background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:.92rem;font-family:var(--font-b)}
+  background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:var(--r-s);padding:9px 12px;font-size:.92rem;font-family:var(--font-b);transition:border-color .15s}
+.controls select:focus,.controls input:focus,.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--navy);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 35%,transparent)}
 .controls input[type=search]{flex:1;min-width:180px}
-.btn{border:0;border-radius:10px;padding:10px 18px;font-weight:600;font-size:.93rem;cursor:pointer;background:var(--chip);color:var(--navy2)}
-.btn:hover{filter:brightness(.97)}
+.btn{border:1px solid transparent;border-radius:var(--r-s);padding:10px 18px;font-weight:600;font-size:.93rem;cursor:pointer;background:var(--chip);color:var(--navy2);transition:background .15s,border-color .15s,transform .05s}
+.btn:hover{background:color-mix(in srgb,var(--chip) 70%,var(--line))}
+.btn:active{transform:translateY(1px)}
 .btn.pri{background:var(--navy);color:#fff}
+.btn.pri:hover{background:var(--navy2)}
 :root[data-theme="dark"] .btn.pri,[data-theme="dark"] .btn.pri{background:var(--gold2);color:#0c1a2c}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.pri{background:var(--gold2);color:#0c1a2c}}
 .btn.gold{background:var(--gold);color:#19233a}
-.btn.ghost{background:none;border:1px solid var(--line);color:var(--fg2)}
+.btn.gold:hover{background:#e3c558}
+.btn.ghost{background:none;border-color:var(--line);color:var(--fg)}
+.btn.ghost:hover{border-color:var(--navy);background:var(--chip)}
 .btn.sm{padding:6px 12px;font-size:.82rem}
 .btn:disabled{opacity:.5;cursor:default}
 
-/* Book detail */
-.bookhead{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:start;margin-top:22px}
+/* ---------- Trang sách ---------- */
+.bookhead{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:start;margin-top:26px}
 @media(max-width:700px){.bookhead{grid-template-columns:1fr}}
 .linkrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .linkrow a.btn{text-decoration:none;display:inline-flex;align-items:center;gap:7px}
 .lesslist{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.lessitem{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;min-width:0}
-.lessitem:hover{box-shadow:var(--shadow)}
+.lessitem{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);padding:11px 14px;cursor:pointer;min-width:0;transition:border-color .15s}
+.lessitem:hover{border-color:var(--gold);box-shadow:var(--shadow)}
 .lessitem .num{flex:none;width:34px;height:34px;border-radius:50%;background:var(--chip);color:var(--navy2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;font-variant-numeric:tabular-nums}
 .lessitem.done .num{background:var(--ok);color:#fff}
 .lessitem .ti{flex:1;min-width:0;font-weight:500}
 .lessitem .st{font-size:.76rem;color:var(--fg2);flex:none;font-variant-numeric:tabular-nums}
 
-/* Player */
+/* ---------- Trình phát ---------- */
 .player{display:grid;grid-template-columns:1.6fr .9fr;gap:18px;margin-top:16px}
 @media(max-width:900px){.player{grid-template-columns:1fr}}
-.player.wide{grid-template-columns:1fr} /* chế độ 2x: khung video chiếm toàn bộ bề ngang, cột phụ xuống dưới */
+.player.wide{grid-template-columns:1fr}
 .screenbox:fullscreen{display:flex;flex-direction:column;background:#000;border:0;border-radius:0}
 .screenbox:fullscreen .screen{flex:1;aspect-ratio:auto;max-height:none}
 .screenbox:-webkit-full-screen{display:flex;flex-direction:column;background:#000}
 .screenbox:-webkit-full-screen .screen{flex:1;aspect-ratio:auto}
-.screenbox{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.screenbox{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r-l);overflow:hidden;box-shadow:var(--shadow)}
 .screen{position:relative;container-type:inline-size;aspect-ratio:16/9;max-width:100%;background:linear-gradient(145deg,#0f2a4a,#16395f 55%,#1d4a7a);color:#f5efdd;display:flex;flex-direction:column;overflow:hidden}
 .screen video{width:100%;height:100%;object-fit:contain;background:#000}
 .scene{flex:1;display:flex;flex-direction:column;justify-content:safe center;gap:10px;padding:22px 26px;min-width:0;min-height:0;overflow:auto}
 .scene>*{flex-shrink:0}
 .scene .phan{font-size:max(.62rem,1.05cqw);letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700}
-.scene .chu{font-family:var(--font-d);font-size:max(1rem,2.5cqw);font-weight:700;color:#fff;text-wrap:balance}
+.scene .chu{font-family:var(--font-d);font-size:max(1rem,2.5cqw);font-weight:600;color:#fff;text-wrap:balance}
 .scene .hinh{font-size:max(.8rem,1.35cqw);color:#cfd9ea;font-style:italic;max-width:46em}
 .scene .loi{font-size:max(.92rem,2.1cqw);color:#f5efdd;max-width:46em;border-left:3px solid var(--gold);padding-left:12px}
-/* Sơ đồ/bảng biểu tự co giãn VỪA KHÍT phần còn lại của khung (không cần kéo thanh cuộn), phóng to khung là sơ đồ + chữ to theo cùng tỉ lệ */
 .scene{padding:max(16px,2.6cqw) max(16px,3.2cqw);gap:max(8px,1.2cqw)}
 .scene .sodo{background:#fff;border-radius:10px;padding:max(6px,1cqw);flex:1 1 0;min-height:30%;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .scene .sodo svg{width:100%;height:100%;max-width:100%;max-height:100%;display:block;margin:0 auto}
-/* Điện thoại: khung mô phỏng tự cao theo nội dung để sơ đồ + lời giảng không bị ép dẹt hoặc cắt chữ (video thật vẫn giữ 16:9) */
 @media (max-width:760px){
   .screen:not(:has(video)){aspect-ratio:auto;min-height:56.25vw}
   .scene{padding:16px 16px 18px;gap:8px;overflow:visible}
@@ -223,33 +306,35 @@ nav.main button.on{background:var(--chip);color:var(--navy);font-weight:600;box-
 .seek .dot.part{background:linear-gradient(90deg,var(--ok) 50%,var(--navy2) 50%)}
 .seek .knob{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--gold);transform:translate(-50%,-50%);z-index:3;box-shadow:0 1px 4px rgba(0,0,0,.25);pointer-events:none}
 .iconbtn{border:0;background:var(--chip);color:var(--navy2);width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
+.iconbtn:hover{background:var(--gold);color:#14213d}
 .iconbtn svg{width:18px;height:18px;fill:currentColor}
 .sidepanel{display:flex;flex-direction:column;gap:14px;min-width:0}
 .qlist{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow:auto}
-.qrow{display:flex;gap:8px;align-items:center;font-size:.84rem;padding:7px 10px;border-radius:9px;background:var(--bg2);cursor:pointer}
+.qrow{display:flex;gap:8px;align-items:center;font-size:.84rem;padding:7px 10px;border-radius:var(--r-s);background:var(--bg2);cursor:pointer}
+.qrow:hover{background:var(--chip)}
 .qrow .tt{font-variant-numeric:tabular-nums;color:var(--fg2);flex:none}
 .qrow .ic{flex:none;width:10px;height:10px;border-radius:50%;background:var(--line)}
 .qrow.hit .ic{background:var(--ok)}
 .qrow.miss .ic{background:var(--bad)}
 
-/* Quiz modal */
-.modalwrap{position:fixed;inset:0;background:rgba(10,20,35,.55);z-index:90;display:flex;align-items:center;justify-content:center;padding:16px}
-.modal{background:var(--card);color:var(--fg);border-radius:16px;max-width:640px;width:100%;max-height:88vh;overflow:auto;padding:22px;border:1px solid var(--line)}
+/* ---------- Hộp thoại & câu hỏi ---------- */
+.modalwrap{position:fixed;inset:0;background:rgba(10,20,35,.6);backdrop-filter:blur(3px);z-index:90;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--card);color:var(--fg);border-radius:var(--r-l);max-width:640px;width:100%;max-height:88vh;overflow:auto;padding:24px;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.35)}
 .modal h3{margin-top:0}
 .opts{display:flex;flex-direction:column;gap:8px;margin:14px 0}
-.opt{border:1.5px solid var(--line);background:var(--bg2);color:var(--fg);border-radius:11px;padding:11px 14px;text-align:left;cursor:pointer;font-size:.95rem}
-.opt:hover{border-color:var(--gold2)}
+.opt{border:1.5px solid var(--line);background:var(--card);color:var(--fg);border-radius:var(--r-m);padding:11px 14px;text-align:left;cursor:pointer;font-size:.95rem;font-family:var(--font-b);transition:border-color .12s,background .12s}
+.opt:hover{border-color:var(--gold2);background:var(--bg2)}
 .opt.sel{border-color:var(--navy2);background:var(--chip)}
 .opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,var(--card))}
 .opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--card))}
 .opt.big{font-size:1.05rem;padding:16px}
-.feedback{border-radius:11px;padding:12px 14px;margin:10px 0;font-size:.92rem}
+.feedback{border-radius:var(--r-m);padding:12px 14px;margin:10px 0;font-size:.92rem}
 .feedback.good{background:color-mix(in srgb,var(--ok) 13%,var(--card));border:1px solid var(--ok)}
 .feedback.bad{background:color-mix(in srgb,var(--bad) 11%,var(--card));border:1px solid var(--bad)}
 .feedback.hint{background:color-mix(in srgb,var(--gold) 14%,var(--card));border:1px solid var(--gold2)}
 .mrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
 .ordlist{display:flex;flex-direction:column;gap:6px;margin:12px 0}
-.orditem{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1.5px solid var(--line);border-radius:10px;padding:9px 12px}
+.orditem{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1.5px solid var(--line);border-radius:var(--r-s);padding:9px 12px}
 .orditem .mv{margin-left:auto;display:flex;gap:4px}
 .orditem button{border:1px solid var(--line);background:var(--card);border-radius:7px;width:30px;height:28px;cursor:pointer;color:var(--fg)}
 textarea.reflect,.fld textarea{width:100%;min-height:96px;resize:vertical}
@@ -257,26 +342,27 @@ textarea.reflect,.fld textarea{width:100%;min-height:96px;resize:vertical}
 .likert button{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:var(--bg2);cursor:pointer;font-weight:700;color:var(--fg)}
 .likert button.sel{background:var(--gold);border-color:var(--gold2);color:#19233a}
 
-/* Score panel */
+/* ---------- Điểm số ---------- */
 .scorebox{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.scorebox .sc{background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:10px;text-align:center}
-.scorebox b{font-size:1.25rem;font-family:var(--font-d);color:var(--navy);font-variant-numeric:tabular-nums}
+.scorebox .sc{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r-m);padding:10px;text-align:center}
+.scorebox b{font-size:1.25rem;font-family:var(--font-d);color:var(--navy);font-variant-numeric:tabular-nums;font-weight:600}
 .scorebox span{font-size:.72rem;color:var(--fg2);display:block}
-.verdict{border-radius:12px;padding:12px 16px;font-weight:600;text-align:center;margin-top:10px}
+.verdict{border-radius:var(--r-m);padding:12px 16px;font-weight:600;text-align:center;margin-top:10px}
 .verdict.dat{background:color-mix(in srgb,var(--ok) 15%,var(--card));color:var(--ok);border:1px solid var(--ok)}
 .verdict.nc{background:color-mix(in srgb,var(--gold) 22%,var(--card));color:var(--gold2);border:1px solid var(--gold2)}
 .verdict.chua{background:color-mix(in srgb,var(--warn) 14%,var(--card));color:var(--warn);border:1px solid var(--warn)}
 
-/* Tutor */
-.tutor{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden}
-.tutor .head{display:flex;align-items:center;gap:9px;padding:10px 14px;border-bottom:1px solid var(--line);font-weight:600;color:var(--navy)}
+/* ---------- Trợ giảng ---------- */
+.tutor{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r-m);background:var(--card);overflow:hidden}
+.tutor .head{display:flex;align-items:center;gap:9px;padding:10px 14px;border-bottom:1px solid var(--line);font-weight:600;color:var(--navy);background:var(--bg2)}
 .tmsgs{display:flex;flex-direction:column;gap:9px;padding:12px;max-height:290px;overflow:auto;font-size:.9rem}
-.tmsg{border-radius:11px;padding:9px 12px;max-width:92%;white-space:pre-wrap}
+.tmsg{border-radius:var(--r-m);padding:9px 12px;max-width:92%;white-space:pre-wrap}
 .tmsg.u{background:var(--chip);align-self:flex-end}
 .tmsg.a{background:var(--bg2);align-self:flex-start}
 .tin{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
 .tchips{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 10px}
 .tchip{border:1px solid var(--line);background:var(--chip);color:var(--fg);border-radius:999px;padding:5px 11px;font-size:.8rem;cursor:pointer;font-family:var(--font-b)}
+.tchip:hover{border-color:var(--gold)}
 .tchip:hover{border-color:var(--gold)}
 .topts{display:flex;flex-direction:column;gap:6px;margin:8px 0}.topt{border-radius:10px;text-align:left}.topt.tok{background:#cfeedd;border-color:#2e9d62;color:#12402a}.topt.tbad{background:#f8d7d7;border-color:#c0392b;color:#5a1a14}
 .tcite{display:inline-block;font-size:.75rem;color:var(--muted,#6b7a90);margin-top:3px}
@@ -288,29 +374,31 @@ textarea.reflect,.fld textarea{width:100%;min-height:96px;resize:vertical}
 .rpwrong{border-left:3px solid #c0392b;padding:6px 10px;margin:6px 0;background:var(--bg2);border-radius:6px;font-size:.88rem}
 .kktab{width:100%;border-collapse:collapse;margin:8px 0;font-size:.85rem}.kktab td{border-bottom:1px solid var(--line);padding:5px 6px;vertical-align:top}
 .qtab{width:100%;border-collapse:collapse;font-size:.84rem}.qtab th,.qtab td{border-bottom:1px solid var(--line);padding:6px;text-align:left}.qflag{color:#c0392b;font-weight:600}.qok{color:#2e9d62;font-weight:600}
-.tin input{flex:1;min-width:0;background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:9px 12px;color:var(--fg);font-family:var(--font-b)}
+.tin input{flex:1;min-width:0;background:var(--bg2);border:1px solid var(--line);border-radius:var(--r-s);padding:9px 12px;color:var(--fg);font-family:var(--font-b)}
 
-/* Tables & admin */
+/* ---------- Bảng & quản trị ---------- */
 table.tb{width:100%;border-spacing:0;font-size:.88rem}
-table.tb th{text-align:left;font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--fg2);padding:8px 10px;border-bottom:1px solid var(--line)}
+table.tb th{text-align:left;font-size:.78rem;font-weight:600;color:var(--fg2);padding:9px 10px;border-bottom:2px solid var(--line);background:var(--bg2)}
 table.tb td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-.tbwrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:13px}
+table.tb tr:hover td{background:var(--bg2)}
+.tbwrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:var(--r-m)}
 .fld{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
 .fld label{font-size:.8rem;font-weight:600;color:var(--fg2)}
 .fld input,.fld select,.fld textarea{width:100%}
 .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
 @media(max-width:640px){.formgrid{grid-template-columns:1fr}}
 .tabbar{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:18px 0;flex-wrap:wrap}
-.tabbar button{background:none;border:0;padding:9px 14px;font-size:.9rem;color:var(--fg2);cursor:pointer;border-bottom:2.5px solid transparent;font-weight:500}
+.tabbar button{background:none;border:0;padding:9px 14px;font-size:.9rem;color:var(--fg2);cursor:pointer;border-bottom:2.5px solid transparent;font-weight:500;margin-bottom:-1px}
+.tabbar button:hover{color:var(--fg)}
 .tabbar button.on{color:var(--navy);border-bottom-color:var(--gold);font-weight:600}
 .note{font-size:.84rem;color:var(--fg2)}
-.alertbox{border-radius:12px;padding:12px 15px;font-size:.9rem;margin:12px 0;border:1px solid var(--gold2);background:color-mix(in srgb,var(--gold) 12%,var(--card))}
-.qrbox{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px;background:#fff;border-radius:14px;border:1px solid var(--line)}
+.alertbox{border-radius:var(--r-m);padding:12px 15px;font-size:.9rem;margin:12px 0;border:1px solid var(--gold2);border-left-width:4px;background:color-mix(in srgb,var(--gold) 12%,var(--card))}
+.qrbox{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px;background:#fff;border-radius:var(--r-m);border:1px solid var(--line)}
 .qrbox canvas,.qrbox img,.qrbox svg{max-width:220px}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:.9rem}
 .kv b{font-variant-numeric:tabular-nums}
 body:has(#modalHost .modalwrap) .consent{display:none}
-.cbox{display:flex;gap:12px;align-items:flex-start;margin:10px 0;padding:12px 14px;border:2px solid var(--gold);border-radius:12px;background:var(--bg2);cursor:pointer;font-size:.92rem;line-height:1.5;color:var(--fg)}
+.cbox{display:flex;gap:12px;align-items:flex-start;margin:10px 0;padding:12px 14px;border:2px solid var(--gold);border-radius:var(--r-m);background:var(--bg2);cursor:pointer;font-size:.92rem;line-height:1.5;color:var(--fg)}
 .cbox:hover{border-color:var(--navy)}
 .cbox input[type=checkbox]{flex:none;width:24px;height:24px;margin:1px 0 0;accent-color:var(--navy,#0f2a4a);cursor:pointer}
 .cbox:has(input:checked){border-color:#2e9d62;background:rgba(46,157,98,.08)}
@@ -322,25 +410,25 @@ body:has(#modalHost .modalwrap) .consent{display:none}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .toast{background:var(--gold2);color:#0c1a2c}}
 :root[data-theme="dark"] .toast{background:var(--gold2);color:#0c1a2c}
 
-/* Consent */
-.consent{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:2px solid var(--gold);padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));z-index:110;box-shadow:0 -10px 30px rgba(15,42,74,.12)}
-.consent .in{max-width:1100px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:.88rem}
+/* ---------- Đồng ý lưu tiến độ ---------- */
+.consent{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:3px solid var(--gold);padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));z-index:110;box-shadow:0 -10px 30px rgba(15,42,74,.12)}
+.consent .in{max-width:1120px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:.88rem}
 
-footer.ft{border-top:1px solid var(--line);margin-top:56px;padding-block:26px;color:var(--fg2);font-size:.84rem}
+/* ---------- Chân trang ---------- */
+footer.ft{border-top:1px solid var(--line);margin-top:64px;padding-block:28px 90px;color:var(--fg2);font-size:.84rem;background:var(--card)}
 footer.ft .in{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
 footer.ft .ftv{display:flex;justify-content:flex-end;margin-top:14px;font-size:.8rem;color:var(--fg2);font-variant-numeric:tabular-nums}
 footer.ft .ftv:empty{display:none}
-footer.ft{padding-bottom:90px} /* chừa chỗ nút trợ giảng nổi góc phải để không che bộ đếm */
-footer.ft .ftv span{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--card,#fff)}
+footer.ft .ftv span{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--bg)}
 footer.ft .ftv b{color:var(--navy);font-weight:700}
 :root[data-theme="dark"] footer.ft .ftv b{color:var(--gold)}
 footer.ft .in span:last-child{margin-left:auto;font-style:italic}
 @media(max-width:600px){footer.ft .in span:last-child{margin-left:0}}
 
-/* ===== KK-Bot chatbot ===== */
-#cbFab{position:fixed;right:18px;bottom:18px;z-index:140;width:56px;height:56px;border-radius:50%;border:2px solid var(--gold);background:var(--navy,#0f2a4a);color:#fff;font-size:1.5rem;line-height:1;cursor:pointer;box-shadow:0 8px 24px rgba(15,42,74,.35);transition:transform .15s}
+/* ---------- KK-Bot ---------- */
+#cbFab{position:fixed;right:18px;bottom:18px;z-index:140;width:56px;height:56px;border-radius:50%;border:2px solid var(--gold);background:#0f2a4a;color:#fff;font-size:1.5rem;line-height:1;cursor:pointer;box-shadow:0 8px 24px rgba(15,42,74,.35);transition:transform .15s}
 #cbFab:hover{transform:scale(1.08)}
-#cbPanel{position:fixed;right:18px;bottom:84px;z-index:141;width:min(370px,calc(100vw - 24px));max-height:min(72vh,620px);display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 50px rgba(15,42,74,.3);overflow:hidden}
+#cbPanel{position:fixed;right:18px;bottom:84px;z-index:141;width:min(370px,calc(100vw - 24px));max-height:min(72vh,620px);display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r-l);box-shadow:0 18px 50px rgba(15,42,74,.3);overflow:hidden}
 #cbPanel[hidden]{display:none}
 .cbHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:linear-gradient(135deg,#0f2a4a,#17406e);color:#fff}
 .cbHead b{font-size:.98rem}
@@ -354,13 +442,13 @@ footer.ft .in span:last-child{margin-left:auto;font-style:italic}
 .cbMsg.b .bub{background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px}
 .cbMsg.u .bub{background:var(--gold);color:#1d1403;border-bottom-right-radius:4px;font-weight:600}
 .cbActs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.cbActs button{border:1px solid var(--gold);background:transparent;color:var(--gold2,#8a6a1f);font-size:.78rem;font-weight:700;padding:5px 10px;border-radius:999px;cursor:pointer}
+.cbActs button{border:1px solid var(--gold);background:transparent;color:var(--gold2);font-size:.78rem;font-weight:700;padding:5px 10px;border-radius:999px;cursor:pointer}
 .cbActs button:hover{background:var(--gold);color:#1d1403}
 .cbChips{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;border-top:1px solid var(--line);background:var(--card);scrollbar-width:thin}
 .cbChips button{flex:0 0 auto;border:1px solid var(--line);background:var(--bg);color:var(--fg);font-size:.76rem;padding:5px 11px;border-radius:999px;cursor:pointer;white-space:nowrap}
-.cbChips button:hover{border-color:var(--gold);color:var(--gold2,#8a6a1f)}
+.cbChips button:hover{border-color:var(--gold);color:var(--gold2)}
 .cbIn{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:var(--card)}
-.cbIn input{flex:1;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:10px;padding:8px 11px;font-size:.87rem;min-width:0}
+.cbIn input{flex:1;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:var(--r-s);padding:8px 11px;font-size:.87rem;min-width:0}
 .cbIn input:focus{outline:2px solid var(--gold);outline-offset:-1px}
 @media(max-width:600px){#cbPanel{right:8px;left:8px;width:auto;bottom:78px;max-height:68vh}#cbFab{right:12px;bottom:12px}}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cbActs button{color:var(--gold)}:root:not([data-theme="light"]) .cbChips button:hover{color:var(--gold)}}
@@ -1220,10 +1308,10 @@ async function loadPack(code){
 /* ================= ROUTER ================= */
 const NAV = [
   {id:"home", label:"Trang chủ"},
-  {id:"tailieu", label:"📚 Tài liệu"},
-  {id:"video", label:"🎬 Video Online"},
-  {id:"live", label:"🧑‍🏫 Dạy Online"},
-  {id:"thi", label:"🎓 Kiểm tra"},
+  {id:"tailieu", label:"Tài liệu"},
+  {id:"video", label:"Video Online"},
+  {id:"live", label:"Dạy Online"},
+  {id:"thi", label:"Kiểm tra"},
   {id:"dash", label:"Học tập"},
   {id:"about", label:"Giới thiệu"},
 ];
@@ -1346,50 +1434,81 @@ function render(){
 
 /* ================= TRANG CHỦ ================= */
 /* ----- Demo động trên trang chủ: mô phỏng trọn một vòng học tương tác, tự chạy lặp ----- */
+/* ---------- Bộ icon nét (SVG, 24x24, tô theo currentColor) ---------- */
+const ICO = (() => {
+  const w = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+  return {
+    // phân hệ
+    book:  w('<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v16H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5V4.5M8 6h8M8 10h6"/>'),
+    play:  w('<rect x="3" y="5" width="18" height="13" rx="2.5"/><path d="m10 9 5 2.5-5 2.5z" fill="currentColor" stroke="none"/><path d="M7 21h10"/>'),
+    teach: w('<rect x="2.5" y="3.5" width="19" height="12" rx="2"/><path d="M8 7h8M8 10.5h5"/><circle cx="7" cy="20" r="1.6"/><path d="M12 21h8M12 15.5v2"/>'),
+    // cấp học (theo thứ tự tăng dần)
+    blocks:w('<rect x="3" y="12" width="8" height="8" rx="1.5"/><rect x="13" y="12" width="8" height="8" rx="1.5"/><rect x="8" y="4" width="8" height="8" rx="1.5"/>'),
+    abc:   w('<path d="M4 18 8 6l4 12M5.5 14h5"/><path d="M14 18V6h3.5a2.5 2.5 0 0 1 0 5H14h4a2.5 2.5 0 0 1 0 5z"/>'),
+    open:  w('<path d="M12 6c-2-1.8-5-2-8-1v13c3-1 6-.8 8 1 2-1.8 5-2 8-1V5c-3-1-6-.8-8 1z"/><path d="M12 6v13"/>'),
+    compass:w('<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z" fill="currentColor" stroke="none" opacity=".9"/>'),
+    cap:   w('<path d="m2.5 9 9.5-4.5L21.5 9 12 13.5z"/><path d="M6 11.5v4.5c0 1.5 3 3 6 3s6-1.5 6-3v-4.5M21.5 9v6"/>'),
+    chart: w('<path d="M4 20V4M4 20h16"/><path d="m7 15 4-5 3 3 5-7"/>'),
+    atom:  w('<circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="9" ry="3.6"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(120 12 12)"/>'),
+  };
+})();
+const LEVEL_ICO = {MN:"blocks", TH:"abc", CS:"open", PT:"compass", DH:"cap", THS:"chart", TS:"atom"};
+const LEVEL_SPAN = {DH:"Giáo trình ngành, năm 1 → năm 4", THS:"Phương pháp nghiên cứu và ứng dụng", TS:"Công trình và năng lực học thuật"};
+
+/* ---------- Minh họa hero: màn hình học tương tác (demo sống) ---------- */
 function heroSVG(){
-  return `<svg viewBox="0 0 420 300" style="width:100%;height:auto;cursor:pointer" id="heroDemo" role="img" aria-label="Demo video tương tác - bấm để học thử">
-  <defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16395f"/><stop offset="1" stop-color="#0f2a4a"/></linearGradient></defs>
-  <rect x="10" y="20" width="400" height="250" rx="18" fill="url(#hg)"/>
-  <rect x="16" y="26" width="52" height="18" rx="9" fill="#d4af37"/><text x="42" y="39" text-anchor="middle" font-size="11" font-weight="700" fill="#0f2a4a">DEMO</text>
+  return `<svg viewBox="0 0 440 300" style="width:100%;height:auto;cursor:pointer" id="heroDemo" role="img" aria-label="Demo video tương tác - bấm để học thử">
+  <defs>
+    <linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16395f"/><stop offset="1" stop-color="#0b1f38"/></linearGradient>
+    <linearGradient id="hfr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e9eef5"/></linearGradient>
+  </defs>
+  <!-- khung máy tính bảng -->
+  <rect x="8" y="10" width="424" height="280" rx="22" fill="url(#hfr)"/>
+  <rect x="8" y="10" width="424" height="280" rx="22" fill="none" stroke="#d4af37" stroke-width="1.5" opacity=".9"/>
   <!-- màn hình bài giảng -->
-  <rect x="38" y="52" width="212" height="128" rx="10" fill="#faf6ec"/>
-  <g id="hdPlay" style="transition:opacity .4s"><polygon points="128,96 128,136 162,116" fill="#0f2a4a"/></g>
-  <g id="hdBoard" opacity="0" style="transition:opacity .5s">
-    <text x="50" y="72" font-size="11" font-weight="700" fill="#0f2a4a">Toán 7 · Số hữu tỉ</text>
-    <rect x="50" y="82" width="58" height="26" rx="6" fill="none" stroke="#0f2a4a" stroke-width="1.6"/>
-    <text x="79" y="99" text-anchor="middle" font-size="12" font-weight="700" fill="#0f2a4a">2/3</text>
-    <text x="118" y="99" text-anchor="middle" font-size="13" font-weight="700" fill="#b8902c">+</text>
-    <rect x="128" y="82" width="58" height="26" rx="6" fill="none" stroke="#0f2a4a" stroke-width="1.6"/>
-    <text x="157" y="99" text-anchor="middle" font-size="12" font-weight="700" fill="#0f2a4a">1/6</text>
-    <path id="hdArrow" d="M118 118 v14 h0" stroke="#b8902c" stroke-width="1.6" fill="none" opacity="0" style="transition:opacity .4s"/>
-    <rect id="hdSum" x="89" y="136" width="58" height="26" rx="6" fill="#0f2a4a" opacity="0" style="transition:opacity .4s"/>
-    <text id="hdSumT" x="118" y="153" text-anchor="middle" font-size="12" font-weight="700" fill="#d4af37" opacity="0" style="transition:opacity .4s">= ?</text>
+  <rect x="24" y="30" width="262" height="160" rx="12" fill="url(#hg)"/>
+  <rect x="30" y="36" width="54" height="18" rx="9" fill="#d4af37"/><text x="57" y="49" text-anchor="middle" font-size="11" font-weight="700" fill="#0f2a4a" font-family="Be Vietnam Pro,sans-serif">DEMO</text>
+  <g id="hdPlay" style="transition:opacity .4s"><circle cx="155" cy="112" r="26" fill="#d4af37"/><polygon points="147,99 147,125 169,112" fill="#0f2a4a"/></g>
+  <g id="hdBoard" opacity="0" style="transition:opacity .5s" font-family="Be Vietnam Pro,sans-serif">
+    <text x="40" y="76" font-size="11.5" font-weight="700" fill="#d4af37">Toán 7 · Số hữu tỉ</text>
+    <rect x="40" y="88" width="62" height="28" rx="6" fill="none" stroke="#f3e9c9" stroke-width="1.6"/>
+    <text x="71" y="107" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">2/3</text>
+    <text x="115" y="107" text-anchor="middle" font-size="14" font-weight="700" fill="#d4af37">+</text>
+    <rect x="128" y="88" width="62" height="28" rx="6" fill="none" stroke="#f3e9c9" stroke-width="1.6"/>
+    <text x="159" y="107" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1/6</text>
+    <path id="hdArrow" d="M115 126 v14" stroke="#d4af37" stroke-width="1.8" fill="none" opacity="0" style="transition:opacity .4s"/>
+    <rect id="hdSum" x="84" y="144" width="62" height="28" rx="6" fill="#d4af37" opacity="0" style="transition:opacity .4s"/>
+    <text id="hdSumT" x="115" y="163" text-anchor="middle" font-size="13" font-weight="700" fill="#0f2a4a" opacity="0" style="transition:opacity .4s">= 5/6</text>
   </g>
   <!-- thẻ câu hỏi bật lên -->
-  <g id="hdQ" opacity="0" style="transition:opacity .35s">
-    <rect x="46" y="60" width="196" height="112" rx="10" fill="#0f2a4a" stroke="#d4af37" stroke-width="1.4"/>
-    <text x="58" y="82" font-size="11" fill="#d4af37" font-weight="700">⏸ DỪNG ĐÚNG GIÂY - CÂU HỎI</text>
-    <text x="58" y="100" font-size="13" fill="#faf6ec" font-weight="700">2/3 + 1/6 = ?</text>
-    <rect id="hdA1" x="58" y="110" width="80" height="24" rx="6" fill="#faf6ec"/>
-    <text x="98" y="126" text-anchor="middle" font-size="12" font-weight="700" fill="#0f2a4a">A. 5/6</text>
-    <rect id="hdA2" x="148" y="110" width="80" height="24" rx="6" fill="#faf6ec" opacity=".85"/>
-    <text x="188" y="126" text-anchor="middle" font-size="12" font-weight="700" fill="#0f2a4a">B. 3/9</text>
-    <text id="hdOK" x="58" y="156" font-size="12" font-weight="700" fill="#7ad48a" opacity="0" style="transition:opacity .3s">✓ Chính xác! +10 điểm · học tiếp ngay</text>
+  <g id="hdQ" opacity="0" style="transition:opacity .35s" font-family="Be Vietnam Pro,sans-serif">
+    <rect x="34" y="42" width="242" height="136" rx="10" fill="#f5f7fb" stroke="#d4af37" stroke-width="1.5"/>
+    <text x="48" y="66" font-size="10.5" fill="#a9871f" font-weight="700">Dừng đúng giây · Câu hỏi</text>
+    <text x="48" y="88" font-size="14" fill="#0f2a4a" font-weight="700">2/3 + 1/6 = ?</text>
+    <rect id="hdA1" x="48" y="100" width="100" height="28" rx="7" fill="#e9eff8" stroke="#d8e0ea"/>
+    <text x="98" y="119" text-anchor="middle" font-size="12.5" font-weight="600" fill="#0f2a4a">A. 5/6</text>
+    <rect id="hdA2" x="160" y="100" width="100" height="28" rx="7" fill="#e9eff8" stroke="#d8e0ea"/>
+    <text x="210" y="119" text-anchor="middle" font-size="12.5" font-weight="600" fill="#0f2a4a">B. 3/9</text>
+    <text id="hdOK" x="48" y="158" font-size="12" font-weight="700" fill="#1e7d4f" opacity="0" style="transition:opacity .3s">✓ Chính xác! +10 điểm · học tiếp ngay</text>
   </g>
   <!-- thanh phát -->
-  <rect x="38" y="196" width="212" height="8" rx="4" fill="#faf6ec" opacity=".35"/>
-  <rect id="hdFill" x="38" y="196" width="21" height="8" rx="4" fill="#d4af37"/>
-  <circle cx="160" cy="200" r="5" fill="#fff" stroke="#d4af37" stroke-width="2"/>
-  <circle id="hdDot" cx="59" cy="200" r="7" fill="#d4af37"/>
+  <rect x="24" y="206" width="262" height="8" rx="4" fill="#dfe6ef"/>
+  <rect id="hdFill" x="24" y="206" width="21" height="8" rx="4" fill="#d4af37"/>
+  <circle cx="146" cy="210" r="5" fill="#fff" stroke="#0f2a4a" stroke-width="2"/>
+  <circle id="hdDot" cx="45" cy="210" r="7" fill="#0f2a4a" stroke="#d4af37" stroke-width="2"/>
+  <text id="hdCap" x="24" y="240" font-size="12" fill="#4f5d73" font-family="Be Vietnam Pro,sans-serif">▶ Video bài giảng đang phát...</text>
+  <text x="24" y="270" font-size="11.5" fill="#a9871f" font-weight="700" font-family="Be Vietnam Pro,sans-serif">Bấm để học thử bài này →</text>
   <!-- cột tính năng -->
-  <g transform="translate(272,52)" font-family="Georgia,serif" font-weight="700">
-    <rect id="hdC1" width="112" height="34" rx="8" fill="#faf6ec" opacity=".6" style="transition:opacity .4s,fill .4s"/><text x="56" y="22" text-anchor="middle" font-size="14" fill="#0f2a4a">Hỏi - Đáp</text>
-    <rect id="hdC2" y="44" width="112" height="34" rx="8" fill="#faf6ec" opacity=".6" style="transition:opacity .4s,fill .4s"/><text x="56" y="66" text-anchor="middle" font-size="13" fill="#0f2a4a">Sơ đồ</text>
-    <rect id="hdC3" y="88" width="112" height="34" rx="8" fill="#faf6ec" opacity=".6" style="transition:opacity .4s,fill .4s"/><text x="56" y="110" text-anchor="middle" font-size="13" fill="#0f2a4a">Thành thạo</text>
-    <rect id="hdC4" y="132" width="112" height="34" rx="8" fill="#faf6ec" opacity=".6" style="transition:opacity .4s,fill .4s"/><text x="56" y="154" text-anchor="middle" font-size="13" fill="#0f2a4a">AI Trợ giảng</text>
+  <g transform="translate(300,30)" font-family="Be Vietnam Pro,sans-serif" font-weight="600">
+    <rect id="hdC1" width="116" height="36" rx="9" fill="#e9eff8" style="transition:fill .4s"/><text x="58" y="23" text-anchor="middle" font-size="12.5" fill="#0f2a4a">Hỏi - đáp</text>
+    <rect id="hdC2" y="46" width="116" height="36" rx="9" fill="#e9eff8" style="transition:fill .4s"/><text x="58" y="69" text-anchor="middle" font-size="12.5" fill="#0f2a4a">Sơ đồ chuẩn</text>
+    <rect id="hdC3" y="92" width="116" height="36" rx="9" fill="#e9eff8" style="transition:fill .4s"/><text x="58" y="115" text-anchor="middle" font-size="12.5" fill="#0f2a4a">Thành thạo</text>
+    <rect id="hdC4" y="138" width="116" height="36" rx="9" fill="#e9eff8" style="transition:fill .4s"/><text x="58" y="161" text-anchor="middle" font-size="12.5" fill="#0f2a4a">Trợ giảng AI</text>
+    <g transform="translate(0,190)"><rect width="116" height="70" rx="9" fill="#0f2a4a"/>
+      <text x="58" y="26" text-anchor="middle" font-size="10" fill="#aebdd0">Điểm bài học</text>
+      <text x="58" y="50" text-anchor="middle" font-size="18" font-weight="700" fill="#d4af37">40·40·20</text>
+      <text x="58" y="62" text-anchor="middle" font-size="8.5" fill="#aebdd0">video · thành thạo · tự luận</text></g>
   </g>
-  <text id="hdCap" x="38" y="246" font-size="12" fill="#cfd9ea" font-style="italic">▶ Video bài giảng đang phát...</text>
-  <text x="394" y="40" text-anchor="end" font-size="11" fill="#d4af37" font-weight="700">Bấm để học thử →</text>
 </svg>`;
 }
 let heroTimer=null;
@@ -1398,44 +1517,44 @@ function startHeroDemo(){
   const $$=id=>document.getElementById(id);
   if(!$$("hdFill")) return;
   const chips=["hdC1","hdC2","hdC3","hdC4"];
-  const chipOn=(on)=>chips.forEach((c,i)=>{ const e=$$(c); if(!e) return; e.setAttribute("fill", on===i?"#d4af37":"#faf6ec"); e.setAttribute("opacity", on===i?"1":".6"); });
+  const chipOn=(on)=>chips.forEach((c,i)=>{ const e=$$(c); if(!e) return; e.setAttribute("fill", on===i?"#d4af37":"#e9eff8"); });
   let t=0;
   heroTimer=setInterval(()=>{
     const f=$$("hdFill");
-    if(!f){ clearInterval(heroTimer); heroTimer=null; return; } // rời trang chủ → tự dừng
+    if(!f){ clearInterval(heroTimer); heroTimer=null; return; }
     t+=0.1; if(t>13.5) t=0;
     const set=(id,attr,val)=>{ const e=$$(id); if(e) e.setAttribute(attr,val); };
     const o=(id,v)=>set(id,"opacity",v);
-    // vị trí thanh phát: 0-4.2s chạy tới mốc; 7.4-11s chạy nốt
     let w;
-    if(t<4.2) w=21+(t/4.2)*101;           // tới mốc câu hỏi (x=160)
-    else if(t<7.4) w=122;                  // dừng
-    else if(t<11) w=122+((t-7.4)/3.6)*90;  // chạy nốt
-    else w=212;
+    if(t<4.2) w=21+(t/4.2)*101;
+    else if(t<7.4) w=122;
+    else if(t<11) w=122+((t-7.4)/3.6)*140;
+    else w=262;
     f.setAttribute("width", String(Math.round(w)));
-    const dot=$$("hdDot"); if(dot) dot.setAttribute("cx", String(38+Math.round(w)));
+    const dot=$$("hdDot"); if(dot) dot.setAttribute("cx", String(24+Math.round(w)));
     const cap=$$("hdCap");
-    if(t<1.6){ o("hdPlay",1); o("hdBoard",0); o("hdQ",0); o("hdOK",0); chipOn(-1); if(cap) cap.textContent="▶ Video bài giảng đang phát..."; set("hdA1","fill","#faf6ec"); }
-    else if(t<4.2){ o("hdPlay",0); o("hdBoard",1); chipOn(1); if(cap) cap.textContent="▶ Sơ đồ chuẩn hiện đúng lúc trong bài giảng";
+    if(t<1.6){ o("hdPlay",1); o("hdBoard",0); o("hdQ",0); o("hdOK",0); chipOn(-1); if(cap) cap.textContent="▶ Video bài giảng đang phát..."; set("hdA1","fill","#e9eff8"); }
+    else if(t<4.2){ o("hdPlay",0); o("hdBoard",1); chipOn(1); if(cap) cap.textContent="Sơ đồ chuẩn hiện đúng lúc trong bài giảng";
       o("hdArrow", t>2.4?1:0); o("hdSum", t>2.4?1:0); o("hdSumT", t>2.4?1:0); }
-    else if(t<5.8){ o("hdQ",1); chipOn(0); if(cap) cap.textContent="⏸ Video tự dừng đúng giây - hỏi đúng lúc"; }
-    else if(t<7.4){ set("hdA1","fill","#7ad48a"); o("hdOK",1); if(cap) cap.textContent="✓ Chọn đúng - cộng điểm, gợi ý 2 mức nếu sai"; }
-    else if(t<9.6){ o("hdQ",0); o("hdOK",0); chipOn(2); if(cap) cap.textContent="▶ Học tiếp - cuối bài có kiểm tra thành thạo"; }
-    else if(t<11){ chipOn(3); if(cap) cap.textContent="🔊 Giọng đọc AI + Trợ giảng giải đáp theo bài"; }
-    else { if(cap) cap.textContent="Điểm bài học: Video 40% · Thành thạo 40% · Tự luận 20%"; }
+    else if(t<5.8){ o("hdQ",1); chipOn(0); if(cap) cap.textContent="⏸ Video tự dừng đúng giây để hỏi"; }
+    else if(t<7.4){ set("hdA1","fill","#cfeedd"); o("hdOK",1); if(cap) cap.textContent="✓ Chọn đúng được cộng điểm, sai có gợi ý 2 mức"; }
+    else if(t<9.6){ o("hdQ",0); o("hdOK",0); chipOn(2); if(cap) cap.textContent="▶ Học tiếp, cuối bài có kiểm tra thành thạo"; }
+    else if(t<11){ chipOn(3); if(cap) cap.textContent="🔊 Giọng đọc AI và trợ giảng giải đáp theo bài"; }
+    else { if(cap) cap.textContent="Điểm bài học: video 40% · thành thạo 40% · tự luận 20%"; }
   },100);
 }
 function viewHome(v){
   const nBooks = CATALOG.length, nLessons = CATALOG.reduce((a,b)=>a+(b.lessons||0),0);
   const nVQ = CATALOG.reduce((a,b)=>a+(b.videoQuiz||0),0), nMQ = CATALOG.reduce((a,b)=>a+(b.masteryQuiz||0),0);
+  const gradeSpan = L => { const cl=g=>String(g).replace(/\s*\(.*?\)/g,"").trim(); const gs=[...new Set(CATALOG.filter(b=>b.level===L.key).map(b=>b.grade).filter(Boolean))].sort((a,b)=>gradeOrder(a)-gradeOrder(b)).map(cl); const u=[...new Set(gs)]; return u.length>1?`${u[0]} → ${u[u.length-1]}`:(u[0]||""); };
   v.innerHTML = `
-  ${S.settings.announcement?`<div class="alertbox">${esc(S.settings.announcement)}</div>`:""}
-  <section class="hero">
+  ${S.settings.announcement?`<div class="alertbox" style="margin-top:14px">${esc(S.settings.announcement)}</div>`:""}
+  <section class="board"><div class="wrap hero">
     <div>
-      <div class="eyebrow">Mô hình giáo dục số thử nghiệm · Phiên bản 2.0</div>
-      <h1>Học bằng video tương tác,<br>từ <span class="gold">Nhà trẻ</span> đến <span class="gold">Tiến sĩ</span></h1>
-      <p class="lead">${nBooks} đầu sách bám sát Chương trình GDPT 2018 và các chương trình đào tạo hiện hành. Mỗi bài học có sơ đồ chuẩn, video dừng đúng giây để hỏi, kiểm tra thành thạo và trợ giảng AI.</p>
-      <div class="rowline" style="margin-top:16px">
+      <div class="kicker"><i></i>Mô hình giáo dục số thử nghiệm · phiên bản 2.0</div>
+      <h1>Học bằng video tương tác, từ <span class="gold">nhà trẻ</span> đến <span class="gold">tiến sĩ</span></h1>
+      <p class="lead">${nBooks} đầu sách bám sát Chương trình GDPT 2018 và các chương trình đào tạo hiện hành. Video dừng đúng giây để hỏi, sơ đồ chuẩn hiện đúng lúc, kiểm tra thành thạo cuối bài và trợ giảng AI theo từng bài.</p>
+      <div class="rowline">
         <button class="btn pri" id="hExplore">Vào học Video Online</button>
         <button class="btn ghost" id="hDemo">Học thử bài demo có video thật</button>
       </div>
@@ -1447,50 +1566,68 @@ function viewHome(v){
       </div>
     </div>
     <div class="hero-art">${heroSVG()}</div>
+  </div></section>
+
+  <section class="home-sec">
+    <div class="sec"><h2>Chọn đúng bậc học của bạn</h2></div>
+    <p class="sec-lead">Bảy bậc nối tiếp nhau theo đúng tiến trình học tập. Khai năm sinh một lần, hệ thống tự xếp lớp và gợi ý sách phù hợp.</p>
+    <div class="ladder">${LEVELS.map((L,i)=>{
+      const n = CATALOG.filter(b=>b.level===L.key).length;
+      return `<div class="step lvcard" data-lv="${esc(L.key)}" role="button" tabindex="0" aria-label="${esc(L.short)}: ${n} sách">
+        <div class="si">${ICO[LEVEL_ICO[L.slug]]||ICO.open}</div>
+        <div class="sn">Bậc ${i+1}</div>
+        <h3>${esc(L.short)}</h3>
+        <div class="meta">${esc(LEVEL_SPAN[L.slug]||gradeSpan(L)||L.desc)}</div>
+        <div class="cnt"><b>${n}</b>sách</div>
+      </div>`;}).join("")}
+    </div>
   </section>
-  <div class="sec"><h2>Ba phân hệ của KK-EDU</h2></div>
-  <div class="grid lv" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))">
-    <div class="card click" id="zoneTL">
-      <div style="font-size:2rem">📚</div><h3 style="margin:.3em 0 .2em">1 · Kho Tài liệu</h3>
-      <div class="meta">Sách PDF (Bộ A) và kịch bản video (Bộ B) của ${CATALOG.length} đầu sách - mở trực tiếp từ Google Drive / OneDrive của tác giả, tra cứu theo cấp học và môn.</div>
-      <div class="rowline" style="margin-top:10px"><span class="badge gold">Mở tài liệu →</span></div>
+
+  <section class="home-sec">
+    <div class="sec"><h2>Ba cách học trên KK-EDU</h2></div>
+    <div class="zones">
+      <div class="zone" id="zoneVD" role="button" tabindex="0">
+        <div class="zi">${ICO.play}</div><h3>Video Online</h3>
+        <div class="meta">Học bằng video tương tác: dừng đúng giây để hỏi, gợi ý 2 mức khi sai, kiểm tra thành thạo, chấm điểm 40·40·20 và trợ giảng AI theo từng bài.</div>
+        <span class="go">Vào học</span>
+      </div>
+      <div class="zone" id="zoneTL" role="button" tabindex="0">
+        <div class="zi">${ICO.book}</div><h3>Kho tài liệu</h3>
+        <div class="meta">Sách PDF và kịch bản video của ${CATALOG.length} đầu sách, đọc ngay trong trình đọc bảo vệ bản quyền, tra cứu theo cấp học và môn.</div>
+        <span class="go">Mở tài liệu</span>
+      </div>
+      <div class="zone" id="zoneLV" role="button" tabindex="0">
+        <div class="zi">${ICO.teach}</div><h3>Giáo viên dạy Online</h3>
+        <div class="meta">Lớp học trực tuyến theo lịch với giáo viên thật qua Zoom hoặc Google Meet: xem lịch, đăng ký chỗ và vào lớp đúng giờ.</div>
+        <span class="go">Xem lịch lớp</span>
+      </div>
     </div>
-    <div class="card click" id="zoneVD">
-      <div style="font-size:2rem">🎬</div><h3 style="margin:.3em 0 .2em">2 · Video Online</h3>
-      <div class="meta">Học bằng video tương tác: dừng đúng giây để hỏi, gợi ý 2 mức, kiểm tra thành thạo, chấm điểm 40-40-20 và trợ giảng AI theo từng bài.</div>
-      <div class="rowline" style="margin-top:10px"><span class="badge gold">Vào học →</span></div>
+  </section>
+
+  <section class="home-sec">
+    <div class="sec"><h2>Một bài học diễn ra như thế nào</h2></div>
+    <p class="sec-lead">Bốn bước của Phương pháp 2.0, lặp lại trong mọi bài học, dựa trên các nguyên lý khoa học học tập đã được kiểm chứng.</p>
+    <div class="flow">
+      <div class="fstep"><div class="fn">1</div><h3>Mã hóa kép</h3><div class="meta">Mỗi khái niệm trọng tâm có sơ đồ đi kèm. Cùng một sơ đồ xuất hiện trong sách và trong video để người học nhận ra ngay.</div></div>
+      <div class="fstep"><div class="fn">2</div><h3>Thực hành truy xuất</h3><div class="meta">Video dừng để người học trả lời, không xem thụ động. Câu hỏi rải suốt video, có thăm dò quan niệm sai trước khi học.</div></div>
+      <div class="fstep"><div class="fn">3</div><h3>Phản hồi có hướng dẫn</h3><div class="meta">Sai thì nhận gợi ý nhẹ, rồi gợi ý rõ, rồi lời giải thích kèm mốc xem lại đúng đoạn video liên quan.</div></div>
+      <div class="fstep"><div class="fn">4</div><h3>Đánh giá thành thạo</h3><div class="meta">Điểm trọng số 40·40·20, ngưỡng Đạt 70% và Nâng cao 90%. Mầm non chỉ quan sát 3 mức, Tiểu học không xếp hạng.</div></div>
     </div>
-    <div class="card click" id="zoneLV">
-      <div style="font-size:2rem">🧑‍🏫</div><h3 style="margin:.3em 0 .2em">3 · Giáo viên dạy Online</h3>
-      <div class="meta">Lớp học trực tuyến theo lịch với giáo viên thật qua Zoom / Google Meet: xem lịch, đăng ký chỗ và vào lớp đúng giờ ngay tại đây.</div>
-      <div class="rowline" style="margin-top:10px"><span class="badge gold">Xem lịch lớp →</span></div>
-    </div>
-  </div>
-  <div class="sec"><h2>Chọn cấp học</h2></div>
-  <div class="grid lv">${LEVELS.map(L=>{
-    const n = CATALOG.filter(b=>b.level===L.key).length;
-    return `<div class="card click lvcard" data-lv="${esc(L.key)}">
-      <div style="font-size:1.9rem">${L.icon}</div>
-      <h3 style="margin:.3em 0 .2em">${esc(L.short)}</h3>
-      <div class="meta">${esc(L.desc)}</div>
-      <div class="rowline" style="margin-top:9px"><span class="badge">${n} sách</span></div>
-    </div>`;}).join("")}
-  </div>
-  <div class="sec"><h2>Phương pháp 2.0</h2></div>
-  <div class="grid lv">
-    <div class="card"><h3>Mã hóa kép</h3><div class="meta">Mỗi khái niệm trọng tâm có sơ đồ đi kèm - cùng một sơ đồ xuất hiện trong sách và trong video để người học nhận ra ngay.</div></div>
-    <div class="card"><h3>Thực hành truy xuất</h3><div class="meta">Video dừng để người học trả lời, không xem thụ động. Câu hỏi phân bố suốt video, có thăm dò quan niệm sai trước khi học.</div></div>
-    <div class="card"><h3>Phản hồi có hướng dẫn</h3><div class="meta">Sai thì nhận gợi ý nhẹ, rồi gợi ý rõ, rồi lời giải thích và mốc xem lại đúng đoạn video liên quan.</div></div>
-    <div class="card"><h3>Đánh giá thành thạo</h3><div class="meta">Điểm trọng số 40-40-20, ngưỡng Đạt 70% và Nâng cao 90%. Mầm non chỉ quan sát 3 mức, Tiểu học không xếp hạng.</div></div>
-  </div>`;
-  v.querySelectorAll(".lvcard").forEach(c=> c.onclick=()=>{ catalogFilter.level=c.dataset.lv; catalogFilter.grade=""; go({name:"video"}); });
+  </section>
+
+  <section class="cta-band">
+    <div><h2>Học thử ngay, không cần đăng nhập</h2><p>${trialN()} bài đầu của mỗi sách đúng lớp mở miễn phí. Bài demo Toán 7 có video thật, câu hỏi dừng giây và chấm điểm như bài học chính thức.</p></div>
+    <button class="btn pri" id="hDemo2">Học thử bài demo</button>
+  </section>`;
+  const goLv=c=>{ catalogFilter.level=c.dataset.lv; catalogFilter.grade=""; go({name:"video"}); };
+  v.querySelectorAll(".lvcard").forEach(c=>{ c.onclick=()=>goLv(c); c.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); goLv(c); } }; });
+  const demo=()=>go({name:"hoc", code:"CS-TOAN-7", i:0});
   $("#hExplore").onclick=()=>go({name:"video"});
-  $("#hDemo").onclick=()=>go({name:"hoc", code:"CS-TOAN-7", i:0});
-  const hd=$("#heroDemo"); if(hd) hd.onclick=()=>go({name:"hoc", code:"CS-TOAN-7", i:0});
+  $("#hDemo").onclick=demo; $("#hDemo2").onclick=demo;
+  const hd=$("#heroDemo"); if(hd) hd.onclick=demo;
   startHeroDemo();
-  $("#zoneTL").onclick=()=>go({name:"tailieu"});
-  $("#zoneVD").onclick=()=>go({name:"video"});
-  $("#zoneLV").onclick=()=>go({name:"live"});
+  const zones={zoneTL:"tailieu", zoneVD:"video", zoneLV:"live"};
+  Object.entries(zones).forEach(([id,name])=>{ const z=$("#"+id); if(!z) return; z.onclick=()=>go({name}); z.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go({name}); } }; });
 }
 
 /* ---------- Bộ lọc lớp / độ tuổi / chương trình dùng chung cho MỌI cấp (Video Online + Kho tài liệu) ---------- */
