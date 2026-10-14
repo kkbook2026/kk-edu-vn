@@ -610,16 +610,19 @@ const VI_DIACRITIC=/[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽ
 const VN_SYL=/^(?:ch|gh|gi|kh|ngh|ng|nh|ph|qu|th|tr|[bcdghklmnpqrstvx])?[aeiouy]{1,3}(?:ch|ng|nh|[cmnpt])?$/;
 const EN_SURE=new Set("the and of is are was were you your we they this that with for have has not will can could should would from into than then there their about which what when where".split(" "));
 const VI_PLAIN=new Set("ta ba hai nam con ai do di ma la va cho khi nha anh em ong ngay nay nhu hay can cau bai lam noi xem cua bao nhieu tren gia so ten viet thi ra vao len nen ban tu toi cai cac chi minh phan luc trong ngoai mot muoi tram nghin ty".split(" "));
+const LEX={en:new Set(), vi:new Set()};   // từ điển không dấu rà soát từ gói nội dung (nạp từ API, dùng cho giọng dự phòng)
+(async()=>{ try{ const base=await kkApiBase(); const r=await fetch(base+"/ielts/lexicon",{cache:"force-cache"}); if(r.ok){ const j=await r.json(); LEX.en=new Set(j.en||[]); LEX.vi=new Set(j.vi||[]); } }catch(e){} })();
+/* Cùng thuật toán với Worker (splitLang) - dùng khi phải đọc bằng giọng thiết bị */
 function kkSplitLang(text){
   const toks=String(text||"").replace(/\s+/g," ").trim().split(" ").filter(Boolean);
-  const clean=t=>t.toLowerCase().replace(/^[^a-zà-ỹ0-9]+|[^a-zà-ỹ0-9]+$/gi,"");
-  const lang=toks.map(t=>{ const w=clean(t); if(!w) return null; if(VI_DIACRITIC.test(w)) return "vi"; if(!/^[a-z][a-z'-]*$/.test(w)) return null; if(EN_SURE.has(w)) return "en"; if(VI_PLAIN.has(w)) return "vi"; if(/^[A-Z]{2,}$/.test(t.replace(/[^A-Za-z]/g,""))) return null; return VN_SYL.test(w)&&w.length<=7?null:"en"; });
+  const clean=t=>t.toLowerCase().replace(/^[^a-zà-ỹ0-9]+|[^a-zà-ỹ0-9]+$/gi,""); const letters=t=>t.replace(/[^A-Za-zÀ-ỹ]/g,"");
+  const lang=toks.map(t=>{ const w=clean(t); if(!w) return null; if(VI_DIACRITIC.test(w)) return "vi"; const L=letters(t); if(L.length>=2&&L===L.toUpperCase()) return "en"; if(/\.[a-z]{2,}$/i.test(w)||/^www\./i.test(w)||/@/.test(w)) return "en"; if(!/^[a-z][a-z'.-]*$/i.test(w)) return null; const lw=w.replace(/'s$/,""); if(LEX.vi.has(lw)) return "vi"; if(LEX.en.has(lw)||EN_SURE.has(lw)) return "en"; if(VI_PLAIN.has(lw)) return "vi"; return VN_SYL.test(lw)&&lw.length<=7?null:"en"; });
   const ends=t=>/[.!?:;]["')\]]?$/.test(t); const n=toks.length, out=lang.slice();
-  for(let i=0;i<n;i++){ if(out[i]) continue; let f=null; for(let j=i+1;j<n;j++){ if(lang[j]){f=lang[j];break;} if(ends(toks[j])) break; } if(!f) for(let j=i-1;j>=0;j--){ if(lang[j]){f=lang[j];break;} if(ends(toks[j])) break; } if(!f) for(let j=i-1;j>=0;j--){ if(lang[j]){f=lang[j];break;} } out[i]=f||"vi"; }
+  for(let i=0;i<n;i++){ if(out[i]==null&&/[a-z]\/[a-z]/i.test(toks[i])){ const parts=clean(toks[i]).split("/").map(x=>x.replace(/'s$/,"")); const en=parts.filter(x=>LEX.en.has(x)||EN_SURE.has(x)).length; const vi=parts.filter(x=>VI_DIACRITIC.test(x)||LEX.vi.has(x)).length; if(en+vi) out[i]=en>=vi?"en":"vi"; } }
+  for(let i=0;i<n;i++){ if(out[i]!=null) continue; const t=toks[i]; if(!/^[A-Z][a-z'-]+[.,;:!?]*$/.test(t)) continue; const sos=i===0||ends(toks[i-1]); const nearVi=[toks[i-1],toks[i+1]].some(x=>x&&/^[A-ZÀ-Ỹ]/.test(x)&&VI_DIACRITIC.test(x)); if(!sos&&!nearVi) out[i]="en"; }
+  for(let i=0;i<n;i++){ if(out[i]) continue; let f=null; for(let j=i+1;j<n;j++){ if(out[j]){f=out[j];break;} if(ends(toks[j])) break; } if(!f) for(let j=i-1;j>=0;j--){ if(out[j]){f=out[j];break;} if(ends(toks[j])) break; } if(!f) for(let j=i-1;j>=0;j--){ if(out[j]){f=out[j];break;} } out[i]=f||"vi"; }
   const runs=[]; toks.forEach((t,i)=>{ const l=out[i]; const last=runs[runs.length-1]; if(last&&last.lang===l) last.words.push(t); else runs.push({lang:l,words:[t]}); });
-  runs.forEach(r=>{ if(r.lang==="en"&&r.words.length<=2&&runs.length>1) r.lang="vi"; });
-  const m=[]; runs.forEach(r=>{ const last=m[m.length-1]; if(last&&last.lang===r.lang) last.words.push(...r.words); else m.push({lang:r.lang,words:r.words.slice()}); });
-  return m.map(r=>({lang:r.lang,text:r.words.join(" ")})).filter(r=>r.text.trim());
+  return runs.map(r=>({lang:r.lang,text:r.words.join(" ")})).filter(r=>r.text.trim());
 }
 function kkStop(){ if(KKV.cur){ try{ KKV.cur.stop(); }catch(e){} KKV.cur=null; } try{ speechSynthesis.cancel(); }catch(e){} }
 /** Đọc một đoạn. opts: {lang:'auto'|'en'|'vi', voiceEn, rate, onend, onprogress(frac)} -> {stop, done:Promise} */
@@ -634,10 +637,11 @@ function kkSpeak(text, opts={}){
     try{
       const base=await kkApiBase();
       if(KKV.ok!==false && (/(^|\.)kk-edu\.(com|vn)$/.test(location.hostname) || /^(localhost|127\.0\.0\.1)$/.test(location.hostname))){
-        const key=JSON.stringify([segs,voiceEn,rate]);
+        const key=JSON.stringify([lang,text,voiceEn,rate]);
         let url=KKV.cache.get(key);
         if(!url){
-          const r=await fetch(base+"/tts",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({segments:segs, voiceVi:KKV.voiceVi, voiceEn, rate})});
+          const body = lang==="auto" ? {text:String(text), voiceVi:KKV.voiceVi, voiceEn, rate} : {segments:segs, voiceVi:KKV.voiceVi, voiceEn, rate};
+          const r=await fetch(base+"/tts",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
           if(!r.ok) throw new Error("tts "+r.status);
           url=URL.createObjectURL(await r.blob()); KKV.cache.set(key,url); if(KKV.cache.size>120){ const k0=KKV.cache.keys().next().value; URL.revokeObjectURL(KKV.cache.get(k0)); KKV.cache.delete(k0); }
         }
