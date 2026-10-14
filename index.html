@@ -162,6 +162,15 @@ nav.main button.on{background:var(--navy);color:#fff;font-weight:600}
 .home-sec .sec{margin:0 0 18px}
 .sec-lead{color:var(--fg2);max-width:46em;margin:-6px 0 18px}
 /* Ba phân hệ: 3 cột, chia bằng đường kẻ */
+/* Dải ảnh thật lớp học / học viên */
+.pstrip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0 22px}
+.pstrip figure{margin:0;border:1px solid var(--line);border-radius:var(--r-m);overflow:hidden;background:var(--card);box-shadow:0 1px 0 rgba(15,42,74,.04)}
+.pstrip .ph{aspect-ratio:4/3;display:block;width:100%;object-fit:cover;background:linear-gradient(135deg,var(--navy),#1e4472)}
+.pstrip .ph.ph-fallback{display:grid;place-items:center;color:var(--gold);padding:16px;text-align:center;font-size:.85rem}
+.pstrip .ph.ph-fallback svg{width:46px;height:46px;margin-bottom:8px;opacity:.9}
+.pstrip figcaption{padding:10px 12px;font-size:.86rem;color:var(--fg2);line-height:1.4}
+.pstrip figcaption b{color:var(--fg);display:block;font-size:.9rem}
+@media(max-width:760px){.pstrip{grid-template-columns:1fr 1fr}.pstrip figure:nth-child(3){grid-column:span 2}.pstrip figure:nth-child(3) .ph{aspect-ratio:2/1}}
 .zones{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:var(--r-l);background:var(--card);overflow:hidden}
 .zone{padding:26px 24px 24px;cursor:pointer;position:relative;border-right:1px solid var(--line);transition:background .15s}
 .zone:last-child{border-right:0}
@@ -1319,6 +1328,31 @@ const NAV = [
   {id:"dash", label:"Học tập"},
   {id:"about", label:"Giới thiệu"},
 ];
+/* ---------- ẢNH THẬT: đặt file vào media/anh/ đúng tên là tự hiện; thiếu file thì hiện khung minh họa ---------- */
+const KK_PHOTOS={
+  live:[
+    {src:"media/anh/lop-online-1.jpg", t:"Lớp Toán 7 trực tuyến", c:"Giáo viên chữa bài trên bảng, học sinh hỏi trực tiếp qua Google Meet."},
+    {src:"media/anh/lop-online-2.jpg", t:"Học viên tại nhà", c:"Xem video tương tác trước, vào lớp để được chữa bài và hỏi đáp sâu."},
+    {src:"media/anh/lop-online-3.jpg", t:"Giáo viên KK-EDU", c:"Đội ngũ giáo viên đứng lớp theo lịch, bám sát từng chương của sách."}
+  ],
+  about:[
+    {src:"media/anh/gioi-thieu-1.jpg", t:"Lớp học cùng KK-EDU", c:"Học sinh học bằng video tương tác trong giờ tự học có hướng dẫn."},
+    {src:"media/anh/gioi-thieu-2.jpg", t:"Phụ huynh đồng hành", c:"Theo dõi tiến độ và học bạ của con ngay trên điện thoại."},
+    {src:"media/anh/gioi-thieu-3.jpg", t:"Tác giả & đội ngũ", c:"Nguyễn Duy Điển (KK-2026) cùng đội ngũ biên soạn 220 đầu sách."}
+  ]
+};
+function kkPhotoStrip(key){
+  const list=KK_PHOTOS[key]||[]; if(!list.length) return "";
+  return `<div class="pstrip" data-pk="${key}">${list.map((p,i)=>`<figure>
+    <img class="ph" src="${esc(p.src)}" alt="${esc(p.t)}" loading="lazy" decoding="async" data-pi="${i}">
+    <figcaption><b>${esc(p.t)}</b>${esc(p.c)}</figcaption></figure>`).join("")}</div>`;
+}
+function kkPhotoBind(root){
+  (root||document).querySelectorAll(".pstrip img.ph").forEach(img=>{
+    const fb=()=>{ const d=document.createElement("div"); d.className="ph ph-fallback"; d.innerHTML=(typeof ICO!=="undefined"&&ICO.teach?ICO.teach:"")+"<div>Ảnh thật sẽ được cập nhật</div>"; img.replaceWith(d); };
+    if(img.complete && img.naturalWidth===0) fb(); else img.onerror=fb;
+  });
+}
 /* ---------- Đo lường (Cloudflare Zaraz -> GA4): không PII, không chặn trang ---------- */
 function kkTrack(ev, props){
   try{
@@ -1925,11 +1959,13 @@ function viewLive(v){
   v.innerHTML=`
   <div class="sec" style="margin-top:26px"><div><div class="eyebrow">Phân hệ 3 · Giáo viên dạy Online</div><h2 style="margin:0">Lớp học trực tuyến</h2></div></div>
   <p class="note" style="max-width:46em">Học trực tiếp với giáo viên qua Google Meet / Zoom. Đăng ký chỗ để giữ suất và nhận nhắc lịch; đến giờ học bấm "Vào lớp". Kết hợp với Video Online: xem bài giảng tương tác trước, vào lớp để được chữa bài và hỏi đáp sâu.</p>
+  ${kkPhotoStrip("live")}
   ${up.length?`<div class="grid lv" style="grid-template-columns:repeat(auto-fill,minmax(310px,1fr))">${up.map(card).join("")}</div>`
     :`<div class="card"><h3>Chưa có lớp nào được mở</h3><div class="note">${S.isAdmin?"Vào Quản trị → Lớp Online để tạo lớp đầu tiên (tên lớp, giáo viên, lịch, link Meet/Zoom).":"Lịch lớp sẽ được cập nhật tại đây. Trong lúc chờ, bạn có thể học Video Online - bài 1 của mọi sách đều miễn phí."}</div>
     <div style="margin-top:12px"><button class="btn pri" id="lvGo">${S.isAdmin?"Mở trang Quản trị":"Vào học Video Online"}</button></div></div>`}
   ${past.length?`<div class="sec"><h2>Lớp đã diễn ra</h2></div><div class="grid lv" style="grid-template-columns:repeat(auto-fill,minmax(310px,1fr))">${past.slice(-6).map(card).join("")}</div>`:""}`;
   const g=$("#lvGo"); if(g) g.onclick=()=>go({name:S.isAdmin?"admin":"video"});
+  kkPhotoBind(v);
   v.querySelectorAll(".regBtn").forEach(b=>b.onclick=async()=>{ const c=list.find(x=>x.id===b.dataset.id); if(c){ await registerClass(c); viewLive(v); } });
 }
 
@@ -1943,6 +1979,7 @@ function viewAbout(v){
   <div class="card" style="max-width:56em">
     <h3 style="margin-top:0">KK-EDU là gì?</h3>
     <p>KK-EDU là <b>mô hình giáo dục số thử nghiệm</b> tại địa chỉ chính thức <b>www.kk-edu.com</b>: nền tảng học liệu tương tác xây dựng trên bộ KK-EDU 2.0 gồm <b>201 sách chuẩn và 19 bộ Nâng cao</b> (220 đầu sách, 6.872 bài học, 47.513 điểm tương tác video, 27.488 câu kiểm tra thành thạo), phủ từ Nhà trẻ đến Tiến sĩ, bám sát Chương trình GDPT 2018 và các chương trình đào tạo hiện hành, năm học ${AY}-${AY+1}.</p>
+    ${kkPhotoStrip("about")}
     <h3>Bốn phân hệ</h3>
     <p><b>1 · Kho Tài liệu</b> - tra cứu 220 đầu sách theo cấp học, môn học; đọc <b>Sách PDF (Bộ A)</b> ngay trên trang trong trình đọc bảo vệ bản quyền (chỉ xem - không tải, không sao chép), mở Kịch bản video (Bộ B).</p>
     <p><b>2 · Video Online</b> - học bằng video tương tác: video dừng đúng giây để hỏi, sai thì nhận gợi ý nhẹ rồi gợi ý rõ, có mốc xem lại đúng đoạn; kết thúc bằng 4 câu kiểm tra thành thạo và câu suy ngẫm; <b>trợ giảng AI</b> trả lời theo đúng nội dung bài; <b>giọng đọc AI tiếng Việt</b> đọc mục tiêu và toàn bộ lời giảng (nút 🔊 Nghe giảng), kèm chế độ chữ chạy cho máy chưa có giọng Việt.</p>
@@ -2014,6 +2051,7 @@ function viewAbout(v){
   <div class="tabbar">${TABS.map(([id,lb])=>`<button data-t="${id}" class="${aboutTab===id?"on":""}">${lb}</button>`).join("")}</div>
   <div id="aboutBody">${C[aboutTab]||C.gt}</div>`;
   v.querySelectorAll(".tabbar button").forEach(b=>b.onclick=()=>{aboutTab=b.dataset.t; viewAbout(v);});
+  kkPhotoBind(v);
 }
 </script>
 
