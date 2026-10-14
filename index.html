@@ -90,7 +90,8 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;backgroun
 .brand .brandtx{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;width:max-content}
 .brand .brandtx b{white-space:nowrap;display:block;line-height:1}
 :root[data-theme="dark"] .brand .tagline{fill:var(--gold)}
-nav.main{display:flex;gap:2px;flex-wrap:nowrap;margin-left:auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+nav.main{display:flex;gap:2px;flex:1 1 auto;min-width:0;flex-wrap:nowrap;justify-content:flex-end;margin-left:auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+header.top .wrap{max-width:1400px}
 nav.main::-webkit-scrollbar{display:none}
 
 nav.main button.hasmenu{display:inline-flex;align-items:center;gap:3px;padding-right:9px}
@@ -111,7 +112,9 @@ nav.main button[aria-expanded="true"] .car{transform:rotate(180deg)}
 .zone.soon{opacity:.72;cursor:default}
 .zone .badge{font-size:.7rem;font-weight:600;background:var(--chip);color:var(--fg2);border-radius:999px;padding:2px 8px;vertical-align:middle;margin-left:4px}
 .zone a.go{text-decoration:none}
-@media(max-width:1400px){nav.main button{padding:8px 9px;font-size:.87rem}}
+@media(max-width:1400px){nav.main button{padding:7px 9px;font-size:.87rem}}
+/* Dưới 1340px: menu xuống hàng riêng, căn giữa - không bị hộp tài khoản che */
+@media(min-width:641px) and (max-width:1340px){.topbar{flex-wrap:wrap;row-gap:0;padding-block:8px 6px}.userbox{order:2;margin-left:auto}nav.main{order:3;flex:1 0 100%;margin-left:0;justify-content:center;overflow:visible;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:6px;padding-top:4px}}
 
 nav.main button{background:none;border:0;padding:9px 12px;white-space:nowrap;border-radius:999px;color:var(--fg2);font-size:.92rem;font-weight:500;cursor:pointer;transition:background .15s,color .15s}
 nav.main button:hover{background:var(--chip);color:var(--fg)}
