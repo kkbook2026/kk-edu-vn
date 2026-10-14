@@ -113,8 +113,10 @@ nav.main button[aria-expanded="true"] .car{transform:rotate(180deg)}
 .zone .badge{font-size:.7rem;font-weight:600;background:var(--chip);color:var(--fg2);border-radius:999px;padding:2px 8px;vertical-align:middle;margin-left:4px}
 .zone a.go{text-decoration:none}
 @media(max-width:1400px){nav.main button{padding:7px 9px;font-size:.87rem}}
-/* Dưới 1340px: menu xuống hàng riêng, căn giữa - không bị hộp tài khoản che */
-@media(min-width:641px) and (max-width:1340px){.topbar{flex-wrap:wrap;row-gap:0;padding-block:8px 6px}.userbox{order:2;margin-left:auto}nav.main{order:3;flex:1 0 100%;margin-left:0;justify-content:center;overflow:visible;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:6px;padding-top:4px}}
+/* 1160-1340px: thu gọn để menu vẫn nằm cùng hàng với logo và hộp tài khoản */
+@media(min-width:1160px) and (max-width:1340px){.topbar{gap:10px}.brand{gap:9px}.brand .logo{width:46px;height:46px}.brand b{font-size:1.6rem}nav.main button{padding:6px 7px;font-size:.82rem}.userbox{font-size:.8rem}.userbox .ava{width:30px;height:30px}}
+/* Dưới 1160px: menu xuống hàng riêng, căn giữa - không bị hộp tài khoản che */
+@media(min-width:641px) and (max-width:1159px){.topbar{flex-wrap:wrap;row-gap:0;padding-block:8px 6px}.userbox{order:2;margin-left:auto}nav.main{order:3;flex:1 0 100%;margin-left:0;justify-content:center;overflow:visible;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:6px;padding-top:4px}}
 
 nav.main button{background:none;border:0;padding:9px 12px;white-space:nowrap;border-radius:999px;color:var(--fg2);font-size:.92rem;font-weight:500;cursor:pointer;transition:background .15s,color .15s}
 nav.main button:hover{background:var(--chip);color:var(--fg)}
@@ -1667,7 +1669,7 @@ function viewHome(v){
   ${S.settings.announcement?`<div class="alertbox" style="margin-top:14px">${esc(S.settings.announcement)}</div>`:""}
   <section class="board"><div class="wrap hero">
     <div>
-      <div class="kicker"><i></i>Mô hình giáo dục số thử nghiệm · phiên bản 2.0</div>
+      <div class="kicker">Mô hình giáo dục số thử nghiệm · phiên bản 2.0</div>
       <h1>Học bằng video tương tác, từ <span class="gold">nhà trẻ</span> đến <span class="gold">tiến sĩ</span></h1>
       <p class="lead">${nBooks} đầu sách bám sát Chương trình GDPT 2018 và các chương trình đào tạo hiện hành. Video dừng đúng giây để hỏi, sơ đồ chuẩn hiện đúng lúc, kiểm tra thành thạo cuối bài và trợ giảng AI theo từng bài.</p>
       <div class="rowline">
