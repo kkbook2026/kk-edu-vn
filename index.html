@@ -490,6 +490,11 @@ footer.ft .in span:last-child{margin-left:auto;font-style:italic}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cbActs button{color:var(--gold)}:root:not([data-theme="light"]) .cbChips button:hover{color:var(--gold)}}
 :root[data-theme="dark"] .cbActs button{color:var(--gold)}
 :root[data-theme="dark"] .cbChips button:hover{color:var(--gold)}
+
+/* KK-STATFIX: hàng số liệu ngoài bảng navy (Học tập của tôi, kết quả kiểm tra) dùng màu chữ của nền sáng/tối */
+.statrow:not(.board .statrow) .stat{border-right-color:var(--line)}
+.statrow:not(.board .statrow) .stat b{color:var(--fg)}
+.statrow:not(.board .statrow) .stat span{color:var(--fg2)}
 </style>
 
 </head>
@@ -1896,12 +1901,12 @@ function kkLangIeltsCard(st){
   const h=(st&&st.history)||[], last=h[h.length-1], prog=Object.keys((st&&st.progress)||{}).length, errs=((st&&st.errorLog)||[]).reduce((a,e)=>a+(e.count||1),0);
   const started=!!(st&&(h.length||prog||errs||(st.journey&&st.journey.diag)));
   return `<div class="card"><div class="eyebrow">Tiếng Anh</div><h3 style="margin:4px 0 10px">Luyện thi IELTS</h3>
-    ${started?`<div class="statrow" style="margin:0 0 12px">
-      <div class="stat"><b>${esc(st.target||"6.5")}</b><span>band mục tiêu</span></div>
-      <div class="stat"><b>${last&&last.overall!=null?Number(last.overall).toFixed(1):"-"}</b><span>overall gần nhất${last?" ("+esc(last.date||"")+")":""}</span></div>
-      <div class="stat"><b>${h.length}</b><span>lần thi thử</span></div>
-      <div class="stat"><b>${prog}</b><span>video đã học</span></div>
-      <div class="stat"><b>${errs}</b><span>lỗi đã ghi</span></div></div>`
+    ${started?`<div class="kkls">
+      <div class="kklsi"><b>${esc(st.target||"6.5")}</b><span>band mục tiêu</span></div>
+      <div class="kklsi"><b>${last&&last.overall!=null?Number(last.overall).toFixed(1):"-"}</b><span>overall gần nhất${last?" ("+esc(last.date||"")+")":""}</span></div>
+      <div class="kklsi"><b>${h.length}</b><span>lần thi thử</span></div>
+      <div class="kklsi"><b>${prog}</b><span>video đã học</span></div>
+      <div class="kklsi"><b>${errs}</b><span>lỗi đã ghi</span></div></div>`
     :`<p class="note">Chưa có dữ liệu IELTS. Bắt đầu từ bài chẩn đoán đầu vào để có lộ trình riêng.</p>`}
     <div class="rowline"><a class="btn pri sm" href="/ielts/">${started?"Học tiếp IELTS":"Vào IELTS"}</a></div></div>`;
 }
@@ -1910,12 +1915,12 @@ function kkLangZhCard(st){
   const started=!!(st&&(prog||vids||tests.length));
   const total=(s&&s.total)||40;
   return `<div class="card"><div class="eyebrow">Tiếng Trung</div><h3 style="margin:4px 0 10px">Tiếng Trung giao tiếp tương tác</h3>
-    ${started?`<div class="statrow" style="margin:0 0 12px">
-      <div class="stat"><b>${s?s.done:"-"}/${total}</b><span>bài hoàn thành</span></div>
-      <div class="stat"><b>${s?s.started:prog}</b><span>bài đã học</span></div>
-      <div class="stat"><b>${s&&s.avg!=null?s.avg:"-"}</b><span>điểm trung bình /100</span></div>
-      <div class="stat"><b>${s?s.videos:vids}</b><span>video tương tác xong</span></div>
-      <div class="stat"><b>${lt?esc(lt.scoreText||"-"):"-"}</b><span>${lt?(lt.pass?"đạt":"chưa đạt")+" · "+esc(lt.name||"đề kiểm tra"):"đề kiểm tra"}</span></div></div>`
+    ${started?`<div class="kkls">
+      <div class="kklsi"><b>${s?s.done:"-"}/${total}</b><span>bài hoàn thành</span></div>
+      <div class="kklsi"><b>${s?s.started:prog}</b><span>bài đã học</span></div>
+      <div class="kklsi"><b>${s&&s.avg!=null?s.avg:"-"}</b><span>điểm trung bình /100</span></div>
+      <div class="kklsi"><b>${s?s.videos:vids}</b><span>video tương tác xong</span></div>
+      <div class="kklsi"><b>${lt?esc(lt.scoreText||"-"):"-"}</b><span>${lt?(lt.pass?"đạt":"chưa đạt")+" · "+esc(lt.name||"đề kiểm tra"):"đề kiểm tra"}</span></div></div>`
     :`<p class="note">Chưa có dữ liệu Tiếng Trung. Bài đầu tiên bắt đầu bằng video tương tác cùng Thầy KEN và Cô Lin.</p>`}
     <div class="rowline"><a class="btn pri sm" href="/tieng-trung/${s&&s.last?"#"+esc(s.last):""}">${started?"Học tiếp":"Vào học"}</a>${started?'<a class="btn sm" href="/tieng-trung/#so-diem">Sổ điểm</a><a class="btn sm ghost" href="/tieng-trung/#kiem-tra">Kiểm tra</a>':""}</div></div>`;
 }
@@ -1924,7 +1929,7 @@ async function kkDashLang(el){
   el.innerHTML=`<div class="sec"><h2>Ngoại ngữ</h2></div><div class="note">Đang tải tiến độ ngoại ngữ...</div>`;
   const st=await kkLangStates();
   if(!el.isConnected) return;
-  el.innerHTML=`<div class="sec"><h2>Ngoại ngữ</h2><span class="note">${S.uid?"Đồng bộ theo tài khoản - cùng dữ liệu với trang IELTS và Tiếng Trung":"Chế độ Khách - dữ liệu trên máy này"}</span></div>
+  el.innerHTML=`<style>#dashLang .kkls{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:0 0 12px}#dashLang .kklsi{background:var(--chip,#eef3f8);border:1px solid var(--line);border-radius:10px;padding:8px 10px}#dashLang .kklsi b{display:block;font-size:1.15rem;color:var(--fg,#142a4a);line-height:1.3}#dashLang .kklsi span{display:block;font-size:.75rem;color:var(--fg2,#5b6b7d);line-height:1.35}</style><div class="sec"><h2>Ngoại ngữ</h2><span class="note">${S.uid?"Đồng bộ theo tài khoản - cùng dữ liệu với trang IELTS và Tiếng Trung":"Chế độ Khách - dữ liệu trên máy này"}</span></div>
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">${kkLangIeltsCard(st.ielts)}${kkLangZhCard(st.zh)}</div>`;
 }
 
