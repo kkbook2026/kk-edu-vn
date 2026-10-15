@@ -247,6 +247,40 @@ i.en{font-style:italic;color:var(--navy)}
 .zhapp .acct{margin-bottom:14px}
 .user select{font-family:var(--font);font-size:12.5px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
 @media (max-width:640px){.zhapp .msg{max-width:95%}.zhapp .item{flex-wrap:wrap}.zhapp .item .done{margin-left:0}.user label[for=zvoice],.user label[for=zrate]{display:none}}
+/* Video tương tác */
+.zhapp .zvsteps{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.zhapp .zvsteps button{border:1px solid var(--line);background:transparent;color:var(--ink);padding:6px 10px;border-radius:999px;font:inherit;font-size:12.5px;cursor:pointer}
+.zhapp .zvsteps button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.zhapp .zvsteps button.done{border-color:var(--good);color:var(--good)}
+.zhapp .zvsteps button:disabled{opacity:.45;cursor:not-allowed}
+.zhapp .zvscreen{border:2px solid var(--navy);border-radius:12px;background:var(--card);padding:12px;min-height:240px;overflow:hidden}
+.zhapp .zvboard{background:linear-gradient(135deg,#0f2a4a,#1e4472);color:#fff;border-radius:10px;padding:22px 18px;font-size:16px;line-height:1.7;min-height:200px}
+.zhapp .zvboard h3{color:#fff;margin-top:0}
+.zhapp .zvboard pre{background:rgba(0,0,0,.25)}
+.zhapp .zvboard .zvzh{color:#f0cf63;font-size:1.35em}
+.zhapp .zvcap{margin:8px 0 0}
+.zhapp .zvchars{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.zhapp .zvch{text-align:center}
+.zhapp .zvrp{display:flex;flex-direction:column;gap:8px}
+.zhapp .zvbar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:10px 0}
+.zhapp .zvbar i{display:block;height:100%;background:var(--gold)}
+.zhapp .zvctl{gap:8px}
+.zhapp .zvtime{font-variant-numeric:tabular-nums;font-weight:700;color:var(--navy);padding:4px 10px;border:1px solid var(--line);border-radius:8px}
+.zhapp .zvsub{margin-top:10px;padding:10px 12px;border-radius:8px;background:#0b1626;color:#e6edf5;font-size:15px;line-height:1.6;max-height:9.6em;overflow:auto}
+.zhapp .zvsub .zvzh{color:#f0cf63}
+.zhapp .zvsub mark{background:rgba(212,175,55,.28);color:inherit;border-radius:3px}
+.zhapp .zvsub.pause{outline:2px dashed var(--gold)}
+.zhapp .zvcp h3{margin-top:0;color:var(--teal)}
+.zhapp .zvdet{margin-top:8px;font-size:13px;color:var(--mute)}
+/* Đề thi */
+.zhapp .ztnav{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}
+.zhapp .ztnav button{width:34px;height:30px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:6px;cursor:pointer;font:inherit;font-size:12.5px}
+.zhapp .ztnav button.done{background:var(--light);border-color:var(--teal)}
+.zhapp .ztnav button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+/* Trợ lý AI */
+.zhapp .zaz{cursor:pointer;border-bottom:1px dotted var(--teal)}
+.zhapp .btn.sm{padding:5px 10px;font-size:12.5px}
+@media print{.topbar,.hero,footer,.noprint,.acct{display:none!important}.zhapp .card{border:0;box-shadow:none}body{background:#fff}}
 </style>
 </head>
 <body>
@@ -305,19 +339,19 @@ const L = () => ZH.full[S.lesson];
 const PR = id => (S.progress[id] = S.progress[id] || {l1:false, write:{}, assembly:{}, pron:{}, listen:null, role:false, quiz:null});
 function logErr(type, detail){ S.errors.push({date:new Date().toISOString().slice(0,10), lesson:S.lesson, type, detail}); save(); }
 
-function render(){ const m=$('#main'); zhHash(); if(!ZH.meta) return zhLoading(m); if(!S.lesson) return home(m); const d=L(); if(!d) return zhLoading(m, S.lesson); const p=PR(d.id);
-  const tabs=[['l1','Lớp 1: Trực quan'],['write','Lớp 2: Tập viết'],['asm','Lớp 2: Ghép'],['pron','Lớp 2: Phát âm'],['listen','Lớp 2: Nghe'],['l3','Lớp 3: AI'],['quiz','Kiểm tra'],['cards','Thẻ nhớ']];
+function render(){ const m=$('#main'); if(S.lesson) S.page=null; zhHash(); if(!ZH.meta) return zhLoading(m); if(!S.lesson) return S.page==='grades'?zhGradesView(m):S.page==='test'?zhTestView(m):home(m); const d=L(); if(!d) return zhLoading(m, S.lesson); const p=PR(d.id); if(!p.tot) p.tot=zhTotals(d);
+  const tabs=[['video','Video tương tác'],['l1','Lớp 1: Trực quan'],['write','Lớp 2: Tập viết'],['asm','Lớp 2: Ghép'],['pron','Lớp 2: Phát âm'],['listen','Lớp 2: Nghe'],['l3','Lớp 3: AI'],['quiz','Kiểm tra'],['cards','Thẻ nhớ'],['score','Điểm và đánh giá'],['ai','Trợ lý AI']];
   const doneCount = [p.l1, Object.values(p.write).every(Boolean)&&Object.keys(p.write).length>0, Object.keys(p.assembly).length>=d.layer2.assembly.length, Object.keys(p.pron).length>=1, p.listen!=null, p.role, p.quiz!=null].filter(Boolean).length;
   m.innerHTML = `<div class="card"><div class="row"><button class="btn sec" onclick="S.lesson=null;save();render()">Danh sách bài</button><span class="tag">${d.id}</span><span class="tag">${esc(d.level)}</span><span class="tag">${esc(d.time)}</span><span class="tag">Video V-${d.id}</span></div>
   <h1>${esc(d.title)} <span class="zh">${esc(d.title_zh||'')}</span></h1><p class="mute">${rich(d.intro)}</p><div class="prog"><i style="width:${Math.round(doneCount/7*100)}%"></i></div><p class="mute">Tiến độ bài: ${doneCount}/7 phần</p>
   <div class="tabs">${tabs.map(t=>`<button class="${S.tab===t[0]?'active':''}" onclick="S.tab='${t[0]}';save();render()">${t[1]}</button>`).join('')}</div></div>
   <div id="tab"></div>`;
-  ({l1:tabL1, write:tabWrite, asm:tabAsm, pron:tabPron, listen:tabListen, l3:tabL3, quiz:tabQuiz, cards:tabCards})[S.tab]($('#tab'), d, p);
+  ({video:tabVideo, score:tabScore, ai:tabAI, l1:tabL1, write:tabWrite, asm:tabAsm, pron:tabPron, listen:tabListen, l3:tabL3, quiz:tabQuiz, cards:tabCards})[S.tab]($('#tab'), d, p);
 }
 function home(m){
   const A=LESSONS.filter(x=>x.part==='A'), B=LESSONS.filter(x=>x.part==='B'), C=LESSONS.filter(x=>x.part==='C');
   const done = x => { const p=S.progress[x.id]; return p && p.quiz!=null; };
-  const item = x => `<div class="item" onclick="S.lesson='${x.id}';S.tab='l1';save();render()"><span class="code">${x.id}</span><span>${esc(x.title)} <span class="zh mute">${esc(x.title_zh||'')}</span></span><span class="done">${done(x)?'Đã học':''}</span></div>`;
+  const item = x => `<div class="item" onclick="S.lesson='${x.id}';S.tab=zhFirstTab('${x.id}');save();render()"><span class="code">${x.id}</span><span>${esc(x.title)} <span class="zh mute">${esc(x.title_zh||'')}</span></span><span class="done">${done(x)?'Đã học':''}</span></div>`;
   m.innerHTML = `<div class="card"><h1>Tiếng Trung giao tiếp tương tác - ${LESSONS.length} bài</h1><p class="mute">Mỗi bài gồm ba lớp: Trực quan hóa (sơ đồ tư duy, chiết tự động, khối ngữ pháp), Thực hành tương tác (tập viết nhận diện nét, kéo thả ghép chữ và câu, phát âm đối chiếu, nghe hiểu) và Trợ lý AI (role-play, phân tích lỗi). Hoàn thành ${LESSONS.filter(done).length}/${LESSONS.length} bài.</p>
   <div class="bands"><div class="band"><div class="v">${LESSONS.length}</div>bài học</div><div class="band"><div class="v">${LESSONS.reduce((a,x)=>a+x.n.vocab,0)}</div>từ vựng</div><div class="band"><div class="v">${ZH.meta?ZH.meta.strokes:0}</div>chữ có dữ liệu nét</div><div class="band"><div class="v">${LESSONS.reduce((a,x)=>a+x.n.grammar,0)}</div>mẫu câu</div><div class="band"><div class="v">${S.errors.length}</div>lỗi đã ghi</div></div></div>
   <div class="card"><h2>Phần A - Nền tảng</h2><div class="list">${A.map(item).join('')}</div></div><div class="card"><h2>Phần B - Giao tiếp theo tình huống</h2><div class="list">${B.map(item).join('')}</div></div>${C.length?`<div class="card"><h2>Giai đoạn 1 - Khối 1 (HSK 2): Đi lại và kế hoạch</h2><p class="mute">${C.length} bài mới mở đầu gói "HSK 3 trong 9 tháng" (bản kiểm thử): 了, 想 và 要; 从...到 và 坐; giờ giấc; 应该, 得, 别; khoảng cách 离, 多远; thời lượng 要...才; đổi xe, 是...的; 次, 遍, 又, 再; kế hoạch trong tuần; bài tổng hợp C10.</p><div class="list">${C.map(item).join('')}</div></div>`:''}
@@ -476,8 +510,8 @@ function zhLoading(m, id){
 }
 /* Địa chỉ theo bài (#ZH-A01): chia sẻ đúng bài, nút Quay lại của trình duyệt về danh sách, đăng nhập xong quay về đúng bài */
 let zhLastHash=null;
-function zhHash(){ const h=S.lesson?("#"+S.lesson):""; const cur=location.hash||""; if(cur!==h){ try{ const u=location.pathname+location.search+h; if(zhLastHash===null) history.replaceState(null,"",u); else history.pushState(null,"",u); }catch(e){} } zhLastHash=h; }
-window.addEventListener("popstate",()=>{ const id=(location.hash||"").slice(1); S.lesson=/^ZH-[A-Z]\d{2}$/.test(id)?id:null; zhLastHash=S.lesson?"#"+S.lesson:""; zhStop(); save(); render(); });
+function zhHash(){ const h=S.lesson?("#"+S.lesson):S.page==="grades"?"#so-diem":S.page==="test"?"#kiem-tra":""; const cur=location.hash||""; if(cur!==h){ try{ const u=location.pathname+location.search+h; if(zhLastHash===null) history.replaceState(null,"",u); else history.pushState(null,"",u); }catch(e){} } zhLastHash=h; }
+window.addEventListener("popstate",()=>{ const id=(location.hash||"").slice(1); S.lesson=/^ZH-[A-Z]\d{2}$/.test(id)?id:null; S.page=S.lesson?null:id==="so-diem"?"grades":id==="kiem-tra"?"test":null; zhLastHash=location.hash||""; zhStop(); save(); render(); });
 
 /* ---------- 2. Tài khoản KK-EDU dùng chung + tiến độ trên đám mây ---------- */
 async function kkInitAuth(){
@@ -500,7 +534,7 @@ async function kkApplyUser(u){
   const name=(KK.profile&&KK.profile.name) || u.displayName || (u.email||"").split("@")[0];
   if(name){ S.name=name; const i=$("#uname"); if(i) i.value=name; }
   try{ const d=await KK.db.doc(`data/users/${u.uid}/zh-state`).get();
-    if(d.exists){ const c=d.data(); if(c && c.state && (c.updatedAt||0) > (S._updatedAt||0)){ const st=JSON.parse(c.state); ["progress","errors"].forEach(k=>{ if(st[k]!==undefined) S[k]=st[k]; }); S._updatedAt=c.updatedAt; } }
+    if(d.exists){ const c=d.data(); if(c && c.state && (c.updatedAt||0) > (S._updatedAt||0)){ const st=JSON.parse(c.state); ["progress","errors","video","tests"].forEach(k=>{ if(st[k]!==undefined) S[k]=st[k]; }); S._updatedAt=c.updatedAt; } }
   }catch(e){}
   KK.cloudLoaded=true; save();
 }
@@ -509,7 +543,7 @@ save = function(){ S._updatedAt=Date.now(); _zhSave0(); kkSyncCloud(); };
 function kkSyncCloud(){
   if(!KK.user||!KK.db||!KK.cloudLoaded) return;
   clearTimeout(KK.syncTimer);
-  KK.syncTimer=setTimeout(async()=>{ try{ const st={progress:S.progress, errors:(S.errors||[]).slice(-500)}; await KK.db.doc(`data/users/${KK.user.uid}/zh-state`).set({state:JSON.stringify(st), updatedAt:S._updatedAt||Date.now()}); }catch(e){} }, 1500);
+  KK.syncTimer=setTimeout(async()=>{ try{ const st={progress:S.progress, errors:(S.errors||[]).slice(-500), video:S.video||{}, tests:(S.tests||[]).slice(-50)}; await KK.db.doc(`data/users/${KK.user.uid}/zh-state`).set({state:JSON.stringify(st), updatedAt:S._updatedAt||Date.now()}); }catch(e){} }, 1500);
 }
 function kkRenderUser(){
   const box=$("#kkUser"); if(!box) return;
@@ -587,6 +621,7 @@ const _zhHome0 = home;
 home = function(m){
   _zhHome0(m);
   m.insertAdjacentHTML("afterbegin", zhAccountHTML());
+  const hb=m.querySelector(".bands"); if(hb && typeof zhAssessHomeCard==="function") hb.closest(".card").insertAdjacentHTML("afterend", zhAssessHomeCard());
   m.insertAdjacentHTML("beforeend", zhExtrasHTML());
   m.querySelectorAll("table").forEach(t=>{ if(!t.parentElement.classList.contains("tblwrap")){ const w=document.createElement("div"); w.className="tblwrap"; t.parentNode.insertBefore(w,t); w.appendChild(t); } });
   if(/^#(tai-lieu|lo-trinh)$/.test(zhPendingAnchor||"")){ const el=document.getElementById(zhPendingAnchor.slice(1)); zhPendingAnchor=null; if(el) setTimeout(()=>el.scrollIntoView({behavior:"smooth", block:"start"}), 50); }
@@ -597,7 +632,9 @@ let zhPendingAnchor=null;
 function zhBoot(){
   const h=location.hash||"";
   if(/^#ZH-[A-Z]\d{2}$/.test(h)){ S.lesson=h.slice(1); S.tab=S.tab||"l1"; }
-  else if(/^#(tai-lieu|lo-trinh)$/.test(h)){ zhPendingAnchor=h; S.lesson=null; }
+  else if(/^#(tai-lieu|lo-trinh)$/.test(h)){ zhPendingAnchor=h; S.lesson=null; S.page=null; }
+  else if(h==="#so-diem"){ S.lesson=null; S.page="grades"; }
+  else if(h==="#kiem-tra"){ S.lesson=null; S.page="test"; }
   if(S.voice && ZH_VOICES[S.voice]) KKV.voice=S.voice;
   if(S.rate) KKV.rate=Number(S.rate)||0.85;
   const vs=$("#zvoice"); if(vs){ vs.innerHTML=Object.entries(ZH_VOICES).map(([k,v])=>`<option value="${k}" ${k===KKV.voice?"selected":""}>${v}</option>`).join(""); vs.onchange=e=>zhSetVoice(e.target.value); }
@@ -605,6 +642,466 @@ function zhBoot(){
   render();
   zhLoadIndex();
   kkInitAuth();
+}
+
+/* ===== KK-EDU Tiếng Trung: Video tương tác (V-ZH-*) - phát liền mạch, đồng hồ, Thầy KEN (Việt) + Cô Lin (Trung), 5 điểm dừng bắt buộc =====
+   Tác giả : Nguyễn Duy Điển (KK-2026). Kịch bản 40 video nạp theo nhu cầu từ /api/zh/video/<mã>. */
+
+const ZV = { data:{}, pending:{}, vid:null, flat:[], i:0, playing:false, elapsed:0, tick:null, cp:{}, quiz:{}, sub:true, err:"" };
+const ZH_VOICE_VI = "vi-VN-NamMinhNeural";   // Thầy KEN
+function zhVideoId(lessonId){ return "V-" + lessonId; }
+function zhFirstTab(id){ const r=(S.video||{})["V-"+id]; return r && r.done ? "l1" : "video"; }
+function zhNeedVideo(id){
+  if(ZV.data[id]) return Promise.resolve(ZV.data[id]);
+  if(ZV.pending[id]) return ZV.pending[id];
+  const f = ZH.man && ZH.man.files; const v = f && f.videos ? "?v="+f.videos : "";
+  const p = zhGet("video/"+encodeURIComponent(id)+v).then(j=>{ ZV.data[id]=j; delete ZV.pending[id]; return j; }, e=>{ delete ZV.pending[id]; throw e; });
+  ZV.pending[id]=p; return p;
+}
+
+/* ---------- Lời thoại -> các đoạn đọc: tiếng Việt (Thầy KEN) + chữ Hán (Cô Lin); pinyin trong ngoặc chỉ hiện phụ đề ---------- */
+const ZCJK = /[㐀-鿿　-〿！-｠]/;
+function zhSegs(text){
+  // bỏ pinyin trong ngoặc ngay sau chữ Hán (chỉ để đọc phụ đề)
+  let t = String(text||"").replace(/([㐀-鿿　-〿！-｠])\s*\(([^()]*[a-zA-Zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü][^()]*)\)/g, "$1");
+  const segs = []; let cur = null;
+  for(const ch of t){
+    const lang = ZCJK.test(ch) ? "zh" : (/\s/.test(ch) && cur ? cur.lang : "vi");
+    if(!cur || cur.lang!==lang){ cur={lang, text:""}; segs.push(cur); }
+    cur.text += ch;
+  }
+  return segs.map(s=>({lang:s.lang, text:s.text.trim()})).filter(s=>s.text && /[\p{L}\p{N}]/u.test(s.text));
+}
+/* Chia lời thoại thành các câu đọc (≤ 260 ký tự) và khoảng dừng "[dừng N giây]" */
+function zhChunks(text){
+  const out = [];
+  String(text||"").split(/(\[dừng \d+ giây\])/).forEach(part=>{
+    const m = /^\[dừng (\d+) giây\]$/.exec(part);
+    if(m){ out.push({pause:Number(m[1])}); return; }
+    const sents = part.match(/[^.!?。！？]+[.!?。！？]*\s*/g) || [];
+    let buf = "";
+    sents.forEach(s=>{ if((buf+s).length > 260 && buf){ out.push({text:buf.trim()}); buf=""; } buf += s; });
+    if(buf.trim()) out.push({text:buf.trim()});
+  });
+  return out;
+}
+async function zhAudioSegs(segs){
+  const key = "V|"+KKV.voice+"|"+KKV.rate+"|"+JSON.stringify(segs); let url = KKV.cache.get(key); if(url) return url;
+  const base = await kkApiBase();
+  const r = await fetch(base+"/tts", {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({segments:segs, voiceVi:ZH_VOICE_VI, voiceZh:KKV.voice, rate:Math.max(0.8, KKV.rate)})});
+  if(!r.ok) throw new Error("tts "+r.status);
+  url = URL.createObjectURL(await r.blob()); KKV.cache.set(key, url);
+  if(KKV.cache.size>150){ const k0=KKV.cache.keys().next().value; URL.revokeObjectURL(KKV.cache.get(k0)); KKV.cache.delete(k0); }
+  return url;
+}
+function zhBrowserSegs(segs, seq){
+  return segs.reduce((pr, s)=>pr.then(()=> seq!==KKV.seq ? null : new Promise(res=>{ try{ const u=new SpeechSynthesisUtterance(s.text); u.lang = s.lang==="zh" ? "zh-CN" : "vi-VN"; u.rate = s.lang==="zh" ? KKV.rate : 1; KKV.done=res; u.onend=()=>{ KKV.done=null; res(); }; u.onerror=()=>{ KKV.done=null; res(); }; speechSynthesis.speak(u); }catch(e){ res(); } })), Promise.resolve());
+}
+async function zhSaySegs(segs, seq){
+  if(!segs.length) return;
+  if(zhAzureOk()){
+    try{ const url = await zhAudioSegs(segs); if(seq!==KKV.seq) return; KKV.ok=true;
+      await new Promise(res=>{ const a=new Audio(url); KKV.cur=a; KKV.done=res; a.onended=()=>{ KKV.done=null; KKV.cur=null; res(); }; a.onerror=()=>{ KKV.done=null; res(); }; a.play().catch(()=>{ KKV.done=null; res(); }); });
+      return;
+    }catch(e){ if(KKV.ok!==true) KKV.ok=false; }
+  }
+  if(seq!==KKV.seq) return;
+  await zhBrowserSegs(segs, seq);
+}
+
+/* ---------- Dựng danh sách mục phát ---------- */
+function zvFlatten(v){
+  const flat = [];
+  v.steps.forEach((s, si)=> s.items.forEach((it, ii)=> flat.push({si, ii, it})));
+  flat.push({si:v.steps.length, ii:0, it:{t:"quiz"}});
+  return flat;
+}
+function zvOpen(id){
+  zhStop(); clearInterval(ZV.tick);
+  ZV.vid=id; ZV.flat=zvFlatten(ZV.data[id]); ZV.i=0; ZV.playing=false; ZV.elapsed=0; ZV.cp={}; ZV.quiz={};
+  const saved = (S.video||{})[id]; if(saved && saved.pos && saved.pos < ZV.flat.length) ZV.i = saved.pos;
+}
+const zvFmt = s => { s=Math.max(0,Math.floor(s)); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); };
+function zvSaveProgress(extra){ S.video = S.video || {}; const r = S.video[ZV.vid] = Object.assign(S.video[ZV.vid]||{}, {pos:ZV.i, at:new Date().toISOString().slice(0,10)}, extra||{}); save(); return r; }
+
+/* ---------- Hình minh họa: dùng chính tài nguyên của bài (sơ đồ, khối, chiết tự, hội thoại, sóng âm), còn lại là bảng phân cảnh ---------- */
+function zvBig(t){ return esc(t).replace(/([㐀-鿿　-〿！-｠]+)/g, '<b class="zh zvzh">$1</b>'); }
+function zvVisual(vis, d){
+  const v = String(vis||"");
+  const L1 = d.layer1, svg = d.svg || {};
+  if(/sơ đồ tư duy/i.test(v) && svg.mindmap) return `<div class="svgwrap">${svg.mindmap}</div>`;
+  if(/khối ngữ pháp|biểu đồ khối|hàng khối|khối màu/i.test(v) && svg.grammar && svg.grammar.length) return svg.grammar.map(x=>`<div class="svgwrap">${x}</div>`).join("");
+  if(/chiết tự/i.test(v)) return `<div class="zvchars">${L1.chietu.map(c=>`<div class="zvch"><span class="hw zvhw" data-ch="${esc(c.zh)}" id="zv_${c.zh.codePointAt(0)}"></span><div><b class="zh">${esc(c.zh)}</b> ${esc(c.py)}</div><div class="mute">${esc(c.vi)}</div></div>`).join("")}</div>`;
+  if(/thứ tự nét|ô điền tự cách|điền tự cách|bảng điện tử/i.test(v)) return `<div class="zvchars">${d.layer2.writing.chars.map(c=>`<div class="zvch"><span class="hw zvhw" data-ch="${esc(c)}" id="zv_${c.codePointAt(0)}"></span><div><b class="zh">${esc(c)}</b></div></div>`).join("")}</div>`;
+  if(/sóng âm|đường cao độ/i.test(v) && svg.pron && svg.pron.length) return svg.pron.slice(0,2).map(x=>`<div class="svgwrap">${x}</div>`).join("");
+  if(/role-play|khung chat/i.test(v)){ const R=d.layer3.roleplay; return `<div class="zvrp"><div class="mute">Role-play: ${esc(R.scene)}</div><div class="msg ai"><b class="zh">${esc(R.opening.zh)}</b><br><span class="mute">${esc(R.opening.py)}</span><br>${esc(R.opening.vi)}</div><div>${R.hints.map(h=>`<span class="tag zh">${esc(h)}</span>`).join(" ")}</div></div>`; }
+  if(/hội thoại|lớp học|ba dòng|đoạn thoại/i.test(v)) return `<div class="tblwrap"><table><tr><th></th><th>Tiếng Trung</th><th>Pinyin</th></tr>${L1.dialogue.map(x=>`<tr><td>${esc(x.who)}</td><td class="zh">${esc(x.zh)}</td><td>${esc(x.py)}</td></tr>`).join("")}</table></div>`;
+  return `<div class="zvboard">${zvBig(v || d.title)}</div>`;
+}
+function zvMountChars(){
+  document.querySelectorAll(".zvhw").forEach(el=>{ const ch=el.dataset.ch; if(!STROKES[ch]||el.dataset.on) return; el.dataset.on="1"; const w=HanziWriter.create(el, ch, {width:96,height:96,padding:6,showOutline:true,strokeColor:'#0E8F8A',charDataLoader:(c,ok)=>ok(STROKES[c])}); w.loopCharacterAnimation(); });
+}
+
+/* ---------- Giao diện ---------- */
+function tabVideo(el, d, p){
+  const id = zhVideoId(d.id);
+  if(!ZV.data[id]){
+    el.innerHTML = ZV.err ? `<div class="card"><p class="warnbox">${esc(ZV.err)}</p><button class="btn" onclick="ZV.err='';render()">Thử lại</button></div>` : `<div class="card"><h2>Video tương tác</h2><p class="mute">Đang tải kịch bản video ${esc(id)}...</p></div>`;
+    if(!ZV.err) zhNeedVideo(id).then(()=>{ if(S.lesson===d.id && S.tab==="video") render(); }).catch(()=>{ ZV.err="Chưa tải được kịch bản video. Kiểm tra kết nối mạng rồi thử lại."; if(S.tab==="video") render(); });
+    return;
+  }
+  if(ZV.vid!==id) zvOpen(id);
+  const v = ZV.data[id], cur = ZV.flat[ZV.i], step = v.steps[cur.si];
+  const rec = (S.video||{})[id] || {};
+  const total = (v.minutes||13)*60;
+  el.innerHTML = `<div class="card zv">
+    <div class="row"><h2 style="margin:0;flex:1">${esc(v.id)} - ${esc(v.title)}</h2><span class="tag">${v.minutes||13} phút</span>${rec.done?`<span class="tag">Đã xem · ${rec.score}/${rec.total} câu</span>`:""}</div>
+    <p class="mute">Thầy KEN (giọng AI tiếng Việt) dẫn bài, Cô Lin (giọng AI tiếng Trung bản ngữ) đọc tiếng Trung. Video dừng ở 5 điểm tương tác bắt buộc; làm xong mới đi tiếp. Mục tiêu: ${esc(v.outcome||"")}</p>
+    <div class="zvsteps">${v.steps.map((s,i)=>`<button class="${i===cur.si?'on':''} ${i<cur.si?'done':''}" ${i<=Math.max(cur.si, zvMaxStep())?`onclick="zvGoStep(${i})"`:'disabled'} title="${esc(s.start)}-${esc(s.end)}">${s.n}. ${esc(s.name.split(" - ")[0])}</button>`).join("")}<button class="${cur.it.t==='quiz'?'on':''}" ${ZV.i===ZV.flat.length-1||zvMaxStep()>=v.steps.length?'onclick="zvGo(ZV.flat.length-1)"':'disabled'}>Kiểm tra</button></div>
+    <div class="zvscreen" id="zvScreen">${zvItemHTML(v, d, cur)}</div>
+    <div class="zvbar"><i style="width:${Math.round(ZV.i/(ZV.flat.length-1)*100)}%"></i></div>
+    <div class="row zvctl">
+      <button class="btn" id="zvPlay" onclick="zvToggle()">${ZV.playing?"Tạm dừng":"Phát"}</button>
+      <button class="btn sec" onclick="zvGo(ZV.i-1)" ${ZV.i===0?'disabled':''}>Cảnh trước</button>
+      <button class="btn sec" id="zvNext" onclick="zvNext()" ${zvBlocked()?'disabled title="Hoàn thành điểm dừng để đi tiếp"':''}>Cảnh sau</button>
+      <span class="zvtime" id="zvTime">${zvFmt(ZV.elapsed)} / ${zvFmt(total)}</span>
+      <span class="mute">${step?esc(step.n+". "+step.name+" ("+step.start+"-"+step.end+")"):"Kiểm tra sau video"}</span>
+      <label class="mute"><input type="checkbox" ${ZV.sub?"checked":""} onchange="ZV.sub=this.checked;render()"> Phụ đề</label>
+    </div>
+    ${cur.it.t==="scene" && ZV.sub && cur.it.say ? `<div class="zvsub" id="zvSub">${zvBig(cur.it.say)}</div>`:""}
+  </div>`;
+  zvMountChars(); zvMountCp(v, d, cur);
+}
+function zvMaxStep(){ const r=(S.video||{})[ZV.vid]; return r&&r.maxStep!=null?r.maxStep:0; }
+function zvItemHTML(v, d, cur){
+  const it = cur.it;
+  if(it.t==="scene") return `${zvVisual(it.visual, d)}${it.visual?`<p class="mute zvcap">Cảnh: ${esc(it.visual)}</p>`:""}`;
+  if(it.t==="prompt") return `<div class="zvboard"><h3>Prompt cho gia sư AI cá nhân của bạn</h3><pre id="zvPrompt">${esc(it.text)}</pre><button class="btn sec" onclick="zvCopy()">Sao chép prompt</button> <button class="btn sec" onclick="S.tab='ai';save();render()">Hỏi Trợ lý AI KK-EDU</button></div>`;
+  if(it.t==="quiz") return zvQuizHTML(v);
+  return zvCpHTML(v, d, it);
+}
+function zvCopy(){ const t=$("#zvPrompt"); if(!t) return; try{ navigator.clipboard.writeText(t.textContent); }catch(e){} const b=event&&event.target; if(b) b.textContent="Đã sao chép"; }
+
+/* ---------- Phát ---------- */
+function zvBlocked(){ const cur = ZV.flat[ZV.i]; if(!cur) return false; if(cur.it.t==="cp") return !ZV.cp[ZV.i]; if(cur.it.t==="quiz") return true; return false; }
+function zvTickStart(){ clearInterval(ZV.tick); ZV.tick=setInterval(()=>{ if(!document.getElementById("zvTime")){ clearInterval(ZV.tick); zhStop(); ZV.playing=false; return; } ZV.elapsed++; const v=ZV.data[ZV.vid]; const el=$("#zvTime"); if(el) el.textContent = zvFmt(ZV.elapsed)+" / "+zvFmt((v.minutes||13)*60); }, 1000); }
+function zvToggle(){ if(ZV.playing){ ZV.playing=false; zhStop(); clearInterval(ZV.tick); render(); return; } ZV.playing=true; zvTickStart(); render(); zvPlayCurrent(); }
+async function zvPlayCurrent(){
+  const cur = ZV.flat[ZV.i]; if(!cur || !ZV.playing) return;
+  if(cur.it.t!=="scene"){ return; }   // điểm dừng / prompt / kiểm tra: chờ người học
+  zhStop(); const seq = KKV.seq; const myI = ZV.i;
+  const chunks = zhChunks(cur.it.say);
+  for(const c of chunks){
+    if(seq!==KKV.seq || !ZV.playing || ZV.i!==myI) return;
+    const sub = $("#zvSub");
+    if(c.pause){ if(sub) sub.classList.add("pause"); await new Promise(r=>setTimeout(r, c.pause*1000)); if(sub) sub.classList.remove("pause"); continue; }
+    if(sub){ sub.innerHTML = zvBig(cur.it.say).replace(zvBig(c.text), `<mark>${zvBig(c.text)}</mark>`); }
+    await zhSaySegs(zhSegs(c.text), seq);
+  }
+  if(seq===KKV.seq && ZV.playing && ZV.i===myI){ await new Promise(r=>setTimeout(r, 400)); if(ZV.playing && ZV.i===myI) zvNext(true); }
+}
+function zvGo(i){ if(i<0||i>=ZV.flat.length) return; zhStop(); ZV.i=i; const st=ZV.flat[i].si; zvSaveProgress({maxStep:Math.max(zvMaxStep(), st)}); render(); if(ZV.playing) zvPlayCurrent(); }
+function zvGoStep(si){ const k = ZV.flat.findIndex(x=>x.si===si); if(k>=0) zvGo(k); }
+function zvNext(auto){ if(zvBlocked()) return; if(ZV.i < ZV.flat.length-1) zvGo(ZV.i+1); }
+
+/* ---------- Điểm dừng tương tác ---------- */
+function zvCpDone(msg){ ZV.cp[ZV.i]=true; const fb=$("#zvCpFb"); if(fb && msg) fb.innerHTML=`<div class="fb good">${msg}</div>`; const n=$("#zvNext"); if(n){ n.disabled=false; n.removeAttribute("title"); } const c=$("#zvCont"); if(c) c.disabled=false; }
+function zvCpHTML(v, d, it){
+  const lines = it.lines.filter(x=>!/^Người học/.test(x));
+  const detail = `<details class="zvdet"><summary>Mô tả điểm dừng trong kịch bản</summary><ul>${lines.map(x=>`<li>${zvBig(x)}</li>`).join("")}</ul></details>`;
+  const done = !!ZV.cp[ZV.i];
+  const cont = `<div class="row" style="margin-top:8px"><button class="btn gold" id="zvCont" ${done?"":"disabled"} onclick="zvNext()">Tiếp tục video</button>${done?"":'<span class="mute">Hoàn thành điểm dừng để đi tiếp.</span>'}</div><div id="zvCpFb"></div>`;
+  if(it.kind==="mcq"){ const m=it.mcq; const ch=ZV.quiz["cp"+ZV.i];
+    return `<div class="zvcp"><h3>${esc(it.title)}</h3><p><b>${zvBig(m.q)}</b></p>${["A","B","C"].map(k=>`<button class="opt ${ch&&ch.includes(k)?(k===m.answer?"ok":"ko"):""}" onclick="zvMcq('${k}')">${k}. ${zvBig(m.options[k])}</button>`).join("")}<div id="zvMcqFb">${ch?`<div class="fb ${ch[ch.length-1]===m.answer?"good":"bad"}">${esc(m.feedback[ch[ch.length-1]]||"")}</div>`:""}</div>${cont}${detail}</div>`; }
+  if(it.kind==="write"){ const chars=d.layer2.writing.chars.slice(0,2);
+    return `<div class="zvcp"><h3>${esc(it.title)}</h3><p>Tô theo nét mờ bằng chuột hoặc ngón tay. Viết đúng một chữ để mở khóa video (viết thêm chữ còn lại để luyện).</p><div class="row">${chars.map(c=>`<div style="text-align:center"><span class="hw" id="zvw_${c.codePointAt(0)}"></span><div><b class="zh">${esc(c)}</b> <button class="btn sec" onclick="zvWriteAnim('${c}')">Xem mẫu</button></div><div class="mute" id="zvwf_${c.codePointAt(0)}"></div></div>`).join("")}</div>${cont}${detail}</div>`; }
+  if(it.kind==="asm"){ const a = d.layer2.assembly.find(x=>x.type==="sentence") || d.layer2.assembly[0]; const st = ZV.quiz["asm"+ZV.i] || (ZV.quiz["asm"+ZV.i]={placed:[]}); const pieces = a.type==="char"?a.parts:a.pieces;
+    return `<div class="zvcp"><h3>${esc(it.title)}</h3><p>Ghép các mảnh thành câu đúng: <b>${esc(a.vi||"")}</b></p><div class="rail" id="zvRail">${st.placed.map((j,k)=>`<span class="chip" onclick="zvUnplace(${k})">${esc(pieces[j])}</span>`).join("")}</div><div>${pieces.map((x,j)=>`<span class="chip ${st.placed.includes(j)?"used":""}" onclick="zvPlace(${j})">${esc(x)}</span>`).join("")}</div><div class="row"><button class="btn" onclick="zvCheckAsm()">Kiểm tra</button><button class="btn sec" onclick="ZV.quiz['asm'+ZV.i]={placed:[]};render()">Làm lại</button></div>${cont}${detail}</div>`; }
+  if(it.kind==="pron"){ const P = d.layer2.pronunciation.slice(0,2); const SRok = !!(window.SpeechRecognition||window.webkitSpeechRecognition);
+    return `<div class="zvcp"><h3>${esc(it.title)}</h3><p>Nghe Cô Lin đọc mẫu rồi bấm Đọc. ${SRok?"Máy nhận dạng giọng tiếng Trung và so với mục tiêu.":"Trình duyệt này chưa nhận dạng được giọng nói (dùng Chrome hoặc Edge); hãy đọc theo 3 lần rồi tự xác nhận."}</p>${P.map((x,i)=>`<div class="box"><b class="zh" style="font-size:22px">${esc(x.zh)}</b> ${esc(x.py)} <span class="mute">${esc(x.rule)}</span><div class="row"><button class="btn sec" onclick="TTS('${esc(x.zh)}')">Nghe mẫu</button>${SRok?`<button class="btn" onclick="zvRec(${i})">Đọc</button>`:""}<span class="mute" id="zvpr_${i}"></span></div></div>`).join("")}${SRok?"":`<button class="btn sec" onclick="zvCpDone('Bạn đã tự xác nhận đọc theo mẫu. Hãy luyện thêm ở tab Phát âm khi dùng Chrome.')">Tôi đã đọc theo 3 lần</button>`}${cont}${detail}</div>`; }
+  if(it.kind==="listen"){ const qs=it.questions; const ans=ZV.quiz["ls"+ZV.i]||{};
+    return `<div class="zvcp"><h3>${esc(it.title)}</h3><div class="row"><button class="btn" onclick="zvPlayScript()">Nghe đoạn thoại</button><label class="mute"><input type="checkbox" onchange="document.getElementById('zvScript').hidden=!this.checked"> Hiện chữ</label></div><p class="zh" id="zvScript" hidden>${esc(it.script)}</p>${qs.map((q,i)=>`<div class="box"><b>${i+1}. ${zvBig(q.q)}</b>${["A","B","C"].map(k=>`<button class="opt ${ans[i]?(k===q.answer?"ok":(k===ans[i]?"ko":"")):""}" ${ans[i]?"disabled":""} onclick="zvListen(${i},'${k}')">${k}. ${zvBig(q.options[k])}</button>`).join("")}${ans[i]?`<div class="fb ${ans[i]===q.answer?"good":"bad"}">${ans[i]===q.answer?"Đúng. ":"Chưa đúng. "}${esc(q.explain)}</div>`:""}</div>`).join("")}${cont}${detail}</div>`; }
+  return `<div class="zvcp"><h3>${esc(it.title)}</h3><ul>${it.lines.map(x=>`<li>${zvBig(x)}</li>`).join("")}</ul><button class="btn sec" onclick="zvCpDone('Đã xem.')">Đã xem</button>${cont}</div>`;
+}
+function zvMountCp(v, d, cur){
+  if(cur.it.t!=="cp" || cur.it.kind!=="write") return;
+  d.layer2.writing.chars.slice(0,2).forEach(c=>{ const el=document.getElementById("zvw_"+c.codePointAt(0)); if(!el||!STROKES[c]) return;
+    const w = HanziWriter.create(el, c, {width:150,height:150,padding:8,showOutline:true,showCharacter:false,strokeColor:'#0f2a4a',outlineColor:'#DDE3EA',drawingColor:'#0E8F8A',drawingWidth:12,highlightColor:'#d4af37',charDataLoader:(x,ok)=>ok(STROKES[x])});
+    ZV.writers = ZV.writers||{}; ZV.writers[c]=w; let miss=0;
+    w.quiz({ onMistake:()=>{ miss++; const f=document.getElementById("zvwf_"+c.codePointAt(0)); if(f) f.textContent="Sai nét hoặc sai thứ tự ("+miss+"). Nhìn nét mờ và thử lại."; if(miss===2) logErr("bút thuận", c); },
+             onComplete:()=>{ const f=document.getElementById("zvwf_"+c.codePointAt(0)); if(f) f.textContent="Hoàn thành chữ "+c+(miss?" ("+miss+" lỗi)":" - không lỗi"); PR(d.id).write[c]=true; save(); zvCpDone("Đúng bút thuận. Cô Lin đọc lại chữ "+c+"."); TTS(c); } });
+  });
+}
+function zvWriteAnim(c){ const w=ZV.writers&&ZV.writers[c]; if(w) w.animateCharacter(); }
+function zvMcq(k){ const v=ZV.data[ZV.vid]; const it=ZV.flat[ZV.i].it; const key="cp"+ZV.i; const ch=ZV.quiz[key]=(ZV.quiz[key]||[]); ch.push(k);
+  if(k===it.mcq.answer){ zvCpDone(); } else logErr("video", it.mcq.q);
+  render(); }
+function zvPlace(j){ const st=ZV.quiz["asm"+ZV.i]; if(st.placed.includes(j)) return; st.placed.push(j); render(); }
+function zvUnplace(k){ ZV.quiz["asm"+ZV.i].placed.splice(k,1); render(); }
+function zvCheckAsm(){ const d=L(); const a=d.layer2.assembly.find(x=>x.type==="sentence")||d.layer2.assembly[0]; const st=ZV.quiz["asm"+ZV.i]; const pieces=a.type==="char"?a.parts:a.pieces; const got=st.placed.map(j=>pieces[j]); const want=a.type==="char"?a.parts:a.answer;
+  const ok = got.length===want.length && got.every((x,k)=>x===want[k]); const rail=$("#zvRail");
+  if(ok){ if(rail) rail.className="rail ok"; zvCpDone(`Đúng: <b class="zh">${esc(want.join(" "))}</b> ${esc(a.py||"")} - ${esc(a.vi||"")}`); TTS(want.join("")); }
+  else { if(rail) rail.className="rail ko"; logErr("trật tự từ", got.join(" ")); const fb=$("#zvCpFb"); if(fb) fb.innerHTML=`<div class="fb bad">Chưa đúng thứ tự. Nhớ khối ngữ pháp: chủ ngữ, thời gian, động từ, tân ngữ.</div>`; }
+}
+function zvRec(i){ const d=L(); const x=d.layer2.pronunciation[i]; const SR=window.SpeechRecognition||window.webkitSpeechRecognition; const out=$("#zvpr_"+i); if(!SR) return;
+  const r=new SR(); r.lang="zh-CN"; r.maxAlternatives=3; if(out) out.textContent="Đang nghe...";
+  r.onresult=e=>{ const alts=[...e.results[0]].map(a=>a.transcript.replace(/[。，！？\s]/g,"")); const tg=x.zh.replace(/[。，！？\s]/g,""); const hit=alts.some(a=>a===tg||a.includes(tg));
+    if(hit){ if(out) out.textContent="Máy nhận ra đúng: "+alts[0]; PR(d.id).pron[i]=true; save(); zvCpDone("Đạt: máy nhận ra đúng "+x.zh+"."); }
+    else { if(out) out.textContent="Máy nghe thành: "+(alts[0]||"(không rõ)")+". "+x.feedback; logErr("thanh điệu", x.zh); } };
+  r.onerror=e=>{ if(out) out.textContent="Lỗi micro: "+e.error; }; try{ r.start(); }catch(e){} }
+function zvPlayScript(){ const it=ZV.flat[ZV.i].it; const lines=(it.script.match(/[㐀-鿿　-〿！-｠][^()]*?(?=\s*\(|$)/g)||[]).map(s=>s.replace(/^[A-Z]:\s*/,"").trim()).filter(Boolean); zhPlayLines(lines.length?lines:[it.script]); }
+function zvListen(i,k){ const it=ZV.flat[ZV.i].it; const key="ls"+ZV.i; const a=ZV.quiz[key]=(ZV.quiz[key]||{}); if(a[i]) return; a[i]=k; if(k!==it.questions[i].answer) logErr("nghe", it.questions[i].q);
+  if(it.questions.every((q,j)=>a[j])){ const c=it.questions.filter((q,j)=>a[j]===q.answer).length; ZV.cp[ZV.i]=true; } render(); }
+
+/* ---------- Kiểm tra sau video: chấm điểm, lưu ---------- */
+function zvQuizHTML(v){ const a=ZV.quiz.final||{}; const all=v.quiz.every((q,i)=>a[i]); const c=v.quiz.filter((q,i)=>a[i]===q.answer).length;
+  return `<div class="zvcp"><h3>Kiểm tra sau video (${v.quiz.length} câu)</h3>${v.quiz.map((q,i)=>`<div class="box"><b>${i+1}. ${zvBig(q.q)}</b>${["A","B","C"].map(k=>`<button class="opt ${a[i]?(k===q.answer?"ok":(k===a[i]?"ko":"")):""}" ${a[i]?"disabled":""} onclick="zvFinal(${i},'${k}')">${k}. ${zvBig(q.options[k])}</button>`).join("")}${a[i]?`<div class="fb ${a[i]===q.answer?"good":"bad"}">${esc(q.explain)}</div>`:""}</div>`).join("")}
+  ${all?`<div class="fb ${c/v.quiz.length>=0.6?"good":"bad"}"><b>Kết quả: ${c}/${v.quiz.length}</b>. ${c===v.quiz.length?"Xuất sắc, bạn nắm chắc nội dung video.":c/v.quiz.length>=0.6?"Đạt. Xem lại câu sai rồi sang Lớp 1 của bài.":"Chưa đạt. Hãy xem lại video phần CORE rồi làm lại."}</div><div class="row"><button class="btn gold" onclick="S.tab='l1';save();render()">Sang Lớp 1 của bài</button><button class="btn sec" onclick="ZV.quiz.final={};render()">Làm lại kiểm tra</button><button class="btn sec" onclick="zvGo(0)">Xem lại từ đầu</button></div>`:""}</div>`; }
+function zvFinal(i,k){ const v=ZV.data[ZV.vid]; const a=ZV.quiz.final=(ZV.quiz.final||{}); if(a[i]) return; a[i]=k; if(k!==v.quiz[i].answer) logErr("video", v.quiz[i].q);
+  if(v.quiz.every((q,j)=>a[j])){ const c=v.quiz.filter((q,j)=>a[j]===q.answer).length; const prev=(S.video||{})[ZV.vid]||{}; zvSaveProgress({done:true, score:Math.max(c, prev.score||0), last:c, total:v.quiz.length, maxStep:v.steps.length}); ZV.playing=false; zhStop(); clearInterval(ZV.tick); }
+  render(); }
+
+/* ===== KK-EDU Tiếng Trung: Đánh giá và chấm điểm - điểm từng bài, sổ điểm, kiểm tra theo phần, thi thử theo cấu trúc HSK =====
+   Tác giả : Nguyễn Duy Điển (KK-2026). Đề sinh tự động từ chính nội dung bài học; chấm tự động; lỗi ghi vào sổ lỗi. */
+
+const ZH_SR = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+const ZH_W = [["video","Video tương tác",10],["l1","Lớp 1: Trực quan",10],["write","Tập viết",15],["asm","Ghép chữ và câu",15],["pron","Phát âm",15],["listen","Nghe hiểu",10],["role","Role-play với AI",10],["quiz","Kiểm tra cuối bài",15]];
+function zhGrade(s){ return s>=90?"Xuất sắc":s>=80?"Giỏi":s>=65?"Khá":s>=50?"Đạt":"Chưa đạt"; }
+function zhTotals(d){ return {write:d.layer2.writing.chars.length, asm:d.layer2.assembly.length, pron:d.layer2.pronunciation.length, listen:d.layer2.listening.questions.length, quiz:d.quiz.length}; }
+/** Điểm một bài (thang 100) từ tiến độ đã lưu; tot = số mục của bài (lưu lại khi mở bài để sổ điểm tính được cả khi chưa tải bài). */
+function zhLessonScore(id, tot){
+  const p = (S.progress||{})[id]; if(!p) return null;
+  tot = tot || p.tot; if(!tot) return null;
+  const v = (S.video||{})["V-"+id];
+  const ratio = {
+    video: v && v.total ? (v.score||0)/v.total : 0,
+    l1: p.l1 ? 1 : 0,
+    write: tot.write ? Object.values(p.write||{}).filter(Boolean).length / tot.write : 0,
+    asm: tot.asm ? Object.values(p.assembly||{}).filter(Boolean).length / tot.asm : 0,
+    pron: tot.pron ? Object.values(p.pron||{}).filter(Boolean).length / tot.pron : 0,
+    listen: tot.listen && p.listen!=null ? p.listen / tot.listen : 0,
+    role: p.role ? 1 : 0,
+    quiz: tot.quiz && p.quiz!=null ? p.quiz / tot.quiz : 0,
+  };
+  // Trình duyệt không nhận dạng giọng nói và chưa có kết quả phát âm: không tính phần phát âm (không trừ điểm oan)
+  const skipPron = !ZH_SR && !Object.values(p.pron||{}).some(Boolean);
+  let got = 0, max = 0; const rows = [];
+  ZH_W.forEach(([k, name, w])=>{ const skip = k==="pron" && skipPron; const pts = Math.round(Math.min(1, ratio[k]) * w * 10) / 10; if(!skip){ got += pts; max += w; } rows.push({k, name, w, pts, r:ratio[k], skip}); });
+  const score = max ? Math.round(got / max * 1000) / 10 : 0;
+  return {score, grade:zhGrade(score), rows, started: Object.values(ratio).some(x=>x>0)};
+}
+function zhAdvice(k){ return {video:"Xem video tương tác và làm kiểm tra sau video.", l1:"Học hết Lớp 1 rồi bấm 'Đã học xong Lớp 1'.", write:"Viết đủ các chữ ở tab Tập viết, đúng bút thuận.", asm:"Làm hết các bài ghép ở tab Ghép.", pron:"Luyện tab Phát âm trên Chrome hoặc Edge đến khi máy nhận ra đúng.", listen:"Làm bài nghe hiểu và bấm lưu kết quả.", role:"Hoàn thành role-play ở Lớp 3 (có thể nhờ AI chấm câu tự do).", quiz:"Làm kiểm tra cuối bài và lưu kết quả."}[k]; }
+
+/* ---------- Tab Điểm của bài ---------- */
+function tabScore(el, d, p){
+  p.tot = zhTotals(d); save();
+  const r = zhLessonScore(d.id, p.tot);
+  const errs = (S.errors||[]).filter(e=>e.lesson===d.id); const types={}; errs.forEach(e=>types[e.type]=(types[e.type]||0)+1);
+  const weak = r.rows.filter(x=>!x.skip && x.r<1).sort((a,b)=>(b.w*(1-b.r))-(a.w*(1-a.r))).slice(0,3);
+  el.innerHTML = `<div class="card"><h2>Điểm và đánh giá bài ${esc(d.id)}</h2>
+    <div class="bands"><div class="band"><div class="v">${r.score}</div>điểm / 100</div><div class="band"><div class="v" style="font-size:22px">${r.grade}</div>xếp loại</div><div class="band"><div class="v">${errs.length}</div>lỗi đã ghi</div></div>
+    <div class="tblwrap"><table><tr><th>Thành phần</th><th>Trọng số</th><th>Mức hoàn thành</th><th>Điểm</th><th>Việc nên làm</th></tr>${r.rows.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.w}</td><td>${x.skip?"Không tính (trình duyệt chưa hỗ trợ nhận dạng giọng nói)":Math.round(x.r*100)+"%"}</td><td>${x.skip?"-":x.pts}</td><td>${x.r>=1||x.skip?"Đã xong":esc(zhAdvice(x.k))}</td></tr>`).join("")}</table></div>
+    <p class="mute">Thang điểm: Xuất sắc từ 90, Giỏi từ 80, Khá từ 65, Đạt từ 50. Bài được tính là hoàn thành khi đạt từ 50 điểm và đã làm kiểm tra cuối bài.</p>
+    <h3>Nhận xét tự động</h3><div class="box">${r.score>=90?"Bạn đã làm chủ bài này. Hãy ôn thẻ ghi nhớ theo lịch 1-3-7-14-30 để giữ kiến thức.":r.started?`Điểm hiện tại ${r.score}. Ưu tiên: ${weak.map(x=>esc(x.name)).join(", ")||"hoàn thiện các phần còn lại"}.`:"Bạn chưa bắt đầu bài này. Hãy xem video tương tác trước, rồi học Lớp 1."}${Object.keys(types).length?`<br>Lỗi lặp lại nhiều nhất: ${Object.entries(types).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,n])=>esc(k)+" ("+n+")").join(", ")}.`:""}</div>
+    <div class="row"><button class="btn sec" onclick="S.tab='ai';save();render();setTimeout(()=>zaAsk('Hãy nhận xét kết quả học bài này của tôi và đề xuất cách ôn: điểm ${r.score}/100, ${r.rows.map(x=>x.name+' '+Math.round(x.r*100)+'%').join(', ')}; lỗi: ${Object.entries(types).map(([k,n])=>k+' '+n).join(', ')||'chưa có'}.'),50)">Nhờ Trợ lý AI nhận xét chi tiết</button><button class="btn sec" onclick="S.lesson=null;S.page='grades';save();render()">Mở sổ điểm</button></div></div>`;
+}
+
+/* ---------- Sổ điểm ---------- */
+function zhGradesView(m){
+  const rows = LESSONS.map(x=>({x, r:zhLessonScore(x.id)}));
+  const started = rows.filter(o=>o.r && o.r.started);
+  const avg = started.length ? Math.round(started.reduce((a,o)=>a+o.r.score,0)/started.length*10)/10 : 0;
+  const done = rows.filter(o=>o.r && o.r.score>=50 && (S.progress[o.x.id]||{}).quiz!=null).length;
+  const tests = (S.tests||[]).slice().reverse();
+  const part = c => { const g=rows.filter(o=>o.x.part===c && o.r && o.r.started); return g.length?Math.round(g.reduce((a,o)=>a+o.r.score,0)/g.length):"-"; };
+  m.innerHTML = `<div class="card"><div class="row"><button class="btn sec" onclick="S.page=null;save();render()">Danh sách bài</button><button class="btn sec" onclick="S.page='test';ZT.cfg=null;save();render()">Kiểm tra và thi thử</button></div>
+    <h1>Sổ điểm Tiếng Trung</h1><p class="mute">Điểm mỗi bài tính tự động theo thang 100 từ video, ba lớp học và kiểm tra. ${KK.user?"Sổ điểm lưu theo tài khoản KK-EDU.":"Đăng nhập để lưu sổ điểm lên đám mây."}</p>
+    <div class="bands"><div class="band"><div class="v">${done}/${LESSONS.length}</div>bài hoàn thành</div><div class="band"><div class="v">${avg}</div>điểm trung bình</div><div class="band"><div class="v" style="font-size:22px">${started.length?zhGrade(avg):"-"}</div>xếp loại chung</div><div class="band"><div class="v">${tests.length}</div>lần kiểm tra</div></div>
+    <p class="mute">Trung bình theo phần: Phần A ${part("A")} · Phần B ${part("B")} · Khối C1 ${part("C")}</p></div>
+    <div class="card"><h2>Điểm từng bài</h2><div class="tblwrap"><table><tr><th>Bài</th><th>Tên bài</th><th>Video</th><th>Điểm</th><th>Xếp loại</th><th></th></tr>${rows.map(({x,r})=>{ const v=(S.video||{})["V-"+x.id]; return `<tr><td>${esc(x.id)}</td><td>${esc(x.title)}</td><td>${v&&v.done?v.score+"/"+v.total:"-"}</td><td>${r&&r.started?r.score:"-"}</td><td>${r&&r.started?r.grade:"Chưa học"}</td><td><button class="btn sec" onclick="S.page=null;S.lesson='${x.id}';S.tab='score';save();render()">Xem</button></td></tr>`; }).join("")}</table></div></div>
+    <div class="card"><h2>Lịch sử kiểm tra và thi thử</h2>${tests.length?`<div class="tblwrap"><table><tr><th>Ngày</th><th>Bài thi</th><th>Kết quả</th><th>Đánh giá</th></tr>${tests.map(t=>`<tr><td>${esc(t.date)}</td><td>${esc(t.name)}</td><td>${esc(t.scoreText)}</td><td>${t.pass?"Đạt":"Chưa đạt"}</td></tr>`).join("")}</table></div>`:'<p class="mute">Chưa có lần kiểm tra nào.</p>'}</div>
+    ${(S.errors||[]).length?`<div class="card"><h2>Sổ lỗi và điều hướng ôn tập</h2>${errorSummary()}<div class="row" style="margin-top:8px"><button class="btn sec" onclick="zaPracticeGlobal()">AI soạn bài luyện từ lỗi của tôi</button></div><div id="zaPg"></div></div>`:""}`;
+}
+function zhAssessHomeCard(){
+  const rows = LESSONS.map(x=>zhLessonScore(x.id)).filter(r=>r&&r.started);
+  const avg = rows.length ? Math.round(rows.reduce((a,r)=>a+r.score,0)/rows.length) : 0;
+  const lastT = (S.tests||[]).slice(-1)[0];
+  return `<div class="card"><h2>Đánh giá và chấm điểm</h2><p class="mute">Mỗi bài chấm tự động thang 100 (video, ba lớp, kiểm tra). Kiểm tra theo phần và thi thử theo cấu trúc HSK sinh đề ngẫu nhiên từ chính các bài, chấm ngay, ghi lỗi vào sổ lỗi để AI gợi ý ôn.</p>
+    <div class="bands"><div class="band"><div class="v">${rows.length}</div>bài đã bắt đầu</div><div class="band"><div class="v">${rows.length?avg:"-"}</div>điểm trung bình</div><div class="band"><div class="v" style="font-size:18px">${lastT?esc(lastT.scoreText):"-"}</div>lần thi gần nhất</div></div>
+    <div class="row" style="margin-top:10px"><button class="btn" onclick="S.page='grades';save();render()">Sổ điểm</button><button class="btn gold" onclick="S.page='test';ZT.cfg=null;save();render()">Kiểm tra và thi thử</button></div></div>`;
+}
+
+/* ---------- Bộ máy đề thi ---------- */
+const ZT = { cfg:null, qs:[], ans:{}, ord:{}, i:0, t0:0, left:0, tick:null, done:false, res:null, loading:false, err:"" };
+const ZT_CFG = {
+  A: {name:"Kiểm tra Phần A - Nền tảng", parts:["A"], mix:{vocab:6, read:3, pinyin:3, listen:3, quiz:3, order:2}, min:25, pass:70},
+  B: {name:"Kiểm tra Phần B - Giao tiếp", parts:["B"], mix:{vocab:6, read:3, pinyin:3, listen:3, quiz:3, order:2}, min:25, pass:70},
+  C: {name:"Kiểm tra Giai đoạn 1 - Khối 1 (HSK 2)", parts:["C"], mix:{vocab:6, read:3, pinyin:3, listen:3, quiz:3, order:2}, min:25, pass:70},
+  HSK: {name:"Thi thử theo cấu trúc HSK 1-2 (KK-EDU)", parts:["A","B","C"], hsk:true, sections:[["Nghe", {listen:10}, 100], ["Đọc", {vocab:4, read:3, quiz:3}, 60], ["Viết câu", {order:5}, 40]], min:35, pass:120},
+};
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+function ztOpts(correct, pool){ const ds = shuffle(pool.filter(x=>x && x!==correct)).filter((x,i,a)=>a.indexOf(x)===i).slice(0,2); if(ds.length<2) return null; const keys=["A","B","C"]; const vals=shuffle([correct, ...ds]); const o={}; keys.forEach((k,i)=>o[k]=vals[i]); return {options:o, answer:keys[vals.indexOf(correct)]}; }
+function ztBank(lessons){
+  const B = {vocab:[], read:[], pinyin:[], listen:[], quiz:[], order:[]};
+  const V = lessons.flatMap(d=>d.layer1.vocab.map(v=>Object.assign({lesson:d.id}, v)));
+  const vis = V.map(v=>v.vi), zhs = V.map(v=>v.zh), pys = V.map(v=>v.py);
+  V.forEach(v=>{
+    let o = ztOpts(v.vi, vis); if(o) B.vocab.push(Object.assign({type:"mcq", cat:"từ vựng", lesson:v.lesson, q:`Nghĩa của <b class="zh">${esc(v.zh)}</b> (${esc(v.py)}) là gì?`, explain:`${v.zh} (${v.py}) nghĩa là ${v.vi}${v.hv?", Hán-Việt: "+v.hv:""}.`}, o));
+    o = ztOpts(v.zh, zhs); if(o) B.read.push(Object.assign({type:"mcq", cat:"đọc", lesson:v.lesson, q:`Chọn từ tiếng Trung có nghĩa "${esc(v.vi)}".`, explain:`"${v.vi}" là ${v.zh} (${v.py}).`, zhOpts:true}, o));
+    const near = pys.filter(p=>p!==v.py && p.replace(/[^a-zü]/gi,"").length && Math.abs(p.length-v.py.length)<=3);
+    o = ztOpts(v.py, near.length>=2?near:pys); if(o) B.pinyin.push(Object.assign({type:"mcq", cat:"phát âm", lesson:v.lesson, q:`Pinyin đúng của <b class="zh">${esc(v.zh)}</b> là?`, explain:`${v.zh} đọc ${v.py}.`}, o));
+  });
+  lessons.forEach(d=>{
+    const Ls = d.layer2.listening; const audio = Ls.script.map(x=>x.zh);
+    Ls.questions.forEach(q=>B.listen.push({type:"listen", cat:"nghe", lesson:d.id, audio, q:esc(q.q), options:q.options, answer:q.answer, explain:q.explain}));
+    d.quiz.forEach(q=>B.quiz.push({type:"mcq", cat:"kiến thức", lesson:d.id, q:rich(q.q), options:q.options, answer:q.answer, explain:q.explain}));
+    d.layer2.assembly.filter(a=>a.type==="sentence").forEach(a=>B.order.push({type:"order", cat:"trật tự từ", lesson:d.id, q:`Sắp xếp thành câu: "${esc(a.vi)}"`, pieces:shuffle(a.pieces), answer:a.answer, py:a.py, vi:a.vi}));
+  });
+  return B;
+}
+function ztPick(B, mix){ let out=[]; Object.entries(mix).forEach(([k,n])=>{ out = out.concat(shuffle(B[k]).slice(0,n)); }); return out; }
+async function ztStart(key){
+  const cfg = ZT_CFG[key]; ZT.cfg=Object.assign({key}, cfg); ZT.loading=true; ZT.err=""; render();
+  try{
+    const ids = LESSONS.filter(x=>cfg.parts.includes(x.part)).map(x=>x.id);
+    const lessons = await Promise.all(ids.map(zhNeed));
+    const B = ztBank(lessons);
+    if(cfg.hsk){ ZT.qs=[]; cfg.sections.forEach(([name, mix])=>{ ztPick(B, mix).forEach(q=>ZT.qs.push(Object.assign({sec:name}, q))); }); }
+    else ZT.qs = shuffle(ztPick(B, cfg.mix));
+    ZT.ans={}; ZT.ord={}; ZT.i=0; ZT.done=false; ZT.res=null; ZT.t0=Date.now(); ZT.left=cfg.min*60;
+    clearInterval(ZT.tick); ZT.tick=setInterval(()=>{ ZT.left--; const el=$("#ztTime"); if(el) el.textContent=zvFmt(ZT.left); if(ZT.left<=0){ clearInterval(ZT.tick); if(!ZT.done) ztSubmit(true); } if(!el && S.page!=="test"){ clearInterval(ZT.tick); } }, 1000);
+  }catch(e){ ZT.err="Chưa tải đủ bài để sinh đề. Kiểm tra kết nối mạng rồi thử lại."; ZT.cfg=null; }
+  ZT.loading=false; render();
+}
+function ztCorrect(q, a){ if(a==null) return false; if(q.type==="order") return Array.isArray(a) && a.length===q.answer.length && a.every((x,i)=>x===q.answer[i]); return a===q.answer; }
+function ztSubmit(timeout){
+  clearInterval(ZT.tick); ZT.done=true; const cfg=ZT.cfg; const ok = ZT.qs.map((q,i)=>ztCorrect(q, ZT.ans[i]));
+  ZT.qs.forEach((q,i)=>{ if(!ok[i]) S.errors.push({date:new Date().toISOString().slice(0,10), lesson:q.lesson, type:q.cat, detail:String(q.q).replace(/<[^>]*>/g,"").slice(0,80)}); });
+  let res;
+  if(cfg.hsk){ const secs = cfg.sections.map(([name,,pts])=>{ const idx=ZT.qs.map((q,i)=>i).filter(i=>ZT.qs[i].sec===name); const c=idx.filter(i=>ok[i]).length; return {name, c, n:idx.length, pts, score: idx.length?Math.round(c/idx.length*pts):0}; });
+    const total = secs.reduce((a,s)=>a+s.score,0); res = {secs, total, pass: total>=cfg.pass, scoreText: total+"/200"}; }
+  else { const c=ok.filter(Boolean).length, n=ZT.qs.length, pct=Math.round(c/n*100); res = {c, n, pct, pass: pct>=cfg.pass, scoreText: c+"/"+n+" ("+pct+"%)"}; }
+  const cats={}; ZT.qs.forEach((q,i)=>{ const k=q.cat; cats[k]=cats[k]||{c:0,n:0}; cats[k].n++; if(ok[i]) cats[k].c++; }); res.cats=cats; res.ok=ok; res.timeout=!!timeout;
+  res.secsUsed = Math.round((Date.now()-ZT.t0)/1000);
+  ZT.res=res; S.tests=(S.tests||[]).concat([{date:new Date().toISOString().slice(0,10), key:cfg.key, name:cfg.name, scoreText:res.scoreText, pass:res.pass, cats}]).slice(-50); save(); render();
+}
+function ztAnswer(k){ ZT.ans[ZT.i]=k; render(); }
+function ztOrder(j){ const q=ZT.qs[ZT.i]; const idx=ZT.ord[ZT.i]=(ZT.ord[ZT.i]||[]); if(idx.includes(j)) return; idx.push(j); ZT.ans[ZT.i]=idx.map(k=>q.pieces[k]); render(); }
+function ztPlay(){ const q=ZT.qs[ZT.i]; q.plays=(q.plays||0)+1; if(q.plays>2) return; zhPlayLines(q.audio); render(); }
+function zhTestView(m){
+  if(ZT.loading){ m.innerHTML=`<div class="card"><h1>Đang chuẩn bị đề...</h1><p class="mute">Nạp nội dung các bài và sinh đề ngẫu nhiên.</p></div>`; return; }
+  if(!ZT.cfg){
+    const hist=(S.tests||[]).slice(-5).reverse();
+    m.innerHTML=`<div class="card"><div class="row"><button class="btn sec" onclick="S.page=null;save();render()">Danh sách bài</button><button class="btn sec" onclick="S.page='grades';save();render()">Sổ điểm</button></div><h1>Kiểm tra và thi thử</h1>${ZT.err?`<p class="warnbox">${esc(ZT.err)}</p>`:""}
+      <p class="mute">Đề sinh ngẫu nhiên từ chính nội dung các bài (từ vựng, đọc, pinyin, nghe, kiến thức, trật tự từ). Có đồng hồ đếm ngược, hết giờ tự nộp; chấm ngay; câu sai được ghi vào sổ lỗi.</p>
+      <div class="grid">${["A","B","C"].map(k=>{ const c=ZT_CFG[k]; return `<div class="box"><b>${esc(c.name)}</b><div class="mute">20 câu · ${c.min} phút · đạt từ ${c.pass}%</div><button class="btn" style="margin-top:8px" onclick="ztStart('${k}')">Bắt đầu</button></div>`; }).join("")}
+      <div class="box"><b>${esc(ZT_CFG.HSK.name)}</b><div class="mute">25 câu: Nghe 10 (100 điểm), Đọc 10 (60 điểm), Viết câu 5 (40 điểm) · ${ZT_CFG.HSK.min} phút · đạt từ 120/200. Không thay thế kỳ thi HSK chính thức.</div><button class="btn gold" style="margin-top:8px" onclick="ztStart('HSK')">Bắt đầu thi thử</button></div></div></div>
+      ${hist.length?`<div class="card"><h2>Gần đây</h2><ul>${hist.map(t=>`<li>${esc(t.date)} · ${esc(t.name)}: <b>${esc(t.scoreText)}</b> - ${t.pass?"Đạt":"Chưa đạt"}</li>`).join("")}</ul></div>`:""}`;
+    return;
+  }
+  if(ZT.done){ const r=ZT.res, cfg=ZT.cfg;
+    m.innerHTML=`<div class="card zhprint"><h1>${esc(cfg.name)}: kết quả</h1>
+      <p class="mute">Thí sinh: <b>${esc(S.name||"(chưa nhập tên)")}</b> · Ngày ${new Date().toLocaleDateString("vi-VN")} · Thời gian làm bài ${zvFmt(r.secsUsed)}${r.timeout?" (hết giờ, tự nộp)":""}</p>
+      <div class="bands"><div class="band"><div class="v">${esc(r.scoreText.split(" ")[0])}</div>${cfg.hsk?"điểm / 200":"câu đúng"}</div><div class="band"><div class="v" style="font-size:22px">${r.pass?"Đạt":"Chưa đạt"}</div>${cfg.hsk?"mốc đạt 120":"mốc đạt "+cfg.pass+"%"}</div>${cfg.hsk?r.secs.map(s=>`<div class="band"><div class="v">${s.score}</div>${esc(s.name)} (${s.c}/${s.n})</div>`).join(""):`<div class="band"><div class="v">${r.pct}%</div>tỷ lệ đúng</div>`}</div>
+      <h3>Theo kỹ năng</h3><div class="tblwrap"><table><tr><th>Kỹ năng</th><th>Đúng</th><th>Tỷ lệ</th></tr>${Object.entries(r.cats).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v.c}/${v.n}</td><td>${Math.round(v.c/v.n*100)}%</td></tr>`).join("")}</table></div>
+      ${cfg.hsk?'<p class="mute">Phiếu kết quả thi thử nội bộ KK-EDU theo cấu trúc HSK; không thay thế chứng chỉ HSK chính thức do Trung tâm Khảo thí Hán ngữ cấp.</p>':""}
+      <div class="row noprint"><button class="btn" onclick="ZT.cfg=null;render()">Chọn bài thi khác</button><button class="btn sec" onclick="window.print()">In phiếu kết quả</button><button class="btn sec" onclick="S.page='grades';save();render()">Sổ điểm</button></div></div>
+      <div class="card noprint"><h2>Xem lại bài làm</h2>${ZT.qs.map((q,i)=>`<div class="box"><b>${i+1}. ${q.sec?esc(q.sec)+" · ":""}${q.q}</b> <span class="tag">${esc(q.lesson)}</span><br>${q.type==="order"?`Bạn xếp: <span class="zh">${esc((ZT.ans[i]||[]).join(" "))||"(bỏ trống)"}</span><br>Đáp án: <span class="zh">${esc(q.answer.join(" "))}</span> ${esc(q.py||"")}`:`Bạn chọn: ${ZT.ans[i]?esc(ZT.ans[i])+". "+(q.zhOpts?`<span class="zh">${esc(q.options[ZT.ans[i]])}</span>`:esc(q.options[ZT.ans[i]])):"(bỏ trống)"} · Đáp án: ${q.answer}. ${q.zhOpts?`<span class="zh">${esc(q.options[q.answer])}</span>`:esc(q.options[q.answer])}`}<div class="fb ${r.ok[i]?"good":"bad"}">${r.ok[i]?"Đúng.":"Sai."} ${esc(q.explain||"")}</div></div>`).join("")}</div>`;
+    return; }
+  const q=ZT.qs[ZT.i], a=ZT.ans[ZT.i], n=ZT.qs.length, answered=ZT.qs.filter((x,i)=>ZT.ans[i]!=null && !(Array.isArray(ZT.ans[i])&&!ZT.ans[i].length)).length;
+  m.innerHTML=`<div class="card"><div class="row"><h2 style="margin:0;flex:1">${esc(ZT.cfg.name)}</h2><span class="zvtime">Còn <b id="ztTime">${zvFmt(ZT.left)}</b></span></div>
+    <div class="zvbar"><i style="width:${Math.round(answered/n*100)}%"></i></div>
+    <div class="ztnav">${ZT.qs.map((x,i)=>`<button class="${i===ZT.i?"on":""} ${ZT.ans[i]!=null?"done":""}" onclick="ZT.i=${i};render()">${i+1}</button>`).join("")}</div>
+    <div class="box"><div class="mute">Câu ${ZT.i+1}/${n}${q.sec?" · Phần "+esc(q.sec):""} · ${esc(q.cat)}</div><p><b>${q.q}</b></p>
+    ${q.type==="listen"?`<div class="row"><button class="btn sec" onclick="ztPlay()" ${(q.plays||0)>=2?"disabled":""}>Nghe đoạn thoại (${2-(q.plays||0)} lần)</button></div>`:""}
+    ${q.type==="order"?`<div class="rail">${(a||[]).map(x=>`<span class="chip">${esc(x)}</span>`).join("")}</div><div>${q.pieces.map((x,j)=>`<span class="chip ${(ZT.ord[ZT.i]||[]).includes(j)?"used":""}" onclick="ztOrder(${j})">${esc(x)}</span>`).join("")}</div><button class="btn sec" onclick="ZT.ans[ZT.i]=null;ZT.ord[ZT.i]=[];render()">Xếp lại</button>`
+      : ["A","B","C"].map(k=>`<button class="opt ${a===k?"ok":""}" onclick="ztAnswer('${k}')">${k}. ${q.zhOpts?`<span class="zh">${esc(q.options[k])}</span>`:esc(q.options[k])}</button>`).join("")}</div>
+    <div class="row"><button class="btn sec" onclick="ZT.i=Math.max(0,ZT.i-1);render()" ${ZT.i===0?"disabled":""}>Câu trước</button><button class="btn sec" onclick="ZT.i=Math.min(${n-1},ZT.i+1);render()" ${ZT.i===n-1?"disabled":""}>Câu sau</button><button class="btn gold" onclick="if(confirm('Nộp bài? Đã làm ${answered}/${n} câu.'))ztSubmit()">Nộp bài</button></div></div>`;
+}
+
+/* ===== KK-EDU Tiếng Trung: Trợ lý AI theo bài - hỏi đáp, chấm câu tự do trong role-play, bài luyện từ lỗi =====
+   Tác giả : Nguyễn Duy Điển (KK-2026). Gọi /api/zh/ai (Workers AI; ngữ cảnh bài học do máy chủ dựng). AI gợi ý, con người quyết định. */
+
+const ZA = { chat:{}, busy:false, prac:{}, grade:null, err:"" };
+const ZA_ERR = {401:"Phiên đăng nhập đã hết, hãy đăng nhập lại.", 403:"Trang này không được phép gọi trợ lý AI.", 503:"Trợ lý AI tạm thời chưa sẵn sàng trên máy chủ. Hãy thử lại sau.", 413:"Câu hỏi quá dài.", 400:"Yêu cầu chưa hợp lệ."};
+async function zaApi(body){
+  if(!KK.user) throw new Error("login");
+  const base = await kkApiBase(); const tok = await kkIdToken();
+  const r = await fetch(base+"/zh/ai", {method:"POST", headers:{"content-type":"application/json", authorization:"Bearer "+tok}, body:JSON.stringify(body)});
+  const j = await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(ZA_ERR[r.status] || ("Lỗi máy chủ "+r.status));
+  return j;
+}
+function zaText(t){ return esc(t).replace(/\n/g,"<br>").replace(/([㐀-鿿][㐀-鿿　-〿！-｠]*)/g, (m)=>`<span class="zh zaz" title="Bấm để nghe" onclick="TTS('${m.replace(/'/g,"")}')">${m}</span>`); }
+function zaLoginBox(what){ return `<div class="warnbox">${esc(what)} cần tài khoản KK-EDU (miễn phí). <a href="${kkLoginUrl()}">Đăng nhập hoặc đăng ký</a>. Tài khoản dùng chung cho mọi phân hệ.</div>`; }
+
+/* ---------- Tab Trợ lý AI ---------- */
+function tabAI(el, d, p){
+  if(!KK.user){ el.innerHTML = `<div class="card"><h2>Trợ lý AI của bài ${esc(d.id)}</h2>${zaLoginBox("Trợ lý AI")}<p class="mute">Trợ lý trả lời bám sát bài học (từ vựng, mẫu câu, hội thoại), chấm câu tự do trong role-play và soạn bài luyện từ chính lỗi của bạn.</p></div>`; return; }
+  const log = ZA.chat[d.id] = ZA.chat[d.id] || [{role:"ai", text:`Chào ${S.name||"bạn"}, mình là trợ lý AI của bài ${d.id} - ${d.title}. Bạn có thể hỏi nghĩa từ, cách dùng mẫu câu, nhờ sửa câu, hoặc nhờ cho thêm ví dụ. Bấm vào chữ Hán để nghe Cô Lin đọc.`}];
+  const sug = [`Giải thích mẫu câu chính của bài ${d.id}`, `Cho tôi 3 câu ví dụ với từ ${d.layer1.vocab[0].zh}`, `Cách nhớ chữ ${d.layer1.chietu[0].zh} bằng Hán-Việt?`, `Sửa giúp câu: ${(d.layer2.assembly.find(a=>a.type==="sentence")||{answer:["我","是","学生"]}).answer.slice().reverse().join("")}`];
+  const pr = ZA.prac[d.id];
+  el.innerHTML = `<div class="card"><h2>Trợ lý AI của bài ${esc(d.id)}</h2><p class="mute">Trả lời bằng tiếng Việt, bám sát nội dung bài; AI gợi ý, con người quyết định. Không gửi thông tin cá nhân trong câu hỏi.</p>
+    <div class="chat" id="zaChat">${log.map(m=>`<div class="msg ${m.role==="me"?"me":"ai"}">${zaText(m.text)}</div>`).join("")}${ZA.busy?'<div class="msg ai mute">Trợ lý đang soạn câu trả lời...</div>':""}</div>
+    ${ZA.err?`<p class="warnbox">${esc(ZA.err)}</p>`:""}
+    <div style="margin:8px 0">${sug.map(s=>`<button class="btn sec sm" style="margin:2px" onclick="zaAsk(${JSON.stringify(s).replace(/"/g,"&quot;")})">${esc(s)}</button>`).join("")}</div>
+    <div class="row"><input id="zaQ" placeholder="Hỏi trợ lý về bài này" maxlength="500" style="flex:1;min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit" onkeydown="if(event.key==='Enter')zaAsk(this.value)"><button class="btn" ${ZA.busy?"disabled":""} onclick="zaAsk($('#zaQ').value)">Gửi</button></div></div>
+    <div class="card"><h2>Bài luyện AI từ lỗi của bạn</h2><p class="mute">AI soạn 5 câu trắc nghiệm theo các lỗi bạn đã mắc trong bài này (sổ lỗi), chỉ dùng từ và mẫu câu của bài.</p>
+    <button class="btn sec" ${ZA.busy?"disabled":""} onclick="zaPractice('${d.id}','zaP')">Soạn bài luyện</button><div id="zaP">${pr?zaPracHTML(d.id):""}</div></div>`;
+  const c=$("#zaChat"); if(c) c.scrollTop=c.scrollHeight;
+}
+async function zaAsk(q){
+  q = String(q||"").trim(); const d = L(); if(!q || !d || ZA.busy) return;
+  if(S.tab!=="ai"){ S.tab="ai"; save(); }
+  const log = ZA.chat[d.id] = ZA.chat[d.id] || [];
+  log.push({role:"me", text:q}); ZA.busy=true; ZA.err=""; render();
+  try{ const j = await zaApi({task:"tutor", lesson:d.id, question:q, history:log.slice(-7,-1)}); log.push({role:"ai", text:(j.text||"").trim() || "Trợ lý chưa có câu trả lời, hãy hỏi lại cụ thể hơn."}); }
+  catch(e){ ZA.err = e.message==="login" ? "Cần đăng nhập để dùng trợ lý AI." : e.message; log.pop(); }
+  ZA.busy=false; if(S.tab==="ai") render();
+}
+
+/* ---------- Bài luyện AI ---------- */
+function zaPracHTML(id){ const P=ZA.prac[id]; if(!P) return ""; if(P.err) return `<p class="warnbox">${esc(P.err)}</p>`; if(!P.items) return '<p class="mute">Đang soạn bài luyện...</p>';
+  const all=P.items.every((q,i)=>P.ans[i]); const c=P.items.filter((q,i)=>P.ans[i]===q.answer).length;
+  return P.items.map((q,i)=>`<div class="box"><b>${i+1}. ${zaText(q.q)}</b>${["A","B","C"].map(k=>`<button class="opt ${P.ans[i]?(k===q.answer?"ok":(k===P.ans[i]?"ko":"")):""}" ${P.ans[i]?"disabled":""} onclick="zaPick('${id}',${i},'${k}')">${k}. ${zaText(q.options[k]||"")}</button>`).join("")}${P.ans[i]?`<div class="fb ${P.ans[i]===q.answer?"good":"bad"}">${zaText(q.explain||"")}</div>`:""}</div>`).join("") + (all?`<p><b>Kết quả: ${c}/${P.items.length}</b></p>`:""); }
+async function zaPractice(id, target){
+  const errs = (S.errors||[]).filter(e=>!id || e.lesson===id).slice(-12).map(e=>({type:e.type, detail:e.detail}));
+  ZA.prac[id] = {items:null, ans:{}}; ZA.busy=true; const out=document.getElementById(target); if(out) out.innerHTML=zaPracHTML(id);
+  try{ const j = await zaApi({task:"practice", lesson:id, errors:errs}); const items=(j.json&&j.json.items)||[]; if(!items.length) throw new Error("Trợ lý chưa soạn được bài luyện hợp lệ, hãy thử lại."); ZA.prac[id].items=items; }
+  catch(e){ ZA.prac[id].err = e.message==="login" ? "Cần đăng nhập để dùng bài luyện AI." : e.message; }
+  ZA.busy=false; const o2=document.getElementById(target); if(o2) o2.innerHTML=zaPracHTML(id); else render();
+}
+function zaPick(id,i,k){ const P=ZA.prac[id]; if(!P||P.ans[i]) return; P.ans[i]=k; const q=P.items[i]; if(k!==q.answer) S.errors.push({date:new Date().toISOString().slice(0,10), lesson:id, type:"bài luyện AI", detail:String(q.q).slice(0,80)});
+  if(P.items.every((x,j)=>P.ans[j])){ const pr=PR(id); pr.aiPractice=(pr.aiPractice||[]).concat([{at:new Date().toISOString().slice(0,10), c:P.items.filter((x,j)=>P.ans[j]===x.answer).length, n:P.items.length}]).slice(-10); }
+  save(); const el=document.getElementById(S.page==="grades"?"zaPg":"zaP"); if(el) el.innerHTML=zaPracHTML(id); }
+function zaPracticeGlobal(){
+  if(!KK.user){ const el=$("#zaPg"); if(el) el.innerHTML=zaLoginBox("Bài luyện AI"); return; }
+  const e=(S.errors||[]).filter(x=>x.lesson && /^ZH-/.test(x.lesson)).slice(-1)[0]; const id=e?e.lesson:(LESSONS[0]||{}).id;
+  zhNeed(id).then(()=>zaPractice(id, "zaPg")); }
+
+/* ---------- Role-play: AI chấm câu tự do khi không khớp mẫu ---------- */
+const _zaSend0 = sendChat;
+sendChat = function(){ const t=chat.turn; _zaSend0(); const last=chat.log[chat.log.length-1]; chat.aiCand = (last && !last.ai && last.ok===false && !chat.done) ? {turn:t, text:last.zh} : null; ZA.grade=null; render(); };
+const _zaL3 = tabL3;
+tabL3 = function(el, d, p){
+  _zaL3(el, d, p);
+  if(!chat.aiCand || chat.done) return;
+  const g = ZA.grade;
+  el.insertAdjacentHTML("beforeend", `<div class="card"><h3>Câu của bạn chưa khớp câu mẫu</h3><p class="mute">Câu tự do vẫn có thể đúng. Nhờ Trợ lý AI chấm câu <b class="zh">${esc(chat.aiCand.text)}</b> theo ngữ cảnh lượt hỏi.</p>
+    ${KK.user?`<button class="btn sec" ${ZA.busy?"disabled":""} onclick="zaGradeSay()">Nhờ AI chấm câu này</button>`:zaLoginBox("Chấm câu bằng AI")}
+    ${g?(g.err?`<p class="warnbox">${esc(g.err)}</p>`:`<div class="fb ${g.ok?"good":"bad"}"><b>${g.ok?"AI chấp nhận":"AI chưa chấp nhận"}</b> · ${g.score}/10. ${zaText(g.comment_vi||"")}${g.corrected?`<br>Câu chuẩn: ${zaText(g.corrected)} ${esc(g.pinyin||"")}`:""}</div>${g.ok?`<button class="btn" onclick="zaAccept()">Chấp nhận và sang lượt sau</button>`:""}`):""}</div>`);
+};
+async function zaGradeSay(){
+  const d=L(); if(!chat.aiCand) return; ZA.busy=true; ZA.grade=null; render();
+  try{ const j=await zaApi({task:"grade_say", lesson:d.id, turn:chat.aiCand.turn, answer:chat.aiCand.text}); ZA.grade = j.json || {err:"Trợ lý chưa trả kết quả chấm hợp lệ, hãy thử lại."}; }
+  catch(e){ ZA.grade={err: e.message==="login"?"Cần đăng nhập để chấm bằng AI.":e.message}; }
+  ZA.busy=false; render();
+}
+function zaAccept(){
+  const d=L(); const R=d.layer3.roleplay; if(!ZA.grade||!ZA.grade.ok||!chat.aiCand) return;
+  const last=chat.log[chat.log.length-1]; if(last && !last.ai){ last.ok=true; last.fb="AI chấp nhận câu tự do ("+ZA.grade.score+"/10)."; }
+  chat.turn++; const nt=R.turns[chat.turn]; if(nt){ chat.log.push({ai:true, zh:nt.ai.zh, py:nt.ai.py, vi:nt.ai.vi}); TTS(nt.ai.zh); } else chat.done=true;
+  chat.aiCand=null; ZA.grade=null; render();
 }
 
 zhBoot();
