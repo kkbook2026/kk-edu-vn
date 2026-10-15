@@ -198,6 +198,14 @@ nav.steps button.done .n{background:var(--good);color:#fff}
 #kkToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:all .2s;z-index:99;max-width:90vw}
 #kkToast.show{opacity:1;transform:translateX(-50%)}
 @media(max-width:760px){nav.steps button{min-width:96px}.jw{min-width:64px}}
+
+/* flashcard - Đợt C */
+.fcard{cursor:pointer;text-align:center;padding:34px 20px;min-height:220px;border:2px solid var(--line);transition:border-color .2s} .fcard:not(.back):hover{border-color:var(--navy)} .fcard.back{cursor:default;border-color:var(--gold)}
+.fcw{font-family:var(--font-d);font-size:2rem;color:var(--navy);line-height:1.1} .fcw small{font-size:.9rem;font-family:var(--font)} .fcipa{margin-top:6px;font-size:1.05rem;color:var(--mute)} .fcvi{font-size:1.35rem;font-weight:600;margin-top:16px} .fcex{font-size:1.02rem;margin-top:10px} .fchint{margin-top:26px}
+.fcrate{justify-content:center} .fcrate .btn{min-width:110px;display:inline-flex;flex-direction:column;align-items:center;line-height:1.1} .fcrate .btn small{font-weight:400;opacity:.8;font-size:11px}
+.voctab{width:100%;font-size:13px} .voctab td,.voctab th{padding:6px 8px;vertical-align:top;border-bottom:1px solid var(--line)} .voctab th{text-align:left;color:var(--mute);font-weight:600}
+i.en{font-style:italic;color:var(--navy)}
+@media(max-width:760px){.voctab{font-size:12px}.voctab td:nth-child(2),.voctab th:nth-child(2){display:none}.fcw{font-size:1.5rem}}
 </style>
 </head>
 <body>
@@ -254,6 +262,7 @@ function kkNeed(what){
   if(KKD.pending[what]) return KKD.pending[what];
   let p;
   if(what==="banks"){ p = Promise.all(Object.entries(KK_BANKS).map(async ([k,[f,key]])=>{ const j = await kkDGet(f); D[k] = key ? j[key] : j; })); }
+  else if(["vocab","grammar","pronunciation"].includes(what)){ p = kkDGet(what).then(j=>{ D[what]=j; }); }
   else { const [kind,id] = what.split(":"); const it = (kind==="video"?D.videos:D.materials).find(x=>x.id===id);
     p = !it ? Promise.resolve() : kkDGet(kind+"/"+encodeURIComponent(id), true).then(full=>{ Object.assign(it, full); }); }
   p = p.then(()=>{ KKD.loaded[what]=true; }, e=>{ delete KKD.pending[what]; throw e; });
@@ -623,7 +632,7 @@ async function kkApplyUser(u){
   if(KK.profile&&KK.profile.namSinh){ KK.age = new Date().getFullYear() - Number(KK.profile.namSinh); }
   // Tiến độ trên đám mây (ưu tiên bản mới hơn)
   try{ const d=await KK.db.doc(`data/users/${u.uid}/ielts-state`).get();
-    if(d.exists){ const c=d.data(); if(c && c.state && (c.updatedAt||0) > (S._updatedAt||0)){ const st=JSON.parse(c.state); ["progress","history","errorLog","lastResult","target","test"].forEach(k=>{ if(st[k]!==undefined) S[k]=st[k]; }); S._updatedAt=c.updatedAt; } }
+    if(d.exists){ const c=d.data(); if(c && c.state && (c.updatedAt||0) > (S._updatedAt||0)){ const st=JSON.parse(c.state); ["progress","history","errorLog","lastResult","target","test","journey","srs"].forEach(k=>{ if(st[k]!==undefined) S[k]=st[k]; }); S._updatedAt=c.updatedAt; } }
   }catch(e){}
   KK.cloudLoaded=true; save();
 }
@@ -632,7 +641,7 @@ save = function(){ S._updatedAt = Date.now(); _save0(); kkSyncCloud(); };
 function kkSyncCloud(){
   if(!KK.user||!KK.db||!KK.cloudLoaded) return;
   clearTimeout(KK.syncTimer);
-  KK.syncTimer=setTimeout(async()=>{ try{ const st={progress:S.progress,history:S.history,errorLog:S.errorLog,lastResult:S.lastResult,target:S.target,test:S.test}; await KK.db.doc(`data/users/${KK.user.uid}/ielts-state`).set({state:JSON.stringify(st), updatedAt:S._updatedAt||Date.now()}); }catch(e){} }, 1500);
+  KK.syncTimer=setTimeout(async()=>{ try{ const st={progress:S.progress,history:S.history,errorLog:S.errorLog,lastResult:S.lastResult,target:S.target,test:S.test,journey:S.journey,srs:S.srs}; await KK.db.doc(`data/users/${KK.user.uid}/ielts-state`).set({state:JSON.stringify(st), updatedAt:S._updatedAt||Date.now()}); }catch(e){} }, 1500);
 }
 function kkRenderUser(){
   const box=$("#kkUser"); if(!box) return;
@@ -1344,6 +1353,158 @@ viewDiag = function(m){
   const b=[...m.querySelectorAll('button')].find(x=>/Bắt đầu chẩn đoán/.test(x.textContent)); if(b) b.textContent='Bắt đầu chẩn đoán 4 kỹ năng (~60 phút)';
 };
 
+/* ===================== Đợt C: 600 từ vựng + flashcard lặp ngắt quãng, ngữ pháp, phát âm (tuần 1-4) ===================== */
+const SRS_NEW_PER_SESSION = 20, SRS_MASTER_DAYS = 21;
+const DAY = 864e5;
+function srs(){ if(!S.srs) S.srs={cards:{}, quiz:{}, log:{}}; S.srs.cards=S.srs.cards||{}; S.srs.quiz=S.srs.quiz||{}; S.srs.log=S.srs.log||{}; return S.srs; }
+function srsCard(id){ const c=srs().cards; return c[id]||(c[id]={ef:2.5, iv:0, due:0, reps:0, lapses:0}); }
+/* SM-2 rút gọn: 0 Quên, 1 Khó, 2 Nhớ, 3 Dễ */
+function srsRate(id, q){
+  const c=srsCard(id); const now=Date.now();
+  if(q===0){ c.lapses++; c.reps=0; c.iv=0; c.due=now+10*60*1000; c.ef=Math.max(1.3, c.ef-0.2); }
+  else{ c.reps++; if(c.reps===1) c.iv = q===1?1:(q===2?1:3); else if(c.reps===2) c.iv = q===1?3:(q===2?6:8); else c.iv = Math.round(c.iv*(q===1?1.2:(q===2?c.ef:c.ef*1.3)));
+    c.iv=Math.min(c.iv,180); c.due=now+c.iv*DAY; c.ef=Math.max(1.3, Math.min(3.0, c.ef+(q===3?0.15:q===2?0:-0.15))); }
+  c.last=now; const d=TODAY(); srs().log[d]=(srs().log[d]||0)+1;
+}
+function vocTopic(id){ return (D.vocab.topics||[]).find(t=>t.id===id); }
+function vocWords(topicId){ return D.vocab.words.filter(w=>!topicId||w.topic===topicId); }
+function vocStats(topicId){ const ws=vocWords(topicId); const now=Date.now(); let seen=0, due=0, mastered=0; ws.forEach(w=>{ const c=srs().cards[w.id]; if(c&&c.reps>0||c&&c.lapses>0){ seen++; if(c.due<=now) due++; if(c.iv>=SRS_MASTER_DAYS) mastered++; } }); return {total:ws.length, seen, due, mastered, new:ws.length-seen}; }
+function vocDoneTopic(id){ const st=vocStats(id); const qz=srs().quiz[id]; return st.seen>=Math.round(st.total*0.9) && !!(qz&&qz.pct>=70); }
+
+/* ---------- Phiên flashcard ---------- */
+const FC = { on:false, topic:null, queue:[], i:0, flipped:false, done:0, again:0, start:0 };
+function fcStart(topicId, opts){
+  const now=Date.now(); const ws=vocWords(topicId); const due=ws.filter(w=>{ const c=srs().cards[w.id]; return c&&(c.reps>0||c.lapses>0)&&c.due<=now; });
+  const fresh=ws.filter(w=>{ const c=srs().cards[w.id]; return !c||(c.reps===0&&c.lapses===0); }).slice(0, (opts&&opts.newMax!=null)?opts.newMax:SRS_NEW_PER_SESSION);
+  const q=[...due, ...fresh]; if(!q.length){ kkToast('Không có thẻ nào đến hạn - quay lại sau hoặc làm kiểm tra nhanh.'); return; }
+  Object.assign(FC,{on:true, topic:topicId, queue:q, i:0, flipped:false, done:0, again:0, start:now, title:(opts&&opts.title)||(topicId?vocTopic(topicId).name_en:'Ôn tất cả chủ đề')}); kkStop(); render(); window.scrollTo(0,0);
+}
+function fcFlip(){ FC.flipped=true; render(); const w=FC.queue[FC.i]; if(w) kkSpeak(w.example,{lang:'en'}); }
+function fcRate(q){
+  const w=FC.queue[FC.i]; if(!w) return; srsRate(w.id, q); FC.done++;
+  if(q===0){ FC.again++; FC.queue.push(w); }   // quên: gặp lại cuối phiên
+  FC.i++; FC.flipped=false; save(); if(FC.i>=FC.queue.length){ FC.on=false; FC.finished=true; kkTrackIelts('ielts_flashcard',{n:FC.done, topic:FC.topic||'all'}); }
+  render(); window.scrollTo(0,0);
+}
+function fcExit(){ FC.on=false; FC.finished=false; S.vocTopic=null; render(); }
+function fcView(m){
+  const w=FC.queue[FC.i]; const left=FC.queue.length-FC.i;
+  if(FC.finished||!w){ const mins=Math.max(1,Math.round((Date.now()-FC.start)/60000)); const st=vocStats(FC.topic); FC.finished=false;
+    m.innerHTML=`<div class="card chot"><div class="eyebrow">Phiên ôn từ</div><h1>Xong ${FC.done} lượt trong ${mins} phút</h1><p>Quên ${FC.again} lần. Chủ đề ${esc(FC.title)}: đã học ${st.seen}/${st.total}, thành thạo ${st.mastered}, đến hạn ${st.due}.</p><div class="row"><button class="btn gold" onclick="fcExit()">Về tuần học</button>${FC.topic?`<button class="btn sec" onclick="vocQuizStart('${FC.topic}')">Kiểm tra nhanh 10 câu</button>`:''}</div></div>`; return; }
+  const c=srs().cards[w.id]; const isNew=!c||(c.reps===0&&c.lapses===0);
+  m.innerHTML=`<div class="card"><div class="row"><button class="btn sec" onclick="S.vocTopic=FC.topic;FC.on=false;render()">Thoát phiên</button><span class="pill">${esc(FC.title)}</span><span class="pill">${FC.i+1}/${FC.queue.length}</span>${isNew?'<span class="badge">từ mới</span>':'<span class="badge ok">ôn lại</span>'}</div><div class="bar"><i style="width:${Math.round(100*FC.i/FC.queue.length)}%"></i></div></div>
+  <div class="card fcard ${FC.flipped?'back':''}" onclick="${FC.flipped?'':'fcFlip()'}">
+    <div class="fcw">${esc(w.word)} <small class="mute">${esc(w.pos)}</small></div><div class="fcipa">${esc(w.ipa)} <button class="btn sm sec" onclick="event.stopPropagation();kkSpeak(${JSON.stringify(w.word).replace(/"/g,'&quot;')},{lang:'en'})">🔊 Nghe</button></div>
+    ${FC.flipped?`<div class="fcvi">${esc(w.vi)}</div><p class="fcex">${esc(w.example)} <button class="btn sm sec" onclick="event.stopPropagation();kkSpeak(${JSON.stringify(w.example).replace(/"/g,'&quot;')},{lang:'en'})">🔊</button></p><p class="mute">Collocation: <b>${esc(w.collocation)}</b></p>`:`<p class="mute fchint">Nhớ nghĩa và một câu ví dụ, rồi bấm để lật thẻ</p>`}
+  </div>
+  ${FC.flipped?`<div class="card"><div class="row fcrate"><button class="btn sec" onclick="fcRate(0)">Quên<small>10 phút</small></button><button class="btn sec" onclick="fcRate(1)">Khó<small>${fcNext(w.id,1)}</small></button><button class="btn" onclick="fcRate(2)">Nhớ<small>${fcNext(w.id,2)}</small></button><button class="btn gold" onclick="fcRate(3)">Dễ<small>${fcNext(w.id,3)}</small></button></div><p class="mute">Phím tắt: 1 Quên · 2 Khó · 3 Nhớ · 4 Dễ · Space lật thẻ</p></div>`:`<div class="card"><div class="row"><button class="btn" onclick="fcFlip()">Lật thẻ (Space)</button></div></div>`}`;
+}
+function fcNext(id,q){ const c=srs().cards[id]||{reps:0,iv:0,ef:2.5}; let iv; if(c.reps===0) iv=q===3?3:1; else if(c.reps===1) iv=q===1?3:(q===2?6:8); else iv=Math.round(c.iv*(q===1?1.2:(q===2?c.ef:c.ef*1.3))); return Math.min(iv,180)+' ngày'; }
+document.addEventListener('keydown', e=>{ if(!FC.on||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return; if(e.code==='Space'){ e.preventDefault(); if(!FC.flipped) fcFlip(); } else if(FC.flipped&&['1','2','3','4'].includes(e.key)){ fcRate(Number(e.key)-1); } });
+
+/* ---------- Kiểm tra nhanh 10 câu (5 Anh->Việt trắc nghiệm, 5 Việt->Anh gõ từ) ---------- */
+const VQ = { on:false, topic:null, qs:[], i:0, answers:[], done:false };
+function vocQuizStart(topicId){
+  const ws=vocWords(topicId).slice(); const r=rng(Date.now()>>>0); const pick=()=>ws.splice(Math.floor(r()*ws.length),1)[0];
+  const qs=[]; for(let k=0;k<10&&ws.length;k++){ const w=pick(); if(k<5){ const pool=vocWords(topicId).filter(x=>x.id!==w.id); const opts=[w.vi]; while(opts.length<4&&pool.length){ const o=pool.splice(Math.floor(r()*pool.length),1)[0].vi; if(!opts.includes(o)) opts.push(o); } for(let i=opts.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [opts[i],opts[j]]=[opts[j],opts[i]]; } qs.push({type:'mc', w, opts}); } else qs.push({type:'type', w}); }
+  Object.assign(VQ,{on:true, topic:topicId, qs, i:0, answers:[], done:false}); FC.on=false; render(); window.scrollTo(0,0);
+}
+function vocQuizAnswer(v){ const q=VQ.qs[VQ.i]; const ok = q.type==='mc' ? v===q.w.vi : vocNorm(v)===vocNorm(q.w.word); VQ.answers.push({ok, given:v}); if(!ok) srsRate(q.w.id,0); VQ.i++; if(VQ.i>=VQ.qs.length){ VQ.done=true; const right=VQ.answers.filter(a=>a.ok).length; const pct=Math.round(100*right/VQ.qs.length); const cur=srs().quiz[VQ.topic]||{}; srs().quiz[VQ.topic]={date:TODAY(), pct, right, total:VQ.qs.length, best:Math.max(pct,cur.best||0)}; save(); kkTrackIelts('ielts_vocab_quiz',{topic:VQ.topic,pct}); } render(); }
+const vocNorm = s => String(s||'').toLowerCase().replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,' ').trim();
+function vocQuizView(m){
+  const t=vocTopic(VQ.topic);
+  if(VQ.done){ const right=VQ.answers.filter(a=>a.ok).length; const pct=Math.round(100*right/VQ.qs.length);
+    m.innerHTML=`<div class="card chot"><div class="eyebrow">Kiểm tra nhanh · ${esc(t.name_en)}</div><h1>${right}/${VQ.qs.length} đúng (${pct}%) ${pct>=70?'<span class="badge ok">đạt</span>':'<span class="badge">cần ≥ 70%</span>'}</h1>${VQ.qs.map((q,i)=>`<div class="q ${VQ.answers[i].ok?'right':'wrong'}"><b>${i+1}.</b> ${esc(q.w.word)} - ${esc(q.w.vi)} ${VQ.answers[i].ok?'':`<span class="mute">(bạn: ${esc(VQ.answers[i].given||'(trống)')})</span>`}<br><i class="mute">${esc(q.w.example)}</i></div>`).join('')}<div class="row"><button class="btn gold" onclick="VQ.on=false;S.vocTopic=null;render()">Về tuần học</button><button class="btn sec" onclick="S.vocTopic=VQ.topic;VQ.on=false;render()">Trang chủ đề</button><button class="btn sec" onclick="vocQuizStart('${VQ.topic}')">Làm đề khác</button></div></div>`; return; }
+  const q=VQ.qs[VQ.i];
+  m.innerHTML=`<div class="card"><div class="row"><button class="btn sec" onclick="S.vocTopic=VQ.topic;VQ.on=false;render()">Thoát</button><span class="pill">Kiểm tra nhanh · ${esc(t.name_en)}</span><span class="pill">${VQ.i+1}/${VQ.qs.length}</span></div><div class="bar"><i style="width:${Math.round(100*VQ.i/VQ.qs.length)}%"></i></div></div>
+  <div class="card">${q.type==='mc'?`<h2>${esc(q.w.word)} <small class="mute">${esc(q.w.pos)} ${esc(q.w.ipa)}</small> <button class="btn sm sec" onclick="kkSpeak(${JSON.stringify(q.w.word).replace(/"/g,'&quot;')},{lang:'en'})">🔊</button></h2><p class="mute">Chọn nghĩa đúng:</p><div class="wlist">${q.opts.map(o=>`<button class="btn sec" style="text-align:left" onclick="vocQuizAnswer(${JSON.stringify(o).replace(/"/g,'&quot;')})">${esc(o)}</button>`).join('')}</div>`
+  :`<h2>${esc(q.w.vi)}</h2><p class="mute">Gõ từ tiếng Anh (${esc(q.w.pos)}). Gợi ý: ${esc(q.w.collocation.replace(new RegExp(q.w.word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i'),'___'))}</p><div class="row"><input id="vqIn" type="text" autocomplete="off" style="flex:1;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:16px" onkeydown="if(event.key==='Enter')vocQuizAnswer(this.value)"><button class="btn" onclick="vocQuizAnswer(document.getElementById('vqIn').value)">Trả lời</button></div>`}</div>`;
+  const inp=$('#vqIn'); if(inp) inp.focus();
+}
+
+/* ---------- Trang chủ đề từ vựng ---------- */
+function vocView(m, topicId){
+  const t=vocTopic(topicId); if(!t){ S.vocTopic=null; render(); return; } const st=vocStats(topicId); const qz=srs().quiz[topicId]; const ws=vocWords(topicId); const now=Date.now();
+  m.innerHTML=`<div class="card"><div class="row"><button class="btn sec" onclick="S.vocTopic=null;render()">Về tuần học</button><span class="pill">Từ vựng · Tuần ${t.week}</span>${vocDoneTopic(topicId)?'<span class="badge ok">hoàn thành</span>':''}</div>
+    <h1>${esc(t.name_en)} <small class="mute">${esc(t.name_vi)}</small></h1>
+    <div class="bands"><div class="band"><div class="v">${st.seen}</div>đã học / ${st.total}</div><div class="band"><div class="v">${st.due}</div>đến hạn ôn</div><div class="band"><div class="v">${st.mastered}</div>thành thạo</div><div class="band ov"><div class="v">${qz?qz.best+'%':'-'}</div>kiểm tra nhanh</div></div>
+    <p class="mute">Cách học: mỗi ngày ôn thẻ đến hạn trước, rồi học tối đa 20 từ mới. Lật thẻ, tự đánh giá Quên / Khó / Nhớ / Dễ - hệ thống tự xếp lịch ôn (1, 3, 6 ngày... tới 6 tháng). Hoàn thành chủ đề khi đã học 90% số từ và kiểm tra nhanh đạt 70%.</p>
+    <div class="row"><button class="btn gold" onclick="fcStart('${topicId}')">${st.due?`Ôn ${st.due} thẻ đến hạn`:''}${st.due&&st.new?' + ':''}${st.new?`học ${Math.min(SRS_NEW_PER_SESSION,st.new)} từ mới`:''}${!st.due&&!st.new?'Ôn lại (không có thẻ đến hạn)':''}</button><button class="btn sec" onclick="vocQuizStart('${topicId}')">Kiểm tra nhanh 10 câu</button><button class="btn sec" onclick="kkSpeak(${JSON.stringify(ws.slice(0,10).map(w=>w.word).join('. ')).replace(/"/g,'&quot;')},{lang:'en'})">🔊 Nghe 10 từ đầu</button></div></div>
+  <div class="card"><h2>Danh sách 50 từ</h2><table class="doc voctab"><tr><th>Từ</th><th>Phát âm</th><th>Nghĩa</th><th>Ví dụ · collocation</th><th>Lịch ôn</th></tr>${ws.map(w=>{ const c=srs().cards[w.id]; const stt=!c||(c.reps===0&&c.lapses===0)?'<span class="badge">mới</span>':(c.due<=now?'<span class="badge" style="background:#fff4d6">đến hạn</span>':`<span class="badge ok">${Math.max(1,Math.ceil((c.due-now)/DAY))} ngày</span>`); return `<tr><td><b>${esc(w.word)}</b> <small class="mute">${esc(w.pos)}</small></td><td><small>${esc(w.ipa)}</small> <button class="lnk" onclick="kkSpeak(${JSON.stringify(w.word).replace(/"/g,'&quot;')},{lang:'en'})">🔊</button></td><td>${esc(w.vi)}</td><td><small>${esc(w.example)}<br><b>${esc(w.collocation)}</b></small></td><td>${stt}</td></tr>`; }).join('')}</table></div>`;
+}
+
+/* ---------- Ngữ pháp ---------- */
+const GQ = { lesson:null, answers:{}, submitted:false };
+function gramView(m, id){
+  const L=(D.grammar.lessons||[]).find(x=>x.id===id); if(!L){ S.gramLesson=null; render(); return; } const saved=(S.journey.grammar||{})[id]; const pass=D.grammar.pass_pct||75;
+  if(GQ.lesson!==id){ GQ.lesson=id; GQ.answers={}; GQ.submitted=false; }
+  const sub=GQ.submitted; const right=L.quiz.filter((q,i)=>GQ.answers[i]===q.answer).length;
+  m.innerHTML=`<div class="card"><div class="row"><button class="btn sec" onclick="S.gramLesson=null;render()">Về tuần học</button><span class="pill">Ngữ pháp · Tuần ${L.week}</span>${saved&&saved.pct>=pass?'<span class="badge ok">đạt '+saved.pct+'%</span>':(saved?`<span class="badge">lần trước ${saved.pct}%</span>`:'')}</div>
+    <h1>${esc(L.title)} <small class="mute">${esc(L.title_vi)}</small></h1><p>${esc(L.goal_vi)}</p>
+    ${L.rules.map((r,i)=>`<div class="q"><b>${i+1}.</b> ${esc(r.vi)}<br><i class="en">${esc(r.en)}</i> <button class="lnk" onclick="kkSpeak(${JSON.stringify(r.en).replace(/"/g,'&quot;')},{lang:'en'})">🔊</button></div>`).join('')}
+    <h3>Nghe và nhắc lại</h3>${L.examples.map(e=>`<div class="q"><i class="en">${esc(e)}</i> <button class="lnk" onclick="kkSpeak(${JSON.stringify(e).replace(/"/g,'&quot;')},{lang:'en'})">🔊</button></div>`).join('')}<div class="row"><button class="btn sec" onclick="kkSpeak(${JSON.stringify(L.examples.join(' ')).replace(/"/g,'&quot;')},{lang:'en',rate:0.95})">🔊 Nghe cả 6 câu</button></div></div>
+  <div class="card"><h2>Bài tập ${L.quiz.length} câu ${sub?`- ${right}/${L.quiz.length} đúng (${Math.round(100*right/L.quiz.length)}%)`:''}</h2>
+    ${L.quiz.map((q,i)=>{ const a=GQ.answers[i]; const st=sub?(a===q.answer?'right':'wrong'):''; return `<div class="qwrap ${st}"><div class="q"><b>${i+1}.</b> ${esc(q.stem)}<br>${q.options.map((o,k)=>`<label style="display:inline-block;margin:4px 12px 0 0"><input type="radio" name="gq${i}" ${a===k?'checked':''} ${sub?'disabled':''} onchange="GQ.answers[${i}]=${k}"> ${esc(o)}</label>`).join('')}</div>${sub?`<div class="ex"><b>${a===q.answer?'Đúng.':'Sai - đáp án: '+esc(q.options[q.answer])+'.'}</b> ${esc(q.why)}</div>`:''}</div>`; }).join('')}
+    <div class="row">${sub?`<button class="btn gold" onclick="GQ.answers={};GQ.submitted=false;render();window.scrollTo(0,0)">Làm lại</button><button class="btn sec" onclick="S.gramLesson=null;render()">Về tuần học</button>`:`<button class="btn gold" onclick="gramSubmit()">Nộp bài</button>`}</div></div>`;
+}
+function gramSubmit(){ const L=D.grammar.lessons.find(x=>x.id===GQ.lesson); const n=Object.keys(GQ.answers).length; if(n<L.quiz.length){ kkToast(`Còn ${L.quiz.length-n} câu chưa trả lời.`); return; } GQ.submitted=true; const right=L.quiz.filter((q,i)=>GQ.answers[i]===q.answer).length; const pct=Math.round(100*right/L.quiz.length); S.journey.grammar=S.journey.grammar||{}; const cur=S.journey.grammar[L.id]||{}; S.journey.grammar[L.id]={date:TODAY(), pct, best:Math.max(pct,cur.best||0), n:(cur.n||0)+1}; if(pct<(D.grammar.pass_pct||75)) (S.errorLog=S.errorLog||[]).push({date:TODAY(), code:'W6', count:L.quiz.length-right, source:'grammar:'+L.id}); save(); kkTrackIelts('ielts_grammar',{id:L.id,pct}); render(); window.scrollTo(0,0); }
+
+/* ---------- Phát âm ---------- */
+const PQ = { active:null, recog:null, text:'' };
+function pronView(m, id){
+  const L=(D.pronunciation.lessons||[]).find(x=>x.id===id); if(!L){ S.pronLesson=null; render(); return; } const saved=(S.journey.pron||{})[id]||{best:{}}; const SR=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+  const practised=Object.keys(saved.best||{}).length;
+  m.innerHTML=`<div class="card"><div class="row"><button class="btn sec" onclick="pronStop();S.pronLesson=null;render()">Về tuần học</button><span class="pill">Phát âm · Tuần ${L.week}</span>${practised>=3?'<span class="badge ok">đã luyện '+practised+' câu</span>':`<span class="badge">luyện ${practised}/3 câu</span>`}</div>
+    <h1>${esc(L.title)} <small class="mute">${esc(L.title_vi)}</small></h1><p>${esc(L.goal_vi)}</p>${L.tips.map(t=>`<div class="q">${esc(t)}</div>`).join('')}</div>
+  <div class="card"><h2>Cặp từ tối thiểu - nghe rồi nhại theo</h2><p class="mute">Bấm từng từ để nghe giọng Anh-Anh; nghe cả cặp liền nhau để thấy khác biệt.</p><div class="wlist">${L.pairs.map(p=>`<div class="witem"><div class="tx" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn sm sec" onclick="kkSpeak(${JSON.stringify(pronClean(p[0])).replace(/"/g,'&quot;')},{lang:'en',rate:0.9})">🔊 ${esc(p[0])}</button><span class="mute">vs</span><button class="btn sm sec" onclick="kkSpeak(${JSON.stringify(pronClean(p[1])).replace(/"/g,'&quot;')},{lang:'en',rate:0.9})">🔊 ${esc(p[1])}</button><button class="lnk" onclick="kkSpeak(${JSON.stringify(pronClean(p[0])+'. '+pronClean(p[1])+'.').replace(/"/g,'&quot;')},{lang:'en',rate:0.85})">cả cặp</button></div></div>`).join('')}</div></div>
+  <div class="card"><h2>Câu luyện - nghe, nói theo, máy chấm từ khớp</h2><p class="mute">${SR?'Bấm Ghi âm, đọc câu thật rõ, bấm Dừng; máy so khớp từng từ với câu mẫu (nhận dạng của Chrome/Edge). Đạt ≥ 80% là tốt.':'Trình duyệt này không nhận dạng giọng nói; hãy dùng Chrome hoặc Edge để được chấm. Vẫn nghe và nhại theo được.'}</p>
+    ${L.sentences.map((s,i)=>{ const b=saved.best&&saved.best[i]; const on=PQ.active===i; return `<div class="q"><i class="en">${esc(s)}</i><div class="row" style="margin-top:6px"><button class="btn sm sec" onclick="kkSpeak(${JSON.stringify(s).replace(/"/g,'&quot;')},{lang:'en',rate:0.9})">🔊 Nghe</button><button class="btn sm ${on?'gold':''}" id="pqbtn${i}" onclick="pronRec(${i})">${on?'Dừng':'Ghi âm'}</button>${b!=null?`<span class="badge ${b>=80?'ok':''}">tốt nhất ${b}%</span>`:''}</div><p class="mute" id="pqout${i}" style="min-height:0">${saved.last&&saved.last[i]?esc(saved.last[i]):''}</p></div>`; }).join('')}</div>`;
+}
+const pronClean = s => String(s).replace(/\s*\([^)]*\)/g,'').replace(/\.\.\./g,'').trim();
+function pronRec(i){
+  if(PQ.active!==null){ pronStop(); return; }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){ kkToast('Trình duyệt không hỗ trợ nhận dạng giọng nói (dùng Chrome/Edge).'); return; }
+  kkStop(); PQ.active=i; PQ.text=''; const g=new SR(); g.lang='en-GB'; g.continuous=true; g.interimResults=true;
+  g.onresult=e=>{ let fin='', tmp=''; for(let k=0;k<e.results.length;k++){ if(e.results[k].isFinal) fin+=e.results[k][0].transcript+' '; else tmp=e.results[k][0].transcript; } PQ.text=fin||tmp; const el=$('#pqout'+i); if(el) el.textContent='Nghe được: '+(fin+' '+tmp).trim(); };
+  g.onerror=()=>{}; g.onend=()=>{ if(PQ.active===i&&PQ.recog===g){ try{ g.start(); }catch(e){} } }; try{ g.start(); PQ.recog=g; }catch(e){}
+  const b=$('#pqbtn'+i); if(b){ b.textContent='Dừng'; b.classList.add('gold'); }
+}
+function pronStop(){ const i=PQ.active; if(i===null) return; const g=PQ.recog; PQ.recog=null; PQ.active=null; try{ g&&g.stop(); }catch(e){}
+  const L=D.pronunciation.lessons.find(x=>x.id===S.pronLesson); if(!L) return; const target=L.sentences[i]; const score=pronScore(target, PQ.text);
+  S.journey.pron=S.journey.pron||{}; const cur=S.journey.pron[L.id]||{best:{}, last:{}}; cur.best=cur.best||{}; cur.last=cur.last||{}; cur.best[i]=Math.max(score.pct, cur.best[i]||0); cur.last[i]=`Nghe được: "${PQ.text.trim()||'(không có)'}" - khớp ${score.pct}% (${score.hit}/${score.total} từ)${score.missed.length?` - chưa rõ: ${score.missed.join(', ')}`:''}`; cur.date=TODAY(); S.journey.pron[L.id]=cur; save(); kkTrackIelts('ielts_pron',{id:L.id,pct:score.pct}); render(); }
+function pronScore(target, said){ const t=vocNorm(target).split(' ').filter(Boolean); const s=new Set(vocNorm(said).split(' ').filter(Boolean)); const missed=t.filter(w=>!s.has(w)); const hit=t.length-missed.length; return {pct:Math.round(100*hit/Math.max(1,t.length)), hit, total:t.length, missed:missed.slice(0,6)}; }
+
+/* ---------- Gắn vào lộ trình: mục tuần, điều kiện hoàn thành, điều hướng, ôn hằng ngày ---------- */
+const _itemDoneC0 = itemDone;
+itemDone = function(it, w){ if(it.type==='vocab') return D.vocab?vocDoneTopic(it.id):false; if(it.type==='grammar'){ const g=(S.journey.grammar||{})[it.id]; return !!(g&&g.best>=((D.grammar&&D.grammar.pass_pct)||75)); } if(it.type==='pron'){ const p=(S.journey.pron||{})[it.id]; return !!(p&&Object.keys(p.best||{}).length>=3); } return _itemDoneC0(it, w); };
+const _itemRowC0 = itemRow;
+itemRow = function(it, w, i){
+  if(!['vocab','grammar','pron'].includes(it.type)) return _itemRowC0(it, w, i);
+  const done=itemDone(it,w); let sub='', ico='📚', act='';
+  if(it.type==='vocab'){ const st=D.vocab?vocStats(it.id):null; const qz=srs().quiz[it.id]; sub=st?`${st.seen}/${st.total} đã học${st.due?` · ${st.due} đến hạn`:''}${qz?` · kiểm tra ${qz.best}%`:''}`:'50 từ + flashcard'; ico='🃏'; act=`S.vocTopic='${it.id}';save();render()`; }
+  if(it.type==='grammar'){ const g=(S.journey.grammar||{})[it.id]; sub=`8 câu hỏi${g?` · tốt nhất ${g.best}%`:''}`; ico='✒️'; act=`S.gramLesson='${it.id}';save();render()`; }
+  if(it.type==='pron'){ const p=(S.journey.pron||{})[it.id]; const n=p?Object.keys(p.best||{}).length:0; sub=`cặp từ + 5 câu ghi âm${n?` · đã luyện ${n} câu`:''}`; ico='🎙️'; act=`S.pronLesson='${it.id}';save();render()`; }
+  return `<div class="witem ${done?'done':''}"><span class="ic">${ico}</span><div class="tx"><b>${esc(it.label||'')}</b><small>${esc(sub)}</small></div><button class="btn sm ${done?'sec':''}" onclick="${act}">${done?'Ôn lại':'Bắt đầu'}</button></div>`;
+};
+const _viewPhaseC0 = viewPhase;
+viewPhase = function(m, ph){
+  if(FC.on||FC.finished){ fcView(m); return; }
+  if(VQ.on){ vocQuizView(m); return; }
+  if(S.vocTopic){ vocView(m, S.vocTopic); return; }
+  if(S.gramLesson){ gramView(m, S.gramLesson); return; }
+  if(S.pronLesson){ pronView(m, S.pronLesson); return; }
+  _viewPhaseC0(m, ph);
+  if(ph<=2 && D.vocab && !J.pr && !S.vid && !S.mat && !(S.test&&S.test.mode==='GATE')){ const st=vocStats(null); if(st.seen){ const card=document.createElement('div'); card.className='card'; card.innerHTML=`<div class="row"><h2 style="margin:0">Ôn từ vựng hôm nay</h2><span class="pill">${st.due} thẻ đến hạn</span><span class="mute">đã học ${st.seen}/600 · thành thạo ${st.mastered}</span><button class="btn ${st.due?'gold':'sec'}" onclick="fcStart(null,{newMax:0,title:'Ôn tất cả chủ đề'})">${st.due?'Ôn ngay':'Không có thẻ đến hạn'}</button></div>`; const first=m.querySelector('.card'); if(first) first.after(card); } }
+};
+// rời bài khi đổi chặng / mở mục khác
+const _goC0 = go;
+go = function(i){ if(i!==S.step){ FC.on=false; FC.finished=false; VQ.on=false; S.vocTopic=null; S.gramLesson=null; S.pronLesson=null; pronStop(); } _goC0(i); };
+const _openPracticeC0 = openPractice;
+openPractice = function(it, week, opts){ FC.on=false; VQ.on=false; S.vocTopic=null; S.gramLesson=null; S.pronLesson=null; _openPracticeC0(it, week, opts); };
+// Hồ sơ: thống kê từ vựng
+const _viewPortfolioC0 = viewPortfolio;
+viewPortfolio = function(m){ _viewPortfolioC0(m); if(!D.vocab) return; const st=vocStats(null); const log=srs().log||{}; const days=Object.keys(log).sort().slice(-14); const c=document.createElement('div'); c.className='card'; c.innerHTML=`<h2>Từ vựng</h2><div class="bands"><div class="band"><div class="v">${st.seen}</div>đã học / 600</div><div class="band"><div class="v">${st.mastered}</div>thành thạo (≥ 21 ngày)</div><div class="band"><div class="v">${st.due}</div>đến hạn ôn</div><div class="band ov"><div class="v">${Object.values(log).reduce((a,b)=>a+b,0)}</div>lượt ôn</div></div><p class="mute">14 ngày gần nhất: ${days.map(d=>d.slice(5)+' '+log[d]).join(' · ')||'chưa có'}</p>`; const h=[...m.querySelectorAll('h2')].find(x=>/Lịch sử thi thử/.test(x.textContent)); if(h) h.closest('.card').before(c); else m.appendChild(c); };
+
 /* ---------- 9. Cổng nạp dữ liệu theo nhu cầu (chạy sau mọi lớp render) ---------- */
 const _renderLazy0 = render;
 function kkNeeds(){
@@ -1351,6 +1512,9 @@ function kkNeeds(){
   if(S.vid) n.push("video:"+S.vid);
   if(S.mat) n.push("material:"+S.mat);
   if([3,4,5].includes(S.step) || (typeof J!=="undefined" && J.pr) || (S.test && S.test.running)) n.push("banks");
+  if([1,2].includes(S.step) || S.vocTopic || (typeof FC!=="undefined"&&(FC.on||FC.finished)) || (typeof VQ!=="undefined"&&VQ.on)) n.push("vocab");
+  if(S.gramLesson) n.push("grammar");
+  if(S.pronLesson) n.push("pronunciation");
   return n.filter(x=>!kkHas(x));
 }
 render = function(){
