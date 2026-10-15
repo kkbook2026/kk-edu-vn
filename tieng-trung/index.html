@@ -281,6 +281,28 @@ i.en{font-style:italic;color:var(--navy)}
 .zhapp .zaz{cursor:pointer;border-bottom:1px dotted var(--teal)}
 .zhapp .btn.sm{padding:5px 10px;font-size:12.5px}
 @media print{.topbar,.hero,footer,.noprint,.acct{display:none!important}.zhapp .card{border:0;box-shadow:none}body{background:#fff}}
+
+/* KK-EDU: ô tài khoản dùng chung (cùng kiểu trang chủ) */
+#kkUser{position:relative;display:flex;align-items:center}
+.kkava{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px 12px 3px 3px;cursor:pointer;color:var(--ink);font-family:var(--font);font-size:13px;max-width:230px}
+.kkava:hover{border-color:var(--gold)}
+.kkav{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex:none}
+.kkavt{font-weight:600;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kkcar{font-size:10px;color:var(--mute)}
+.kkumenu{position:absolute;right:0;top:calc(100% + 8px);min-width:260px;max-width:88vw;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 40px rgba(10,20,40,.18);padding:8px;z-index:80;white-space:normal}
+.kkumenu[hidden]{display:none}
+.kkuhead{padding:8px 10px 10px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.kkuhead b{display:block;color:var(--ink)}
+.kkuhead span{display:block;font-size:12px;color:var(--mute);margin-top:2px;word-break:break-all}
+.kkumenu a,.kkumenu button{display:block;width:100%;text-align:left;background:none;border:0;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--ink);font-family:var(--font);font-size:13.5px;text-decoration:none;box-sizing:border-box}
+.kkumenu a:hover,.kkumenu button:hover{background:var(--light)}
+.kkumenu a.on{font-weight:700;color:var(--navy)}
+.kkumenu a.kkupri{background:var(--navy);color:#fff;font-weight:600;margin-bottom:4px;text-align:center}
+.kkusep{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);padding:8px 10px 2px;border-top:1px solid var(--line);margin-top:6px}
+.kkunote{font-size:12px;color:var(--mute);padding:8px 10px 4px;line-height:1.5}
+.kkuwarn{color:#a35a00}
+@media(max-width:760px){#kkUser{margin-left:auto}.kkavt{max-width:120px}.user.logged #kkUser{margin-left:0}}
+@media print{#kkUser{display:none}}
 </style>
 </head>
 <body>
@@ -543,13 +565,9 @@ save = function(){ S._updatedAt=Date.now(); _zhSave0(); kkSyncCloud(); };
 function kkSyncCloud(){
   if(!KK.user||!KK.db||!KK.cloudLoaded) return;
   clearTimeout(KK.syncTimer);
-  KK.syncTimer=setTimeout(async()=>{ try{ const st={progress:S.progress, errors:(S.errors||[]).slice(-500), video:S.video||{}, tests:(S.tests||[]).slice(-50)}; await KK.db.doc(`data/users/${KK.user.uid}/zh-state`).set({state:JSON.stringify(st), updatedAt:S._updatedAt||Date.now()}); }catch(e){} }, 1500);
+  KK.syncTimer=setTimeout(async()=>{ try{ const st={progress:S.progress, errors:(S.errors||[]).slice(-500), video:S.video||{}, tests:(S.tests||[]).slice(-50), sum:(typeof zhSummary==="function"?zhSummary():null)}; await KK.db.doc(`data/users/${KK.user.uid}/zh-state`).set({state:JSON.stringify(st), updatedAt:S._updatedAt||Date.now()}); }catch(e){} }, 1500);
 }
-function kkRenderUser(){
-  const box=$("#kkUser"); if(!box) return;
-  if(KK.user){ box.innerHTML=`<span class="who" title="${esc(KK.user.email||"")}">${esc(S.name||"Thành viên")}</span><button class="lnk" onclick="KK.fb.auth().signOut()">Đăng xuất</button>`; const i=$("#uname"); if(i){ i.readOnly=true; i.title="Họ tên lấy từ hồ sơ KK-EDU"; } box.closest(".user").classList.add("logged"); }
-  else { box.innerHTML=`<a class="btn sm" href="${kkLoginUrl()}">Đăng nhập KK-EDU</a>`; const i=$("#uname"); if(i) i.readOnly=false; box.closest(".user").classList.remove("logged"); }
-}
+/* kkRenderUser: xem kk_account.js (ô tài khoản dùng chung các phân hệ) */
 function zhAccountHTML(){
   if(!KK.authReady) return "";
   if(KK.user) return `<div class="card chot acct"><div class="row"><b>Tiến độ đang lưu theo tài khoản KK-EDU</b><span class="mute">Học tiếp trên mọi thiết bị: tiến độ từng bài, sổ lỗi và thẻ ghi nhớ đồng bộ tự động.</span></div></div>`;
@@ -1019,6 +1037,18 @@ function zhTestView(m){
     <div class="row"><button class="btn sec" onclick="ZT.i=Math.max(0,ZT.i-1);render()" ${ZT.i===0?"disabled":""}>Câu trước</button><button class="btn sec" onclick="ZT.i=Math.min(${n-1},ZT.i+1);render()" ${ZT.i===n-1?"disabled":""}>Câu sau</button><button class="btn gold" onclick="if(confirm('Nộp bài? Đã làm ${answered}/${n} câu.'))ztSubmit()">Nộp bài</button></div></div>`;
 }
 
+/* ---------- Tóm tắt cho trang chủ KK-EDU (mục Học tập của tôi) - lưu kèm zh-state ---------- */
+function zhSummary(){
+  const ids = (typeof LESSONS!=="undefined" && LESSONS.length) ? LESSONS.map(x=>x.id) : Object.keys(S.progress||{});
+  const rs = ids.map(id=>({id, r:zhLessonScore(id), p:(S.progress||{})[id]})).filter(o=>o.r && o.r.started);
+  const done = rs.filter(o=>o.r.score>=50 && o.p && o.p.quiz!=null).length;
+  const avg = rs.length ? Math.round(rs.reduce((a,o)=>a+o.r.score,0)/rs.length*10)/10 : null;
+  const vids = Object.values(S.video||{}).filter(v=>v && v.done).length;
+  const t = (S.tests||[]).slice(-1)[0] || null;
+  const last = (S.lesson && /^ZH-/.test(S.lesson)) ? S.lesson : (rs.length ? rs[rs.length-1].id : null);
+  return {total: ids.length || 40, started: rs.length, done, avg, videos: vids, tests: (S.tests||[]).length, lastTest: t ? {date:t.date, name:t.name, scoreText:t.scoreText, pass:!!t.pass} : null, errors: (S.errors||[]).length, last, at: new Date().toISOString().slice(0,10)};
+}
+
 /* ===== KK-EDU Tiếng Trung: Trợ lý AI theo bài - hỏi đáp, chấm câu tự do trong role-play, bài luyện từ lỗi =====
    Tác giả : Nguyễn Duy Điển (KK-2026). Gọi /api/zh/ai (Workers AI; ngữ cảnh bài học do máy chủ dựng). AI gợi ý, con người quyết định. */
 
@@ -1102,6 +1132,50 @@ function zaAccept(){
   const last=chat.log[chat.log.length-1]; if(last && !last.ai){ last.ok=true; last.fb="AI chấp nhận câu tự do ("+ZA.grade.score+"/10)."; }
   chat.turn++; const nt=R.turns[chat.turn]; if(nt){ chat.log.push({ai:true, zh:nt.ai.zh, py:nt.ai.py, vi:nt.ai.vi}); TTS(nt.ai.zh); } else chat.done=true;
   chat.aiCand=null; ZA.grade=null; render();
+}
+
+/* ===== KK-EDU: Ô tài khoản dùng chung cho các phân hệ (IELTS, Tiếng Trung) - cùng kiểu menu với trang chủ =====
+   Tác giả : Nguyễn Duy Điển (KK-2026). Một tài khoản KK-EDU cho mọi phân hệ: tên lấy từ hồ sơ học viên, liên kết về Học tập của tôi, Quản trị. */
+const KK_ADMIN_EMAILS = ["nguyenduydien75@gmail.com"];
+const KK_MODULES = [["/ielts/","IELTS (Tiếng Anh)"],["/tieng-trung/","Tiếng Trung"]];
+function kkIsAdmin(){ const u=KK.user; return !!(u && u.email && KK_ADMIN_EMAILS.includes(u.email) && u.emailVerified); }
+function kkAcctName(){ const u=KK.user; return (KK.profile&&KK.profile.name) || (u&&u.displayName) || (u&&(u.email||"").split("@")[0]) || (typeof S!=="undefined"&&S.name) || "Khách"; }
+function kkRenderUser(){
+  const box=document.getElementById("kkUser"); if(!box) return;
+  const u=KK.user, wrap=box.closest(".user"), here=location.pathname;
+  const name=u?kkAcctName():"Khách", role=u?(kkIsAdmin()?"Quản trị":"Thành viên"):"Khách", initial=(name||"K").trim().charAt(0).toUpperCase();
+  const age=(u&&KK.age!=null)?` · ${KK.age} tuổi`:"";
+  const mods=KK_MODULES.map(([h,l])=>`<a href="${h}" class="${here.indexOf(h)===0?"on":""}">${here.indexOf(h)===0?"● ":""}${l}</a>`).join("");
+  const items = u
+    ? `<a href="/#dash">📊 Học tập của tôi</a><a href="/#dash" onclick="try{sessionStorage.setItem('kk_open','profile')}catch(e){}">👤 Hồ sơ học viên</a>
+       <div class="kkusep">Phân hệ ngoại ngữ</div>${mods}
+       ${kkIsAdmin()?'<a href="/#admin">🛠 Quản trị</a>':""}
+       <button type="button" onclick="kkLogout()">Đăng xuất</button>
+       ${(u.email&&!u.emailVerified)?'<div class="kkunote kkuwarn">Email chưa xác minh - kiểm tra hộp thư.</div>':""}`
+    : `<a class="kkupri" href="${kkLoginUrl()}">Đăng nhập</a><a href="${kkLoginUrl()}">Đăng ký thành viên (miễn phí)</a>
+       <div class="kkusep">Phân hệ ngoại ngữ</div>${mods}
+       <div class="kkunote">Một tài khoản KK-EDU dùng cho mọi phân hệ: tiến độ, điểm và sổ lỗi lưu trên đám mây, học tiếp trên mọi thiết bị.</div>`;
+  box.innerHTML = `<button type="button" class="kkava" id="kkAvaBtn" aria-haspopup="true" aria-expanded="false" aria-label="Tài khoản">
+      <span class="kkav">${esc(initial)}</span><span class="kkavt">${esc(u?name:"Đăng nhập")}</span><span class="kkcar">▾</span></button>
+    <div class="kkumenu" id="kkUMenu" hidden><div class="kkuhead"><b>${esc(name)}</b><span>${role}${u&&u.email?" · "+esc(u.email):""}${age}</span></div>${items}</div>`;
+  const b=document.getElementById("kkAvaBtn"), m=document.getElementById("kkUMenu");
+  b.onclick=e=>{ e.stopPropagation(); m.hidden=!m.hidden; b.setAttribute("aria-expanded", String(!m.hidden)); if(!m.hidden) kkPlaceMenu(b, m); };
+  m.onclick=e=>e.stopPropagation();
+  if(!window._kkUMenuDoc){ window._kkUMenuDoc=true; document.addEventListener("click",()=>{ const x=document.getElementById("kkUMenu"); if(x) x.hidden=true; }); document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ const x=document.getElementById("kkUMenu"); if(x) x.hidden=true; } }); }
+  const i=document.getElementById("uname");
+  if(u){ if(i){ i.value=name; i.readOnly=true; i.title="Họ tên lấy từ hồ sơ KK-EDU"; } if(typeof S!=="undefined") S.name=name; wrap&&wrap.classList.add("logged"); }
+  else { if(i) i.readOnly=false; wrap&&wrap.classList.remove("logged"); }
+}
+/* Đặt menu trong khung nhìn (điện thoại: ô tài khoản có thể nằm bên trái) */
+function kkPlaceMenu(b, m){
+  const r=b.getBoundingClientRect(), vw=document.documentElement.clientWidth, w=Math.min(300, vw-16);
+  m.style.position="fixed"; m.style.width=w+"px"; m.style.minWidth="0"; m.style.top=Math.round(r.bottom+8)+"px"; m.style.right="auto";
+  m.style.left=Math.round(Math.max(8, Math.min(r.right-w, vw-w-8)))+"px";
+}
+window.addEventListener("resize",()=>{ const m=document.getElementById("kkUMenu"), b=document.getElementById("kkAvaBtn"); if(m&&b&&!m.hidden) kkPlaceMenu(b,m); });
+window.addEventListener("scroll",()=>{ const m=document.getElementById("kkUMenu"); if(m) m.hidden=true; }, {passive:true});
+async function kkLogout(){
+  try{ clearTimeout(KK.syncTimer); await KK.fb.auth().signOut(); }catch(e){}
 }
 
 zhBoot();

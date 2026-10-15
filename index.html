@@ -1881,6 +1881,53 @@ async function viewBook(v, code){
   const cb=$("#codeBtn"); if(cb) cb.onclick=()=>openUnlockCode(code);
 }
 
+/* KK-LANG: Ngoại ngữ trong "Học tập của tôi" - đọc trạng thái phân hệ IELTS (ielts-state) và Tiếng Trung (zh-state) theo tài khoản */
+const KK_LANG_LS = {ielts:"kkedu_ielts_v1", zh:"kkedu_zh_v1"};
+async function kkLangStates(){
+  const out = {ielts:null, zh:null};
+  if(S.uid && S.caps && S.caps.db){
+    await Promise.all(["ielts","zh"].map(async k=>{ try{ const d=await S.caps.db.doc("data/users/"+S.uid+"/"+k+"-state").get(); if(d.exists){ const c=d.data(); out[k]=Object.assign(JSON.parse(c.state||"{}"), {_at:c.updatedAt||null, _src:"cloud"}); } }catch(e){} }));
+  } else {
+    ["ielts","zh"].forEach(k=>{ try{ const r=localStorage.getItem(KK_LANG_LS[k]); if(r) out[k]=Object.assign(JSON.parse(r), {_src:"local"}); }catch(e){} });
+  }
+  return out;
+}
+function kkLangIeltsCard(st){
+  const h=(st&&st.history)||[], last=h[h.length-1], prog=Object.keys((st&&st.progress)||{}).length, errs=((st&&st.errorLog)||[]).reduce((a,e)=>a+(e.count||1),0);
+  const started=!!(st&&(h.length||prog||errs||(st.journey&&st.journey.diag)));
+  return `<div class="card"><div class="eyebrow">Tiếng Anh</div><h3 style="margin:4px 0 10px">Luyện thi IELTS</h3>
+    ${started?`<div class="statrow" style="margin:0 0 12px">
+      <div class="stat"><b>${esc(st.target||"6.5")}</b><span>band mục tiêu</span></div>
+      <div class="stat"><b>${last&&last.overall!=null?Number(last.overall).toFixed(1):"-"}</b><span>overall gần nhất${last?" ("+esc(last.date||"")+")":""}</span></div>
+      <div class="stat"><b>${h.length}</b><span>lần thi thử</span></div>
+      <div class="stat"><b>${prog}</b><span>video đã học</span></div>
+      <div class="stat"><b>${errs}</b><span>lỗi đã ghi</span></div></div>`
+    :`<p class="note">Chưa có dữ liệu IELTS. Bắt đầu từ bài chẩn đoán đầu vào để có lộ trình riêng.</p>`}
+    <div class="rowline"><a class="btn pri sm" href="/ielts/">${started?"Học tiếp IELTS":"Vào IELTS"}</a></div></div>`;
+}
+function kkLangZhCard(st){
+  const s=(st&&st.sum)||null, prog=Object.keys((st&&st.progress)||{}).length, vids=Object.values((st&&st.video)||{}).filter(v=>v&&v.done).length, tests=(st&&st.tests)||[], lt=s&&s.lastTest||tests[tests.length-1]||null;
+  const started=!!(st&&(prog||vids||tests.length));
+  const total=(s&&s.total)||40;
+  return `<div class="card"><div class="eyebrow">Tiếng Trung</div><h3 style="margin:4px 0 10px">Tiếng Trung giao tiếp tương tác</h3>
+    ${started?`<div class="statrow" style="margin:0 0 12px">
+      <div class="stat"><b>${s?s.done:"-"}/${total}</b><span>bài hoàn thành</span></div>
+      <div class="stat"><b>${s?s.started:prog}</b><span>bài đã học</span></div>
+      <div class="stat"><b>${s&&s.avg!=null?s.avg:"-"}</b><span>điểm trung bình /100</span></div>
+      <div class="stat"><b>${s?s.videos:vids}</b><span>video tương tác xong</span></div>
+      <div class="stat"><b>${lt?esc(lt.scoreText||"-"):"-"}</b><span>${lt?(lt.pass?"đạt":"chưa đạt")+" · "+esc(lt.name||"đề kiểm tra"):"đề kiểm tra"}</span></div></div>`
+    :`<p class="note">Chưa có dữ liệu Tiếng Trung. Bài đầu tiên bắt đầu bằng video tương tác cùng Thầy KEN và Cô Lin.</p>`}
+    <div class="rowline"><a class="btn pri sm" href="/tieng-trung/${s&&s.last?"#"+esc(s.last):""}">${started?"Học tiếp":"Vào học"}</a>${started?'<a class="btn sm" href="/tieng-trung/#so-diem">Sổ điểm</a><a class="btn sm ghost" href="/tieng-trung/#kiem-tra">Kiểm tra</a>':""}</div></div>`;
+}
+async function kkDashLang(el){
+  if(!el) return;
+  el.innerHTML=`<div class="sec"><h2>Ngoại ngữ</h2></div><div class="note">Đang tải tiến độ ngoại ngữ...</div>`;
+  const st=await kkLangStates();
+  if(!el.isConnected) return;
+  el.innerHTML=`<div class="sec"><h2>Ngoại ngữ</h2><span class="note">${S.uid?"Đồng bộ theo tài khoản - cùng dữ liệu với trang IELTS và Tiếng Trung":"Chế độ Khách - dữ liệu trên máy này"}</span></div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">${kkLangIeltsCard(st.ielts)}${kkLangZhCard(st.zh)}</div>`;
+}
+
 /* ================= HỌC TẬP (Dashboard) ================= */
 function viewDash(v){
   const entries = Object.entries(S.progress).map(([code,p])=>({code, p, b:CATALOG.find(x=>x.code===code)})).filter(x=>x.b);
@@ -1914,12 +1961,14 @@ function viewDash(v){
       <td><b>${t.nam??"-"}</b></td><td>${t.label?`<span class="badge ${t.nam>=70?"ok":""}">${esc(t.label)}</span>`:'<span class="note">cần thi cuối năm</span>'}</td></tr>`).join("")}
     </tbody></table></div>
     <div class="note" style="margin:8px 0 0">Điểm năm = 30% quá trình + 20% TB cuối chương + 20% giữa năm + 30% cuối năm. ${trs.some(t=>t.b.level==="Tiểu học")?"Tiểu học: chỉ ghi nhận mức hoàn thành, không xếp hạng.":""}</div>`; })()}
+  <div id="dashLang"></div>
   <div class="sec"><h2>Dữ liệu của bạn</h2></div>
   <div class="card"><div class="rowline">
     <button class="btn" id="expBtn">Tải xuống dữ liệu (JSON)</button>
     <button class="btn ghost" id="delBtn">Xóa toàn bộ tiến độ</button>
     ${(S.mode==="firebase"&&S.uid)?`<button class="btn ghost" id="delAcct" style="color:#a33;border-color:#a33">Xóa tài khoản & toàn bộ dữ liệu</button>`:""}
   </div><div class="note" style="margin-top:8px">Theo Nghị định 13/2023/NĐ-CP, bạn có quyền truy cập, chỉnh sửa và xóa dữ liệu cá nhân của mình bất cứ lúc nào.</div></div>`;
+  kkDashLang($("#dashLang"));
   v.querySelectorAll(".bkcard").forEach(c=> c.onclick=()=>go({name:"book", code:c.dataset.code}));
   $("#pfEdit").onclick=()=>openProfileForm(()=>viewDash(v));
   const g=$("#dGo"); if(g) g.onclick=()=>go({name:"video"});
@@ -1930,15 +1979,17 @@ function viewDash(v){
   const hb=$("#hbGo"); if(hb) hb.onclick=()=>go({name:"thi"});
   // nạp kết quả thi từ đám mây cho các sách đang học rồi vẽ lại học bạ (1 lần)
   if(S.caps.db&&S.uid&&!v._exLoaded){ v._exLoaded=true; Promise.all(entries.map(x=>loadMyExams(x.code))).then(()=>{ if(S.route.name==="dash") viewDash(v); }).catch(()=>{}); }
-  $("#expBtn").onclick=()=>{ copyText(JSON.stringify({exportedAt:new Date().toISOString(), progress:S.progress},null,1)); toast("Đã sao chép dữ liệu JSON vào clipboard"); };
+  $("#expBtn").onclick=async()=>{ const lang=await kkLangStates(); copyText(JSON.stringify({exportedAt:new Date().toISOString(), progress:S.progress, ngoaiNgu:{ielts:lang.ielts, tiengTrung:lang.zh}},null,1)); toast("Đã sao chép dữ liệu JSON (gồm ngoại ngữ) vào clipboard"); };
   $("#delBtn").onclick=()=>{
-    modal(`<h3>Xóa toàn bộ tiến độ?</h3><p class="note">Hành động này xóa tiến độ trên máy này${S.uid?" và trên đám mây":""}. Không thể hoàn tác.</p>
+    modal(`<h3>Xóa toàn bộ tiến độ?</h3><p class="note">Hành động này xóa tiến độ (gồm cả IELTS và Tiếng Trung) trên máy này${S.uid?" và trên đám mây":""}. Không thể hoàn tác.</p>
     <div class="mrow"><button class="btn pri" id="delYes" style="background:var(--bad)">Xóa vĩnh viễn</button><button class="btn ghost" id="delNo">Hủy</button></div>`);
     $("#delNo").onclick=closeModal;
     $("#delYes").onclick=async()=>{
       const codes = Object.keys(S.progress);
       S.progress={}; LS.set("progress",{});
       if(S.caps.db&&S.uid){ for(const cd of codes){ try{ await S.caps.db.doc("data/users/"+S.uid+"/prog-"+cd).delete(); }catch(e){} } }
+      if(S.caps.db&&S.uid){ for(const k of ["ielts-state","zh-state"]){ try{ await S.caps.db.doc("data/users/"+S.uid+"/"+k).delete(); }catch(e){} } }
+      try{ Object.values(KK_LANG_LS).forEach(k=>localStorage.removeItem(k)); }catch(e){}
       closeModal(); toast("Đã xóa toàn bộ tiến độ"); viewDash(v);
     };
   };
@@ -5178,6 +5229,7 @@ fitBrand(); window.addEventListener("resize",()=>{ clearTimeout(window._fbT); wi
   await loadShared();
   render();                 // vẽ lại với dữ liệu chia sẻ + vai trò
   maybeConsent();
+  try{ if(sessionStorage.getItem("kk_open")==="profile"){ sessionStorage.removeItem("kk_open"); openProfileForm(); } }catch(e){}
   // ?login=1&next=/ielts/ : mở hộp đăng nhập ngay (tài khoản dùng chung cho mọi phân hệ)
   try{ const q=new URLSearchParams(location.search); if(q.get("login")==="1"){ S.loginNext=q.get("next")||"/"; history.replaceState(null,"",location.pathname+location.hash); if(S.uid){ if(S.profile) location.href=S.loginNext; else openProfileForm(()=>{ location.href=S.loginNext; }); } else if(S.fb) openLogin(); } }catch(e){}
 })();
