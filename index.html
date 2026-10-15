@@ -4380,7 +4380,7 @@ async function adminResults(el){
     try{ const pf=await S.caps.db.collection("profiles").limit(200).get();
       profiles=pf.docs.filter(d=>d.exists).map(d=>Object.assign({uid:d.id}, d.data())); }catch(e2){}
     const rows=[], svs=[];
-    for(const p of profiles){
+    await kkPool(profiles, 8, async p=>{
       try{
         const col=await S.caps.db.collection("data/users/"+p.uid).limit(300).get();
         const exams={}; let sv=null; const prog={};
@@ -4397,7 +4397,8 @@ async function adminResults(el){
         if(qt!=null||cn!=null||gn!=null||chAvg!=null) rows.push({name:p.name||p.uid.slice(0,8), ns:p.namSinh||"", qt, chAvg, gn, cn, nam});
         if(sv) svs.push(sv);
       }catch(e3){}
-    }
+    });
+    rows.sort((a,b)=>String(a.name).localeCompare(String(b.name),"vi"));
     const bb=CATALOG.find(x=>x.code===code);
     const avg=i=>{ const xs=svs.map(s=>s.a&&s.a[i]).filter(Boolean); return xs.length?(xs.reduce((a,b2)=>a+b2,0)/xs.length).toFixed(1):"-"; };
     body.innerHTML=`
@@ -4892,26 +4893,54 @@ function editContent(code, back){
     closeModal(); adminContent(back);
   };
 }
+/* KK-ADMFAST: đệm tiến độ học từ Worker trong phiên (10 phút) để bảng Học viên mở ngay */
+function kkAdmMembersCache(){ try{ const c=JSON.parse(sessionStorage.getItem("kk_adm_members")||"null"); if(c && Date.now()-c.at<600000) return c.users; }catch(e){} return null; }
+let _kkAdmJob=null;
+function kkAdmMembersFetch(){
+  if(_kkAdmJob) return _kkAdmJob;
+  _kkAdmJob=(async()=>{ try{ const u=S.fb&&S.fb.auth().currentUser; const tok=u&&await u.getIdToken(); try{ await window.KK_API_READY; }catch(e){}
+      if(!tok||!window.KK_API) return null;
+      const rr=await withTimeout(fetch(window.KK_API+"/admin/members",{headers:{authorization:"Bearer "+tok}}),20000); if(!rr.ok) return null;
+      const users=(await rr.json()).users||{}; try{ sessionStorage.setItem("kk_adm_members", JSON.stringify({at:Date.now(), users})); }catch(e){} return users;
+    }catch(e){ return null; } finally{ setTimeout(()=>{ _kkAdmJob=null; }, 0); } })();
+  return _kkAdmJob;
+}
+/* chạy hàm bất đồng bộ trên danh sách với số luồng giới hạn */
+async function kkPool(items, n, fn){ let i=0; const run=async()=>{ while(i<items.length){ const k=i++; try{ await fn(items[k],k); }catch(e){} } }; await Promise.all(Array.from({length:Math.min(n,items.length)},run)); }
 /* ----- Quản trị Học viên: hồ sơ độ tuổi + phê duyệt mở lớp ----- */
-async function adminStudents(el){
+async function adminStudents(el, pre){
   el.innerHTML=`<div class="note">Đang tải hồ sơ học viên...</div>`;
-  let profiles=[], reqs=[], vcodes=[], members={}, progU={}, srcErr=[];
+  let profiles=[], reqs=[], vcodes=[], members={}, progU={}, srcErr=[], pendingProg=false;
   if(S.caps.db){
-    try{ const pf=await S.caps.db.collection("profiles").limit(5000).get();
-      profiles=pf.docs.filter(d=>d.exists).map(d=>Object.assign({uid:d.id}, d.data())); }catch(e){ srcErr.push("profiles"); }
-    try{ const mb=await S.caps.db.collection("members").limit(5000).get(); mb.docs.forEach(d=>{ if(d.exists) members[d.id]=d.data(); }); }catch(e){ srcErr.push("members"); }
-    try{ const gr=await S.caps.db.collection("grants").limit(5000).get(); gr.docs.forEach(d=>{ if(d.exists) S.grants[d.id]=d.data(); }); }catch(e){}
-    /* tài khoản đã có tiến độ học (kể cả chưa lập hồ sơ) - Worker đọc bằng tài khoản dịch vụ */
-    try{ const u=S.fb&&S.fb.auth().currentUser; const tok=u&&await u.getIdToken(); try{ await window.KK_API_READY; }catch(e){}
-      if(tok&&window.KK_API){ const rr=await withTimeout(fetch(window.KK_API+"/admin/members",{headers:{authorization:"Bearer "+tok}}),15000); if(rr.ok){ progU=(await rr.json()).users||{}; } else srcErr.push("worker "+rr.status); } }catch(e){ srcErr.push("worker"); }
-    try{ const vc=await S.caps.db.collection("vcodes").limit(500).get();
-      vcodes=vc.docs.filter(d=>d.exists).map(d=>Object.assign({hash:d.id}, d.data())).filter(c=>!c.revoked).sort((a,b)=>(b.at||"").localeCompare(a.at||"")); }catch(e){}
-    try{ const vn=await S.caps.db.collection("vnotes").limit(500).get(); // ghi chú riêng tư (chỉ admin đọc được)
-      const notes={}; vn.docs.forEach(d=>{ if(d.exists) notes[d.id]=(d.data()||{}).note; });
-      vcodes.forEach(c=>{ if(notes[c.hash]) c.note=notes[c.hash]; }); }catch(e){}
-    try{ const rq=await S.caps.db.collection("reqs").limit(5000).get();
-      rq.docs.forEach(d=>{ if(!d.exists) return; const data=d.data();
-        Object.entries((data||{}).items||{}).forEach(([key,x])=> reqs.push({uid:d.id, name:data.name||"", namSinh:data.namSinh, lop:data.lop||"", key, level:x.level, grade:x.grade, at:x.at, status:x.status})); }); }catch(e){}
+    const db=S.caps.db, T0=performance.now();
+    const [pf,mb,gr,vc,vn,rq]=await Promise.all([
+      db.collection("profiles").limit(5000).get().catch(e=>{ srcErr.push("profiles"); return null; }),
+      db.collection("members").limit(5000).get().catch(e=>{ srcErr.push("members"); return null; }),
+      db.collection("grants").limit(5000).get().catch(()=>null),
+      db.collection("vcodes").limit(500).get().catch(()=>null),
+      db.collection("vnotes").limit(500).get().catch(()=>null), // ghi chú riêng tư (chỉ admin đọc được)
+      db.collection("reqs").limit(5000).get().catch(()=>null)]);
+    if(pf) profiles=pf.docs.filter(d=>d.exists).map(d=>Object.assign({uid:d.id}, d.data()));
+    if(mb) mb.docs.forEach(d=>{ if(d.exists) members[d.id]=d.data(); });
+    if(gr) gr.docs.forEach(d=>{ if(d.exists) S.grants[d.id]=d.data(); });
+    if(vc) vcodes=vc.docs.filter(d=>d.exists).map(d=>Object.assign({hash:d.id}, d.data())).filter(c=>!c.revoked).sort((a,b)=>(b.at||"").localeCompare(a.at||""));
+    if(vn){ const notes={}; vn.docs.forEach(d=>{ if(d.exists) notes[d.id]=(d.data()||{}).note; }); vcodes.forEach(c=>{ if(notes[c.hash]) c.note=notes[c.hash]; }); }
+    if(rq) rq.docs.forEach(d=>{ if(!d.exists) return; const data=d.data();
+        Object.entries((data||{}).items||{}).forEach(([key,x])=> reqs.push({uid:d.id, name:data.name||"", namSinh:data.namSinh, lop:data.lop||"", key, level:x.level, grade:x.grade, at:x.at, status:x.status})); });
+    /* tài khoản đã có tiến độ học (kể cả chưa lập hồ sơ) - Worker đọc bằng tài khoản dịch vụ; không chặn bảng */
+    if(pre && pre.progU){ progU=pre.progU; }
+    else {
+      const cached=kkAdmMembersCache();
+      const job=kkAdmMembersFetch();
+      if(cached){ progU=cached; job.then(fresh=>{ if(fresh && JSON.stringify(fresh)!==JSON.stringify(cached) && el.isConnected) adminStudents(el,{progU:fresh}); }); }
+      else {
+        const quick=await Promise.race([job, new Promise(r=>setTimeout(()=>r("slow"),2500))]);
+        if(quick==="slow"){ pendingProg=true; job.then(fresh=>{ if(el.isConnected) adminStudents(el,{progU:fresh||{}, err:fresh?null:"worker"}); }); }
+        else if(quick) progU=quick; else srcErr.push("worker");
+      }
+    }
+    if(pre && pre.err) srcErr.push(pre.err);
+    window._kkAdmMs=Math.round(performance.now()-T0);
   }
   const pending=reqs.filter(r=>r.status==="pending").sort((a,b)=>(a.at||"").localeCompare(b.at||""));
   const done=reqs.filter(r=>r.status!=="pending");
@@ -4941,7 +4970,7 @@ async function adminStudents(el){
     <div class="rowline"><input id="mbQ" placeholder="Tìm tên, email, mã..." style="padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--bg2);color:var(--fg)">
     <select id="mbF" style="padding:7px;border:1px solid var(--line);border-radius:9px;background:var(--bg2);color:var(--fg)"><option value="">Tất cả</option><option value="noprof">Chưa lập hồ sơ</option><option value="nover">Chưa xác thực</option><option value="req">Có yêu cầu chờ</option><option value="learn">Đang học</option><option value="lang">Học ngoại ngữ</option></select>
     <button class="btn sm ghost" id="mbCsv">⬇ Xuất CSV</button></div></div>
-  <div class="note" style="margin-bottom:6px">Gộp từ sổ đăng nhập, hồ sơ, yêu cầu mở lớp, quyền đã cấp và tiến độ học - không bỏ sót tài khoản. ${profiles.filter(p=>!p.hasProfile).length} tài khoản chưa lập hồ sơ năm sinh. ${srcErr.length?`<span style="color:#c0392b">Nguồn chưa đọc được: ${esc(srcErr.join(", "))}</span>`:""}</div>
+  <div class="note" style="margin-bottom:6px">Gộp từ sổ đăng nhập, hồ sơ, yêu cầu mở lớp, quyền đã cấp và tiến độ học - không bỏ sót tài khoản. ${pendingProg?'<b>Đang tải tiến độ học và ngoại ngữ, bảng tự cập nhật khi xong.</b> ':""}${profiles.filter(p=>!p.hasProfile).length} tài khoản chưa lập hồ sơ năm sinh. ${srcErr.length?`<span style="color:#c0392b">Nguồn chưa đọc được: ${esc(srcErr.join(", "))}</span>`:""}</div>
   <div class="tbwrap"><table class="tb" id="mbTb"><thead><tr><th>Thành viên</th><th>Năm sinh</th><th>Lớp được xếp</th><th>Được duyệt thêm</th><th>Xác thực độ tuổi</th><th>Ngoại ngữ</th></tr></thead><tbody>
   ${profiles.map((p,i)=>{const g=p.namSinh?gradeFromBirthYear(p.namSinh):null; const gr=S.grants[p.uid]||{}; const ex=gr.grades||[];
     const ver=gr.verified&&Number(gr.verifiedYear)===Number(p.namSinh);
