@@ -801,13 +801,15 @@ function kkVpSubMode(){ const m=S.journey&&S.journey.vpSub; if(["off","vi","en",
 function kkVpSetSub(v,val){ S.journey.vpSub=val; save(); kkVpRender(v); }
 function kkVpTxt(vi,en,mode){ const hasEn=en!=null&&String(en).trim()!==""; if(mode==="en"&&hasEn) return rich(en); if(mode==="both"&&hasEn) return `${rich(en)}<br><small class="mute">${rich(vi)}</small>`; return rich(vi); }
 function kkVpTxtMode(){ const m=kkVpSubMode(); return m==="off" ? (VP.lang==="en"?"en":"vi") : m; }
+function kkUiEn(){ const m=kkVpSubMode(); return m==="en" || (m==="off" && VP.lang==="en"); }
+function kkUi(vi,en){ return kkUiEn()?en:vi; }
 function kkVpCurUnit(){ const sg=VP.segs[VP.seg]; if(!sg||!sg.unitOf.length) return 0; const k=Math.min(VP.sent, sg.unitOf.length-1); return sg.unitOf[k]||0; }
 function kkVpStop(){ VP.playing=false; if(VP.ctl){ VP.ctl.stop(); VP.ctl=null; } clearInterval(VP.tick); }
 function kkVpTime(frac){ const sg=VP.segs[VP.seg]; if(!sg) return 0; const per=sg.len/Math.max(1,sg.sents.length); return sg.start + VP.sent*per + (frac||0)*per; }
 function kkVpUpdateUI(){
   const bar=$("#vpFill"), tm=$("#vpTime"), st=$("#vpState"); if(bar) bar.style.width=(100*Math.min(1,VP.t/VP.total)).toFixed(2)+"%"; if(tm) tm.textContent=fmtT(VP.t)+" / "+fmtT(VP.total);
-  if(st) st.textContent = VP.await!=null ? "Đang chờ bạn trả lời điểm dừng" : VP.finished ? "Hết video - làm bài kiểm tra bên dưới" : VP.playing ? "Đang phát" : VP.started ? "Tạm dừng" : "Sẵn sàng";
-  const pb=$("#vpPlay"); if(pb) pb.textContent = VP.playing ? "Tạm dừng" : (VP.started ? "Tiếp tục" : "Bắt đầu video");
+  if(st) st.textContent = VP.await!=null ? kkUi("Đang chờ bạn trả lời điểm dừng","Waiting for your checkpoint answer") : VP.finished ? kkUi("Hết video - làm bài kiểm tra bên dưới","Video finished - take the quiz below") : VP.playing ? kkUi("Đang phát","Playing") : VP.started ? kkUi("Tạm dừng","Paused") : kkUi("Sẵn sàng","Ready");
+  const pb=$("#vpPlay"); if(pb) pb.textContent = VP.playing ? kkUi("Tạm dừng","Pause") : (VP.started ? kkUi("Tiếp tục","Resume") : kkUi("Bắt đầu video","Start video"));
   const cu=kkVpCurUnit(); document.querySelectorAll("#vpText .s").forEach((el,i)=>el.classList.toggle("on", i===cu));
   const cur=document.querySelector("#vpText .s.on"); if(cur&&VP.playing) cur.scrollIntoView({block:"nearest",behavior:"smooth"});
 }
@@ -854,19 +856,20 @@ function kkExtraHTML(e, v){
 function kkVpRender(v){
   const host=$("#vpHost"); if(!host) return;
   const sg=VP.segs[VP.seg]; const seg=v.segments[VP.seg];
+  const subMode=kkVpSubMode(); const tm=kkVpTxtMode(); const uE=kkUiEn();
   const markers=VP.segs.flatMap(s=>s.cps.map(ci=>`<span class="mk ${VP.cp[ci]?'done':''}" style="left:${(100*s.end/VP.total).toFixed(2)}%" title="Điểm dừng tương tác"></span>`)).join("");
   const bounds=VP.segs.slice(1).map(s=>`<span class="bd" style="left:${(100*s.start/VP.total).toFixed(2)}%"></span>`).join("");
   const cpi=VP.await; const c=cpi!=null?v.checkpoints[cpi]:null; const chosen=c?VP.cp[cpi]:null;
-  const subMode=kkVpSubMode(); const tm=kkVpTxtMode(); const cuU=kkVpCurUnit();
+  const cuU=kkVpCurUnit();
 
   host.innerHTML=`
   <div class="vp">
     <div class="stage">
-      <div class="shead"><span class="pill">${seg.n}/${v.segments.length} · ${esc(seg.name)}</span><span class="pill">${esc(seg.time)}</span><span class="pill">Giọng: ${KKV.ok===false?"thiết bị":"AI KK-EDU"}</span></div>
-      <div class="scene">${seg.visual.map(x=>`<div class="vis">${rich(x)}</div>`).join("")}${seg.extra.filter(e=>e.type!=="checkpoint").map(e=>kkExtraHTML(e,v)).join("")}</div>
-      ${c?`<div class="cpov"><div class="cpbox"><div class="eyebrow">Điểm dừng tương tác · bắt buộc</div><b>${esc(c.title)}</b><p>${kkVpTxt(c.question, c.question_en, tm)}</p>
+      <div class="shead"><span class="pill">${seg.n}/${v.segments.length} · ${esc(seg.name)}</span><span class="pill">${esc(seg.time)}</span><span class="pill">${uE?"Voice":"Giọng"}: ${KKV.ok===false?(uE?"device":"thiết bị"):"AI KK-EDU"}</span></div>
+      <div class="scene">${seg.visual.map((x,k)=>`<div class="vis">${kkVpTxt(x,(seg.visual_en||[])[k],tm)}</div>`).join("")}${seg.extra.map((e,k)=>[e,k]).filter(([e])=>e.type!=="checkpoint").map(([e,k])=>kkExtraHTML(tm!=="vi"&&seg.extra_en?seg.extra_en[k]:e,v)).join("")}</div>
+      ${c?`<div class="cpov"><div class="cpbox"><div class="eyebrow">${uE?"Interactive checkpoint · required":"Điểm dừng tương tác · bắt buộc"}</div><b>${esc(tm==="en"&&c.title_en?c.title_en:c.title)}</b><p>${kkVpTxt(c.question, c.question_en, tm)}</p>
         ${c.options.map((o,oi)=>`<button class="opt ${chosen?(o.key===c.answer?'ok':(o.key===chosen?'ko':'')):''}" ${chosen?'disabled':''} onclick="kkVpAnswer(D.videos.find(x=>x.id==='${v.id}'),${cpi},'${o.key}')">${o.key}. ${kkVpTxt(o.text, c.options_en?c.options_en[oi]:null, tm)}</button>`).join("")}
-        ${chosen?`<div class="fb"><b>${tm==="en"?"Feedback":"Phản hồi"} ${chosen}:</b> ${kkVpTxt(c.feedback[chosen]||"", (c.feedback_en||{})[chosen], tm)}${chosen!==c.answer?`<br><b>${tm==="en"?"Correct answer":"Đáp án đúng"} ${c.answer}:</b> ${kkVpTxt(c.feedback[c.answer]||"", (c.feedback_en||{})[c.answer], tm)}`:""}</div><div class="row"><button class="btn" onclick="kkVpContinue(D.videos.find(x=>x.id==='${v.id}'))">Tiếp tục video</button></div>`:`<p class="mute">Video tạm dừng. Chọn một phương án để tiếp tục.</p>`}
+        ${chosen?`<div class="fb"><b>${uE?"Feedback":"Phản hồi"} ${chosen}:</b> ${kkVpTxt(c.feedback[chosen]||"", (c.feedback_en||{})[chosen], tm)}${chosen!==c.answer?`<br><b>${uE?"Correct answer":"Đáp án đúng"} ${c.answer}:</b> ${kkVpTxt(c.feedback[c.answer]||"", (c.feedback_en||{})[c.answer], tm)}`:""}</div><div class="row"><button class="btn" onclick="kkVpContinue(D.videos.find(x=>x.id==='${v.id}'))">${uE?"Continue video":"Tiếp tục video"}</button></div>`:`<p class="mute">${uE?"Video paused. Choose an answer to continue.":"Video tạm dừng. Chọn một phương án để tiếp tục."}</p>`}
       </div></div>`:""}
     </div>
     <div class="bar" onclick="kkVpSeek(event)"><div class="fill" id="vpFill"></div>${bounds}${markers}</div>
@@ -875,8 +878,8 @@ function kkVpRender(v){
       <span class="timer" id="vpTime">${fmtT(VP.t)} / ${fmtT(VP.total)}</span>
       <span class="mute" id="vpState"></span>
       <span style="flex:1"></span>
-      <label class="mute">Tốc độ <select onchange="KKV.rate=Number(this.value)">${[0.9,1,1.15,1.3].map(r=>`<option value="${r}" ${KKV.rate===r?'selected':''}>${r}x</option>`).join("")}</select></label>
-      <label class="mute">Phụ đề <select onchange="kkVpSetSub(D.videos.find(x=>x.id==='${v.id}'),this.value)">${[["off","Tắt"],["vi","Tiếng Việt"],["en","Tiếng Anh"],["both","Song ngữ"]].map(([k,l])=>`<option value="${k}" ${subMode===k?'selected':''}>${l}</option>`).join("")}</select></label>
+      <label class="mute">${uE?"Speed":"Tốc độ"} <select onchange="KKV.rate=Number(this.value)">${[0.9,1,1.15,1.3].map(r=>`<option value="${r}" ${KKV.rate===r?'selected':''}>${r}x</option>`).join("")}</select></label>
+      <label class="mute">${uE?"Subtitles":"Phụ đề"} <select onchange="kkVpSetSub(D.videos.find(x=>x.id==='${v.id}'),this.value)">${(uE?[["off","Off"],["vi","Vietnamese"],["en","English"],["both","Bilingual"]]:[["off","Tắt"],["vi","Tiếng Việt"],["en","Tiếng Anh"],["both","Song ngữ"]]).map(([k,l])=>`<option value="${k}" ${subMode===k?'selected':''}>${l}</option>`).join("")}</select></label>
     </div>
     <div class="chips">${v.segments.map((s,i)=>`<button class="chip ${i===VP.seg?'on':''}" ${i>VP.maxSeg?'disabled':''} onclick="kkVpJump(${i})">${s.n}. ${esc(s.name)}</button>`).join("")}</div>
     ${subMode!=="off"?`<div class="doc" id="vpText">${seg.narration.map((vi,u)=>`<p class="s ${u===cuU?'on':''}">${kkVpTxt(vi, (seg.narration_en||[])[u], subMode)}</p>`).join("")}</div>`:""}
@@ -890,9 +893,9 @@ videoPlayer = function(v){
   const last = VP.finished;
   const qm=kkVpTxtMode();
   const quizHTML = last?`<div class="card doc"><h2>${qm==="en"?"Quiz after the video":"Kiểm tra sau video"}</h2>${v.quiz.map((q,i)=>`<div class="q"><b>${i+1}. ${kkVpTxt(q.q, q.q_en, qm)}</b><br>${['A','B','C'].map(k=>`<button class="opt ${VP.quiz[i]?(k===q.answer?'ok':(k===VP.quiz[i]?'ko':'')):''}" onclick="VP.quiz[${i}]='${k}';render()">${k}. ${kkVpTxt(q.options[k], (q.options_en||{})[k], qm)}</button>`).join('')}${VP.quiz[i]?`<div class="ex">${kkVpTxt(q.explain, q.explain_en, qm)}</div>`:''}</div>`).join('')}
-    ${Object.keys(VP.quiz).length===v.quiz.length?(()=>{ const ok=v.quiz.filter((q,i)=>VP.quiz[i]===q.answer).length; const pass=ok>=Math.ceil(v.quiz.length*0.75); return `<p><b>Kết quả: ${ok}/${v.quiz.length}</b> ${pass?'- Đạt. Video được ghi nhận hoàn thành.':'- Chưa đạt 75%. Xem lại phần CORE rồi làm lại.'}</p>${pass?`<button class="btn" onclick="S.progress['${v.id}']=Object.assign({},S.progress['${v.id}']||{},{done:true,date:TODAY()});save();kkVpStop();VP.vid=null;S.vid=null;render()">Ghi nhận hoàn thành và quay lại danh sách</button>`:`<button class="btn sec" onclick="VP.quiz={};VP.finished=false;kkVpJump(2)">Xem lại CORE</button>`}`; })():''}</div>`:'';
+    ${Object.keys(VP.quiz).length===v.quiz.length?(()=>{ const ok=v.quiz.filter((q,i)=>VP.quiz[i]===q.answer).length; const pass=ok>=Math.ceil(v.quiz.length*0.75); return `<p><b>${kkUi("Kết quả","Score")}: ${ok}/${v.quiz.length}</b> ${pass?kkUi('- Đạt. Video được ghi nhận hoàn thành.','- Passed. The video is recorded as complete.'):kkUi('- Chưa đạt 75%. Xem lại phần CORE rồi làm lại.','- Below 75%. Review the CORE section and try again.')}</p>${pass?`<button class="btn" onclick="S.progress['${v.id}']=Object.assign({},S.progress['${v.id}']||{},{done:true,date:TODAY()});save();kkVpStop();VP.vid=null;S.vid=null;render()">${kkUi("Ghi nhận hoàn thành và quay lại danh sách","Record completion and return to the list")}</button>`:`<button class="btn sec" onclick="VP.quiz={};VP.finished=false;kkVpJump(2)">${kkUi("Xem lại CORE","Review CORE")}</button>`}`; })():''}</div>`:'';
   setTimeout(()=>{ const vv=D.videos.find(x=>x.id===VP.vid); if(vv) kkVpRender(vv); },0);
-  return `<div class="card doc"><div class="row"><button class="btn sec" onclick="kkVpStop();VP.vid=null;S.vid=null;render()">Danh sách</button><span class="code" style="color:var(--gold2)">${v.id}</span><span class="pill">${esc(v.duration)}</span><span class="pill">${v.checkpoints.filter(c=>c.options.length).length} điểm dừng bắt buộc</span></div><h2>${esc(v.title)}</h2><p class="mute"><b>Mục tiêu:</b> ${esc(v.objective)} | Tài liệu: ${v.material_ids.join(', ')}</p><div id="vpHost"></div></div>${quizHTML}`;
+  return `<div class="card doc"><div class="row"><button class="btn sec" onclick="kkVpStop();VP.vid=null;S.vid=null;render()">${kkUi("Danh sách","List")}</button><span class="code" style="color:var(--gold2)">${v.id}</span><span class="pill">${esc(v.duration)}</span><span class="pill">${v.checkpoints.filter(c=>c.options.length).length} ${kkUi("điểm dừng bắt buộc","required checkpoints")}</span></div><h2>${esc(v.title)}</h2><p class="mute"><b>${kkUi("Mục tiêu","Objective")}:</b> ${esc(v.objective)} | ${kkUi("Tài liệu","Materials")}: ${v.material_ids.join(', ')}</p><div id="vpHost"></div></div>${quizHTML}`;
 };
 const _render0 = render;
 render = function(){ if(VP.vid && (S.step!==2 || S.vid!==VP.vid)){ kkVpStop(); VP.vid=null; } if(S.step!==2 && S.step!==3) kkStop(); _render0(); };
