@@ -1540,6 +1540,228 @@ render = function(){
   let w = 15; const tm = setInterval(()=>{ w = Math.min(90, w+9); const b = m.querySelector(".kkbar"); if(b) b.style.width = w+"%"; }, 250);
   Promise.all(need.map(kkNeed)).then(()=>{ clearInterval(tm); try{ render(); }catch(e){ console.error(e); m.innerHTML = `<div class="card"><h1>Không hiển thị được mục này</h1><p class="mute">${esc(String(e.message||e))}</p><p><button class="btn" onclick="J.pr=null;S.vid=null;S.mat=null;render()">Về tuần học</button></p></div>`; } }).catch(e=>{ clearInterval(tm); m.innerHTML = `<div class="card"><h1>Chưa tải được nội dung</h1><p class="mute">Máy chủ nội dung tạm thời không phản hồi (${esc(String(e.message||e))}). Hãy thử lại sau ít phút.</p><p><button class="btn" onclick="render()">Thử lại</button></p></div>`; });
 };
+/* ---------- E. Đợt E: Phòng giám khảo Speaking (đúng thời gian), Thử thách 3 phút hằng ngày, Checklist trước thi ----------
+   Nạp sau app_lazy.js. Trạng thái: S.lab = null | 'examiner' | 'challenge' | 'checklist'; S.labWeek = tuần mở checklist.
+   Dữ liệu lưu trong S.journey: examiner[] (10 lần gần nhất), challenge{ngày:{set,at}}, checklist{id:true}. */
+
+const EX = { set:null, steps:[], i:-1, cur:null, start:0, limit:0, iv:null, run:null, log:[], finished:null, speed:1, endNow:null };
+const EX_TIMES = { p1: 25, p2prep: 60, p2speak: 120, p3: 40 };   // giây theo đề thi thật (Part 1: ~25 s/câu; Part 2: 1 phút chuẩn bị, tối đa 2 phút nói; Part 3: ~40 s/câu)
+
+function exSet(){ return (D.sp||[]).find(s=>s.id===EX.set) || (D.sp||[])[0]; }
+function exSleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+/* Giám khảo đọc câu bằng giọng Anh; có chốt thời gian dự phòng để không bị treo nếu giọng lỗi. */
+function exSpeak(text){
+  return new Promise(res=>{
+    let done=false; const fin=()=>{ if(!done){ done=true; res(); } };
+    const words=String(text).trim().split(/\s+/).length;
+    setTimeout(fin, (words*450+2000)*EX.speed*2 + 1500*EX.speed);
+    try{ const c=kkSpeak(text,{lang:"en"}); c.done.then(fin, fin); }catch(e){ fin(); }
+  });
+}
+/* Kịch bản một buổi thi: Part 1 (2 chủ đề), Part 2 (cue card + chuẩn bị + nói), Part 3 (3 câu). */
+function exBuild(set){
+  const es=set.examiner_script||{}; const steps=[];
+  steps.push({k:"say", part:1, text:es.part1_intro||"Good morning. Let's begin with Part 1.", tag:"Giám khảo: mở đầu Part 1"});
+  set.part1.slice(0,2).forEach(tp=>tp.questions.forEach(q=>{
+    steps.push({k:"say", part:1, text:q, tag:"Giám khảo hỏi"});
+    steps.push({k:"answer", part:1, sec:EX_TIMES.p1, text:q, tag:"Bạn trả lời · Part 1"});
+  }));
+  const p2=set.part2;
+  steps.push({k:"say", part:2, text:es.part2_intro||"Now I am going to give you a topic.", tag:"Giám khảo: đưa đề Part 2"});
+  steps.push({k:"say", part:2, text:p2.cue+" You should say: "+p2.prompts.join("; ")+".", tag:"Đề Part 2 (cue card)"});
+  steps.push({k:"prep", part:2, sec:EX_TIMES.p2prep, text:p2.cue, tag:"Chuẩn bị · ghi chú (không được nói)"});
+  steps.push({k:"speak", part:2, sec:EX_TIMES.p2speak, text:p2.cue, tag:"Bạn nói · tối đa 2 phút"});
+  steps.push({k:"say", part:2, text:"Thank you. That is the end of your talk.", tag:"Giám khảo: kết thúc Part 2"});
+  steps.push({k:"say", part:3, text:es.part3_intro||"Now let's discuss some more general questions.", tag:"Giám khảo: mở đầu Part 3"});
+  set.part3.slice(0,3).forEach(x=>{
+    steps.push({k:"say", part:3, text:x.question, tag:"Giám khảo hỏi"});
+    steps.push({k:"answer", part:3, sec:EX_TIMES.p3, text:x.question, tag:"Bạn trả lời · Part 3"});
+  });
+  steps.push({k:"say", part:3, text:"Thank you. That is the end of the speaking test.", tag:"Giám khảo: kết thúc"});
+  return steps;
+}
+function exRender(){ labRender(); }
+function exTick(left){ const el=$("#exTime"); if(el) el.textContent=fmtT(Math.max(0,left)/1000); const b=$("#exBar"); if(b) b.style.width=Math.min(100,100*(1-left/Math.max(1,EX.limit)))+"%"; }
+function exTimed(st, runId){
+  return new Promise(res=>{
+    const limit=st.sec*1000*EX.speed, t0=Date.now(); EX.start=t0; EX.limit=limit; EX.cur=st;
+    const finish=()=>{ clearInterval(EX.iv); EX.iv=null; EX.endNow=null; const actual=(Date.now()-t0)/1000/EX.speed; EX.log.push({part:st.part, kind:st.k, planned:st.sec, actual:Math.round(actual)}); res(); };
+    EX.endNow=finish;
+    clearInterval(EX.iv);
+    EX.iv=setInterval(()=>{ if(EX.run!==runId){ finish(); return; } const left=limit-(Date.now()-t0); exTick(left); if(left<=0) finish(); }, 250);
+    exRender();
+  });
+}
+async function exRun(runId){
+  EX.log=[]; EX.finished=null;
+  for(let i=0;i<EX.steps.length;i++){
+    if(EX.run!==runId) return;
+    EX.i=i; const st=EX.steps[i];
+    if(st.k==="say"){ EX.cur=st; exRender(); await exSpeak(st.text); continue; }
+    await exTimed(st, runId);
+    if(EX.run!==runId) return;
+  }
+  EX.i=EX.steps.length; exFinish();
+}
+function exStart(){
+  if(!D.sp||!D.sp.length){ kkToast("Kho đề Speaking chưa tải xong, thử lại sau giây lát."); return; }
+  EX.steps=exBuild(exSet()); EX.run=Date.now()+""; const id=EX.run; EX.set=exSet().id; exRun(id); exRender();
+}
+function exStop(){ EX.run=null; if(EX.endNow) EX.endNow(); clearInterval(EX.iv); EX.iv=null; kkStop(); EX.i=-1; EX.cur=null; exRender(); }
+function exNext(){ if(EX.endNow && EX.cur && EX.cur.k!=="say") EX.endNow(); }
+function exFinish(){
+  const sums={1:0,2:0,3:0}; EX.log.forEach(l=>{ sums[l.part]+=l.actual; });
+  const warn=[];
+  const p2=EX.log.find(l=>l.part===2&&l.kind==="speak");
+  if(p2 && p2.actual<60) warn.push("Phần nói Part 2 chưa đủ 1 phút (giám khảo thường hỏi thêm khi bạn nói quá ngắn).");
+  if(p2 && p2.actual>=120) warn.push("Đã đạt giới hạn 2 phút Part 2, giám khảo sẽ dừng bạn đúng lúc này.");
+  const plan={1:0,2:0,3:0}; EX.steps.forEach(st=>{ if(st.sec) plan[st.part]+=st.sec; });
+  [1,3].forEach(p=>{ if(sums[p]<0.7*plan[p]) warn.push(`Part ${p}: dùng ${Math.round(sums[p])} giây, dự kiến ${plan[p]} giây. Hãy trả lời đầy đủ hơn, nêu thêm ví dụ.`); });
+  EX.finished={sums, plan, warn, at:TODAY(), set:EX.set};
+  EX.run=null; exRender();
+  const j=S.journey; j.examiner=[{date:TODAY(), set:EX.set, parts:{1:Math.round(sums[1]),2:Math.round(sums[2]),3:Math.round(sums[3])}, warn:warn.length}].concat(j.examiner||[]).slice(0,10);
+  save();
+}
+
+/* Thử thách 3 phút: một đề Part 2 mỗi ngày (xoay vòng theo ngày), 1 phút chuẩn bị + 2 phút nói. */
+const CH = { iv:null, phase:"idle", t0:0 };
+function chDayKey(d){ d=d||new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function chToday(){
+  const sets=D.sp||[]; if(!sets.length) return null;
+  const d=new Date(); const idx=Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())/864e5);
+  return sets[idx % sets.length];
+}
+function chStreak(){
+  const h=S.journey.challenge||{}; let n=0; const d=new Date();
+  if(!h[chDayKey(d)]) d.setDate(d.getDate()-1);            // hôm nay chưa làm thì tính từ hôm qua
+  while(h[chDayKey(d)]){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+function chTick(limitSec, next){
+  clearInterval(CH.iv); CH.t0=Date.now();
+  CH.iv=setInterval(()=>{ const left=limitSec*1000-(Date.now()-CH.t0); const el=$("#chTime"); if(el) el.textContent=fmtT(Math.max(0,left)/1000); if(left<=0){ clearInterval(CH.iv); CH.iv=null; next&&next(); } }, 250);
+}
+function chStart(){ CH.phase="prep"; chTick(60, ()=>{ CH.phase="speak"; chTick(120, ()=>{ CH.phase="stopped"; labRender(); }); labRender(); }); labRender(); }
+function chDone(){
+  const k=chDayKey(); S.journey.challenge=Object.assign({}, S.journey.challenge||{}, {[k]:{set:(chToday()||{}).id||"", at:Date.now()}}); save();
+  clearInterval(CH.iv); CH.iv=null; CH.phase="done"; kkToast("Đã ghi nhận thử thách hôm nay. Chuỗi: "+chStreak()+" ngày."); labRender();
+}
+
+/* Checklist trước thi */
+const CL_GROUPS = [
+  {g:"Trước 1-2 tuần", items:[
+    ["c1","Xác nhận lịch thi, địa điểm và giờ có mặt trên phiếu dự thi"],
+    ["c2","Kiểm tra họ tên trên giấy tờ khớp với đăng ký thi (không viết tắt, đúng dấu)"],
+    ["c3","Làm 1 đề thi thử đầy đủ đúng giờ, ghi lại band từng kỹ năng"],
+    ["c4","Ôn 3 mã lỗi lặp nhiều nhất trong Error Log"]]},
+  {g:"Trước 1 ngày", items:[
+    ["c5","Chuẩn bị giấy tờ gốc còn hạn (hộ chiếu hoặc CCCD đúng loại đã đăng ký)"],
+    ["c6","Xem trước đường đi, chọn phương tiện, dự kiến đến sớm 30 phút"],
+    ["c7","Ngủ đủ 7-8 giờ; không luyện nhồi nhét quá 60 phút"]]},
+  {g:"Thiết bị (thi trên máy tính)", items:[
+    ["c8","Kiểm tra tai nghe, micro, webcam và đường truyền internet"],
+    ["c9","Đóng các ứng dụng chạy nền, tắt thông báo"],
+    ["c10","Thử ghi âm 30 giây và nghe lại rõ ràng"],
+    ["c11","Sạc đầy pin laptop, chuẩn bị nguồn điện dự phòng"]]},
+  {g:"Buổi thi", items:[
+    ["c12","Đến sớm 30 phút, mang theo nước uống, không mang điện thoại vào phòng"],
+    ["c13","Listening: chỉ nghe một lần, dùng thời gian đọc đề để đoán trước đáp án"],
+    ["c14","Reading: để dành 2 phút cuối kiểm tra lại đáp án, không bỏ trống"],
+    ["c15","Speaking: nói tự nhiên, không học thuộc; khi chưa rõ câu hỏi thì xin giám khảo nhắc lại"]]}
+];
+function clAll(){ return CL_GROUPS.flatMap(g=>g.items.map(i=>i[0])); }
+function clDone(){ const c=S.journey.checklist||{}; return clAll().filter(id=>c[id]).length; }
+function clToggle(id){
+  const c=Object.assign({}, S.journey.checklist||{}); c[id]=!c[id]; S.journey.checklist=c;
+  if(clDone()===clAll().length && S.labWeek){ S.journey.ticks[S.labWeek+":checklist:Exam day checklist"]=TODAY(); }
+  save(); labRender();
+}
+
+/* ---------- Giao diện ---------- */
+function labOpen(k){
+  if(k==="checklist"){ S.lab=k; S.step=2; save(); render(); return; }
+  S.lab=k; S.step=2; if(k==="challenge") CH.phase="idle"; save(); render();
+  kkNeed("banks").then(()=>render()).catch(()=>kkToast("Chưa tải được kho đề, thử lại sau."));
+}
+function labClose(){ EX.run=null; if(EX.endNow) EX.endNow(); clearInterval(EX.iv); clearInterval(CH.iv); kkStop(); S.lab=null; save(); render(); }
+function labBanner(){
+  const n=clDone(), t=clAll().length;
+  return `<div class="card lab"><div class="row"><b>Luyện Speaking nâng cao và chuẩn bị thi</b></div>
+    <p class="mute">Phòng giám khảo chạy đúng thời gian từng phần; thử thách 3 phút mỗi ngày; checklist trước thi.</p>
+    <div class="row"><button class="btn sec" onclick="labOpen('examiner')">Phòng giám khảo</button><button class="btn sec" onclick="labOpen('challenge')">Thử thách 3 phút hôm nay</button><button class="btn sec" onclick="labOpen('checklist')">Checklist trước thi (${n}/${t})</button></div></div>`;
+}
+function labRender(){ if(S.lab) render(); }
+function labView(m){
+  if(S.lab==="checklist") return m.innerHTML=labChecklistHTML();
+  if(!D.sp||!D.sp.length) return m.innerHTML=`<div class="card"><h1>Đang tải kho đề...</h1><p class="mute">Chỉ tải một lần.</p></div>`;
+  if(S.lab==="examiner") return m.innerHTML=labExaminerHTML();
+  if(S.lab==="challenge") return m.innerHTML=labChallengeHTML();
+}
+function labBack(){ return `<div class="row"><button class="btn sec" onclick="labClose()">Về tuần học</button></div>`; }
+function labExaminerHTML(){
+  const running = !!EX.run, fin = EX.finished;
+  const set = exSet();
+  const home = !running && !fin;
+  const table = `<table class="doc"><tr><th>Phần</th><th>Thời lượng thật</th><th>Cách luyện ở đây</th></tr>
+    <tr><td>Part 1 (phỏng vấn)</td><td>4-5 phút, 3 chủ đề</td><td>2 chủ đề, mỗi câu ${EX_TIMES.p1} giây</td></tr>
+    <tr><td>Part 2 (nói một mình)</td><td>1 phút chuẩn bị + 1-2 phút nói</td><td>${EX_TIMES.p2prep} giây chuẩn bị, tối đa ${EX_TIMES.p2speak/60} phút nói</td></tr>
+    <tr><td>Part 3 (thảo luận)</td><td>4-5 phút, 4-6 câu</td><td>3 câu, mỗi câu ${EX_TIMES.p3} giây</td></tr></table>`;
+  let body;
+  if(home){
+    body=`${table}<p class="mute">Đề: ${esc(set?set.theme:"")}</p>
+      <div class="row">${(D.sp||[]).map(s=>`<button class="chip ${s.id===(set||{}).id?'on':''}" onclick="EX.set='${s.id}';render()">${esc(s.theme)}</button>`).join("")}</div>
+      <p class="mute">Giọng giám khảo đọc bằng tiếng Anh. Bạn nói to trước máy, không cần ghi âm: phòng này kiểm soát thời gian và nhịp độ như buổi thi thật.</p>
+      <div class="row"><button class="btn gold" onclick="exStart()">Bắt đầu mô phỏng</button></div>`;
+  } else if(running){
+    const st=EX.cur||{}; const inSay = st.k==="say";
+    body=`<div class="row"><span class="pill" id="exTag">${esc(st.tag||"")}</span><span class="pill">Part ${st.part||""}</span></div>
+      <div class="bar big"><i id="exBar" style="width:0%"></i></div>
+      <div class="row" style="justify-content:center"><span class="timer big" id="exTime">${st.sec?fmtT(st.sec):""}</span></div>
+      <div class="card doc"><p><b>${esc(st.text||"")}</b></p></div>
+      <div class="row">${inSay?'<span class="mute">Giám khảo đang nói...</span>':`<button class="btn gold" onclick="exNext()">Xong, sang bước tiếp</button>`}<button class="btn sec" onclick="exStop()">Dừng mô phỏng</button></div>`;
+  } else {
+    const warn=(fin.warn||[]).map(w=>`<li>${esc(w)}</li>`).join("")||"<li>Thời lượng các phần nằm trong mục tiêu.</li>";
+    body=`<h2>Nhật ký thời gian</h2><table class="doc"><tr><th>Phần</th><th>Thực tế</th><th>Dự kiến của kịch bản</th></tr>
+      <tr><td>Part 1</td><td>${Math.round(fin.sums[1])} giây</td><td>${fin.plan[1]} giây</td></tr>
+      <tr><td>Part 2 (chuẩn bị + nói)</td><td>${Math.round(fin.sums[2])} giây</td><td>${fin.plan[2]} giây</td></tr>
+      <tr><td>Part 3</td><td>${Math.round(fin.sums[3])} giây</td><td>${fin.plan[3]} giây</td></tr></table>
+      <h2>Nhận xét</h2><ul>${warn}</ul><div class="row"><button class="btn gold" onclick="exStart()">Chạy lại</button></div>`;
+  }
+  return `<div class="card">${labBack()}<h1>Phòng giám khảo Speaking</h1>${body}</div>`;
+}
+function labChallengeHTML(){
+  const cue=chToday(); const st=chStreak(); const done=!!(S.journey.challenge||{})[chDayKey()];
+  const days=[...Array(7)].map((_,k)=>{ const d=new Date(); d.setDate(d.getDate()-(6-k)); return `<span class="pill ${(S.journey.challenge||{})[chDayKey(d)]?'gold':''}">${d.getDate()}/${d.getMonth()+1}</span>`; }).join(" ");
+  let action;
+  if(done) action=`<p><b>Hôm nay bạn đã hoàn thành thử thách.</b></p>`;
+  else if(CH.phase==="idle") action=`<div class="row"><button class="btn gold" onclick="chStart()">Bắt đầu: 1 phút chuẩn bị</button></div>`;
+  else if(CH.phase==="prep") action=`<p><b>Chuẩn bị:</b> <span class="timer big" id="chTime">01:00</span></p><div class="row"><button class="btn sec" onclick="chStart2()">Bỏ qua, nói ngay</button></div>`;
+  else if(CH.phase==="speak") action=`<p><b>Nói:</b> <span class="timer big" id="chTime">02:00</span></p><div class="row"><button class="btn gold" onclick="chDone()">Xong, ghi nhận</button></div>`;
+  else action=`<p><b>Hết 2 phút.</b> Ghi nhận khi bạn đã nói đủ.</p><div class="row"><button class="btn gold" onclick="chDone()">Ghi nhận hoàn thành</button></div>`;
+  return `<div class="card">${labBack()}<h1>Thử thách 3 phút hôm nay</h1>
+    <p class="mute">Chuỗi hiện tại: <b>${st} ngày</b> · 7 ngày gần nhất: ${days}</p>
+    <div class="card doc"><b>${esc(cue?cue.part2.cue:"")}</b><p class="mute">Gợi ý: ${esc(cue?cue.part2.prompts.join("; "):"")}</p></div>
+    ${action}</div>`;
+}
+function chStart2(){ CH.phase="speak"; chTick(120, ()=>{ CH.phase="stopped"; labRender(); }); labRender(); }
+function labChecklistHTML(){
+  const c=S.journey.checklist||{}; const n=clDone(), t=clAll().length; const pct=Math.round(100*n/t);
+  const groups=CL_GROUPS.map(g=>`<div class="card doc"><h2>${esc(g.g)}</h2>${g.items.map(([id,txt])=>`<label class="row" style="align-items:flex-start;gap:8px"><input type="checkbox" ${c[id]?'checked':''} onchange="clToggle('${id}')"><span>${esc(txt)}</span></label>`).join("")}</div>`).join("");
+  return `<div class="card">${labBack()}<h1>Checklist trước thi</h1><p class="mute">Đã làm ${n}/${t} (${pct}%). ${S.labWeek?"Hoàn thành đủ sẽ tự đánh dấu mục Exam day checklist của tuần.":""}</p><div class="bar big"><i style="width:${pct}%"></i></div>${groups}</div>`;
+}
+
+/* Gắn vào luồng sẵn có: tuần học hiện banner; mục checklist tuần 12 mở trang checklist thay vì tick giả. */
+const _vp_e = viewPhase;
+viewPhase = function(m, ph){
+  if(S.lab && !J.pr && !S.vid && !S.mat) return labView(m);
+  _vp_e(m, ph);
+  if(!J.pr && !S.vid && !S.mat && ph>=1) m.insertAdjacentHTML("afterbegin", labBanner());
+};
+const _tick_e = tickItem;
+tickItem = function(week, key){
+  if(/^checklist:/.test(key)){ S.labWeek=week; S.lab="checklist"; save(); render(); return; }
+  return _tick_e(week, key);
+};
 
 </script>
 </body>
