@@ -1354,7 +1354,7 @@ const NAV = [
   {id:"thi", label:"Kiểm tra"},
   {id:"ngoaingu", label:"Ngoại ngữ", menu:[
     {label:"Tiếng Anh", items:[{label:"Luyện thi và thi thử IELTS", href:"/ielts/", note:"4 kỹ năng, đề ngẫu nhiên, chấm tự động"}]},
-    {label:"Tiếng Trung", soon:true},
+    {label:"Tiếng Trung", items:[{label:"Tiếng Trung giao tiếp tương tác", href:"/tieng-trung/", note:"30 bài, tập viết, phát âm, role-play"},{label:"Lộ trình và tài liệu PDF", href:"/tieng-trung/#tai-lieu", note:"Tập 1, Tập 2, khối C01-C10 (thành viên)"}]},
     {label:"Tiếng Nhật", soon:true}
   ]},
   {id:"dash", label:"Học tập"},
@@ -1518,12 +1518,12 @@ window.addEventListener("resize", kkMenuClose);
 function viewNgoaiNgu(v){
   const LANGS=[
     {id:"en", name:"Tiếng Anh", ico:"abc", desc:"Luyện thi và thi thử IELTS: 4 kỹ năng, tài liệu chuẩn, 52 kịch bản video tương tác, đề ngẫu nhiên, chấm tự động, chứng chỉ KK-EDU thử nghiệm.", items:[{label:"Luyện thi và thi thử IELTS", href:"/ielts/"}]},
-    {id:"zh", name:"Tiếng Trung", ico:"open", desc:"Lộ trình HSK từ nền tảng đến HSK 4: chữ Hán, phát âm, giao tiếp và luyện đề.", soon:true},
+    {id:"zh", name:"Tiếng Trung", ico:"open", desc:"30 bài giao tiếp tương tác cho người Việt (nền tảng đến HSK 2): chữ Hán, tập viết nhận diện nét, phát âm cùng giọng Cô Lin, ghép câu, role-play; lộ trình 3 giai đoạn đến HSK 9.", items:[{label:"Học Tiếng Trung giao tiếp", href:"/tieng-trung/"},{label:"Lộ trình và tài liệu PDF", href:"/tieng-trung/#tai-lieu"}]},
     {id:"ja", name:"Tiếng Nhật", ico:"compass", desc:"Lộ trình JLPT N5 → N3: bảng chữ, ngữ pháp, nghe hiểu và luyện đề.", soon:true}
   ];
   v.innerHTML=`
   <div class="sec" style="margin-top:26px"><div><div class="eyebrow">Phân hệ 5 · Ngoại ngữ</div><h2 style="margin:0">Ngoại ngữ trên KK-EDU</h2></div></div>
-  <p class="note" style="max-width:52em">Cùng phương pháp 2.0: tài liệu chuẩn, video dừng để hỏi, thi thử đề ngẫu nhiên và chấm tự động. Tiếng Anh mở trước với phân hệ IELTS; Tiếng Trung và Tiếng Nhật đang biên soạn.</p>
+  <p class="note" style="max-width:52em">Cùng phương pháp 2.0: tài liệu chuẩn, video dừng để hỏi, thi thử đề ngẫu nhiên và chấm tự động. Đã mở Tiếng Anh (phân hệ IELTS) và Tiếng Trung (30 bài giao tiếp tương tác); Tiếng Nhật đang biên soạn.</p>
   <div class="zones" style="margin-top:14px">${LANGS.map(l=>`<div class="zone${l.soon?' soon':''}" ${l.soon?'':'role="button" tabindex="0" data-href="'+esc(l.items[0].href)+'"'}>
       <div class="zi">${ICO[l.ico]||ICO.book}</div><h3>${esc(l.name)}${l.soon?' <span class="badge">Sắp ra mắt</span>':''}</h3>
       <div class="meta">${esc(l.desc)}</div>
@@ -4854,7 +4854,7 @@ async function adminStudents(el){
   profiles.forEach(p=>Object.assign(U(p.uid),{name:p.name,namSinh:p.namSinh,guardian:p.guardian,pat:p.at,hasProfile:true}));
   reqs.forEach(r=>{ const x=U(r.uid); x.name=x.name||r.name; x.namSinh=x.namSinh||r.namSinh; x.reqN=(x.reqN||0)+(r.status==="pending"?1:0); });
   Object.keys(S.grants||{}).forEach(uid=>{ U(uid); });
-  Object.entries(progU).forEach(([uid,g])=>Object.assign(U(uid),{books:g.books||[],plast:g.last}));
+  Object.entries(progU).forEach(([uid,g])=>Object.assign(U(uid),{books:g.books||[],plast:g.last,ielts:!!g.ielts,zh:!!g.zh}));
   const allU=Object.values(byUid).filter(x=>x.uid&&x.uid.length>8).sort((a,b)=>String(b.last||b.plast||b.pat||"").localeCompare(String(a.last||a.plast||a.pat||"")));
   profiles=allU; // bảng chính dùng danh sách hợp nhất
   el.innerHTML=`
@@ -4878,8 +4878,8 @@ async function adminStudents(el){
   ${profiles.map((p,i)=>{const g=p.namSinh?gradeFromBirthYear(p.namSinh):null; const gr=S.grants[p.uid]||{}; const ex=gr.grades||[];
     const ver=gr.verified&&Number(gr.verifiedYear)===Number(p.namSinh);
     const nm=p.name||p.mname||(p.email?p.email.split("@")[0]:"(chưa có tên)");
-    const tags=[!p.hasProfile?'<span class="badge lock" title="Chưa khai năm sinh - chưa vào học đúng lớp được">Chưa hồ sơ</span>':"", p.reqN?`<span class="badge gold">${p.reqN} yêu cầu</span>`:"", (p.books&&p.books.length)?`<span class="badge ok" title="${esc(p.books.join(", "))}">${p.books.length} sách</span>`:"", p.provider==="google.com"?'<span class="badge">Google</span>':""].join(" ");
-    const filt=[!p.hasProfile?"noprof":"", !ver?"nover":"", p.reqN?"req":"", (p.books&&p.books.length)?"learn":""].join(" ");
+    const tags=[!p.hasProfile?'<span class="badge lock" title="Chưa khai năm sinh - chưa vào học đúng lớp được">Chưa hồ sơ</span>':"", p.reqN?`<span class="badge gold">${p.reqN} yêu cầu</span>`:"", (p.books&&p.books.length)?`<span class="badge ok" title="${esc(p.books.join(", "))}">${p.books.length} sách</span>`:"", p.ielts?'<span class="badge ok" title="Có tiến độ IELTS">IELTS</span>':"", p.zh?'<span class="badge ok" title="Có tiến độ Tiếng Trung">Tiếng Trung</span>':"", p.provider==="google.com"?'<span class="badge">Google</span>':""].join(" ");
+    const filt=[!p.hasProfile?"noprof":"", !ver?"nover":"", p.reqN?"req":"", ((p.books&&p.books.length)||p.ielts||p.zh)?"learn":""].join(" ");
     return `<tr data-q="${esc((nm+" "+(p.email||"")+" "+p.uid).toLowerCase())}" data-f="${filt}"><td><b>${esc(nm)}</b> ${tags}<br><span class="note">${esc(p.email||"(email chưa ghi nhận - cập nhật khi đăng nhập lại)")}</span><br><span class="note">${esc((p.uid||"").slice(0,12))} · tạo ${p.created?fmtDate(p.created):(p.pat?fmtDate(p.pat):"?")} · gần nhất ${p.last?fmtDate(p.last):(p.plast?fmtDate(p.plast):"?")}</span></td>
     <td>${esc(p.namSinh||"-")}${p.guardian?' <span class="badge" title="Cha mẹ/người giám hộ đã xác nhận">PH ✓</span>':""}</td>
     <td>${g?esc(g.label):"-"}</td><td>${ex.length?ex.map(esc).join(", "):"-"}</td>
