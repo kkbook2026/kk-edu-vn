@@ -1739,6 +1739,7 @@ function clToggle(id){
 /* ---------- Giao diện ---------- */
 function labOpen(k){
   if(k==="checklist"){ S.lab=k; S.step=2; save(); render(); return; }
+  if(k==="family"){ S.lab=k; S.step=2; save(); render(); famLoad(); return; }
   S.lab=k; S.step=2; if(k==="challenge") CH.phase="idle"; save(); render();
   kkNeed("banks").then(()=>render()).catch(()=>kkToast("Chưa tải được kho đề, thử lại sau."));
 }
@@ -1747,11 +1748,12 @@ function labBanner(){
   const n=clDone(), t=clAll().length;
   return `<div class="card lab"><div class="row"><b>Luyện Speaking nâng cao và chuẩn bị thi</b></div>
     <p class="mute">Phòng giám khảo chạy đúng thời gian từng phần; thử thách 3 phút mỗi ngày; checklist trước thi.</p>
-    <div class="row"><button class="btn sec" onclick="labOpen('examiner')">Phòng giám khảo</button><button class="btn sec" onclick="labOpen('challenge')">Thử thách 3 phút hôm nay</button><button class="btn sec" onclick="labOpen('checklist')">Checklist trước thi (${n}/${t})</button></div></div>`;
+    <div class="row"><button class="btn sec" onclick="labOpen('examiner')">Phòng giám khảo</button><button class="btn sec" onclick="labOpen('challenge')">Thử thách 3 phút hôm nay</button><button class="btn sec" onclick="labOpen('checklist')">Checklist trước thi (${n}/${t})</button><button class="btn sec" onclick="labOpen('family')">Gia đình & giáo viên</button></div></div>`;
 }
 function labRender(){ if(S.lab) render(); }
 function labView(m){
   if(S.lab==="checklist") return m.innerHTML=labChecklistHTML();
+  if(S.lab==="family") return m.innerHTML=labFamilyHTML();
   if(!D.sp||!D.sp.length) return m.innerHTML=`<div class="card"><h1>Đang tải kho đề...</h1><p class="mute">Chỉ tải một lần.</p></div>`;
   if(S.lab==="examiner") return m.innerHTML=labExaminerHTML();
   if(S.lab==="challenge") return m.innerHTML=labChallengeHTML();
@@ -1821,6 +1823,116 @@ tickItem = function(week, key){
   if(/^checklist:/.test(key)){ S.labWeek=week; S.lab="checklist"; save(); render(); return; }
   return _tick_e(week, key);
 };
+/* ---------- F. Đợt F: Gia đình & giáo viên (liên kết có kiểm soát, tổng quan học tập), chứng chỉ có thể xác minh ----------
+   Nạp sau app_e.js. Dữ liệu máy chủ: /api/family/* (worker/src/family.js). Trình duyệt chỉ gửi bản tóm tắt tổng quan, không gửi bài làm. */
+
+const FM = { state:null, dash:null, err:"", msg:"", loading:false, cert:null, certErr:"", minorDraft:null };
+function famMinorDraft(v){ FM.minorDraft=!!v; labRender(); }
+const FAM_ERR = {
+  "auth":"Cần đăng nhập KK-EDU.", "origin":"Trang này không được phép gọi máy chủ.",
+  "email-not-verified":"Hãy xác minh email tài khoản của bạn trước khi liên kết.",
+  "parent-email-mismatch":"Email đăng nhập không khớp email phụ huynh mà học viên đã khai báo.",
+  "minor-parent-only":"Học viên dưới 18 tuổi chỉ liên kết được với phụ huynh.",
+  "parent-email-required":"Học viên dưới 18 tuổi cần khai email phụ huynh trước khi liên kết.",
+  "learner-sharing-off":"Học viên đã tắt chia sẻ tổng quan.",
+  "code-not-found":"Không tìm thấy mã này.", "code-used":"Mã này đã được dùng.",
+  "code-expired":"Mã này đã hết hạn (mã có hiệu lực 7 ngày).", "self-link":"Bạn không thể liên kết với chính mình.",
+  "too-many-codes":"Bạn đang có quá 5 mã chưa dùng. Hãy chờ mã hết hạn hoặc dùng bớt.",
+  "bad-role":"Vai trò không hợp lệ.", "link-not-found":"Không tìm thấy liên kết này.",
+  "parent-email-invalid":"Email phụ huynh chưa đúng định dạng.", "bad-code":"Mã không đúng định dạng (8 ký tự).",
+};
+async function famApi(method, path, body){
+  if(!KK.user) throw new Error(FAM_ERR.auth);
+  const base=await kkApiBase(); const tok=await kkIdToken();
+  const r=await fetch(base+path,{method, headers:{"content-type":"application/json", "authorization":"Bearer "+tok}, body: body?JSON.stringify(body):undefined});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(FAM_ERR[j.error] || ("Máy chủ báo lỗi: "+(j.error||r.status)));
+  return j;
+}
+/* Tổng quan học tập: chỉ các con số tổng hợp, không có bài làm hay bản ghi âm. */
+function famOverview(){
+  const lb=sk=>{ const a=lastBands(sk,1); return a.length?a[0]:null; };
+  const dates=new Set([...(S.history||[]).map(h=>h.date), ...Object.values(S.journey.ticks||{}), ...Object.values(S.journey.read||{}).map(x=>x&&x.date)].filter(Boolean));
+  const last=[...dates].sort().pop()||TODAY();
+  const wr=Object.values(S.journey.writing||{}).filter(x=>x&&x.band!=null).slice(-1)[0];
+  const sp=Object.values(S.journey.speaking||{}).filter(x=>x&&x.aiBand!=null).slice(-1)[0];
+  const cw=currentWeek(); const weekNo=typeof cw==="number"?cw:(cw&&cw.week)||null;
+  return { lisBand:lb("LIS"), rdBand:lb("RD"), wrBand:wr?wr.band:null, spBand:sp?sp.aiBand:null,
+    days:dates.size, streak:chStreak(), examRuns:(S.journey.examiner||[]).length, weekNo, phase:Math.max(1,phaseNow()), lastActive:last };
+}
+async function famLoad(){
+  if(!KK.user){ FM.state=null; FM.dash=null; labRender(); return; }
+  FM.loading=true; FM.err=""; labRender();
+  try{ FM.state=await famApi("GET","/family/state"); FM.dash=await famApi("GET","/family/dashboard"); }
+  catch(e){ FM.err=e.message; }
+  finally{ FM.loading=false; labRender(); }
+}
+async function famSaveShare(){
+  const v=id=>{ const el=$(id); return el?el.value:""; };
+  const minor=!!($("#fmMinor")&&$("#fmMinor").checked);
+  const body={ level:v("#fmLevel")||"overview", minor, parentEmail: minor?v("#fmEmail").trim():"", displayName:v("#fmName").trim(), overview: famOverview() };
+  try{ await famApi("PUT","/family/share",body); FM.msg="Đã lưu cài đặt. Tổng quan mới đã được cập nhật."; FM.err=""; FM.minorDraft=null; await famLoad(); }
+  catch(e){ FM.err=e.message; labRender(); }
+}
+async function famMakeCode(role){
+  try{ const r=await famApi("POST","/family/code",{role}); FM.msg="Mã "+(role==="parent"?"phụ huynh":"giáo viên")+": "+r.code+" (hiệu lực đến "+r.expires.slice(0,10)+"). Gửi mã này cho người theo dõi."; FM.err=""; await famLoad(); }
+  catch(e){ FM.err=e.message; labRender(); }
+}
+async function famRedeem(){
+  const code=($("#fmCode").value||"").trim().toUpperCase();
+  try{ await famApi("POST","/family/redeem",{code}); FM.msg="Đã liên kết. Tổng quan của học viên sẽ hiện bên dưới."; FM.err=""; await famLoad(); }
+  catch(e){ FM.err=e.message; labRender(); }
+}
+async function famRevoke(ref){
+  try{ await famApi("POST","/family/revoke",{ref}); FM.msg="Đã hủy liên kết."; FM.err=""; await famLoad(); }
+  catch(e){ FM.err=e.message; labRender(); }
+}
+async function famIssueCert(){
+  const name=($("#fcName").value||"").trim(); const band=Number($("#fcBand").value);
+  try{ const r=await famApi("POST","/family/cert",{name, band}); FM.cert={code:r.code, name:r.name, band:r.band, issued:r.issued, url:location.origin+"/verify/?code="+r.code}; FM.certErr=""; }
+  catch(e){ FM.certErr=e.message; FM.cert=null; }
+  labRender();
+}
+const FAM_LBL = {lisBand:"Listening", rdBand:"Reading", wrBand:"Writing", spBand:"Speaking (ước tính)", days:"Số ngày học", streak:"Chuỗi thử thách", examRuns:"Lần luyện giám khảo", weekNo:"Tuần hiện tại", phase:"Chặng", lastActive:"Hoạt động gần nhất"};
+function famCardHTML(l){
+  const o=l.overview||{};
+  const item=k=>{ const v=o[k]; return `<div class="band"><div class="v">${v==null?"-":(typeof v==="number"&&k.endsWith("Band")?Number(v).toFixed(1):esc(String(v)))}</div>${esc(FAM_LBL[k]||k)}</div>`; };
+  return `<div class="card doc"><h2>${esc(l.name)} <span class="pill">${l.role==="parent"?"Phụ huynh":"Giáo viên"}</span></h2>
+    <div class="bands">${["lisBand","rdBand","wrBand","spBand"].map(item).join("")}</div>
+    <div class="bands">${["days","streak","examRuns","weekNo","phase"].map(item).join("")}</div>
+    <p class="mute">Hoạt động gần nhất: ${esc(o.lastActive||"-")} · Cập nhật: ${esc((l.updated||"").slice(0,16).replace("T"," "))}</p></div>`;
+}
+function labFamilyHTML(){
+  const msg=FM.msg?`<p class="chot">${esc(FM.msg)}</p>`:"", err=FM.err?`<p class="warnbox">${esc(FM.err)}</p>`:"";
+  if(!KK.user) return `<div class="card">${labBack()}<h1>Gia đình & giáo viên</h1><p class="warnbox">${esc(FAM_ERR.auth)}</p></div>`;
+  if(FM.loading && !FM.state) return `<div class="card">${labBack()}<h1>Gia đình & giáo viên</h1><p class="mute">Đang tải...</p></div>`;
+  const st=FM.state||{share:{level:"overview",minor:false,displayName:"",parentEmail:""},codes:[],linked:[]};
+  const sh=st.share;
+  const minorOn=FM.minorDraft!==null?FM.minorDraft:!!sh.minor;
+  const codes=(st.codes||[]).map(c=>`<li><b>${esc(c.code)}</b> · ${c.role==="parent"?"phụ huynh":"giáo viên"} · đến ${esc(c.expires.slice(0,10))}</li>`).join("")||"<li class=\"mute\">Chưa có mã nào đang mở.</li>";
+  const linked=(st.linked||[]).map(l=>`<li>${l.role==="parent"?"Phụ huynh":"Giáo viên"} · liên kết từ ${esc((l.created||"").slice(0,10))} <button class="btn sm sec" onclick="famRevoke('${esc(l.ref)}')">Hủy liên kết</button></li>`).join("")||"<li class=\"mute\">Chưa có ai liên kết.</li>";
+  const dash=(FM.dash&&FM.dash.learners||[]).map(famCardHTML).join("")||"<p class=\"mute\">Chưa có học viên nào được bạn theo dõi.</p>";
+  const cert=!isAdminUser()?"":`<div class="card doc"><h2>Cấp chứng chỉ (Admin)</h2>
+    <div class="row"><input id="fcName" placeholder="Họ tên đúng như giấy tờ" maxlength="80" style="flex:1"><select id="fcBand">${[4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9].map(b=>`<option value="${b}" ${b===6.5?'selected':''}>${b.toFixed(1)}</option>`).join("")}</select></div>
+    <div class="row"><button class="btn gold" onclick="famIssueCert()">Cấp mã xác minh</button></div>
+    ${FM.certErr?`<p class="warnbox">${esc(FM.certErr)}</p>`:""}
+    ${FM.cert?`<p class="chot">Mã <b>${esc(FM.cert.code)}</b> cho ${esc(FM.cert.name)} (band ${FM.cert.band.toFixed(1)}, ngày ${esc(FM.cert.issued)}).<br>Trang xác minh: <a href="${esc(FM.cert.url)}" target="_blank" rel="noopener">${esc(FM.cert.url)}</a></p>`:""}</div>`;
+  return `<div class="card">${labBack()}<h1>Gia đình & giáo viên</h1>
+    <p class="mute">Bạn quyết định ai được xem tổng quan. Người theo dõi chỉ thấy band ước tính, số ngày học và tiến độ; không thấy bài làm, bản ghi âm hay email của bạn.</p>
+    ${msg}${err}
+    <div class="card doc"><h2>Bạn là học viên</h2>
+      <div class="row"><label class="mute" style="flex:1">Tên hiển thị <input id="fmName" maxlength="40" value="${esc(sh.displayName||"")}" style="width:100%"></label>
+        <label class="mute">Chia sẻ <select id="fmLevel"><option value="overview" ${sh.level!=="off"?"selected":""}>Tổng quan</option><option value="off" ${sh.level==="off"?"selected":""}>Tắt</option></select></label></div>
+      <div class="row"><label class="mute"><input type="checkbox" id="fmMinor" ${minorOn?"checked":""} onchange="famMinorDraft(this.checked)"> Tôi dưới 18 tuổi</label></div>
+      ${minorOn?`<div class="row"><label class="mute" style="flex:1">Email phụ huynh (phải là email đã xác minh của phụ huynh) <input id="fmEmail" maxlength="120" value="${esc(sh.parentEmail||"")}" style="width:100%"></label></div>`:""}
+      <div class="row"><button class="btn gold" onclick="famSaveShare()">Lưu cài đặt và cập nhật tổng quan</button></div>
+      <h2>Mã mời</h2><div class="row"><button class="btn sec" onclick="famMakeCode('parent')">Tạo mã cho phụ huynh</button>${minorOn?"":`<button class="btn sec" onclick="famMakeCode('teacher')">Tạo mã cho giáo viên</button>`}</div>
+      <ul>${codes}</ul><h2>Đang liên kết</h2><ul>${linked}</ul></div>
+    <div class="card doc"><h2>Bạn là phụ huynh hoặc giáo viên</h2>
+      <div class="row"><input id="fmCode" placeholder="Nhập mã 8 ký tự" maxlength="8" style="flex:1"><button class="btn gold" onclick="famRedeem()">Liên kết</button><button class="btn sec" onclick="famLoad()">Làm mới</button></div>
+      ${dash}</div>
+    ${cert}</div>`;
+}
 
 </script>
 </body>
