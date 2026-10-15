@@ -393,6 +393,7 @@ function genTest(mode){
   if(mode==='FULL'||mode==='RD'){ t.parts.RD = [1,2,3].map(p=>pick(D.rd.filter(s=>s.position===p), r, used).id); t.ids.push(...t.parts.RD); t.timeLeft.RD = 60*60; }
   if(mode==='FULL'||mode==='WR'){ t.parts.WR = [pick(D.wr.task1, r, used).id, pick(D.wr.task2, r, used).id]; t.ids.push(...t.parts.WR); t.timeLeft.WR = 60*60; }
   if(mode==='FULL'||mode==='SP'){ t.parts.SP = [pick(D.sp, r, used).id]; t.ids.push(...t.parts.SP); t.timeLeft.SP = 14*60; }
+  if(mode==='GATE'){ t.parts.LIS = [1,2].map(p=>pick(D.lis.filter(s=>s.part===p), r, used).id); t.parts.RD = [1,2].map(p=>pick(D.rd.filter(s=>s.position===p), r, used).id); t.ids.push(...t.parts.LIS, ...t.parts.RD); t.qcap={LIS:20, RD:20}; t.timeLeft.LIS=14*60; t.timeLeft.RD=26*60; }
   t.order = ['LIS','RD','WR','SP'].filter(k=>t.parts[k]); t.cur = t.order[0]; t.done = {};
   return t;
 }
@@ -408,7 +409,7 @@ function renderTest(m){
   const k = t.cur;
   const head = `<div class="sticky"><b>Thi thử (seed ${t.seed})</b> ${t.order.map(x=>`<span class="pill" style="${x===k?'background:var(--teal);color:#fff':''}">${SKN[x]}${t.done[x]?' (đã nộp)':''}</span>`).join('')}<span style="margin-left:auto">Thời gian còn lại: <span id="timer" class="timer">${fmtT(t.timeLeft[k])}</span></span>${t.running?`<button class="btn gold" onclick="if(confirm('Nộp phần ${SKN[k]}?'))submitPart('${k}')">Nộp phần ${SKN[k]}</button>`:`<button class="btn" onclick="S.test.running=true;S.test.startedAt['${k}']=Date.now();save();startTimer();render()">Bắt đầu ${SKN[k]}</button>`}</div>`;
   let body = '';
-  if(!t.running){ body = `<div class="card"><h2>${SKN[k]}</h2><p>${{LIS:'4 section, 40 câu. Audio mỗi section phát một lần (giọng máy en-GB). Bạn có thể đọc câu hỏi trước khi bấm phát. Sau khi hết giờ có thêm 2 phút kiểm tra đã gộp vào đồng hồ.',RD:'3 passage, 40 câu, 60 phút. Passage bên trái, câu hỏi bên phải. Không có thời gian chép đáp án.',WR:'Task 1 (150 từ, khuyên 20 phút) và Task 2 (250 từ, khuyên 40 phút). Dán văn bản bị khóa.',SP:'Máy đọc câu hỏi; bạn trả lời vào microphone (ghi âm và nhận dạng nếu trình duyệt hỗ trợ). Part 2 có 1 phút chuẩn bị. Sau mỗi phần bạn tự chấm theo rubric; AI và giáo viên duyệt sau.'}[k]}</p><p class="mute">Bấm "Bắt đầu" ở thanh trên để chạy đồng hồ.</p></div>`; }
+  if(!t.running){ body = `<div class="card"><h2>${SKN[k]}</h2><p>${{LIS:'4 Part, 40 câu. Audio phát liên tục một lần duy nhất như đề thật (tự chuyển Part, nhiều giọng, có khoảng nghỉ ngắn để kiểm tra đáp án). Đọc trước câu hỏi Part 1 rồi bấm Phát audio. 2 phút kiểm tra cuối đã gộp vào đồng hồ.',RD:'3 passage, 40 câu, 60 phút. Passage bên trái, câu hỏi bên phải. Không có thời gian chép đáp án.',WR:'Task 1 (150 từ, khuyên 20 phút) và Task 2 (250 từ, khuyên 40 phút). Dán văn bản bị khóa.',SP:'Máy đọc câu hỏi; bạn trả lời vào microphone (ghi âm và nhận dạng nếu trình duyệt hỗ trợ). Part 2 có 1 phút chuẩn bị. Sau mỗi phần bạn tự chấm theo rubric; AI và giáo viên duyệt sau.'}[k]}</p><p class="mute">Bấm "Bắt đầu" ở thanh trên để chạy đồng hồ.</p></div>`; }
   else body = {LIS:lisUI,RD:rdUI,WR:wrUI,SP:spUI}[k](t);
   m.innerHTML = head + body;
   if(t.running && !tick) startTimer();
@@ -433,9 +434,9 @@ function lisUI(t){
 function playSection(id){ const s=D.lis.find(x=>x.id===id); S.test.played=S.test.played||{}; if(S.test.played[id]) return; S.test.played[id]=true; save(); speechSynthesis.cancel(); const voices = speechSynthesis.getVoices().filter(v=>/en/i.test(v.lang)); let i=0; const next=()=>{ if(i>=s.transcript.length) return; const line=s.transcript[i++]; const u=new SpeechSynthesisUtterance(line.text); u.lang='en-GB'; u.rate=0.95; const spk = s.speakers.indexOf(line.speaker); if(voices.length>1) u.voice = voices[spk % voices.length]; u.onend=next; speechSynthesis.speak(u); }; next(); render(); }
 function rdUI(t){
   const ps = t.parts.RD.map(id=>D.rd.find(p=>p.id===id)); let n=0; const pi = t.rdIndex||0; const p = ps[pi];
-  const before = ps.slice(0,pi).reduce((a,x)=>a+x.question_groups.reduce((b,g)=>b+g.questions.length,0),0); n = before;
+  const capR=(t.qcap&&t.qcap.RD)||Infinity; const before = Math.min(capR, ps.slice(0,pi).reduce((a,x)=>a+x.question_groups.reduce((b,g)=>b+g.questions.length,0),0)); n = before;
   p.question_groups.forEach(g=>g._labels = p.paragraphs.map(x=>x.label));
-  return `<div class="card"><div class="row">${ps.map((x,i)=>`<button class="btn ${i===pi?'':'sec'}" onclick="S.test.rdIndex=${i};render()">Passage ${x.position}</button>`).join('')}</div></div><div class="two"><div class="card passage"><h2>${esc(p.title)}</h2>${p.paragraphs.map(x=>`<p><b>${x.label}</b> ${esc(x.text)}</p>`).join('')}<p class="note">${esc(p.note||'')}</p></div><div class="card passage">${p.question_groups.map(g=>groupHead(g)+g.questions.map(q=>{ n++; return qInput('RD:'+p.id+':'+q.n, g, q, n); }).join('')).join('')}</div></div>`;
+  return `<div class="card"><div class="row">${ps.map((x,i)=>`<button class="btn ${i===pi?'':'sec'}" onclick="S.test.rdIndex=${i};render()">Passage ${x.position}</button>`).join('')}</div></div><div class="two"><div class="card passage"><h2>${esc(p.title)}</h2>${p.paragraphs.map(x=>`<p><b>${x.label}</b> ${esc(x.text)}</p>`).join('')}<p class="note">${esc(p.note||'')}</p></div><div class="card passage">${p.question_groups.map(g=>{ if(n>=capR) return ''; return groupHead(g)+g.questions.map(q=>{ if(n>=capR) return ''; n++; return qInput('RD:'+p.id+':'+q.n, g, q, n); }).join(''); }).join('')}${n>=capR&&capR!==Infinity?'<p class="mute">Đề cổng chỉ lấy '+capR+' câu Reading.</p>':''}</div></div>`;
 }
 function chartSVG(d, w=600, h=280){
   const tb = d.table; if(!tb||!tb.columns||!tb.rows||!tb.rows.length) return '';
@@ -483,13 +484,13 @@ function submitPart(k, auto){ const t=S.test; if(rec.active!==null) stopRec(); s
 
 /* ---------- 5. Grading ---------- */
 function gradeLR(k, t){
-  const items = []; const codes = {}; let raw=0, n=0;
+  const items = []; const codes = {}; let raw=0, n=0; const cap=(t.qcap&&t.qcap[k])||Infinity;
   const units = k==='LIS' ? t.parts.LIS.map(id=>D.lis.find(s=>s.id===id)) : t.parts.RD.map(id=>D.rd.find(p=>p.id===id));
-  units.forEach(u=>{ u.question_groups.forEach(g=>{
+  units.forEach(u=>{ u.question_groups.forEach(g=>{ if(n>=cap) return;
     if(g.type==='list_selection'){ // pair grading
-      const qs=g.questions; for(let i=0;i<qs.length;i+=2){ const pair=qs.slice(i,i+2); const set=new Set(pair.flatMap(q=>[...q.answer,...(q.accept||[])])); const stu=[...new Set(pair.map(q=>(t.answers[k+':'+u.id+':'+q.n]||'').trim().toUpperCase()).filter(Boolean))]; let ok=stu.filter(x=>set.has(x)).length; pair.forEach((q,j)=>{ n++; const c=j<ok; if(c) raw++; else { codes[q.error_code]=(codes[q.error_code]||0)+1; } items.push({n, unit:u.id, q, g, student:t.answers[k+':'+u.id+':'+q.n]||'', correct:c}); }); }
+      const qs=g.questions; for(let i=0;i<qs.length;i+=2){ if(n>=cap) break; const pair=qs.slice(i,i+2); const set=new Set(pair.flatMap(q=>[...q.answer,...(q.accept||[])])); const stu=[...new Set(pair.map(q=>(t.answers[k+':'+u.id+':'+q.n]||'').trim().toUpperCase()).filter(Boolean))]; let ok=stu.filter(x=>set.has(x)).length; pair.forEach((q,j)=>{ n++; const c=j<ok; if(c) raw++; else { codes[q.error_code]=(codes[q.error_code]||0)+1; } items.push({n, unit:u.id, q, g, student:t.answers[k+':'+u.id+':'+q.n]||'', correct:c}); }); }
       return; }
-    g.questions.forEach(q=>{ n++; const st=t.answers[k+':'+u.id+':'+q.n]||''; let c; if(['multiple_choice','matching','matching_features','matching_information','matching_headings','map_labelling','true_false_not_given','yes_no_not_given'].includes(g.type)) c = st.trim().toUpperCase()===q.answer[0].toUpperCase(); else c = matchAns(st,q,g.word_limit); if(c) raw++; else codes[q.error_code]=(codes[q.error_code]||0)+1; items.push({n, unit:u.id, q, g, student:st, correct:c}); }); }); });
+    g.questions.forEach(q=>{ if(n>=cap) return; n++; const st=t.answers[k+':'+u.id+':'+q.n]||''; let c; if(['multiple_choice','matching','matching_features','matching_information','matching_headings','map_labelling','true_false_not_given','yes_no_not_given'].includes(g.type)) c = st.trim().toUpperCase()===q.answer[0].toUpperCase(); else c = matchAns(st,q,g.word_limit); if(c) raw++; else codes[q.error_code]=(codes[q.error_code]||0)+1; items.push({n, unit:u.id, q, g, student:st, correct:c}); }); }); });
   return {raw, total:n, band:bandLR(raw), items, codes};
 }
 function wrAuto(text, task){
@@ -1181,6 +1182,167 @@ kkAi = function(task, prompt){ const p=phaseNow(); const pre = p>=3 ? "Respond e
   const lb=document.createElement("span"); lb.id="kkLang"; lb.className="pill lang"; const hero=document.querySelector(".hero .tags"); if(hero) hero.prepend(lb);
   render();
 })();
+
+/* ===================== Đợt B: chẩn đoán đủ 4 kỹ năng, đề cổng 40 câu, Listening phát liên tục ===================== */
+
+/* ---------- B1. Listening thi thử: một nút Play, 4 Part liền mạch, tự chuyển, hiển thị thời gian audio ---------- */
+const LP = { on:false, part:0, t0:0, iv:null, abort:false };
+function kkLisSecs(t){ return t.parts.LIS.map(id=>D.lis.find(s=>s.id===id)); }
+function kkLisEstimate(secs){ return Math.round(secs.reduce((a,s)=>a + 6 + s.transcript.reduce((b,l)=>b+Math.max(1.2, l.text.split(/\s+/).length/2.6), 0) + 12, 0)); }
+function kkLisBarHTML(t){
+  const secs=kkLisSecs(t); const est=kkLisEstimate(secs); const lp=t.lisPlay;
+  if(lp&&lp.done) return `<span class="pill">Audio đã phát xong (1 lần)</span><span class="mute">Kiểm tra lại đáp án rồi bấm Nộp phần Listening.</span>`;
+  if(LP.on) return `<span class="pill" style="background:var(--teal);color:#fff" id="lisNow">Đang phát Part ${LP.part+1}/${secs.length}</span><span class="timer" id="lisTime">${fmtT(Math.floor((Date.now()-LP.t0)/1000))} / ~${fmtT(est)}</span><span class="mute">Không tua, không phát lại - như đề thật.</span><button class="btn sec sm" onclick="kkLisAbort()">Dừng hẳn</button>`;
+  if(lp&&lp.started) return `<span class="pill">Audio bị gián đoạn ở Part ${(lp.part||0)+1}</span><button class="btn gold" onclick="kkLisStart(${lp.part||0})">▶ Tiếp tục từ Part ${(lp.part||0)+1}</button><span class="mute">Phần đã phát không nghe lại được.</span>`;
+  return `<button class="btn gold" onclick="kkLisStart(0)">▶ Phát audio - ${secs.length} Part liên tục (~${fmtT(est)})</button><span class="mute">Phát một lần duy nhất, tự chuyển Part, có khoảng nghỉ ngắn để kiểm tra đáp án. Hãy đọc trước câu hỏi Part 1.</span>`;
+}
+lisUI = function(t){
+  const secs=kkLisSecs(t); let n=0; const cap=(t.qcap&&t.qcap.LIS)||Infinity;
+  return `<div class="card"><div class="row lisbar" id="lisbar">${kkLisBarHTML(t)}</div>${secs.map((s,si)=>`<h2 id="lisPart${si}">Part ${s.part} <small class="mute" id="lisSt${si}">${LP.on&&LP.part===si?'· đang phát':(t.lisPlay&&((t.lisPlay.done)||(t.lisPlay.part||0)>si)?'· đã phát':'')}</small></h2><p class="mute">${esc(s.intro||'')}</p>${s.question_groups.map(g=>{ if(n>=cap) return ''; return groupHead(g)+g.questions.map(q=>{ if(n>=cap) return ''; n++; return qInput('LIS:'+s.id+':'+q.n, g, q, n); }).join(''); }).join('')}`).join('')}</div>`;
+};
+function kkLisRefresh(){ const t=S.test; const bar=$("#lisbar"); if(bar&&t) bar.innerHTML=kkLisBarHTML(t); kkLisSecs(t||{parts:{LIS:[]}}).forEach((s,si)=>{ const el=$("#lisSt"+si); if(el) el.textContent = LP.on&&LP.part===si?'· đang phát':(t.lisPlay&&((t.lisPlay.done)||(t.lisPlay.part||0)>si)?'· đã phát':''); }); }
+const kkWait = ms => new Promise(r=>setTimeout(r, ms));
+function kkLisAlive(){ return LP.on && !LP.abort && S.test && S.test.running && S.test.cur==='LIS' && !S.test.done.LIS; }
+async function kkLisSay(text, voice){ if(!kkLisAlive()) return; try{ await kkSpeak(text,{lang:'en', voiceEn:voice||'en-GB-RyanNeural', rate:1}).done; }catch(e){} }
+async function kkLisStart(from){
+  const t=S.test; if(!t) return; if(LP.on && !kkLisAlive()){ LP.on=false; clearInterval(LP.iv); } if(LP.on) return; if(!t.running){ kkToast('Bấm "Bắt đầu Listening" trước khi phát audio.'); return; }
+  const secs=kkLisSecs(t); t.lisPlay=Object.assign(t.lisPlay||{}, {started:true, part:from||0, done:false}); t.played=t.played||{}; secs.forEach(s=>t.played[s.id]=true); save();
+  LP.on=true; LP.abort=false; LP.part=from||0; LP.t0=Date.now()-((t.lisPlay.elapsed||0)*1000); kkStop();
+  clearInterval(LP.iv); LP.iv=setInterval(()=>{ const el=$("#lisTime"); if(el) el.textContent=fmtT(Math.floor((Date.now()-LP.t0)/1000))+' / ~'+fmtT(kkLisEstimate(secs)); if(S.test&&S.test.lisPlay){ S.test.lisPlay.elapsed=Math.floor((Date.now()-LP.t0)/1000); } }, 500);
+  kkLisRefresh();
+  for(let si=LP.part; si<secs.length; si++){
+    if(!kkLisAlive()) break;
+    LP.part=si; t.lisPlay.part=si; save(); kkLisRefresh(); const h=$("#lisPart"+si); if(h) try{ h.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){}
+    const s=secs[si];
+    await kkLisSay(`Part ${s.part}. ${s.intro||''} First, you have some time to look at the questions.`); if(!kkLisAlive()) break; await kkWait(si===0?4000:6000);
+    for(const line of s.transcript){ if(!kkLisAlive()) break; const spk=Math.max(0, s.speakers.indexOf(line.speaker)); await kkLisSay(line.text, KK_SPK_VOICES[spk % KK_SPK_VOICES.length]); }
+    if(!kkLisAlive()) break;
+    await kkLisSay(si===secs.length-1 ? 'That is the end of the Listening test. You now have two minutes to check your answers.' : `That is the end of Part ${s.part}. You now have half a minute to check your answers.`);
+    if(si<secs.length-1){ await kkWait(6000); }
+  }
+  const finished = kkLisAlive() || (S.test && S.test.done && S.test.done.LIS);
+  clearInterval(LP.iv); LP.on=false;
+  if(S.test && S.test.lisPlay){ if(finished && !LP.abort){ S.test.lisPlay.done=true; S.test.lisPlay.part=secs.length-1; } save(); }
+  kkLisRefresh(); if(finished && !LP.abort) kkToast('Audio đã phát xong. Bạn có 2 phút kiểm tra đáp án.');
+}
+function kkLisAbort(){ if(!LP.on) return; if(!confirm('Dừng hẳn audio? Phần còn lại sẽ không được phát lại (như đề thật).')) return; LP.abort=true; kkStop(); if(S.test&&S.test.lisPlay){ S.test.lisPlay.done=true; save(); } }
+// Nộp phần Listening hoặc rời bài thi: dừng audio
+const _submitPartB0 = submitPart;
+submitPart = function(k, auto){ if(k==='LIS' && LP.on){ LP.abort=true; kkStop(); } _submitPartB0(k, auto); };
+
+/* ---------- B2. Đề cổng 40 câu (Listening Part 1-2: 20 câu + Reading: 20 câu, 40 phút) ---------- */
+const GATE_PASS = 60;
+function startGateTest(){ kkNeed('banks').then(()=>{ kkStop(); J.pr=null; S.vid=null; S.mat=null; S.test=genTest('GATE'); save(); S.step=1; render(); window.scrollTo(0,0); }); }
+function gateTestResult(){
+  const t=S.test; const L=gradeLR('LIS',t), R=gradeLR('RD',t); const raw=L.raw+R.raw, total=L.total+R.total; const pct=Math.round(100*raw/total);
+  const codes={}; [L,R].forEach(g=>Object.entries(g.codes).forEach(([c,n])=>codes[c]=(codes[c]||0)+n));
+  const res={date:TODAY(), raw, total, pct, pass:pct>=GATE_PASS, lis:{raw:L.raw,total:L.total}, rd:{raw:R.raw,total:R.total}, codes, seed:t.seed};
+  S.journey.gateTest=S.journey.gateTest||{}; S.journey.gateTest[1]=res; const best=S.journey.gateBest||{}; if(!best[1]||best[1].pct<pct) { S.journey.gateBest=Object.assign(best,{1:res}); }
+  Object.entries(codes).forEach(([c,n])=>(S.errorLog=S.errorLog||[]).push({date:TODAY(), code:c, count:n, source:"gate:1"}));
+  S.test=null; save(); kkTrackIelts("ielts_de_cong",{pct});
+  return {res, L, R};
+}
+function gateResultView(m){
+  const {res, L, R}=gateTestResult(); const F=D.feedback; const codes=Object.entries(res.codes).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const item=(g,k)=>g.items.map(it=>`<div class="q ${it.correct?'right':'wrong'}"><b>${it.n}.</b> ${esc(mcStem(it.q)).slice(0,110)} <br>Bạn: <b>${esc(it.student)||'(trống)'}</b> · Đúng: <b>${esc(it.q.answer.join(' / '))}</b> ${it.correct?'':`<span class="tag">${esc(it.q.error_code||'')}</span>`}</div>`).join('');
+  m.innerHTML=`<div class="card chot"><div class="eyebrow">Đề cổng giai đoạn 1</div><h1>${res.raw}/${res.total} câu đúng (${res.pct}%) - ${res.pass?'<span class="badge ok">ĐẠT</span>':'<span class="badge">CHƯA ĐẠT</span>'}</h1>
+    <div class="bands"><div class="band"><div class="v">${res.lis.raw}/${res.lis.total}</div>Listening</div><div class="band"><div class="v">${res.rd.raw}/${res.rd.total}</div>Reading</div><div class="band ov"><div class="v">${res.pct}%</div>Cần ≥ ${GATE_PASS}%</div></div>
+    <p class="mute">${res.pass?'Bạn đã qua điều kiện đề cổng. Hoàn thành các điều kiện còn lại để mở chặng Kỹ năng.':'Chưa đạt. Hãy xem mã lỗi dưới đây, ôn lại video và tài liệu được gợi ý rồi làm lại đề cổng (đề ghép ngẫu nhiên, không trùng).'}</p>
+    ${codes.map(([c,n])=>{ const e=F.error_codes[c]||{}; return `<div class="q"><b>${c} - ${esc(e.name_vi||'')}</b> <span class="pill">x${n}</span><br><span class="mute">${esc(e.diagnosis||'')}</span><br><b>Cách sửa:</b> ${esc(e.advice||'')}<br>${(e.video_ids||[]).map(v=>`<a href="#" onclick="S.vid='${v}';S.skill='${v.split('-')[2]}';save();render();return false"><span class="tag">${v}</span></a>`).join("")}${(e.material_ids||[]).map(x=>`<a href="#" onclick="S.mat='${x}';save();render();return false"><span class="tag">${x}</span></a>`).join("")}</div>`; }).join('')}
+    <div class="row"><button class="btn gold" onclick="render()">Về tuần học</button><button class="btn sec" onclick="startGateTest()">Làm lại đề cổng</button></div></div>
+    <details class="card"><summary><b>Chi tiết ${res.total} câu</b></summary><h3>Listening</h3>${item(L)}<h3>Reading</h3>${item(R)}</details>`;
+}
+// Cổng 1 có thêm điều kiện đề cổng
+const _gate1B0 = gate1;
+gate1 = function(){ const g=_gate1B0(); const gt=(S.journey.gateTest||{})[1]; const best=(S.journey.gateBest||{})[1]||gt; const ok=!!(best&&best.pct>=GATE_PASS); g.parts.push(["Đề cổng 40 câu đạt "+GATE_PASS+"%", best?best.pct+"%":"chưa làm", "≥ "+GATE_PASS+"%"]); g.ok=g.ok&&ok; return g; };
+// Hiển thị đề cổng bên trong chặng 1
+const _viewPhaseB0 = viewPhase;
+viewPhase = function(m, ph){
+  if(ph===1 && S.test && S.test.mode==='GATE'){
+    if(S.test.order.every(k=>S.test.done[k])){ gateResultView(m); return; }
+    renderTest(m); const st=m.querySelector('.sticky b'); if(st) st.textContent='Đề cổng 40 câu (đề '+S.test.seed+')';
+    if(!S.test.running){ const p=m.querySelector('.card h2+p'); if(p) p.innerHTML = S.test.cur==='LIS' ? 'Part 1 và Part 2 (20 câu), audio phát liên tục một lần, 14 phút kể cả thời gian kiểm tra.' : '20 câu từ 2 bài đọc, 26 phút. Passage bên trái, câu hỏi bên phải.'; const w=document.createElement('div'); w.className='card'; w.innerHTML='<div class="row"><button class="btn sec" onclick="if(confirm(\'Hủy đề cổng này? Kết quả không được ghi nhận.\')){S.test=null;save();render()}">Hủy đề cổng</button><span class="mute">Đề gồm Listening 20 câu + Reading 20 câu = 40 câu, tổng 40 phút. Đạt từ '+GATE_PASS+'% là qua.</span></div>'; m.appendChild(w); }
+    return;
+  }
+  _viewPhaseB0(m, ph);
+  if(ph===1){ const h=[...m.querySelectorAll('h2')].find(x=>/Cổng ra giai đoạn 1/.test(x.textContent)); if(h){ const card=h.closest('.card'); const best=(S.journey.gateBest||{})[1]; const row=document.createElement('div'); row.className='row'; row.style.marginTop='10px'; row.innerHTML=`<button class="btn ${best&&best.pct>=GATE_PASS?'sec':'gold'}" onclick="startGateTest()">${best?'Làm lại đề cổng 40 câu':'Làm đề cổng 40 câu (40 phút)'}</button>${best?`<span class="mute">Lần tốt nhất: ${best.raw}/${best.total} (${best.pct}%) ngày ${best.date}</span>`:'<span class="mute">Listening Part 1-2 + Reading, đề ghép ngẫu nhiên từ ngân hàng.</span>'}`; const tbl=card.querySelector('table'); if(tbl) tbl.after(row); else card.appendChild(row); } }
+};
+// Đề cổng không lọt sang chặng Luyện đề / Thi thử
+const _viewIntensiveB0 = viewIntensive, _viewMockB0 = viewMock;
+viewIntensive = function(m){ if(S.test && S.test.mode==='GATE'){ S.test=null; save(); } _viewIntensiveB0(m); };
+viewMock = function(m){ if(S.test && S.test.mode==='GATE'){ S.test=null; save(); } _viewMockB0(m); };
+
+/* ---------- B3. Chẩn đoán đủ 4 kỹ năng: Listening -> Reading -> Writing Task 2 (20 phút) -> Speaking (Part 1 + Part 2) ---------- */
+function diagIds(){ const dg=J.plan.diagnostic; return { lis:dg.lis, rd:dg.rd, wr: dg.wr || (D.wr.task2[0]||{}).id, sp: dg.sp || (D.sp[0]||{}).id }; }
+startDiag = function(){ const dg=diagIds(); delete S.journey.writing[dg.wr]; delete S.journey.speaking[dg.sp]; save(); openPractice({type:"practice", skill:"LIS", bank:dg.lis, label:"Chẩn đoán 1/4 - Listening"}, null, {diag:true, chain:{type:"practice", skill:"RD", bank:dg.rd, label:"Chẩn đoán 2/4 - Reading"}}); };
+// gradePractice gốc: sau Reading sẽ gọi finishDiag(); ta chuyển tiếp sang Writing trước
+const _finishDiagB0 = finishDiag;
+finishDiag = function(){
+  const dg=diagIds(); const W=S.journey.writing[dg.wr], P=S.journey.speaking[dg.sp];
+  if(!(W&&W.diag)){ openPractice({type:"writing", bank:dg.wr, label:"Chẩn đoán 3/4 - Writing Task 2"}, null, {diag:true, chain:{type:"speaking", bank:dg.sp, label:"Chẩn đoán 4/4 - Speaking"}}); return; }
+  if(!(P&&P.diag)){ openPractice({type:"speaking", bank:dg.sp, label:"Chẩn đoán 4/4 - Speaking"}, null, {diag:true}); return; }
+  const pr=S.journey.practice; const L=pr[dg.lis], R=pr[dg.rd]; if(!L||!R) return;
+  const bL=bandLR(Math.round(L.raw/L.total*40)), bR=bandLR(Math.round(R.raw/R.total*40)); const fallback=Math.max(1,floorHalf(Math.min(bL,bR)-0.5));
+  const bands={LIS:bL, RD:bR, WR: W.band||fallback, SP: P.aiBand||P.estBand||fallback}; const overall=overallBand(Object.values(bands)); const estimated=[]; if(!W.band) estimated.push("WR"); if(!P.aiBand) estimated.push("SP");
+  S.journey.diag={date:TODAY(), bands, overall, estimated, source:{WR:W.source||'-', SP:P.source||'-'}}; S.journey.start=S.journey.start||TODAY(); save();
+  kkTrackIelts("ielts_chan_doan",{overall}); J.pr=null; S.step=0; render(); window.scrollTo(0,0);
+};
+async function diagSubmitWriting(){
+  const pr=J.pr; const it=pr.it; const task=D.wr.task2.find(x=>x.id===it.bank)||D.wr.task1.find(x=>x.id===it.bank); const text=(pr.text||"").trim(); const words=(text.match(/[A-Za-z0-9'-]+/g)||[]).length;
+  if(words<80){ kkToast("Chẩn đoán cần tối thiểu 80 từ để chấm được (bài thật 250 từ)."); return; }
+  const out=$("#pwout"); if(out) out.innerHTML='<p class="mute">Đang chấm bài viết (AI, 15-40 giây)...</p>'; const btn=$("#diagWrBtn"); if(btn) btn.disabled=true;
+  let bands=null, band=null, source='AI';
+  try{ const tpl=D.grading.writing.ai_prompt_task2; const j=await kkAi("grade_wr", tpl.replace("{prompt}",task.prompt).replace("{data}","{}").replace("{words}",words).replace("{minutes}","20").replace("{essay}",text)); const b=j.json&&j.json.bands; if(b){ bands=b; band=floorHalf(Object.values(b).reduce((a,x)=>a+Number(x),0)/Object.keys(b).length); (j.json.top_errors||[]).forEach(e=>{ if(e.code) (S.errorLog=S.errorLog||[]).push({date:TODAY(), code:String(e.code).split(/[-,\s]/)[0], count:1, source:"diag:writing"}); }); } }catch(e){}
+  if(!bands){ const a=wrAuto(text,'task2'); bands=a.bands; band=a.band; source='kiểm tra tự động (AI không phản hồi)'; }
+  S.journey.writing[it.bank]={date:TODAY(), text, words, bands, band, diag:true, source, week:null}; save();
+  J.pr=null; finishDiag();
+}
+async function diagSubmitSpeaking(){
+  const pr=J.pr; const it=pr.it; const s=D.sp.find(x=>x.id===it.bank); const qs=spQList(s); const recs=pr.rec||{}; const rs=Object.values(recs);
+  if(!rs.length){ kkToast("Hãy trả lời (ghi âm) ít nhất 1 câu; tốt nhất đủ 3 câu Part 1 và Part 2."); return; }
+  if(PR.active!==null) spRecStop();
+  const btn=$("#diagSpBtn"); if(btn) btn.disabled=true; const out=$("#psout"); if(out) out.innerHTML='<p class="mute">Đang chấm bài nói...</p>';
+  const withText=Object.entries(recs).filter(([i,r])=>r.text); const totalW=rs.reduce((a,r)=>a+r.words,0), totalD=rs.reduce((a,r)=>a+r.dur,0); const metrics={wpm: totalD?Math.round(totalW*60/totalD):0, pauses: rs.reduce((a,r)=>a+r.pauses,0), answers: rs.length, seconds: totalD};
+  let ai=null, aiBand=null, source='AI';
+  if(withText.length>=2){ try{ const lines=withText.map(([i,r])=>'Q'+(Number(i)+1)+' (Part '+qs[i].part+') ['+qs[i].q+']: '+r.text); const j=await kkAi('grade_sp', D.grading.speaking.ai_prompt.replace('{transcript}', lines.join('\n')).replace('{metrics}', JSON.stringify(metrics))); const b=j.json&&j.json.bands; if(b){ ai=b; const vals=Object.values(b).map(Number); aiBand=floorHalf(vals.reduce((a,x)=>a+x,0)/vals.length); } }catch(e){} }
+  let estBand=null; if(!aiBand){ const m=D.grading.speaking.metrics||{}; const good=(m.wpm_good||[110,160])[0]; estBand = metrics.wpm>=good ? 6.0 : metrics.wpm>=good*0.7 ? 5.5 : metrics.wpm>0 ? 5.0 : 4.5; if(totalD<30) estBand=Math.min(estBand,5.0); source = withText.length?'ước tính theo số đo (AI không phản hồi)':'ước tính theo thời lượng nói (trình duyệt không nhận dạng giọng)'; }
+  const pron=(pr.self&&pr.self['Pronunciation'])||6;
+  S.journey.speaking[it.bank]={date:TODAY(), ai, aiBand: aiBand!=null?floorHalf((aiBand*3+Math.min(pron,7))/4):null, estBand, metrics, recs, diag:true, source, selfBy:{Pronunciation:pron}, self: aiBand!=null?String(aiBand):(estBand!=null?String(estBand):'-'), week:null}; save();
+  J.pr=null; finishDiag();
+}
+// Giao diện chẩn đoán cho Writing / Speaking: ghi đè practiceView để thêm nút Nộp và rút gọn
+const _practiceViewB0 = practiceView;
+practiceView = function(m){
+  const pr=J.pr; if(!pr||!pr.diag||!["writing","speaking"].includes(pr.it.type)){ _practiceViewB0(m); return; }
+  _practiceViewB0(m);
+  const it=pr.it;
+  if(it.type==="writing"){
+    const h=m.querySelector('h1'); if(h) h.innerHTML='Chẩn đoán 3/4 - Writing Task 2 <span class="pill">20 phút · nhắm 250 từ (tối thiểu 80 để chấm)</span>';
+    m.querySelectorAll('.btn').forEach(b=>{ if(/Chấm bằng AI|Dàn ý gợi ý|Đăng nhập để chấm/.test(b.textContent)) b.remove(); });
+    const row=m.querySelector('#pwout'); if(row){ const r=document.createElement('div'); r.className='row'; r.innerHTML=`<button class="btn gold" id="diagWrBtn" onclick="diagSubmitWriting()">Nộp bài viết và sang Speaking</button><span class="timer" id="diagWrTimer"></span><span class="mute">Viết thẳng vào ô, không dán. Bài được AI chấm 4 tiêu chí để xếp band khởi điểm.</span>`; row.before(r); }
+    m.querySelectorAll('.two').forEach(x=>x.remove());
+    if(!pr.t0) pr.t0=Date.now(); const tick=()=>{ const el=$('#diagWrTimer'); if(!el||!J.pr||J.pr!==pr) return; const left=20*60-Math.floor((Date.now()-pr.t0)/1000); el.textContent=left>0?fmtT(left):'Hết 20 phút - hãy nộp'; el.className='timer'+(left<=120?' warn':''); setTimeout(tick,1000); }; tick();
+  }
+  if(it.type==="speaking"){
+    const h=m.querySelector('h1'); if(h) h.innerHTML='Chẩn đoán 4/4 - Speaking <span class="pill">Part 1 (3 câu) + Part 2 (1-2 phút)</span>';
+    const intro=m.querySelector('.card p.mute'); if(intro) intro.innerHTML='Trả lời như trong phòng thi: bấm <b>Trả lời (ghi âm)</b>, nói thành tiếng, bấm <b>Dừng ghi</b>. Chrome hoặc Edge nhận dạng lời nói để AI chấm; trình duyệt khác chỉ ước tính theo thời lượng nói.';
+    // chỉ giữ 3 câu Part 1 đầu + Part 2
+    const qsEl=[...m.querySelectorAll('.card .q')]; let p1=0; qsEl.forEach(q=>{ const txt=q.querySelector('b')?.textContent||''; if(/^Part 1/.test(txt)){ p1++; if(p1>3) q.remove(); } else if(/^Part 3/.test(txt)) q.remove(); });
+    m.querySelectorAll('.btn').forEach(b=>{ if(/Bài mẫu|Chấm bằng AI theo 3|Ghi nhận hoàn thành|Đăng nhập để chấm/.test(b.textContent)) b.remove(); });
+    m.querySelectorAll('h3').forEach(x=>{ if(/Chấm bằng AI|Tự chấm/.test(x.textContent)) x.remove(); });
+    m.querySelectorAll('label.mute').forEach(l=>{ if(!/Pronunciation/.test(l.textContent)) l.remove(); else l.innerHTML='Tự đánh giá phát âm (5-8): '+l.querySelector('select').outerHTML; });
+    const out=m.querySelector('#psout'); if(out){ out.innerHTML=''; const r=document.createElement('div'); r.className='row'; r.style.marginTop='10px'; r.innerHTML=`<button class="btn gold" id="diagSpBtn" onclick="diagSubmitSpeaking()">Nộp bài nói và xem kết quả chẩn đoán</button>`; out.before(r); }
+    m.querySelectorAll('p.mute').forEach(p=>{ if(/Đã ghi \d+\/\d+ câu/.test(p.textContent)) p.remove(); });
+  }
+};
+// Chặng 0: mô tả mới + nguồn điểm WR/SP
+const _viewDiagB0 = viewDiag;
+viewDiag = function(m){
+  _viewDiagB0(m); if(J.pr&&J.pr.diag) return;
+  const p=m.querySelector('.card h1+p'); if(p) p.innerHTML='Khoảng 60 phút, đủ 4 kỹ năng: Listening (1 Part, 10 câu) → Reading (1 passage, 13 câu) → Writing Task 2 (20 phút, AI chấm 4 tiêu chí) → Speaking (Part 1 + Part 2, ghi âm, AI chấm 3 tiêu chí). Kết quả tạo ra band khởi điểm từng kỹ năng, khoảng cách tới mục tiêu và lịch 12 tuần cá nhân.';
+  const d=S.journey.diag; if(d&&d.source){ const bands=m.querySelector('.bands'); if(bands){ const note=document.createElement('p'); note.className='mute'; note.textContent=`Writing: ${d.source.WR}. Speaking: ${d.source.SP}.`+(d.estimated&&d.estimated.length?` Ước tính: ${d.estimated.map(k=>SKN[k]).join(', ')}.`:''); bands.after(note); } }
+  const b=[...m.querySelectorAll('button')].find(x=>/Bắt đầu chẩn đoán/.test(x.textContent)); if(b) b.textContent='Bắt đầu chẩn đoán 4 kỹ năng (~60 phút)';
+};
 
 /* ---------- 9. Cổng nạp dữ liệu theo nhu cầu (chạy sau mọi lớp render) ---------- */
 const _renderLazy0 = render;
