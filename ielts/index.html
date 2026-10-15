@@ -844,7 +844,12 @@ function kkVpAnswer(v, ci, key){
 }
 function kkVpContinue(v){ VP.await=null; const sg=VP.segs[VP.seg]; VP.sent=sg.sents.length; kkVpRender(v); kkVpSegmentEnd(v); }
 function kkExtraHTML(e, v){
-  if(e.type==="checkpoint"){ const c=v.checkpoints[e.index]; if(!c||c.options.length) return ""; return `<details class="box"><summary><b>${esc(kkVpTxtMode()==="en"&&c.title_en?c.title_en:c.title)}</b> - ${kkVpTxtMode()==="en"?"practice: try it yourself, then open the model answer":"bài luyện: tự làm rồi mở đáp án"}</summary>${c.raw.map(x=>`<p>${rich(x)}</p>`).join("")}</details>`; }
+  if(e.type==="checkpoint"){
+    const c=v.checkpoints[e.index]; if(!c||c.options.length) return "";
+    const tm=kkVpTxtMode(); const en=tm!=="vi"&&Array.isArray(c.raw_en)&&c.raw_en.length;
+    const toHTML=arr=>(arr||[]).map(x=>`<p>${rich(x)}</p>`).join("");
+    const body= !en ? toHTML(c.raw) : tm==="en" ? toHTML(c.raw_en) : `${toHTML(c.raw_en)}<details class="box"><summary>Tiếng Việt</summary>${toHTML(c.raw)}</details>`;
+    return `<details class="box"><summary><b>${esc(en&&c.title_en?c.title_en:c.title)}</b> - ${en?"practice: try it yourself, then open the model answer":"bài luyện: tự làm rồi mở đáp án"}</summary>${body}</details>`; }
   if(e.type==="code") return kkAiBlock(e.content, "Bài luyện do AI tạo (phần ACTION)");
   if(e.type==="en"||e.type==="p") return `<p class="en">${rich(e.content)}</p>`;
   if(e.type==="box") return `<div class="box"><b class="t">${rich(e.title)}</b>${(e.lines||[]).map(x=>`<p>${rich(x)}</p>`).join("")}</div>`;
@@ -866,7 +871,7 @@ function kkVpRender(v){
   <div class="vp">
     <div class="stage">
       <div class="shead"><span class="pill">${seg.n}/${v.segments.length} · ${esc(seg.name)}</span><span class="pill">${esc(seg.time)}</span><span class="pill">${uE?"Voice":"Giọng"}: ${KKV.ok===false?(uE?"device":"thiết bị"):"AI KK-EDU"}</span></div>
-      <div class="scene">${seg.visual.map((x,k)=>`<div class="vis">${kkVpTxt(x,(seg.visual_en||[])[k],tm)}</div>`).join("")}${seg.extra.map((e,k)=>[e,k]).filter(([e])=>e.type!=="checkpoint").map(([e,k])=>kkExtraHTML(tm!=="vi"&&seg.extra_en?seg.extra_en[k]:e,v)).join("")}</div>
+      <div class="scene">${seg.visual.map((x,k)=>`<div class="vis">${kkVpTxt(x,(seg.visual_en||[])[k],tm)}</div>`).join("")}${seg.extra.map((e,k)=>kkExtraHTML(tm!=="vi"&&seg.extra_en&&e.type!=="checkpoint"?seg.extra_en[k]:e,v)).join("")}</div>
       ${c?`<div class="cpov"><div class="cpbox"><div class="eyebrow">${uE?"Interactive checkpoint · required":"Điểm dừng tương tác · bắt buộc"}</div><b>${esc(tm==="en"&&c.title_en?c.title_en:c.title)}</b><p>${kkVpTxt(c.question, c.question_en, tm)}</p>
         ${c.options.map((o,oi)=>`<button class="opt ${chosen?(o.key===c.answer?'ok':(o.key===chosen?'ko':'')):''}" ${chosen?'disabled':''} onclick="kkVpAnswer(D.videos.find(x=>x.id==='${v.id}'),${cpi},'${o.key}')">${o.key}. ${kkVpTxt(o.text, c.options_en?c.options_en[oi]:null, tm)}</button>`).join("")}
         ${chosen?`<div class="fb"><b>${uE?"Feedback":"Phản hồi"} ${chosen}:</b> ${kkVpTxt(c.feedback[chosen]||"", (c.feedback_en||{})[chosen], tm)}${chosen!==c.answer?`<br><b>${uE?"Correct answer":"Đáp án đúng"} ${c.answer}:</b> ${kkVpTxt(c.feedback[c.answer]||"", (c.feedback_en||{})[c.answer], tm)}`:""}</div><div class="row"><button class="btn" onclick="kkVpContinue(D.videos.find(x=>x.id==='${v.id}'))">${uE?"Continue video":"Tiếp tục video"}</button></div>`:`<p class="mute">${uE?"Video paused. Choose an answer to continue.":"Video tạm dừng. Chọn một phương án để tiếp tục."}</p>`}
@@ -1544,7 +1549,8 @@ render = function(){
    Nạp sau app_lazy.js. Trạng thái: S.lab = null | 'examiner' | 'challenge' | 'checklist'; S.labWeek = tuần mở checklist.
    Dữ liệu lưu trong S.journey: examiner[] (10 lần gần nhất), challenge{ngày:{set,at}}, checklist{id:true}. */
 
-const EX = { set:null, steps:[], i:-1, cur:null, start:0, limit:0, iv:null, run:null, log:[], finished:null, speed:1, endNow:null };
+const EX = { set:null, steps:[], i:-1, cur:null, start:0, limit:0, iv:null, run:null, log:[], finished:null, speed:1, endNow:null,
+  rec:null, recCur:null, recText:"", recStart:0, recLast:0, recPauses:0, recErr:null, answers:[] };
 const EX_TIMES = { p1: 25, p2prep: 60, p2speak: 120, p3: 40 };   // giây theo đề thi thật (Part 1: ~25 s/câu; Part 2: 1 phút chuẩn bị, tối đa 2 phút nói; Part 3: ~40 s/câu)
 
 function exSet(){ return (D.sp||[]).find(s=>s.id===EX.set) || (D.sp||[])[0]; }
@@ -1581,11 +1587,34 @@ function exBuild(set){
   return steps;
 }
 function exRender(){ labRender(); }
+/* Ghi nhận giọng nói từng câu trả lời (nhận dạng của trình duyệt: Chrome/Edge). Không có thì chỉ đo thời gian. */
+function exRecStart(st){
+  EX.recText=""; EX.recPauses=0; EX.recLast=Date.now(); EX.recStart=Date.now(); EX.recErr=null; EX.recCur=st;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ EX.recErr="unsupported"; return; }
+  try{
+    const g=new SR(); g.lang="en-GB"; g.continuous=true; g.interimResults=true;
+    g.onresult=e=>{ let fin="", tmp=""; for(let k=0;k<e.results.length;k++){ if(e.results[k].isFinal) fin+=e.results[k][0].transcript+" "; else tmp=e.results[k][0].transcript; }
+      EX.recText=fin.trim(); const now=Date.now(); if(now-EX.recLast>1500) EX.recPauses++; EX.recLast=now;
+      const el=$("#exLive"); if(el) el.textContent=(fin+(tmp?" "+tmp:"")).trim(); };
+    g.onerror=e=>{ EX.recErr=e.error||"error"; };
+    g.onend=()=>{ if(EX.rec===g && EX.recCur){ try{ g.start(); }catch(_){} } };
+    g.start(); EX.rec=g;
+  }catch(e){ EX.recErr=String(e.message||e); }
+}
+function exRecStop(){
+  const st=EX.recCur, g=EX.rec; EX.rec=null; EX.recCur=null;
+  try{ g&&g.stop(); }catch(_){}
+  if(!st||(st.k!=="answer"&&st.k!=="speak")) return;
+  const dur=Math.round((Date.now()-EX.recStart)/1000); const words=(EX.recText.match(/[A-Za-z'-]+/g)||[]).length;
+  EX.answers.push({part:st.part, q:st.text, text:EX.recText.slice(0,1500), dur, words, wpm:dur?Math.round(words*60/dur):0, pauses:EX.recPauses, err:EX.recErr||""});
+}
 function exTick(left){ const el=$("#exTime"); if(el) el.textContent=fmtT(Math.max(0,left)/1000); const b=$("#exBar"); if(b) b.style.width=Math.min(100,100*(1-left/Math.max(1,EX.limit)))+"%"; }
 function exTimed(st, runId){
   return new Promise(res=>{
     const limit=st.sec*1000*EX.speed, t0=Date.now(); EX.start=t0; EX.limit=limit; EX.cur=st;
-    const finish=()=>{ clearInterval(EX.iv); EX.iv=null; EX.endNow=null; const actual=(Date.now()-t0)/1000/EX.speed; EX.log.push({part:st.part, kind:st.k, planned:st.sec, actual:Math.round(actual)}); res(); };
+    const finish=()=>{ clearInterval(EX.iv); EX.iv=null; EX.endNow=null; const actual=(Date.now()-t0)/1000/EX.speed; EX.log.push({part:st.part, kind:st.k, planned:st.sec, actual:Math.round(actual)}); exRecStop(); res(); };
+    if(st.k==="answer"||st.k==="speak") exRecStart(st);
     EX.endNow=finish;
     clearInterval(EX.iv);
     EX.iv=setInterval(()=>{ if(EX.run!==runId){ finish(); return; } const left=limit-(Date.now()-t0); exTick(left); if(left<=0) finish(); }, 250);
@@ -1593,7 +1622,7 @@ function exTimed(st, runId){
   });
 }
 async function exRun(runId){
-  EX.log=[]; EX.finished=null;
+  EX.log=[]; EX.finished=null; EX.answers=[];
   for(let i=0;i<EX.steps.length;i++){
     if(EX.run!==runId) return;
     EX.i=i; const st=EX.steps[i];
@@ -1617,10 +1646,40 @@ function exFinish(){
   if(p2 && p2.actual>=120) warn.push("Đã đạt giới hạn 2 phút Part 2, giám khảo sẽ dừng bạn đúng lúc này.");
   const plan={1:0,2:0,3:0}; EX.steps.forEach(st=>{ if(st.sec) plan[st.part]+=st.sec; });
   [1,3].forEach(p=>{ if(sums[p]<0.7*plan[p]) warn.push(`Part ${p}: dùng ${Math.round(sums[p])} giây, dự kiến ${plan[p]} giây. Hãy trả lời đầy đủ hơn, nêu thêm ví dụ.`); });
-  EX.finished={sums, plan, warn, at:TODAY(), set:EX.set};
+  if(!EX.answers.length && EX.recErr==="unsupported") warn.push("Không có bản nhận dạng giọng nói (trình duyệt chưa hỗ trợ). Dùng Chrome hoặc Edge để chấm AI.");
+  if(EX.recErr && EX.recErr!=="unsupported" && EX.answers.length<3) warn.push("Micro chưa ghi được đủ câu ("+EX.recErr+"). Kiểm tra quyền micro.");
+  EX.finished={sums, plan, warn, at:TODAY(), set:EX.set, answers:EX.answers.slice()};
   EX.run=null; exRender();
-  const j=S.journey; j.examiner=[{date:TODAY(), set:EX.set, parts:{1:Math.round(sums[1]),2:Math.round(sums[2]),3:Math.round(sums[3])}, warn:warn.length}].concat(j.examiner||[]).slice(0,10);
+  const j=S.journey; j.examiner=[{date:TODAY(), set:EX.set, parts:{1:Math.round(sums[1]),2:Math.round(sums[2]),3:Math.round(sums[3])}, warn:warn.length, answers:EX.answers.map(a=>({part:a.part,q:a.q,text:a.text,wpm:a.wpm,pauses:a.pauses}))}].concat(j.examiner||[]).slice(0,10);
   save();
+}
+
+/* Chấm AI theo 3 tiêu chí Speaking (FC, LR, GRA), dùng cùng prompt và endpoint với luyện Speaking. */
+async function exGradeAI(){
+  const ans=((EX.finished||{}).answers||[]).filter(a=>a.text); const box=$("#exAi");
+  if(ans.length<3){ kkToast("Cần ít nhất 3 câu có lời nói được nhận dạng (dùng Chrome hoặc Edge, cho phép micro)."); return; }
+  const lines=ans.map((a,i)=>`Q${i+1} (Part ${a.part}) [${a.q}]: ${a.text}`);
+  const totalW=ans.reduce((x,a)=>x+a.words,0), totalD=ans.reduce((x,a)=>x+a.dur,0);
+  const metrics={wpm: totalD?Math.round(totalW*60/totalD):0, pauses: ans.reduce((x,a)=>x+a.pauses,0), answers: ans.length, seconds: totalD};
+  if(box) box.innerHTML='<p class="mute">AI đang chấm (15-40 giây)...</p>';
+  try{
+    const j=await kkAi("grade_sp", D.grading.speaking.ai_prompt.replace("{transcript}", lines.join("\n")).replace("{metrics}", JSON.stringify(metrics)));
+    const b=j.json&&j.json.bands; if(!b) throw new Error("AI chưa trả về điểm hợp lệ, hãy thử lại.");
+    const vals=Object.values(b).map(Number); const band=floorHalf(vals.reduce((x,y)=>x+y,0)/vals.length);
+    EX.finished.ai={bands:b, band, metrics, errors:j.json.top_errors||[], comment:j.json.comment_vi||""};
+    const cur=S.journey.examiner&&S.journey.examiner[0]; if(cur && cur.date===TODAY()) cur.ai={bands:b, band};
+    save(); exRender(); kkTrackIelts("ielts_speaking_ai",{band});
+  }catch(e){ if(box) box.innerHTML=`<p class="warnbox">${esc(e.message)}</p>`; }
+}
+const EX_CRIT = {FC:"Fluency and Coherence", LR:"Lexical Resource", GRA:"Grammatical Range and Accuracy", TR:"Task Response", CC:"Coherence and Cohesion"};
+function exAiHTML(){
+  const f=EX.finished||{}; const ans=(f.answers||[]).filter(a=>a.text); const can=ans.length>=3;
+  if(f.ai) return `<h2>Chấm AI (3 tiêu chí)</h2><div class="bands">${Object.entries(f.ai.bands).map(([k,v])=>`<div class="band"><div class="v">${Number(v).toFixed(1)}</div>${esc(EX_CRIT[k]||k)}</div>`).join("")}<div class="band ov"><div class="v">${f.ai.band.toFixed(1)}</div>Ước tính</div></div>
+    <p class="mute">${f.ai.metrics.wpm} từ/phút · ${f.ai.metrics.pauses} ngập ngừng dài · ${f.ai.metrics.answers} câu.</p>
+    ${(f.ai.errors||[]).map(e=>`<div class="q"><b>${esc(e.code||"")}</b> "${esc(e.quote||"")}" → ${esc(e.fix||"")}</div>`).join("")}
+    ${f.ai.comment?`<div class="chot"><p>${esc(f.ai.comment)}</p></div>`:""}`;
+  return `<h2>Chấm AI (3 tiêu chí)</h2><p class="mute">${can?`Có ${ans.length} câu đã ghi nhận lời nói. Bấm chấm để nhận band Fluency and Coherence, Lexical Resource, Grammatical Range and Accuracy.`:"Cần ít nhất 3 câu có lời nói được nhận dạng để chấm AI."}</p>
+    <div id="exAi"></div><div class="row"><button class="btn gold" ${can?"":"disabled"} onclick="exGradeAI()">Chấm bằng AI</button></div>`;
 }
 
 /* Thử thách 3 phút: một đề Part 2 mỗi ngày (xoay vòng theo ngày), 1 phút chuẩn bị + 2 phút nói. */
@@ -1717,7 +1776,7 @@ function labExaminerHTML(){
     body=`<div class="row"><span class="pill" id="exTag">${esc(st.tag||"")}</span><span class="pill">Part ${st.part||""}</span></div>
       <div class="bar big"><i id="exBar" style="width:0%"></i></div>
       <div class="row" style="justify-content:center"><span class="timer big" id="exTime">${st.sec?fmtT(st.sec):""}</span></div>
-      <div class="card doc"><p><b>${esc(st.text||"")}</b></p></div>
+      <div class="card doc"><p><b>${esc(st.text||"")}</b></p>${(st.k==="answer"||st.k==="speak")?`<small class="mute">${EX.recErr==="unsupported"?"Trình duyệt chưa hỗ trợ nhận dạng giọng nói (dùng Chrome hoặc Edge): chỉ đo thời gian.":(EX.recErr?"Micro chưa sẵn sàng ("+esc(EX.recErr)+"): cho phép micro rồi thử lại.":"Bạn đang nói (nhận dạng):")}</small><p id="exLive" class="mute"></p>`:""}</div>
       <div class="row">${inSay?'<span class="mute">Giám khảo đang nói...</span>':`<button class="btn gold" onclick="exNext()">Xong, sang bước tiếp</button>`}<button class="btn sec" onclick="exStop()">Dừng mô phỏng</button></div>`;
   } else {
     const warn=(fin.warn||[]).map(w=>`<li>${esc(w)}</li>`).join("")||"<li>Thời lượng các phần nằm trong mục tiêu.</li>";
@@ -1725,7 +1784,7 @@ function labExaminerHTML(){
       <tr><td>Part 1</td><td>${Math.round(fin.sums[1])} giây</td><td>${fin.plan[1]} giây</td></tr>
       <tr><td>Part 2 (chuẩn bị + nói)</td><td>${Math.round(fin.sums[2])} giây</td><td>${fin.plan[2]} giây</td></tr>
       <tr><td>Part 3</td><td>${Math.round(fin.sums[3])} giây</td><td>${fin.plan[3]} giây</td></tr></table>
-      <h2>Nhận xét</h2><ul>${warn}</ul><div class="row"><button class="btn gold" onclick="exStart()">Chạy lại</button></div>`;
+      <h2>Nhận xét</h2><ul>${warn}</ul>${exAiHTML()}${(fin.answers||[]).length?`<h2>Lời bạn đã nói</h2>${fin.answers.map((a,i)=>`<details class="box"><summary>Câu ${i+1} · Part ${a.part} · ${a.wpm} từ/phút${a.err?" · "+esc(a.err):""}</summary><p class="mute">${esc(a.q)}</p><p>${esc(a.text||"(không nhận dạng được)")}</p></details>`).join("")}`:""}<div class="row"><button class="btn gold" onclick="exStart()">Chạy lại</button></div>`;
   }
   return `<div class="card">${labBack()}<h1>Phòng giám khảo Speaking</h1>${body}</div>`;
 }
