@@ -8,7 +8,7 @@
 <!-- /KK-VNREDIRECT -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tiếng Trung giao tiếp tương tác - KK-EDU</title>
-<meta name="description" content="KK-EDU Ngoại ngữ - Tiếng Trung: 40 bài giao tiếp tương tác cho người Việt (HSK 1-2), ba lớp học: trực quan hóa, tập viết nhận diện nét, ghép chữ và câu, phát âm, nghe hiểu, role-play với AI; tiến độ lưu theo tài khoản KK-EDU.">
+<meta name="description" content="KK-EDU Ngoại ngữ - Tiếng Trung: 140 bài giao tiếp tương tác cho người Việt (HSK 1-4), ba lớp học: trực quan hóa, tập viết nhận diện nét, ghép chữ và câu, phát âm, nghe hiểu, role-play với AI; tiến độ lưu theo tài khoản KK-EDU.">
 <meta name="author" content="Nguyễn Duy Điển (KK-2026)">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://www.kk-edu.com/tieng-trung/">
@@ -19,7 +19,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KK-EDU">
 <meta property="og:title" content="Tiếng Trung giao tiếp tương tác - KK-EDU">
-<meta property="og:description" content="40 bài tiếng Trung giao tiếp cho người Việt: chữ Hán, phát âm, ghép câu, nghe hiểu, role-play với AI.">
+<meta property="og:description" content="140 bài tiếng Trung giao tiếp cho người Việt: chữ Hán, phát âm, ghép câu, nghe hiểu, role-play với AI.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='1' y='1' width='46' height='46' rx='11' fill='%230f2a4a'/%3E%3Cpath d='M24 15.2 C20.4 11.2 15.4 10.4 11.6 12.3 C13.7 7.3 20.2 6 24 9.5 C27.8 6 34.3 7.3 36.4 12.3 C32.6 10.4 27.6 11.2 24 15.2 Z' fill='%23faf6ec'/%3E%3Cpath transform='translate(15 -2.2)' d='M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z' fill='%234f7bab'/%3E%3Cpath transform='translate(10.4 0)' d='M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z' fill='%23e0b941' stroke='%230f2a4a' stroke-width='1.2' paint-order='stroke'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -285,6 +285,20 @@ i.en{font-style:italic;color:var(--navy)}
 .zhapp .zaz{cursor:pointer;border-bottom:1px dotted var(--teal)}
 .zhapp .btn.sm{padding:5px 10px;font-size:12.5px}
 @media print{.topbar,.hero,footer,.noprint,.acct{display:none!important}.zhapp .card{border:0;box-shadow:none}body{background:#fff}}
+/* Lộ trình tuần tự */
+.zhapp .zhblock{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:8px 0;background:var(--card)}
+.zhapp .zhblock>summary{cursor:pointer;list-style-position:outside;padding:4px 0}
+.zhapp .zhblock .zsub{margin-top:2px}
+.zhapp .zbact{gap:6px;flex-wrap:wrap;margin:8px 0 4px}
+.zhapp .zst{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mute);white-space:nowrap}
+.zhapp .zst.ok{border-color:var(--good);color:var(--good)}
+.zhapp .zst.now{border-color:var(--gold);color:#7a5a00;background:#fff7dc}
+.zhapp .zst.lock{opacity:.7}
+.zhapp .item.next{outline:2px solid var(--gold);border-radius:8px}
+.zhapp .zhnext{border-color:var(--gold)}
+.zhapp .zhnav{padding:10px 12px}
+.zhapp .pill{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:999px;background:var(--light);color:var(--navy);border:1px solid var(--line)}
+@media (max-width:640px){.user{flex-wrap:wrap!important;row-gap:6px}.user input#uname{flex:1 1 110px;min-width:0}.user select{max-width:46vw}}
 
 /* KK-EDU: ô tài khoản dùng chung (cùng kiểu trang chủ) */
 #kkUser{position:relative;display:flex;align-items:center}
@@ -327,7 +341,7 @@ i.en{font-style:italic;color:var(--navy)}
   <div class="crumb"><a href="/">Trang chủ</a><span>›</span><a href="/#ngoaingu">Ngoại ngữ</a><span>›</span><span>Tiếng Trung</span><span>›</span><b>Tiếng Trung giao tiếp tương tác</b></div>
   <div class="user"><span id="kkUser"></span><label for="uname">Học viên</label><input id="uname" placeholder="Họ và tên" autocomplete="name"><label for="zvoice">Giọng</label><select id="zvoice" aria-label="Giọng đọc tiếng Trung"></select><label for="zrate">Tốc độ</label><select id="zrate" aria-label="Tốc độ đọc"></select></div>
 </div>
-<div class="hero"><div class="in"><div><div class="kick">Phân hệ Ngoại ngữ · bản thử nghiệm</div><h1>Tiếng Trung <em>giao tiếp tương tác</em></h1><p>40 bài cho người Việt (nền tảng đến HSK 2, khối 1 Giai đoạn 1), mỗi bài ba lớp: Trực quan hóa, Thực hành tương tác, Trợ lý AI. Cô Lin đọc mẫu tiếng Trung; tiến độ lưu theo tài khoản KK-EDU.</p></div><div class="tags"><span class="tag">Chữ Hán</span><span class="tag">Pinyin và thanh điệu</span><span class="tag">Ghép câu</span><span class="tag">Role-play</span></div></div></div>
+<div class="hero"><div class="in"><div><div class="kick">Phân hệ Ngoại ngữ · bản thử nghiệm</div><h1>Tiếng Trung <em>giao tiếp tương tác</em></h1><p>140 bài cho người Việt theo lộ trình tuần tự (Giai đoạn 1: HSK 1-3, Giai đoạn 2: HSK 4), mỗi bài ba lớp: Trực quan hóa, Thực hành tương tác, Trợ lý AI. Cô Lin đọc mẫu tiếng Trung; tiến độ lưu theo tài khoản KK-EDU.</p></div><div class="tags"><span class="tag">Chữ Hán</span><span class="tag">Pinyin và thanh điệu</span><span class="tag">Ghép câu</span><span class="tag">Role-play</span></div></div></div>
 <main id="main" class="zhapp"><div class="card"><h1>Đang tải bài học tiếng Trung...</h1><p class="mute">Bài học, hình minh họa và dữ liệu nét chữ được nạp từ máy chủ KK-EDU.</p></div></main>
 <footer>Tác giả: Nguyễn Duy Điển (KK-2026) · <a href="/">www.kk-edu.com</a> · Phát triển từ sách Chinh phục tiếng Trung bằng khoa học (Phan Thị Hồng Quyên, Tủ sách KK-2026). Học liệu bổ trợ, mô hình thí điểm; chứng chỉ KK-EDU không thay thế chứng chỉ HSK chính thức. Tập viết dùng Hanzi Writer (MIT). AI gợi ý, con người quyết định.</footer>
 <script>
@@ -366,13 +380,13 @@ const PR = id => (S.progress[id] = S.progress[id] || {l1:false, write:{}, assemb
 function logErr(type, detail){ S.errors.push({date:new Date().toISOString().slice(0,10), lesson:S.lesson, type, detail}); save(); }
 
 function render(){ const m=$('#main'); if(S.lesson) S.page=null; zhHash(); if(!ZH.meta) return zhLoading(m); if(!S.lesson) return S.page==='grades'?zhGradesView(m):S.page==='test'?zhTestView(m):home(m); const d=L(); if(!d) return zhLoading(m, S.lesson); const p=PR(d.id); if(!p.tot) p.tot=zhTotals(d);
-  const tabs=[['video','Video tương tác'],['l1','Lớp 1: Trực quan'],['write','Lớp 2: Tập viết'],['asm','Lớp 2: Ghép'],['pron','Lớp 2: Phát âm'],['listen','Lớp 2: Nghe'],['l3','Lớp 3: AI'],['quiz','Kiểm tra'],['cards','Thẻ nhớ'],['score','Điểm và đánh giá'],['ai','Trợ lý AI']];
+  const tabs=[['video','Video tương tác'],['l1','Lớp 1: Trực quan'],['write','Lớp 2: Tập viết'],['asm','Lớp 2: Ghép'],['pron','Lớp 2: Phát âm'],['listen','Lớp 2: Nghe'],['l3','Lớp 3: AI'],['quiz','Kiểm tra'],['cards','Thẻ nhớ']].concat(d.layer2.paragraph?[['para','Viết đoạn văn']]:[], d.layer2.news?[['news','Nghe bản tin']]:[], [['score','Điểm và đánh giá'],['ai','Trợ lý AI']]);
   const doneCount = [p.l1, Object.values(p.write).every(Boolean)&&Object.keys(p.write).length>0, Object.keys(p.assembly).length>=d.layer2.assembly.length, Object.keys(p.pron).length>=1, p.listen!=null, p.role, p.quiz!=null].filter(Boolean).length;
   m.innerHTML = `<div class="card"><div class="row"><button class="btn sec" onclick="S.lesson=null;save();render()">Danh sách bài</button><span class="tag">${d.id}</span><span class="tag">${esc(d.level)}</span><span class="tag">${esc(d.time)}</span><span class="tag">Video V-${d.id}</span></div>
   <h1>${esc(d.title)} <span class="zh">${esc(d.title_zh||'')}</span></h1><p class="mute">${rich(d.intro)}</p><div class="prog"><i style="width:${Math.round(doneCount/7*100)}%"></i></div><p class="mute">Tiến độ bài: ${doneCount}/7 phần</p>
   <div class="tabs">${tabs.map(t=>`<button class="${S.tab===t[0]?'active':''}" onclick="S.tab='${t[0]}';save();render()">${t[1]}</button>`).join('')}</div></div>
   <div id="tab"></div>`;
-  ({video:tabVideo, score:tabScore, ai:tabAI, l1:tabL1, write:tabWrite, asm:tabAsm, pron:tabPron, listen:tabListen, l3:tabL3, quiz:tabQuiz, cards:tabCards})[S.tab]($('#tab'), d, p);
+  ({video:tabVideo, score:tabScore, ai:tabAI, para:tabPara, news:tabNews, l1:tabL1, write:tabWrite, asm:tabAsm, pron:tabPron, listen:tabListen, l3:tabL3, quiz:tabQuiz, cards:tabCards})[S.tab]($('#tab'), d, p);
 }
 function home(m){
   const A=LESSONS.filter(x=>x.part==='A'), B=LESSONS.filter(x=>x.part==='B'), C=LESSONS.filter(x=>x.part==='C');
@@ -500,6 +514,152 @@ function tabCards(el,d,p){ const f=d.flashcards; const c=f[cardI%f.length];
 
 $('#uname').value=S.name||''; $('#uname').addEventListener('input',e=>{S.name=e.target.value;save();});
 
+const {pinyinRuns, pinyinSyllables} = (function(){
+/* Pinyin có dấu thanh -> phiên âm SAPI tiếng Trung (vd. "nǐ hǎo" -> ["ni 3","hao 3"]) để giọng Cô Lin đọc đúng pinyin đứng riêng trong lời giảng tiếng Việt.
+   Danh sách âm tiết hợp lệ sinh từ pypinyin (420 âm tiết). Tác giả : Nguyễn Duy Điển (KK-2026). */
+const PY_SYL = new Set("a ai an ang ao ba bai ban bang bao bei ben beng bi bian biao bie bin bing bo bu ca cai can cang cao ce cei cen ceng cha chai chan chang chao che chen cheng chi chong chou chu chua chuai chuan chuang chui chun chuo ci cong cou cu cuan cui cun cuo da dai dan dang dao de dei den deng di dia dian diao die ding diu dong dou du duan dui dun duo e ei en eng er fa fan fang fei fen feng fiao fo fou fu ga gai gan gang gao ge gei gen geng gong gou gu gua guai guan guang gui gun guo ha hai han hang hao he hei hen heng hm hng hong hou hu hua huai huan huang hui hun huo ji jia jian jiang jiao jie jin jing jiong jiu ju juan jue jun ka kai kan kang kao ke kei ken keng kong kou ku kua kuai kuan kuang kui kun kuo la lai lan lang lao le lei len leng li lia lian liang liao lie lin ling liu lo long lou lu luan lun luo lv lve m ma mai man mang mao me mei men meng mi mian miao mie min ming miu mo mou mu n na nai nan nang nao ne nei nen neng ng ni nian niang niao nie nin ning niu nong nou nu nuan nun nuo nv nve o ou pa pai pan pang pao pei pen peng pi pian piao pie pin ping po pou pu qi qia qian qiang qiao qie qin qing qiong qiu qu quan que qun ran rang rao re ren reng ri rong rou ru rua ruan rui run ruo sa sai san sang sao se sen seng sha shai shan shang shao she shei shen sheng shi shou shu shua shuai shuan shuang shui shun shuo si song sou su suan sui sun suo ta tai tan tang tao te tei teng ti tian tiao tie ting tong tou tu tuan tui tun tuo wa wai wan wang wei wen weng wo wu xi xia xian xiang xiao xie xin xing xiong xiu xu xuan xue xun ya yan yang yao ye yi yin ying yo yong you yu yuan yue yun za zai zan zang zao ze zei zen zeng zha zhai zhan zhang zhao zhe zhei zhen zheng zhi zhong zhou zhu zhua zhuai zhuan zhuang zhui zhun zhuo zi zong zou zu zuan zui zun zuo".split(" "));
+const TONE = { "ā": ["a", 1], "á": ["a", 2], "ǎ": ["a", 3], "à": ["a", 4], "ē": ["e", 1], "é": ["e", 2], "ě": ["e", 3], "è": ["e", 4], "ī": ["i", 1], "í": ["i", 2], "ǐ": ["i", 3], "ì": ["i", 4],
+  "ō": ["o", 1], "ó": ["o", 2], "ǒ": ["o", 3], "ò": ["o", 4], "ū": ["u", 1], "ú": ["u", 2], "ǔ": ["u", 3], "ù": ["u", 4], "ǖ": ["v", 1], "ǘ": ["v", 2], "ǚ": ["v", 3], "ǜ": ["v", 4], "ü": ["v", 0] };
+const PY_ONLY = /[ǎǐǒǔāēīōūǖǘǚǜüěǚ]/;
+/** Một từ pinyin (có thể nhiều âm tiết liền: "xièxie", "Běijīng", "qǐngwèn") -> mảng "âm tiết thanh" hoặc null nếu không phải pinyin hợp lệ. */
+function pinyinSyllables(word) {
+  const w = String(word || "").toLowerCase().replace(/[’']/g, "'").replace(/^[^a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü]+|[^a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü]+$/g, "");
+  if (!w || !/^[a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü']+$/.test(w)) return null;
+  // tách dấu thanh: chuỗi không dấu + vị trí thanh
+  let base = "", tones = [];
+  for (const ch of w) { const t = TONE[ch]; if (t) { if (t[1]) tones.push([base.length, t[1]]); base += t[0]; } else base += ch; }
+  const parts = base.split("'"); const out = []; let pos = 0;
+  for (const part of parts) {
+    // tách âm tiết dài nhất từ trái (ưu tiên khi âm tiết sau vẫn hợp lệ)
+    const seg = (s) => { if (!s) return []; for (let L = Math.min(6, s.length); L >= 1; L--) { const h = s.slice(0, L); if (PY_SYL.has(h)) { const r = seg(s.slice(L)); if (r) return [h].concat(r); } } return null; };
+    const sy = seg(part); if (!sy) return null;
+    for (const s of sy) { const t = tones.find(([p]) => p >= pos && p < pos + s.length); out.push(s + " " + (t ? t[1] : 5)); pos += s.length; }
+    pos += 1;
+  }
+  return out.length ? out : null;
+}
+const VI_ONLY = /[ơưđạảãẹẻẽịỉĩọỏõụủũỳýỵỷỹăâêôầấậẩẫằắặẳẵềếệểễồốộổỗờớợởỡừứựửữ]/i;
+const TONED = /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/;
+// từ tiếng Việt viết giống âm tiết pinyin (không nối vào cụm pinyin trừ khi kẹp giữa hai âm tiết pinyin chắc chắn)
+const VI_LIKE = new Set("là mà bà cá má lá tá há hà dì lì bí mì tí hè bè lò mò tò hò bó đó có nó".split(" "));
+const NEUTRAL = new Set("le de ma ne ba zi men me a ya ge".split(" "));
+/** Tách một đoạn lời giảng tiếng Việt thành cụm thường và cụm pinyin (đọc bằng giọng tiếng Trung). Trả về [{py:true|false, text}]. */
+function pinyinRuns(text) {
+  const toks = String(text || "").split(/(\s+)/);   // giữ khoảng trắng
+  const words = []; toks.forEach((t, i) => { if (!/^\s+$/.test(t) && t) words.push(i); });
+  const isSep = t => /^[-–,;/·]+$/.test(t);
+  const core = new Set(), ok = new Map();
+  for (const i of words) { const t = toks[i]; if (VI_ONLY.test(t)) continue; const sy = pinyinSyllables(t); if (!sy) continue; ok.set(i, sy); if (PY_ONLY.test(t)) core.add(i); }
+  const py = new Set(core);
+  // mở rộng: từ hợp lệ liền kề (bỏ qua dấu nối) với âm tiết pinyin chắc chắn
+  let changed = true;
+  while (changed) { changed = false;
+    for (let k = 0; k < words.length; k++) { const i = words[k]; if (py.has(i) || !ok.has(i)) continue;
+      const nb = d => { let j = k + d; while (j >= 0 && j < words.length && isSep(toks[words[j]])) j += d; return j >= 0 && j < words.length ? words[j] : null; };
+      const L = nb(-1), R = nb(1); const t = toks[i].toLowerCase().replace(/[^a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü']/g, "");
+      const between = L != null && R != null && py.has(L) && py.has(R);
+      const endP = j => /[.!?;:,)]["'”’]?$/.test(toks[j]);   // không nối qua dấu câu (trừ khi kẹp giữa hai âm tiết pinyin)
+      const adj = (L != null && py.has(L) && !endP(L)) || (R != null && py.has(R) && !endP(i));
+      if (between || (adj && !VI_LIKE.has(t) && (TONED.test(t) || NEUTRAL.has(t)))) { py.add(i); changed = true; } } }
+  // gộp: dấu nối kẹp giữa hai từ pinyin thuộc cụm pinyin
+  const out = []; let cur = null;
+  toks.forEach((t, i) => {
+    let p = py.has(i);
+    if (!p && (/^\s+$/.test(t) || isSep(t)) && cur && cur.py) { let j = i + 1; while (j < toks.length && (/^\s+$/.test(toks[j]) || isSep(toks[j]))) j++; p = py.has(j); }
+    if (!cur || cur.py !== p) { cur = { py: p, text: "" }; out.push(cur); }
+    cur.text += t;
+  });
+  return out.filter(x => x.text.trim());
+}
+/** SSML cho một cụm pinyin: mỗi âm tiết một phần tử phoneme SAPI (giọng zh-CN đọc đúng âm và thanh). */
+function pinyinSsml(text, fmt) {
+  const parts = [];
+  for (const w of String(text || "").split(/\s+/)) { const sy = pinyinSyllables(w); if (sy) for (const s of sy) parts.push(`<phoneme alphabet="sapi" ph="${fmt === "np" ? s.replace(" ", "") : s}">啊</phoneme>`); else if (/[-–,;]/.test(w)) parts.push('<break time="250ms"/>'); }
+  return parts.join("");
+}
+
+return {pinyinRuns, pinyinSyllables};
+})();
+/* ===== KK-EDU Tiếng Trung: lộ trình tuần tự 140 bài (Giai đoạn 1: A, B, C01-C90; Giai đoạn 2: D01-D20) =====
+   Tác giả : Nguyễn Duy Điển (KK-2026). Học đúng thứ tự: mở trang là vào thẳng bài tiếp theo; bài sau mở khi xong bài trước (vẫn cho xem trước nếu muốn). */
+const ZH_COURSE = [
+  {id:"gd1", name:"Giai đoạn 1 - Sơ cấp (HSK 1 đến 3)", goal:"Gói \"HSK 3 trong 9 tháng\": 120 bài, mỗi bài khoảng 50 phút cộng video 10-14 phút. Tháng 1-3 học 30 bài nền tảng và giao tiếp; tháng 4-9 học 90 bài theo 9 khối ngữ pháp (3-4 bài mỗi tuần).", blocks:[
+    {id:"A", name:"Phần A - Nền tảng", sub:"Pinyin, thanh điệu, nét và bộ thủ, trật tự câu", from:"ZH-A01", to:"ZH-A06", hsk:"HSK 1", docs:["tap1","tap2"]},
+    {id:"B", name:"Phần B - Giao tiếp theo tình huống", sub:"24 tình huống hằng ngày: chào hỏi, mua sắm, ăn uống, đi lại, công việc", from:"ZH-B01", to:"ZH-B24", hsk:"HSK 1-2", docs:["tap1","tap2"]},
+    {id:"C1", name:"Khối 1 (C01-C10): Đi lại và kế hoạch", sub:"了, 想 và 要; 从...到; giờ giấc; 应该, 别; 离, 多远; 要...才; 是...的; 次, 遍, 又, 再; kế hoạch tuần", from:"ZH-C01", to:"ZH-C10", hsk:"HSK 2", docs:["gd1-k1-tailieu","gd1-k1-video"]},
+    {id:"C2", name:"Khối 2 (C11-C20): Thời gian, quan hệ và kinh nghiệm", sub:"过 kinh nghiệm; 了 và 过; 以前, 以后; 从...以来; 快要...了; 一...就; 才 và 就; 还没...呢; 早就, 从来", from:"ZH-C11", to:"ZH-C20", hsk:"HSK 2", docs:["gd1-k2-tailieu","gd1-k2-video"]},
+    {id:"C3", name:"Khối 3 (C21-C30): Hành động, quan hệ và lựa chọn", sub:"在, 正在, 一边...一边; 越...越; 虽然...但是; 因为...所以; 如果...就; 不但...而且; 还是, 或者; 得; lặp động từ", from:"ZH-C21", to:"ZH-C30", hsk:"HSK 2-3", docs:["gd1-k3-tailieu","gd1-k3-video"]},
+    {id:"C4", name:"Khối 4 (C31-C40): So sánh, bị động, kết quả, khả năng và điều kiện", sub:"比, 没有...那么, 最, 更; câu chữ 把, 被; bổ ngữ kết quả, xu hướng, khả năng; 连...都; 只有...才; 不管...都", from:"ZH-C31", to:"ZH-C40", hsk:"HSK 3", docs:["gd1-k4-tailieu","gd1-k4-video"]},
+    {id:"C5", name:"Khối 5 (C41-C50): Nhấn mạnh, số lượng, sai khiến, loại trừ và lựa chọn", sub:"是...的; bổ ngữ động lượng, thời lượng; 又 và 再; 让, 叫, 使; 除了...以外; 一...也/都; 只好, 只能; 必须, 应该", from:"ZH-C41", to:"ZH-C50", hsk:"HSK 3", docs:["gd1-k5-tailieu","gd1-k5-video"]},
+    {id:"C6", name:"Khối 6 (C51-C60): Phỏng đoán, quan điểm, nối ý, nguyên nhân và trạng thái", sub:"可能, 也许, 大概; 对...来说; 离, 远, 近; 跟, 和, 同; 而且, 并且; 由于, 因此; 其实, 原来, 竟然; 起来, 下来; 着, 呢", from:"ZH-C51", to:"ZH-C60", hsk:"HSK 3", docs:["gd1-k6-tailieu","gd1-k6-video"]},
+    {id:"C7", name:"Khối 7 (C61-C70): Thời điểm, tăng dần, nhượng bộ và mục đích", sub:"刚, 刚才, 已经; 快要, 就要; 一边...一边; 越...越; 差不多, 几乎; 从...到; 即使...也; 尽管...但是; 为了", from:"ZH-C61", to:"ZH-C70", hsk:"HSK 3", docs:["gd1-k7-tailieu","gd1-k7-video"]},
+    {id:"C8", name:"Khối 8 (C71-C80): Điều kiện, lựa chọn, nguồn tin, bổ sung và trình tự", sub:"如果...就, 要是...的话; 宁可, 愿意, 肯; 与其...不如; 之所以...是因为; 总之; 据说, 听说; 不但...而且; 先...然后; 只要...就", from:"ZH-C71", to:"ZH-C80", hsk:"HSK 3", docs:["gd1-k8-tailieu","gd1-k8-video"]},
+    {id:"C9", name:"Khối 9 (C81-C90): Điều kiện, liệt kê, câu chữ 把/被, khả năng và trạng thái", sub:"无论...都, 不管...都; 既...又; 或者, 还是; câu chữ 把, 被; 连...都; 次, 遍, 一下; bổ ngữ khả năng; 正在, 着", from:"ZH-C81", to:"ZH-C90", hsk:"HSK 3", docs:["gd1-k9-tailieu","gd1-k9-video"]},
+  ]},
+  {id:"gd2", name:"Giai đoạn 2 - Trung cấp (HSK 4 đến 6)", goal:"Từ vựng lên khoảng 5400 từ theo chuẩn HSK 3.0. Bổ sung so với Giai đoạn 1: viết đoạn văn chấm theo tiêu chí, nghe bản tin ngắn, role-play vai phức tạp hơn. Nên mở khi đã xong Giai đoạn 1.", blocks:[
+    {id:"D1", name:"Khối 1 (D01-D10): Phó từ thái độ, kết quả, lý lẽ và ước đoán", sub:"其实, 本来; 竟然, 居然; 果然; 差点儿, 幸亏; 终于, 总算; 只好, 只能; 以免, 免得; 何况, 况且; 恐怕, 大概", from:"ZH-D01", to:"ZH-D10", hsk:"HSK 4", docs:["gd2-k1-tailieu","gd2-k1-video"]},
+    {id:"D2", name:"Khối 2 (D11-D20): Nhượng bộ, tăng tiến, điều kiện và kết luận", sub:"虽然...但是, 尽管...还是; 不但...而且; 既然...就; 一边...一边; 除了...以外; 对...来说; 根据, 按照; 随着; 总的来说", from:"ZH-D11", to:"ZH-D20", hsk:"HSK 4", docs:["gd2-k2-tailieu","gd2-k2-video"]},
+  ]},
+  {id:"gd3", name:"Giai đoạn 3 - Cao cấp (HSK 7 đến 9)", goal:"Từ vựng khoảng 11000 từ, đọc hiểu văn bản chuyên ngành. Phạm vi chốt sau khi giáo viên cấp cao duyệt Giai đoạn 2; hiện đang lập danh mục từ vựng và ngữ pháp.", blocks:[]},
+];
+/** Thứ tự học chuẩn: A01..A06, B01..B24, C01..C90, D01..D20 */
+function zhOrder(){ return LESSONS.map(x=>x.id).sort((a,b)=>{ const r={A:0,B:1,C:2,D:3,E:4}; return (r[a[3]]-r[b[3]]) || a.localeCompare(b); }); }
+function zhBlockIds(b){ return zhOrder().filter(id=>id>=b.from && id<=b.to && id[3]===b.from[3]); }
+function zhBlockOf(id){ for(const s of ZH_COURSE) for(const b of s.blocks) if(id>=b.from && id<=b.to && id[3]===b.from[3]) return {stage:s, block:b}; return null; }
+/** Bài được tính hoàn thành: đã làm kiểm tra cuối bài và (khi tính được) đạt từ 50 điểm. */
+function zhDone(id){ const p=(S.progress||{})[id]; if(!p || p.quiz==null) return false; const r=typeof zhLessonScore==="function"?zhLessonScore(id):null; return !r || r.score>=50; }
+function zhNextId(){ const o=zhOrder(); return o.find(id=>!zhDone(id)) || o[o.length-1] || null; }
+function zhIsAdminView(){ try{ return !!(KK.user && typeof kkIsAdmin==="function" && kkIsAdmin()); }catch(e){ return false; } }
+/** Mở bài theo thứ tự: bài sau bài tiếp theo thì hỏi lại (học tuần tự), vẫn cho xem trước. */
+function zhOpen(id, force){
+  const o=zhOrder(), nx=zhNextId();
+  if(!force && !zhIsAdminView() && o.indexOf(id) > o.indexOf(nx)){ S.lockAsk=id; S.lesson=null; S.page=null; save(); render(); window.scrollTo(0,0); return; }
+  S.lockAsk=null; S.lesson=id; S.page=null; S.tab=zhFirstTab(id); save(); render(); window.scrollTo(0,0);
+}
+function zhStatus(id, nx){ const p=(S.progress||{})[id]; const r=typeof zhLessonScore==="function"?zhLessonScore(id):null;
+  if(zhDone(id)) return `<span class="zst ok">Đã học${r?" · "+r.score:""}</span>`;
+  if(id===nx) return `<span class="zst now">Bài tiếp theo</span>`;
+  if(r && r.started) return `<span class="zst">Đang học · ${r.score}</span>`;
+  return zhOrder().indexOf(id) > zhOrder().indexOf(nx) ? `<span class="zst lock">Mở sau</span>` : ""; }
+function zhItemHTML(x, nx){ return `<div class="item ${x.id===nx?"next":""}" onclick="zhOpen('${x.id}')"><span class="code">${x.id}</span><span>${esc(x.title)} <span class="zh mute">${esc(x.title_zh||"")}</span></span><span class="done">${zhStatus(x.id, nx)}</span></div>`; }
+function zhBlockStats(ids){ const done=ids.filter(zhDone).length; const sc=ids.map(id=>typeof zhLessonScore==="function"?zhLessonScore(id):null).filter(r=>r&&r.started).map(r=>r.score); return {done, n:ids.length, avg: sc.length?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):null}; }
+function zhDocBtns(ids){ return (ids||[]).map(id=>{ const d=ZH_DOCS.find(x=>x.id===id); return d?`<button class="btn sec sm" onclick="event.stopPropagation();zhDownload('${id}', this)" title="${esc(d.d)}">${esc(d.short||d.t)}</button>`:""; }).join(""); }
+home = function(m){
+  const o=zhOrder(); const nx=zhNextId(); const nxL=LESSONS.find(x=>x.id===nx); const doneAll=o.filter(zhDone).length; const nb=nx?zhBlockOf(nx):null;
+  const ask = S.lockAsk && LESSONS.find(x=>x.id===S.lockAsk);
+  m.innerHTML = `${ask?`<div class="card warnbox"><b>Học tuần tự:</b> bài ${esc(ask.id)} - ${esc(ask.title)} mở sau khi bạn hoàn thành bài tiếp theo của mình là <b>${esc(nx)}</b>. Mỗi bài dùng lại từ vựng và mẫu câu của bài trước, nên học đúng thứ tự sẽ nhớ lâu hơn.<div class="row" style="margin-top:8px"><button class="btn" onclick="zhOpen('${nx}')">Học bài ${esc(nx)}</button><button class="btn sec" onclick="zhOpen('${ask.id}', true)">Vẫn xem trước bài ${esc(ask.id)}</button><button class="btn sec" onclick="S.lockAsk=null;save();render()">Đóng</button></div></div>`:""}
+  <div class="card"><h1>Tiếng Trung giao tiếp tương tác - ${LESSONS.length} bài</h1><p class="mute">Học theo đúng thứ tự khoa học: Nền tảng (A) → Giao tiếp (B) → 9 khối ngữ pháp HSK 2-3 (C01-C90) → Trung cấp HSK 4 (D01-D20). Mỗi bài: Video tương tác → Lớp 1 Trực quan → Lớp 2 Thực hành → Lớp 3 Trợ lý AI → Kiểm tra. Hoàn thành ${doneAll}/${LESSONS.length} bài.</p>
+    ${nxL?`<div class="box zhnext" style="cursor:pointer" onclick="if(event.target.tagName!=='BUTTON') zhOpen('${nx}')"><div class="row" style="align-items:center;gap:10px"><div style="flex:1;min-width:220px"><div class="mute">${doneAll?"Học tiếp":"Bắt đầu"} · ${nb?esc(nb.block.name):""}</div><b><span class="code">${esc(nx)}</span> ${esc(nxL.title)}</b> <span class="zh mute">${esc(nxL.title_zh||"")}</span></div><button class="btn gold" onclick="zhOpen('${nx}')">${doneAll?"Học bài tiếp theo":"Vào bài 1"}</button></div><div class="prog"><i style="width:${Math.round(100*doneAll/Math.max(1,LESSONS.length))}%"></i></div></div>`:""}
+    <div class="bands"><div class="band"><div class="v">${LESSONS.length}</div>bài học</div><div class="band"><div class="v">${LESSONS.reduce((a,x)=>a+x.n.vocab,0)}</div>từ vựng</div><div class="band"><div class="v">${ZH.meta?ZH.meta.strokes:0}</div>chữ có dữ liệu nét</div><div class="band"><div class="v">${LESSONS.reduce((a,x)=>a+x.n.grammar,0)}</div>mẫu câu</div><div class="band"><div class="v">${S.errors.length}</div>lỗi đã ghi</div></div></div>
+  ${ZH_COURSE.map(st=>{ const ids=st.blocks.flatMap(zhBlockIds); const s=zhBlockStats(ids);
+    return `<div class="card zhstage" id="${st.id}"><h2>${esc(st.name)}</h2><p class="mute">${esc(st.goal)}</p>${ids.length?`<p class="mute">Tiến độ giai đoạn: ${s.done}/${s.n} bài${s.avg!=null?` · điểm trung bình ${s.avg}`:""}</p>`:""}
+    ${st.blocks.map(b=>{ const bi=zhBlockIds(b); const bs=zhBlockStats(bi); const open=bi.includes(nx); const full=bs.done===bs.n&&bs.n>0;
+      return `<details class="zhblock" ${open?"open":""}><summary><b>${esc(b.name)}</b> <span class="pill">${esc(b.hsk)}</span> <span class="mute">${bs.done}/${bs.n} bài${bs.avg!=null?" · TB "+bs.avg:""}</span>${full?' <span class="zst ok">Hoàn thành khối</span>':open?' <span class="zst now">Đang học</span>':""}<div class="mute zsub">${esc(b.sub)}</div></summary>
+        <div class="list">${bi.map(id=>zhItemHTML(LESSONS.find(x=>x.id===id), nx)).join("")}</div>
+        <div class="row zbact">${ZT_CFG["K-"+b.id]?`<button class="btn sm" onclick="S.lesson=null;S.page='test';save();ztStart('K-${b.id}')">Kiểm tra ${b.id.length>1?"khối":"phần"} (${ZT_CFG["K-"+b.id].n} câu)</button>`:""}${zhDocBtns(b.docs)}</div></details>`; }).join("")}
+    ${!st.blocks.length?'<p class="mute">Chưa mở bài học.</p>':""}</div>`; }).join("")}
+  ${S.errors.length?`<div class="card"><h2>Nhật ký lỗi (Error Log) và điều hướng</h2>${errorSummary()}</div>`:""}`;
+};
+/* Thanh điều hướng trong bài: vị trí trong lộ trình, bài trước, bài tiếp theo */
+function zhLessonNavHTML(id){
+  const o=zhOrder(); const i=o.indexOf(id); if(i<0) return ""; const b=zhBlockOf(id); const prev=o[i-1], next=o[i+1]; const done=zhDone(id);
+  return `<div class="card zhnav"><div class="row" style="align-items:center;gap:8px"><button class="btn sec sm" onclick="S.lesson=null;S.lockAsk=null;save();render()">Danh sách bài</button><span class="mute" style="flex:1;min-width:160px">Bài ${i+1}/${o.length}${b?" · "+esc(b.stage.name.split(" - ")[0])+" · "+esc(b.block.name.split(":")[0]):""}</span>${prev?`<button class="btn sec sm" onclick="zhOpen('${prev}', true)">← ${prev}</button>`:""}${next?`<button class="btn ${done?"gold":"sec"} sm" onclick="zhOpen('${next}', ${done})" title="${done?"Bài tiếp theo":"Hoàn thành bài này (làm Kiểm tra cuối bài) để mở bài sau"}">${next} →</button>`:""}</div>${done&&next?`<div class="fb good" style="margin-top:8px">Bạn đã hoàn thành ${esc(id)}. Sang bài tiếp theo <b>${next}</b> để giữ mạch học.</div>`:""}</div>`;
+}
+/* Sau mỗi lần vẽ: thanh điều hướng trong bài; mở trang thì vào thẳng bài tiếp theo (khi đã có danh sách bài và tiến độ tài khoản) */
+(function(){
+  const _r = render;
+  render = function(){
+    if(ZH.autoNext && ZH.meta && KK.authReady && (!KK.user || KK.cloudLoaded)){
+      ZH.autoNext=false;
+      if(!S.lesson && !S.page && !S.lockAsk){ const nx=zhNextId(); if(nx){ S.lesson=nx; S.tab=zhFirstTab(nx); save(); } }
+    }
+    _r.apply(this, arguments);
+    try{
+      if(S.lesson && ZH.full[S.lesson]){ const m=document.getElementById("main"); if(m && !m.querySelector(".zhnav")){ const acct=m.querySelector(".acct"); const h=zhLessonNavHTML(S.lesson); if(acct) acct.insertAdjacentHTML("afterend", h); else m.insertAdjacentHTML("afterbegin", h); } }
+    }catch(e){ console.warn("nav", e); }
+  };
+})();
+
 /* ===== KK-EDU lớp tích hợp cho phân hệ Tiếng Trung: tài khoản dùng chung, đồng bộ đám mây, giọng Cô Lin (Azure), nạp bài theo nhu cầu, tài liệu PDF cho thành viên =====
    Tác giả : Nguyễn Duy Điển (KK-2026). Nạp sau app_base.js (ghi đè một số hàm). */
 
@@ -536,8 +696,8 @@ function zhLoading(m, id){
 }
 /* Địa chỉ theo bài (#ZH-A01): chia sẻ đúng bài, nút Quay lại của trình duyệt về danh sách, đăng nhập xong quay về đúng bài */
 let zhLastHash=null;
-function zhHash(){ const h=S.lesson?("#"+S.lesson):S.page==="grades"?"#so-diem":S.page==="test"?"#kiem-tra":""; const cur=location.hash||""; if(cur!==h){ try{ const u=location.pathname+location.search+h; if(zhLastHash===null) history.replaceState(null,"",u); else history.pushState(null,"",u); }catch(e){} } zhLastHash=h; }
-window.addEventListener("popstate",()=>{ const id=(location.hash||"").slice(1); S.lesson=/^ZH-[A-Z]\d{2}$/.test(id)?id:null; S.page=S.lesson?null:id==="so-diem"?"grades":id==="kiem-tra"?"test":null; zhLastHash=location.hash||""; zhStop(); save(); render(); });
+function zhHash(){ const h=S.lesson?("#"+S.lesson):S.page==="grades"?"#so-diem":S.page==="test"?"#kiem-tra":"#danh-sach"; const cur=location.hash||""; if(cur!==h){ try{ const u=location.pathname+location.search+h; if(zhLastHash===null) history.replaceState(null,"",u); else history.pushState(null,"",u); }catch(e){} } zhLastHash=h; }
+window.addEventListener("popstate",()=>{ const id=(location.hash||"").slice(1); S.lockAsk=null; S.lesson=/^ZH-[A-Z]\d{2}$/.test(id)?id:null; S.page=S.lesson?null:id==="so-diem"?"grades":id==="kiem-tra"?"test":null; zhLastHash=location.hash||""; zhStop(); save(); render(); });
 
 /* ---------- 2. Tài khoản KK-EDU dùng chung + tiến độ trên đám mây ---------- */
 async function kkInitAuth(){
@@ -611,10 +771,30 @@ function zhSetRate(r){ r=Number(r); if(r>=0.7&&r<=1.3){ KKV.rate=r; S.rate=r; sa
 
 /* ---------- 4. Lộ trình, tài liệu PDF (thành viên), chứng chỉ ---------- */
 const ZH_DOCS = [
-  {id:"tap1", t:"Tập 1 - Tài liệu học tương tác (30 bài)", d:"451 trang, 19,6 MB. Lý thuyết, từ vựng, chiết tự, ngữ pháp, bài luyện và đáp án của 30 bài."},
-  {id:"tap2", t:"Tập 2 - Kịch bản video tương tác (30 video)", d:"147 trang, 1 MB. Kịch bản lời dẫn, điểm dừng câu hỏi và gợi ý dựng video cho 30 bài."},
-  {id:"gd1-k1-tailieu", t:"Giai đoạn 1 - Khối 1 (C01-C10): Tài liệu học", d:"119 trang, 5,9 MB. Bản kiểm thử 10 bài mới: 了, 要 và 想, 去 và 来 + động từ (HSK 2)."},
-  {id:"gd1-k1-video", t:"Giai đoạn 1 - Khối 1 (C01-C10): Kịch bản video", d:"39 trang. Bản kiểm thử kịch bản 10 video V-ZH-C01 đến C10."},
+  {id:"tap1", short:"Tập 1 (PDF)", t:"Tập 1 - Tài liệu học tương tác (30 bài A, B)", d:"451 trang, 19,6 MB. Lý thuyết, từ vựng, chiết tự, ngữ pháp, bài luyện và đáp án của 30 bài nền tảng và giao tiếp."},
+  {id:"tap2", short:"Tập 2 - Kịch bản video", t:"Tập 2 - Kịch bản video tương tác (30 video A, B)", d:"147 trang. Lời dẫn, điểm dừng câu hỏi và gợi ý dựng video cho 30 bài."},
+  {id:"gd1-k1-tailieu", short:"Tài liệu khối 1", t:"Giai đoạn 1 - Khối 1 (C01-C10): Tài liệu học", d:"103 trang. Đi lại và kế hoạch."},
+  {id:"gd1-k1-video", short:"Kịch bản video khối 1", t:"Giai đoạn 1 - Khối 1 (C01-C10): Kịch bản video", d:"39 trang. Kịch bản 10 video tương tác V-ZH-C01 đến C10."},
+  {id:"gd1-k2-tailieu", short:"Tài liệu khối 2", t:"Giai đoạn 1 - Khối 2 (C11-C20): Tài liệu học", d:"95 trang. Thời gian, quan hệ và kinh nghiệm."},
+  {id:"gd1-k2-video", short:"Kịch bản video khối 2", t:"Giai đoạn 1 - Khối 2 (C11-C20): Kịch bản video", d:"39 trang. Kịch bản 10 video tương tác V-ZH-C11 đến C20."},
+  {id:"gd1-k3-tailieu", short:"Tài liệu khối 3", t:"Giai đoạn 1 - Khối 3 (C21-C30): Tài liệu học", d:"95 trang. Hành động, quan hệ và lựa chọn."},
+  {id:"gd1-k3-video", short:"Kịch bản video khối 3", t:"Giai đoạn 1 - Khối 3 (C21-C30): Kịch bản video", d:"39 trang. Kịch bản 10 video tương tác V-ZH-C21 đến C30."},
+  {id:"gd1-k4-tailieu", short:"Tài liệu khối 4", t:"Giai đoạn 1 - Khối 4 (C31-C40): Tài liệu học", d:"99 trang. So sánh, bị động, kết quả, khả năng và điều kiện."},
+  {id:"gd1-k4-video", short:"Kịch bản video khối 4", t:"Giai đoạn 1 - Khối 4 (C31-C40): Kịch bản video", d:"41 trang. Kịch bản 10 video tương tác V-ZH-C31 đến C40."},
+  {id:"gd1-k5-tailieu", short:"Tài liệu khối 5", t:"Giai đoạn 1 - Khối 5 (C41-C50): Tài liệu học", d:"94 trang. Nhấn mạnh, số lượng, sai khiến, loại trừ và lựa chọn."},
+  {id:"gd1-k5-video", short:"Kịch bản video khối 5", t:"Giai đoạn 1 - Khối 5 (C41-C50): Kịch bản video", d:"39 trang. Kịch bản 10 video tương tác V-ZH-C41 đến C50."},
+  {id:"gd1-k6-tailieu", short:"Tài liệu khối 6", t:"Giai đoạn 1 - Khối 6 (C51-C60): Tài liệu học", d:"93 trang. Phỏng đoán, quan điểm, nối ý, nguyên nhân và trạng thái."},
+  {id:"gd1-k6-video", short:"Kịch bản video khối 6", t:"Giai đoạn 1 - Khối 6 (C51-C60): Kịch bản video", d:"39 trang. Kịch bản 10 video tương tác V-ZH-C51 đến C60."},
+  {id:"gd1-k7-tailieu", short:"Tài liệu khối 7", t:"Giai đoạn 1 - Khối 7 (C61-C70): Tài liệu học", d:"92 trang. Thời điểm, tăng dần, nhượng bộ và mục đích."},
+  {id:"gd1-k7-video", short:"Kịch bản video khối 7", t:"Giai đoạn 1 - Khối 7 (C61-C70): Kịch bản video", d:"37 trang. Kịch bản 10 video tương tác V-ZH-C61 đến C70."},
+  {id:"gd1-k8-tailieu", short:"Tài liệu khối 8", t:"Giai đoạn 1 - Khối 8 (C71-C80): Tài liệu học", d:"91 trang. Điều kiện, lựa chọn, nguồn tin, bổ sung và trình tự."},
+  {id:"gd1-k8-video", short:"Kịch bản video khối 8", t:"Giai đoạn 1 - Khối 8 (C71-C80): Kịch bản video", d:"39 trang. Kịch bản 10 video tương tác V-ZH-C71 đến C80."},
+  {id:"gd1-k9-tailieu", short:"Tài liệu khối 9", t:"Giai đoạn 1 - Khối 9 (C81-C90): Tài liệu học", d:"88 trang. Điều kiện, liệt kê, câu chữ 把/被, khả năng và trạng thái."},
+  {id:"gd1-k9-video", short:"Kịch bản video khối 9", t:"Giai đoạn 1 - Khối 9 (C81-C90): Kịch bản video", d:"38 trang. Kịch bản 10 video tương tác V-ZH-C81 đến C90."},
+  {id:"gd2-k1-tailieu", short:"Tài liệu khối D1", t:"Giai đoạn 2 - Khối 1 (D01-D10): Tài liệu học", d:"105 trang. Phó từ thái độ, kết quả, lý lẽ và ước đoán (HSK 4), có module viết đoạn văn và nghe bản tin."},
+  {id:"gd2-k1-video", short:"Kịch bản video khối D1", t:"Giai đoạn 2 - Khối 1 (D01-D10): Kịch bản video", d:"44 trang. Kịch bản 10 video tương tác V-ZH-D01 đến D10."},
+  {id:"gd2-k2-tailieu", short:"Tài liệu khối D2", t:"Giai đoạn 2 - Khối 2 (D11-D20): Tài liệu học", d:"109 trang. Nhượng bộ, tăng tiến, điều kiện và kết luận (HSK 4), có module viết đoạn văn và nghe bản tin."},
+  {id:"gd2-k2-video", short:"Kịch bản video khối D2", t:"Giai đoạn 2 - Khối 2 (D11-D20): Kịch bản video", d:"46 trang. Kịch bản 10 video tương tác V-ZH-D11 đến D20."},
 ];
 async function zhDownload(id, btn){
   if(!KK.user){ location.href=kkLoginUrl(); return; }
@@ -633,10 +813,10 @@ function zhExtrasHTML(){
   const docs=ZH_DOCS.map(x=>`<div class="box"><b>${esc(x.t)}</b><div class="mute">${esc(x.d)}</div><div class="row" style="margin-top:6px"><button class="btn sec" onclick="zhDownload('${x.id}', this)">${KK.user?"Tải PDF":"Đăng nhập để tải PDF"}</button></div><div id="df_${x.id}"></div></div>`).join("");
   return `<div class="card" id="lo-trinh"><h2>Lộ trình 3 giai đoạn</h2>
     <div class="tblwrap"><table><tr><th>Giai đoạn</th><th>Cấp độ</th><th>Nội dung</th><th>Trạng thái</th></tr>
-    <tr><td>Giai đoạn 1</td><td>HSK 1 đến 3</td><td>120 bài và 120 video: 30 bài nền tảng và giao tiếp (A01-A06, B01-B24) cùng 90 bài mới C01-C90 theo 9 khối ngữ pháp. Gói "HSK 3 trong 9 tháng".</td><td>40 bài đang mở trên web: 30 bài nền tảng và giao tiếp, khối 1 (C01-C10, bản kiểm thử); khối 2 đến 9 đang biên soạn</td></tr>
-    <tr><td>Giai đoạn 2</td><td>HSK 4 đến 6</td><td>Khoảng 120 bài D01-D120: đọc và viết đoạn văn, diễn đạt quan điểm, giao tiếp công việc; chấm bài viết theo tiêu chí, nghe bản tin ngắn.</td><td>Mở sau khi hoàn tất Giai đoạn 1</td></tr>
+    <tr><td>Giai đoạn 1</td><td>HSK 1 đến 3</td><td>120 bài và 120 video: Phần A (6 bài nền tảng), Phần B (24 bài giao tiếp), 9 khối ngữ pháp C01-C90 (mỗi khối 10 bài, bài cuối khối là ôn tập). Gói "HSK 3 trong 9 tháng".</td><td>Đã mở đủ 120 bài</td></tr>
+    <tr><td>Giai đoạn 2</td><td>HSK 4 đến 6</td><td>Khoảng 120 bài D01-D120: đọc và viết đoạn văn, diễn đạt quan điểm, giao tiếp công việc; chấm bài viết theo tiêu chí, nghe bản tin ngắn.</td><td>Đã mở khối 1-2 (D01-D20, HSK 4)</td></tr>
     <tr><td>Giai đoạn 3</td><td>HSK 7 đến 9</td><td>Trình độ cao cấp, đọc hiểu văn bản chuyên ngành. Phạm vi chốt sau khi giáo viên cấp cao duyệt Giai đoạn 2.</td><td>Đang lập danh mục</td></tr></table></div>
-    <p class="mute">Chứng chỉ KK-EDU Thử nghiệm cấp HSK 3 sẽ mở khi hoàn tất 120 bài của Giai đoạn 1; đây là chứng chỉ nội bộ, không thay thế chứng chỉ HSK chính thức.</p></div>
+    <p class="mute">Chứng chỉ KK-EDU Thử nghiệm cấp HSK 3 cấp khi hoàn thành 120 bài của Giai đoạn 1 và đạt bài thi thử HSK 3; đây là chứng chỉ nội bộ, không thay thế chứng chỉ HSK chính thức.</p></div>
     <div class="card" id="tai-lieu"><h2>Tài liệu PDF dành cho thành viên</h2><p class="mute">Tài liệu lưu trên máy chủ riêng của KK-EDU, chỉ tải được khi đã đăng nhập. Bản quyền thuộc tác giả Nguyễn Duy Điển (KK-2026); vui lòng không phát tán lại.</p><div class="grid">${docs}</div></div>`;
 }
 const _zhHome0 = home;
@@ -654,6 +834,8 @@ let zhPendingAnchor=null;
 function zhBoot(){
   const h=location.hash||"";
   if(/^#ZH-[A-Z]\d{2}$/.test(h)){ S.lesson=h.slice(1); S.tab=S.tab||"l1"; }
+  else if(h==="#danh-sach"){ S.lesson=null; S.page=null; }
+  else if(!h){ S.page=null; S.lesson=null; ZH.autoNext=true; }   // mở trang: vào thẳng bài tiếp theo khi đã có danh sách bài
   else if(/^#(tai-lieu|lo-trinh)$/.test(h)){ zhPendingAnchor=h; S.lesson=null; S.page=null; }
   else if(h==="#so-diem"){ S.lesson=null; S.page="grades"; }
   else if(h==="#kiem-tra"){ S.lesson=null; S.page="test"; }
@@ -692,7 +874,10 @@ function zhSegs(text){
     if(!cur || cur.lang!==lang){ cur={lang, text:""}; segs.push(cur); }
     cur.text += ch;
   }
-  return segs.map(s=>({lang:s.lang, text:s.text.trim()})).filter(s=>s.text && /[\p{L}\p{N}]/u.test(s.text));
+  // trong phần tiếng Việt: cụm pinyin đứng riêng (vd. "ní hǎo", "jī - zhī - zī") đọc bằng giọng Cô Lin theo đúng âm và thanh
+  const out = [];
+  segs.forEach(s=>{ if(s.lang!=="vi"){ out.push(s); return; } pinyinRuns(s.text).forEach(r=>out.push({lang:r.py?"py":"vi", text:r.text})); });
+  return out.map(s=>({lang:s.lang, text:s.text.trim()})).filter(s=>s.text && /[\p{L}\p{N}]/u.test(s.text));
 }
 /* Chia lời thoại thành các câu đọc (≤ 260 ký tự) và khoảng dừng "[dừng N giây]" */
 function zhChunks(text){
@@ -717,7 +902,7 @@ async function zhAudioSegs(segs){
   return url;
 }
 function zhBrowserSegs(segs, seq){
-  return segs.reduce((pr, s)=>pr.then(()=> seq!==KKV.seq ? null : new Promise(res=>{ try{ const u=new SpeechSynthesisUtterance(s.text); u.lang = s.lang==="zh" ? "zh-CN" : "vi-VN"; u.rate = s.lang==="zh" ? KKV.rate : 1; KKV.done=res; u.onend=()=>{ KKV.done=null; res(); }; u.onerror=()=>{ KKV.done=null; res(); }; speechSynthesis.speak(u); }catch(e){ res(); } })), Promise.resolve());
+  return segs.reduce((pr, s)=>pr.then(()=> seq!==KKV.seq ? null : new Promise(res=>{ try{ const u=new SpeechSynthesisUtterance(s.text); u.lang = s.lang==="zh"||s.lang==="py" ? "zh-CN" : "vi-VN"; u.rate = s.lang==="zh"||s.lang==="py" ? KKV.rate : 1; KKV.done=res; u.onend=()=>{ KKV.done=null; res(); }; u.onerror=()=>{ KKV.done=null; res(); }; speechSynthesis.speak(u); }catch(e){ res(); } })), Promise.resolve());
 }
 async function zhSaySegs(segs, seq){
   if(!segs.length) return;
@@ -887,9 +1072,9 @@ function zvFinal(i,k){ const v=ZV.data[ZV.vid]; const a=ZV.quiz.final=(ZV.quiz.f
    Tác giả : Nguyễn Duy Điển (KK-2026). Đề sinh tự động từ chính nội dung bài học; chấm tự động; lỗi ghi vào sổ lỗi. */
 
 const ZH_SR = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
-const ZH_W = [["video","Video tương tác",10],["l1","Lớp 1: Trực quan",10],["write","Tập viết",15],["asm","Ghép chữ và câu",15],["pron","Phát âm",15],["listen","Nghe hiểu",10],["role","Role-play với AI",10],["quiz","Kiểm tra cuối bài",15]];
+const ZH_W = [["video","Video tương tác",10],["l1","Lớp 1: Trực quan",10],["write","Tập viết",15],["asm","Ghép chữ và câu",15],["pron","Phát âm",15],["listen","Nghe hiểu",10],["role","Role-play với AI",10],["quiz","Kiểm tra cuối bài",15],["para","Viết đoạn văn (HSK 4)",10],["news","Nghe bản tin (HSK 4)",10]];
 function zhGrade(s){ return s>=90?"Xuất sắc":s>=80?"Giỏi":s>=65?"Khá":s>=50?"Đạt":"Chưa đạt"; }
-function zhTotals(d){ return {write:d.layer2.writing.chars.length, asm:d.layer2.assembly.length, pron:d.layer2.pronunciation.length, listen:d.layer2.listening.questions.length, quiz:d.quiz.length}; }
+function zhTotals(d){ return {write:d.layer2.writing.chars.length, asm:d.layer2.assembly.length, pron:d.layer2.pronunciation.length, listen:d.layer2.listening.questions.length, quiz:d.quiz.length, para:d.layer2.paragraph?1:0, news:d.layer2.news?d.layer2.news.questions.length:0}; }
 /** Điểm một bài (thang 100) từ tiến độ đã lưu; tot = số mục của bài (lưu lại khi mở bài để sổ điểm tính được cả khi chưa tải bài). */
 function zhLessonScore(id, tot){
   const p = (S.progress||{})[id]; if(!p) return null;
@@ -904,15 +1089,17 @@ function zhLessonScore(id, tot){
     listen: tot.listen && p.listen!=null ? p.listen / tot.listen : 0,
     role: p.role ? 1 : 0,
     quiz: tot.quiz && p.quiz!=null ? p.quiz / tot.quiz : 0,
+    para: tot.para && p.para ? Math.min(1, (p.para.score!=null ? p.para.score/100 : 1)) : 0,
+    news: tot.news && p.news!=null ? p.news / tot.news : 0,
   };
   // Trình duyệt không nhận dạng giọng nói và chưa có kết quả phát âm: không tính phần phát âm (không trừ điểm oan)
   const skipPron = !ZH_SR && !Object.values(p.pron||{}).some(Boolean);
   let got = 0, max = 0; const rows = [];
-  ZH_W.forEach(([k, name, w])=>{ const skip = k==="pron" && skipPron; const pts = Math.round(Math.min(1, ratio[k]) * w * 10) / 10; if(!skip){ got += pts; max += w; } rows.push({k, name, w, pts, r:ratio[k], skip}); });
+  ZH_W.forEach(([k, name, w])=>{ const skip = (k==="pron" && skipPron) || ((k==="para"||k==="news") && !tot[k]); const pts = Math.round(Math.min(1, ratio[k]) * w * 10) / 10; if(!skip){ got += pts; max += w; } rows.push({k, name, w, pts, r:ratio[k], skip}); });
   const score = max ? Math.round(got / max * 1000) / 10 : 0;
   return {score, grade:zhGrade(score), rows, started: Object.values(ratio).some(x=>x>0)};
 }
-function zhAdvice(k){ return {video:"Xem video tương tác và làm kiểm tra sau video.", l1:"Học hết Lớp 1 rồi bấm 'Đã học xong Lớp 1'.", write:"Viết đủ các chữ ở tab Tập viết, đúng bút thuận.", asm:"Làm hết các bài ghép ở tab Ghép.", pron:"Luyện tab Phát âm trên Chrome hoặc Edge đến khi máy nhận ra đúng.", listen:"Làm bài nghe hiểu và bấm lưu kết quả.", role:"Hoàn thành role-play ở Lớp 3 (có thể nhờ AI chấm câu tự do).", quiz:"Làm kiểm tra cuối bài và lưu kết quả."}[k]; }
+function zhAdvice(k){ return {video:"Xem video tương tác và làm kiểm tra sau video.", l1:"Học hết Lớp 1 rồi bấm 'Đã học xong Lớp 1'.", write:"Viết đủ các chữ ở tab Tập viết, đúng bút thuận.", asm:"Làm hết các bài ghép ở tab Ghép.", pron:"Luyện tab Phát âm trên Chrome hoặc Edge đến khi máy nhận ra đúng.", listen:"Làm bài nghe hiểu và bấm lưu kết quả.", role:"Hoàn thành role-play ở Lớp 3 (có thể nhờ AI chấm câu tự do).", quiz:"Làm kiểm tra cuối bài và lưu kết quả.", para:"Viết đoạn văn ở tab Viết đoạn văn rồi nhờ AI chấm theo tiêu chí.", news:"Nghe bản tin ở tab Nghe bản tin và trả lời câu hỏi."}[k]; }
 
 /* ---------- Tab Điểm của bài ---------- */
 function tabScore(el, d, p){
@@ -922,7 +1109,7 @@ function tabScore(el, d, p){
   const weak = r.rows.filter(x=>!x.skip && x.r<1).sort((a,b)=>(b.w*(1-b.r))-(a.w*(1-a.r))).slice(0,3);
   el.innerHTML = `<div class="card"><h2>Điểm và đánh giá bài ${esc(d.id)}</h2>
     <div class="bands"><div class="band"><div class="v">${r.score}</div>điểm / 100</div><div class="band"><div class="v" style="font-size:22px">${r.grade}</div>xếp loại</div><div class="band"><div class="v">${errs.length}</div>lỗi đã ghi</div></div>
-    <div class="tblwrap"><table><tr><th>Thành phần</th><th>Trọng số</th><th>Mức hoàn thành</th><th>Điểm</th><th>Việc nên làm</th></tr>${r.rows.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.w}</td><td>${x.skip?"Không tính (trình duyệt chưa hỗ trợ nhận dạng giọng nói)":Math.round(x.r*100)+"%"}</td><td>${x.skip?"-":x.pts}</td><td>${x.r>=1||x.skip?"Đã xong":esc(zhAdvice(x.k))}</td></tr>`).join("")}</table></div>
+    <div class="tblwrap"><table><tr><th>Thành phần</th><th>Trọng số</th><th>Mức hoàn thành</th><th>Điểm</th><th>Việc nên làm</th></tr>${r.rows.filter(x=>!(x.skip&&(x.k==="para"||x.k==="news"))).map(x=>`<tr><td>${esc(x.name)}</td><td>${x.w}</td><td>${x.skip?(x.k==="pron"?"Không tính (trình duyệt chưa hỗ trợ nhận dạng giọng nói)":"Không có ở bài này"):Math.round(x.r*100)+"%"}</td><td>${x.skip?"-":x.pts}</td><td>${x.r>=1||x.skip?"Đã xong":esc(zhAdvice(x.k))}</td></tr>`).join("")}</table></div>
     <p class="mute">Thang điểm: Xuất sắc từ 90, Giỏi từ 80, Khá từ 65, Đạt từ 50. Bài được tính là hoàn thành khi đạt từ 50 điểm và đã làm kiểm tra cuối bài.</p>
     <h3>Nhận xét tự động</h3><div class="box">${r.score>=90?"Bạn đã làm chủ bài này. Hãy ôn thẻ ghi nhớ theo lịch 1-3-7-14-30 để giữ kiến thức.":r.started?`Điểm hiện tại ${r.score}. Ưu tiên: ${weak.map(x=>esc(x.name)).join(", ")||"hoàn thiện các phần còn lại"}.`:"Bạn chưa bắt đầu bài này. Hãy xem video tương tác trước, rồi học Lớp 1."}${Object.keys(types).length?`<br>Lỗi lặp lại nhiều nhất: ${Object.entries(types).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,n])=>esc(k)+" ("+n+")").join(", ")}.`:""}</div>
     <div class="row"><button class="btn sec" onclick="S.tab='ai';save();render();setTimeout(()=>zaAsk('Hãy nhận xét kết quả học bài này của tôi và đề xuất cách ôn: điểm ${r.score}/100, ${r.rows.map(x=>x.name+' '+Math.round(x.r*100)+'%').join(', ')}; lỗi: ${Object.entries(types).map(([k,n])=>k+' '+n).join(', ')||'chưa có'}.'),50)">Nhờ Trợ lý AI nhận xét chi tiết</button><button class="btn sec" onclick="S.lesson=null;S.page='grades';save();render()">Mở sổ điểm</button></div></div>`;
@@ -955,12 +1142,28 @@ function zhAssessHomeCard(){
 
 /* ---------- Bộ máy đề thi ---------- */
 const ZT = { cfg:null, qs:[], ans:{}, ord:{}, i:0, t0:0, left:0, tick:null, done:false, res:null, loading:false, err:"" };
+const ZT_MIX = {vocab:6, read:3, pinyin:3, listen:3, quiz:3, order:2};
 const ZT_CFG = {
-  A: {name:"Kiểm tra Phần A - Nền tảng", parts:["A"], mix:{vocab:6, read:3, pinyin:3, listen:3, quiz:3, order:2}, min:25, pass:70},
-  B: {name:"Kiểm tra Phần B - Giao tiếp", parts:["B"], mix:{vocab:6, read:3, pinyin:3, listen:3, quiz:3, order:2}, min:25, pass:70},
-  C: {name:"Kiểm tra Giai đoạn 1 - Khối 1 (HSK 2)", parts:["C"], mix:{vocab:6, read:3, pinyin:3, listen:3, quiz:3, order:2}, min:25, pass:70},
-  HSK: {name:"Thi thử theo cấu trúc HSK 1-2 (KK-EDU)", parts:["A","B","C"], hsk:true, sections:[["Nghe", {listen:10}, 100], ["Đọc", {vocab:4, read:3, quiz:3}, 60], ["Viết câu", {order:5}, 40]], min:35, pass:120},
+  "K-A": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Phần A - Nền tảng", from:"ZH-A01", to:"ZH-A06", mix:ZT_MIX, n:20, min:25, pass:70},
+  "K-B": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Phần B - Giao tiếp", from:"ZH-B01", to:"ZH-B24", mix:ZT_MIX, n:20, min:25, pass:70},
+  "K-C1": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Giai đoạn 1 - Khối 1 (C01-C10)", from:"ZH-C01", to:"ZH-C10", mix:ZT_MIX, n:20, min:25, pass:70},
+  "K-C2": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Giai đoạn 1 - Khối 2 (C11-C20)", from:"ZH-C11", to:"ZH-C20", mix:ZT_MIX, n:20, min:25, pass:70},
+  "K-C3": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Giai đoạn 1 - Khối 3 (C21-C30)", from:"ZH-C21", to:"ZH-C30", mix:ZT_MIX, n:20, min:25, pass:70},
+  "K-C4": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Giai đoạn 1 - Khối 4 (C31-C40)", from:"ZH-C31", to:"ZH-C40", mix:ZT_MIX, n:20, min:25, pass:70},
+  "K-C5": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Giai đoạn 1 - Khối 5 (C41-C50)", from:"ZH-C41", to:"ZH-C50", mix:ZT_MIX, n:20, min:25, pass:70},
+  "K-C6": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Giai đoạn 1 - Khối 6 (C51-C60)", from:"ZH-C51", to:"ZH-C60", mix:ZT_MIX, n:20, min:25, pass:70},
+  "K-C7": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Giai đoạn 1 - Khối 7 (C61-C70)", from:"ZH-C61", to:"ZH-C70", mix:ZT_MIX, n:20, min:25, pass:70},
+  "K-C8": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Giai đoạn 1 - Khối 8 (C71-C80)", from:"ZH-C71", to:"ZH-C80", mix:ZT_MIX, n:20, min:25, pass:70},
+  "K-C9": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Giai đoạn 1 - Khối 9 (C81-C90)", from:"ZH-C81", to:"ZH-C90", mix:ZT_MIX, n:20, min:25, pass:70},
+  "K-D1": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Giai đoạn 2 - Khối 1 (D01-D10)", from:"ZH-D01", to:"ZH-D10", mix:ZT_MIX, n:20, min:25, pass:70},
+  "K-D2": {group:"Kiểm tra theo phần và khối", name:"Kiểm tra Giai đoạn 2 - Khối 2 (D11-D20)", from:"ZH-D11", to:"ZH-D20", mix:ZT_MIX, n:20, min:25, pass:70},
+  HSK: {group:"Thi thử theo cấu trúc HSK (KK-EDU)", name:"Thi thử HSK 1-2 (A, B, C01-C20)", from:"ZH-A01", to:"ZH-C20", sample:24, hsk:true, sections:[["Nghe", {listen:10}, 100], ["Đọc", {vocab:4, read:3, quiz:3}, 60], ["Viết câu", {order:5}, 40]], n:25, min:35, pass:120},
+  HSK3: {group:"Thi thử theo cấu trúc HSK (KK-EDU)", name:"Thi thử HSK 3 (C01-C90)", from:"ZH-C01", to:"ZH-C90", sample:24, hsk:true, sections:[["Nghe", {listen:10}, 100], ["Đọc", {vocab:4, read:3, quiz:3}, 60], ["Viết câu", {order:5}, 40]], n:25, min:40, pass:120},
+  HSK4: {group:"Thi thử theo cấu trúc HSK (KK-EDU)", name:"Thi thử HSK 4 (D01-D20)", from:"ZH-D01", to:"ZH-D20", sample:20, hsk:true, sections:[["Nghe", {listen:10}, 100], ["Đọc", {vocab:4, read:3, quiz:3}, 60], ["Viết câu", {order:5}, 40]], n:25, min:40, pass:120},
 };
+// tương thích bản cũ: A, B, C (khối 1)
+ZT_CFG.A = ZT_CFG["K-A"]; ZT_CFG.B = ZT_CFG["K-B"]; ZT_CFG.C = ZT_CFG["K-C1"];
+function ztIds(cfg){ const all=LESSONS.map(x=>x.id).filter(id=>id[3]>=cfg.from[3] && id[3]<=cfg.to[3] && id>=cfg.from && id<=cfg.to); return cfg.sample && all.length>cfg.sample ? shuffle(all).slice(0,cfg.sample) : all; }
 const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
 function ztOpts(correct, pool){ const ds = shuffle(pool.filter(x=>x && x!==correct)).filter((x,i,a)=>a.indexOf(x)===i).slice(0,2); if(ds.length<2) return null; const keys=["A","B","C"]; const vals=shuffle([correct, ...ds]); const o={}; keys.forEach((k,i)=>o[k]=vals[i]); return {options:o, answer:keys[vals.indexOf(correct)]}; }
 function ztBank(lessons){
@@ -985,7 +1188,7 @@ function ztPick(B, mix){ let out=[]; Object.entries(mix).forEach(([k,n])=>{ out 
 async function ztStart(key){
   const cfg = ZT_CFG[key]; ZT.cfg=Object.assign({key}, cfg); ZT.loading=true; ZT.err=""; render();
   try{
-    const ids = LESSONS.filter(x=>cfg.parts.includes(x.part)).map(x=>x.id);
+    const ids = ztIds(cfg);
     const lessons = await Promise.all(ids.map(zhNeed));
     const B = ztBank(lessons);
     if(cfg.hsk){ ZT.qs=[]; cfg.sections.forEach(([name, mix])=>{ ztPick(B, mix).forEach(q=>ZT.qs.push(Object.assign({sec:name}, q))); }); }
@@ -1016,8 +1219,7 @@ function zhTestView(m){
     const hist=(S.tests||[]).slice(-5).reverse();
     m.innerHTML=`<div class="card"><div class="row"><button class="btn sec" onclick="S.page=null;save();render()">Danh sách bài</button><button class="btn sec" onclick="S.page='grades';save();render()">Sổ điểm</button></div><h1>Kiểm tra và thi thử</h1>${ZT.err?`<p class="warnbox">${esc(ZT.err)}</p>`:""}
       <p class="mute">Đề sinh ngẫu nhiên từ chính nội dung các bài (từ vựng, đọc, pinyin, nghe, kiến thức, trật tự từ). Có đồng hồ đếm ngược, hết giờ tự nộp; chấm ngay; câu sai được ghi vào sổ lỗi.</p>
-      <div class="grid">${["A","B","C"].map(k=>{ const c=ZT_CFG[k]; return `<div class="box"><b>${esc(c.name)}</b><div class="mute">20 câu · ${c.min} phút · đạt từ ${c.pass}%</div><button class="btn" style="margin-top:8px" onclick="ztStart('${k}')">Bắt đầu</button></div>`; }).join("")}
-      <div class="box"><b>${esc(ZT_CFG.HSK.name)}</b><div class="mute">25 câu: Nghe 10 (100 điểm), Đọc 10 (60 điểm), Viết câu 5 (40 điểm) · ${ZT_CFG.HSK.min} phút · đạt từ 120/200. Không thay thế kỳ thi HSK chính thức.</div><button class="btn gold" style="margin-top:8px" onclick="ztStart('HSK')">Bắt đầu thi thử</button></div></div></div>
+      ${[...new Set(Object.values(ZT_CFG).map(c=>c.group))].map(g=>`<h2>${esc(g)}</h2><div class="grid">${Object.entries(ZT_CFG).filter(([k,c])=>c.group===g && !/^[ABC]$/.test(k)).map(([k,c])=>`<div class="box"><b>${esc(c.name)}</b><div class="mute">${c.hsk?`25 câu: Nghe 10 (100 điểm), Đọc 10 (60 điểm), Viết câu 5 (40 điểm) · ${c.min} phút · đạt từ 120/200. Không thay thế kỳ thi HSK chính thức.`:`${c.n} câu · ${c.min} phút · đạt từ ${c.pass}%`}</div><button class="btn ${c.hsk?"gold":""}" style="margin-top:8px" onclick="ztStart('${k}')">${c.hsk?"Bắt đầu thi thử":"Bắt đầu"}</button></div>`).join("")}</div>`).join("")}</div>
       ${hist.length?`<div class="card"><h2>Gần đây</h2><ul>${hist.map(t=>`<li>${esc(t.date)} · ${esc(t.name)}: <b>${esc(t.scoreText)}</b> - ${t.pass?"Đạt":"Chưa đạt"}</li>`).join("")}</ul></div>`:""}`;
     return;
   }
@@ -1137,6 +1339,74 @@ function zaAccept(){
   chat.turn++; const nt=R.turns[chat.turn]; if(nt){ chat.log.push({ai:true, zh:nt.ai.zh, py:nt.ai.py, vi:nt.ai.vi}); TTS(nt.ai.zh); } else chat.done=true;
   chat.aiCand=null; ZA.grade=null; render();
 }
+
+/* ===== KK-EDU Tiếng Trung Giai đoạn 2 (HSK 4): Viết đoạn văn chấm theo tiêu chí, Nghe bản tin ngắn =====
+   Tác giả : Nguyễn Duy Điển (KK-2026). Có ở các bài ZH-D; điểm dừng 6 và 7 của video cũng dùng hai module này. */
+const ZDP = { busy:false };
+function zhParaHTML(d, compact){
+  const P=d.layer2.paragraph, p=PR(d.id), st=p.para||{};
+  const txt=st.text||"", used=P.connectives.filter(c=>txt.includes(c.zh)).map(c=>c.zh), sent=(txt.match(/[。！？.!?]/g)||[]).length;
+  const g=st.ai;
+  return `<div class="card"><h2>Viết đoạn văn (chấm theo tiêu chí)</h2>
+    <div class="box"><b>Đề bài:</b> ${esc(P.prompt_vi)}<br><span class="zh">${esc(P.prompt_zh)}</span> <button class="btn sec sm" onclick="TTS('${esc(P.prompt_zh)}')">Nghe đề</button></div>
+    ${compact?"":`<div class="tblwrap"><table><tr><th>Từ khóa</th><th>Pinyin</th><th>Nghĩa</th></tr>${P.keywords.map(k=>`<tr onclick="TTS('${esc(k.zh)}')" style="cursor:pointer"><td class="zh">${esc(k.zh)}</td><td>${esc(k.py)}</td><td>${esc(k.vi)}</td></tr>`).join("")}</table></div>`}
+    <p><b>Từ nối bắt buộc (dùng ít nhất 3):</b> ${P.connectives.map(c=>`<span class="chip" style="font-size:16px;cursor:pointer" onclick="zhParaIns('${esc(c.zh)}')" title="${esc(c.py)} - ${esc(c.vi)}">${esc(c.zh)}</span>`).join("")}</p>
+    <div class="box"><b>Khung đoạn văn:</b><ol>${P.frame.map(f=>`<li>${esc(f)}</li>`).join("")}</ol></div>
+    <textarea id="zhParaTx" rows="6" style="width:100%;box-sizing:border-box;font-size:18px;font-family:'Noto Sans SC',var(--font);padding:10px;border:1px solid var(--line);border-radius:8px" placeholder="Viết ít nhất 5 câu bằng chữ Hán..." oninput="zhParaSave(this.value)">${esc(txt)}</textarea>
+    <p class="mute" id="zhParaChk">Đã dùng ${used.length}/3 từ nối${used.length?": "+used.join(", "):""} · ${sent} câu (cần ít nhất 5) · ${txt.replace(/\s/g,"").length} ký tự</p>
+    <div class="row">${KK.user?`<button class="btn" ${ZDP.busy?"disabled":""} onclick="zhParaGrade('${d.id}')">Nộp để AI chấm theo tiêu chí</button>`:`<a class="btn" href="${kkLoginUrl()}">Đăng nhập để AI chấm</a>`}<button class="btn sec" onclick="zhParaSelf('${d.id}')">Tự chấm và xem bài mẫu</button></div>
+    ${ZDP.err?`<p class="warnbox">${esc(ZDP.err)}</p>`:""}${ZDP.busy?'<p class="mute">AI đang chấm bài...</p>':""}
+    ${g?`<div class="box"><b>AI chấm: ${g.score}/100</b> <span class="mute">(AI gợi ý, giáo viên quyết định)</span><div class="tblwrap"><table><tr><th>Tiêu chí</th><th>Điểm</th><th>Nhận xét</th></tr>${(g.criteria||[]).map(c=>`<tr><td>${esc(c.name||"")}</td><td>${esc(String(c.score??""))}</td><td>${esc(c.comment_vi||"")}</td></tr>`).join("")}</table></div>${(g.errors||[]).length?`<p><b>Lỗi cần sửa:</b></p><ul>${g.errors.map(e=>`<li><span class="zh">${esc(e.wrong||"")}</span> → <span class="zh">${esc(e.fix||"")}</span>: ${esc(e.why_vi||"")}</li>`).join("")}</ul>`:""}${g.corrected?`<p><b>Đoạn đã sửa:</b> <span class="zh">${esc(g.corrected)}</span></p>`:""}<p>${esc(g.comment_vi||"")}</p></div>`:""}
+    ${st.shown||g?`<div class="box"><b>Bài mẫu</b> <button class="btn sec sm" onclick="TTS('${esc(P.model.zh)}')">Cô Lin đọc</button><p class="zh">${esc(P.model.zh)}</p><p class="mute">${esc(P.model.py)}</p><p>${esc(P.model.vi)}</p></div>
+      <div class="tblwrap"><table><tr><th>Tiêu chí</th><th>Trọng số</th><th>Mô tả</th></tr>${P.criteria.map(c=>`<tr><td>${esc(c.name)}</td><td>${c.weight}%</td><td>${esc(c.desc)}</td></tr>`).join("")}</table></div>
+      <div class="tblwrap"><table><tr><th>Lỗi thường gặp</th><th>Cách sửa</th></tr>${P.errors.map(e=>`<tr><td>${esc(e.error)}</td><td>${esc(e.fix)}</td></tr>`).join("")}</table></div>`:""}
+  </div>`;
+}
+function zhParaSave(v){ const d=L(); if(!d) return; const p=PR(d.id); p.para=Object.assign(p.para||{}, {text:String(v).slice(0,2000)}); save();
+  const P=d.layer2.paragraph; const used=P.connectives.filter(c=>v.includes(c.zh)).map(c=>c.zh); const sent=(v.match(/[。！？.!?]/g)||[]).length; const el=$("#zhParaChk"); if(el) el.textContent=`Đã dùng ${used.length}/3 từ nối${used.length?": "+used.join(", "):""} · ${sent} câu (cần ít nhất 5) · ${v.replace(/\s/g,"").length} ký tự`; }
+function zhParaIns(w){ const t=$("#zhParaTx"); if(!t) return; const a=t.selectionStart||t.value.length; t.value=t.value.slice(0,a)+w+t.value.slice(a); t.focus(); zhParaSave(t.value); }
+function zhParaSelf(id){ const p=PR(id); const txt=(p.para&&p.para.text)||""; const d=ZH.full[id]; const P=d.layer2.paragraph;
+  const used=P.connectives.filter(c=>txt.includes(c.zh)).length, sent=(txt.match(/[。！？.!?]/g)||[]).length;
+  const self = Math.round(100*Math.min(1, used/3)*0.5 + 100*Math.min(1, sent/5)*0.5);
+  p.para=Object.assign(p.para||{}, {shown:true, score: (p.para&&p.para.ai)?p.para.score:self, self}); save(); render(); }
+async function zhParaGrade(id){
+  const p=PR(id); const txt=((p.para&&p.para.text)||"").trim(); if(txt.length<10){ ZDP.err="Hãy viết đoạn văn (ít nhất vài câu) trước khi nộp."; render(); return; }
+  ZDP.busy=true; ZDP.err=""; render();
+  try{ const j=await zaApi({task:"paragraph", lesson:id, answer:txt}); const g=j.json; if(!g||g.score==null) throw new Error("AI chưa trả kết quả chấm hợp lệ, hãy thử lại.");
+    p.para=Object.assign(p.para||{}, {ai:g, score:g.score, shown:true, at:new Date().toISOString().slice(0,10)});
+    (g.errors||[]).slice(0,3).forEach(e=>S.errors.push({date:new Date().toISOString().slice(0,10), lesson:id, type:"viết đoạn văn", detail:String(e.wrong||"").slice(0,80)}));
+    save(); }
+  catch(e){ ZDP.err = e.message==="login" ? "Cần đăng nhập để AI chấm." : e.message; }
+  ZDP.busy=false; render();
+}
+function tabPara(el, d, p){ el.innerHTML = zhParaHTML(d); }
+
+function zhNewsHTML(d){
+  const N=d.layer2.news, p=PR(d.id), ans=(p.newsAns=p.newsAns||{}); const showTx=!!p.newsTx;
+  const done=N.questions.every((q,i)=>ans[i]); const c=N.questions.filter((q,i)=>ans[i]===q.answer).length;
+  return `<div class="card"><h2>Nghe bản tin: <span class="zh">${esc(N.title_zh)}</span></h2><p class="mute">${esc(N.title_vi)} · ${esc(N.listen_note||"Nghe hai lần: lần một có chữ, lần hai chỉ có âm thanh.")}</p>
+    <div class="row"><button class="btn" onclick="zhPlayLines(L().layer2.news.script.map(x=>x.zh))">Nghe bản tin</button><label class="mute"><input type="checkbox" ${showTx?"checked":""} onchange="PR(L().id).newsTx=this.checked;save();render()"> Hiện chữ (lần nghe đầu)</label></div>
+    ${showTx?`<div class="tblwrap"><table><tr><th>Tiếng Trung</th><th>Pinyin</th><th>Nghĩa</th></tr>${N.script.map(x=>`<tr onclick="TTS('${esc(x.zh)}')" style="cursor:pointer"><td class="zh">${esc(x.zh)}</td><td>${esc(x.py)}</td><td>${done?esc(x.vi):'<span class="mute">(hiện sau khi trả lời)</span>'}</td></tr>`).join("")}</table></div>`:""}
+    <p><b>Từ khóa:</b> ${N.keywords.map(k=>`<span class="zh" style="cursor:pointer" onclick="TTS('${esc(k.zh)}')" title="${esc(k.py)}">${esc(k.zh)}</span> (${esc(k.py)}) ${esc(k.vi)}`).join("; ")}</p>
+    ${N.questions.map((q,i)=>`<div class="box"><b>${i+1}. ${esc(q.q)}</b>${["A","B","C"].map(k=>`<button class="opt ${ans[i]?(k===q.answer?"ok":(k===ans[i]?"ko":"")):""}" ${ans[i]?"disabled":""} onclick="zhNewsPick(${i},'${k}')">${k}. ${esc(q.options[k])}</button>`).join("")}${ans[i]?`<div class="fb ${ans[i]===q.answer?"good":"bad"}">${esc(q.explain||"")}</div>`:""}</div>`).join("")}
+    ${done?`<p><b>Kết quả: ${c}/${N.questions.length}</b> <button class="btn sec sm" onclick="PR(L().id).newsAns={};PR(L().id).news=null;save();render()">Làm lại</button></p>`:""}</div>`;
+}
+function zhNewsPick(i,k){ const d=L(); const N=d.layer2.news; const p=PR(d.id); p.newsAns=p.newsAns||{}; if(p.newsAns[i]) return; p.newsAns[i]=k;
+  if(k!==N.questions[i].answer) S.errors.push({date:new Date().toISOString().slice(0,10), lesson:d.id, type:"nghe", detail:("bản tin: "+N.questions[i].q).slice(0,80)});
+  if(N.questions.every((q,j)=>p.newsAns[j])) p.news=N.questions.filter((q,j)=>p.newsAns[j]===q.answer).length;
+  save(); render(); if(ZV && ZV.flat && ZV.flat[ZV.i] && ZV.flat[ZV.i].it.kind==="news" && N.questions.every((q,j)=>p.newsAns[j])) zvCpDone("Đã nghe và trả lời bản tin."); }
+function tabNews(el, d, p){ el.innerHTML = zhNewsHTML(d); }
+
+/* Điểm dừng 6 (viết đoạn văn) và 7 (nghe tin tức) trong video Giai đoạn 2 */
+const _zvCpD = zvCpHTML;
+zvCpHTML = function(v, d, it){
+  const done = !!ZV.cp[ZV.i];
+  const cont = `<div class="row" style="margin-top:8px"><button class="btn gold" id="zvCont" ${done?"":"disabled"} onclick="zvNext()">Tiếp tục video</button>${done?"":'<span class="mute">Hoàn thành điểm dừng để đi tiếp.</span>'}</div><div id="zvCpFb"></div>`;
+  if(it.kind==="para" && d.layer2.paragraph){ const P=d.layer2.paragraph;
+    return `<div class="zvcp"><h3>${esc(it.title)}</h3><p><b>Đề:</b> ${esc(P.prompt_vi)} <span class="zh">${esc(P.prompt_zh)}</span></p><p>Viết nhanh 2-3 câu dùng ${P.connectives.slice(0,3).map(c=>`<b class="zh">${esc(c.zh)}</b>`).join(", ")}; bài đầy đủ (5 câu, AI chấm theo tiêu chí) làm ở tab Viết đoạn văn.</p><textarea id="zvParaTx" rows="3" style="width:100%;box-sizing:border-box;font-size:18px" oninput="if(PR(L().id).para===undefined)PR(L().id).para={};PR(L().id).para.text=this.value;save();const ok=L().layer2.paragraph.connectives.filter(c=>this.value.includes(c.zh)).length>=1&&this.value.replace(/\\s/g,'').length>=8;if(ok)zvCpDone('Tốt. Bài mẫu: '+L().layer2.paragraph.model.zh)">${esc((PR(d.id).para||{}).text||"")}</textarea>${cont}</div>`; }
+  if(it.kind==="news" && d.layer2.news) return `<div class="zvcp"><h3>${esc(it.title)}</h3>${zhNewsHTML(d)}${cont}</div>`;
+  return _zvCpD(v, d, it);
+};
 
 /* ===== KK-EDU: Ô tài khoản dùng chung cho các phân hệ (IELTS, Tiếng Trung) - cùng kiểu menu với trang chủ =====
    Tác giả : Nguyễn Duy Điển (KK-2026). Một tài khoản KK-EDU cho mọi phân hệ: tên lấy từ hồ sơ học viên, liên kết về Học tập của tôi, Quản trị. */

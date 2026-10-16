@@ -1963,6 +1963,163 @@ function labFamilyHTML(){
 @media print{#kkUser{display:none}}
 </style>
 <script id="kkacct-js">
+const ambigFix = (function(){
+/* KK-EDU: phân định từ viết giống nhau ở tiếng Việt (không dấu) và tiếng Anh theo ngữ cảnh.
+   Ví dụ: "so sánh", "so với" -> tiếng Việt; "so that", "and so on", 'so' trong ngoặc -> tiếng Anh.
+   Dùng chung cho Worker (splitLang) và trang IELTS (kkSplitLang, giọng dự phòng). Tác giả : Nguyễn Duy Điển (KK-2026). */
+// Cặp từ tiếng Việt: từ nhập nhằng + âm tiết đứng sau (n) hoặc đứng trước (p)
+const VI_PAIRS = {
+  so: { n: "với sánh khớp le đo bì kè lại", p: "đem đối" },
+  to: { n: "lớn tát nhỏ đùng tiếng béo gấp", p: "phóng rất nói quá khá hơi cỡ thật chữ" },
+  in: { n: "nghiêng hoa đậm ra ấn sẵn thường lại màu lịch bài trang tài", p: "bản máy chữ" },
+  an: { n: "toàn ninh tâm ủi khang nhàn cư bài", p: "bình bảo công trị" },
+  can: { n: "thiệp đảm ngăn hệ", p: "liên" },
+  no: { n: "nê đủ say", p: "ăn" },
+  long: { n: "lanh trọng", p: "rồng" },
+  me: { n: "chua", p: "cây quả" },
+  man: { n: "mát rợ", p: "lan" },
+  do: { n: "đó vậy dự", p: "lý tự nguyên" },
+  ban: { n: "đầu ngày đêm hành nãy giám tổ chấp sáng", p: "đích" },
+  bay: { n: "lượn nhảy", p: "máy bay" },
+  tin: { n: "tức tưởng cậy học nhắn", p: "thông bản đáng niềm tự" },
+  con: { n: "người số đường đường cái", p: "là" },
+  sang: { n: "trọng năm tuần", p: "chuyển đi đổi" },
+  hang: { n: "động", p: "" },
+  tan: { n: "học biến rã", p: "" },
+};
+const VI_DIA = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+// từ "nhắc tới một từ" đứng trước: "từ so", "chữ to", "cụm in" -> từ đó là ví dụ tiếng Anh
+const MENTION = new Set(["từ", "chữ", "cụm", "dùng"]);
+// từ mà nghĩa tiếng Việt phổ biến hơn khi đứng sau một từ tiếng Việt (do = bởi; tin, con, sang...)
+const VI_STRONG = new Set(["in", "to"]);
+const EN_RARE = new Set(["sang", "tin", "con", "ban", "bay", "tan", "hang"]);
+const DO_EN_NEXT = new Set("you not we they i the it this that so a an your my our their he she at what some any nothing something more".split(" "));
+const SETS = {}; for (const [w, v] of Object.entries(VI_PAIRS)) SETS[w] = { n: new Set(v.n.split(" ").filter(Boolean)), p: new Set(v.p.split(" ").filter(Boolean)) };
+const low = t => String(t || "").toLowerCase().replace(/^[^a-zà-ỹ0-9]+|[^a-zà-ỹ0-9]+$/gi, "");
+const opensQuote = t => /^["'‘“]/.test(t), closesQuote = t => /["'’”][.,;:!?)]*$/.test(t);
+/** Sửa phân loại cho các từ nhập nhằng. toks: mảng token; out: mảng nhãn "vi"|"en"|null (đã phân loại sơ bộ). Trả về out đã sửa. */
+function ambigFix(toks, out, LEX_EN, LEX_VI) {
+  const n = toks.length;
+  // vị trí trong cặp ngoặc kép/đơn và cả cụm trong ngoặc không có dấu tiếng Việt -> là ví dụ tiếng Anh
+  const inQuote = new Array(n).fill(false);
+  for (let i = 0; i < n; i++) {
+    if (!opensQuote(toks[i])) continue;
+    let j = i; while (j < n && j - i < 12 && !(closesQuote(toks[j]) && (j > i || toks[j].length > 2))) j++;
+    if (j >= n || j - i >= 12) continue;
+    const span = toks.slice(i, j + 1);
+    if (!span.some(t => VI_DIA.test(t))) for (let k = i; k <= j; k++) inQuote[k] = true;
+    i = j;
+  }
+  // từ tiếng Anh "chắc chắn" làm ngữ cảnh: có trong từ điển Anh, không phải từ Việt, không nhập nhằng, không nằm trong ngoặc (ngoặc = trích dẫn giữa câu Việt)
+  const strongEn = (x, k) => !!x && !VI_DIA.test(x) && LEX_EN.has(x) && !LEX_VI.has(x) && !SETS[x] && !inQuote[k] && !/^["'‘“]|["'’”][.,;:!?)]*$/.test(toks[k] || "");
+  const clauseBreak = t => /[.!?:;,]["')\]]?$/.test(t);
+  for (let i = 0; i < n; i++) {
+    const w = low(toks[i]); const S = SETS[w];
+    if (!S || VI_DIA.test(w)) continue;
+    if (inQuote[i]) { out[i] = "en"; continue; }
+    const prev = i > 0 && !clauseBreak(toks[i - 1]) ? low(toks[i - 1]) : "";
+    const next = i + 1 < n && !clauseBreak(toks[i]) ? low(toks[i + 1]) : "";
+    if ((next && S.n.has(next)) || (prev && S.p.has(prev))) { out[i] = "vi"; continue; }
+    if (prev && MENTION.has(prev)) { out[i] = "en"; continue; }
+    // ngữ cảnh tiếng Việt hai phía (từ trước có dấu hoặc đầu vế; từ sau có dấu): dùng nghĩa tiếng Việt
+    const viPrev = !prev || VI_DIA.test(prev), viNext = next && VI_DIA.test(next);
+    if (viPrev && viNext && LEX_VI.has(w)) { out[i] = "vi"; continue; }
+    if (EN_RARE.has(w)) { out[i] = strongEn(prev, i - 1) && strongEn(next, i + 1) ? "en" : "vi"; continue; }   // nghĩa tiếng Anh hiếm: sang, tin, con...
+    if (w === "do" && next && DO_EN_NEXT.has(next)) { out[i] = "en"; continue; }                      // "Do you...", "do not", "do the interviews"
+    if (w === "do" && ((prev && VI_DIA.test(prev)) || viNext)) { out[i] = "vi"; continue; }    // "lý do", "do AI viết", "thường do paraphrase"
+    if (VI_STRONG.has(w) && prev && VI_DIA.test(prev) && !strongEn(next, i + 1)) { out[i] = "vi"; continue; }
+    // không có cặp tiếng Việt: hai bên đều là từ tiếng Anh chắc chắn -> Anh; hai bên đều có dấu tiếng Việt -> theo từ điển
+    if (strongEn(prev, i - 1) || strongEn(next, i + 1)) { if (!(prev && VI_DIA.test(prev) && next && VI_DIA.test(next))) out[i] = "en"; }
+  }
+  return out;
+}
+
+return ambigFix;
+})();
+/* KK-EDU IELTS: giọng dự phòng của thiết bị cũng phân định từ nhập nhằng Việt/Anh theo ngữ cảnh (so sánh / so that) - cùng thuật toán Worker */
+kkSplitLang = function(text){
+  const toks=String(text||"").replace(/\s+/g," ").trim().split(" ").filter(Boolean);
+  const clean=t=>t.toLowerCase().replace(/^[^a-zà-ỹ0-9]+|[^a-zà-ỹ0-9]+$/gi,""); const letters=t=>t.replace(/[^A-Za-zÀ-ỹ]/g,"");
+  const lang=toks.map(t=>{ const w=clean(t); if(!w) return null; if(VI_DIACRITIC.test(w)) return "vi"; const L=letters(t); if(L.length>=2&&L===L.toUpperCase()) return "en"; if(/\.[a-z]{2,}$/i.test(w)||/^www\./i.test(w)||/@/.test(w)) return "en"; if(!/^[a-z][a-z'.-]*$/i.test(w)) return null; const lw=w.replace(/'s$/,""); if(LEX.vi.has(lw)) return "vi"; if(LEX.en.has(lw)||EN_SURE.has(lw)) return "en"; if(VI_PLAIN.has(lw)) return "vi"; return VN_SYL.test(lw)&&lw.length<=7?null:"en"; });
+  const ends=t=>/[.!?:;]["')\]]?$/.test(t); const n=toks.length, out=ambigFix(toks, lang.slice(), LEX.en, LEX.vi);
+  for(let i=0;i<n;i++){ if(out[i]==null&&/[a-z]\/[a-z]/i.test(toks[i])){ const parts=clean(toks[i]).split("/").map(x=>x.replace(/'s$/,"")); const en=parts.filter(x=>LEX.en.has(x)||EN_SURE.has(x)).length; const vi=parts.filter(x=>VI_DIACRITIC.test(x)||LEX.vi.has(x)).length; if(en+vi) out[i]=en>=vi?"en":"vi"; } }
+  for(let i=0;i<n;i++){ if(out[i]!=null) continue; const t=toks[i]; if(!/^[A-Z][a-z'-]+[.,;:!?]*$/.test(t)) continue; const sos=i===0||ends(toks[i-1]); const nearVi=[toks[i-1],toks[i+1]].some(x=>x&&/^[A-ZÀ-Ỹ]/.test(x)&&VI_DIACRITIC.test(x)); if(!sos&&!nearVi) out[i]="en"; }
+  for(let i=0;i<n;i++){ if(out[i]) continue; let f=null; if(/^\d/.test(toks[i])&&i>0&&out[i-1]&&!ends(toks[i-1])) f=out[i-1]; if(!f) for(let j=i+1;j<n;j++){ if(out[j]){f=out[j];break;} if(ends(toks[j])) break; } if(!f) for(let j=i-1;j>=0;j--){ if(out[j]){f=out[j];break;} if(ends(toks[j])) break; } if(!f) for(let j=i-1;j>=0;j--){ if(out[j]){f=out[j];break;} } out[i]=f||"vi"; }
+  const runs=[]; toks.forEach((t,i)=>{ const l=out[i]; const last=runs[runs.length-1]; if(last&&last.lang===l) last.words.push(t); else runs.push({lang:l,words:[t]}); });
+  return runs.map(r=>({lang:r.lang,text:r.words.join(" ")})).filter(r=>r.text.trim());
+};
+
+/* ===== KK-EDU IELTS: học tuần tự - mở thẳng bài tiếp theo của lộ trình, thanh "Bài tiếp theo" trên mỗi chặng =====
+   Tác giả : Nguyễn Duy Điển (KK-2026). Thứ tự khoa học: Chẩn đoán đầu vào -> Xây nền (tuần 1-4) -> Kỹ năng (tuần 5-10) -> Luyện đề, thi thử. */
+function kkNextItem(){
+  if(typeof J==="undefined" || !J.plan || !S.journey) return null;
+  if(!S.journey.diag) return {diag:true};
+  const p=phaseNow();
+  for(const ph of [1,2]){
+    if(ph>Math.max(1,p)) break;
+    for(const w of J.plan.weeks.filter(x=>x.phase===ph)){
+      const i=w.items.findIndex(it=>!itemDone(it,w));
+      if(i>=0) return {phase:ph, week:w.week, idx:i, it:w.items[i]};
+    }
+  }
+  return {phase:3};
+}
+function kkItemLabel(it){
+  if(!it) return "";
+  if(it.type==="video"){ const v=D.videos.find(x=>x.id===it.id); return "Video: "+(v?v.title:it.id); }
+  if(it.type==="material"){ const m=D.materials.find(x=>x.id===it.id); return "Tài liệu: "+(m?m.title:it.id); }
+  return ({practice:"Bài luyện: ",writing:"Bài viết: ",speaking:"Bài nói: ",timed:"Làm đúng giờ: ",mock:"Thi thử: ",review:"Ôn tập: ",checklist:"Việc cần làm: "}[it.type]||"")+(it.label||it.skill||it.bank||it.id||"");
+}
+/** Mở bài tiếp theo: video/tài liệu mở thẳng; bài luyện mở đúng bài; còn lại đưa tới tuần học có bài đó. */
+function kkOpenNext(){
+  const n=kkNextItem(); if(!n) return;
+  if(n.diag){ if(S.step!==0) go(0); return; }
+  if(n.phase>=3){ go(3); return; }
+  S.journey.weekView=n.week; S.vid=null; S.mat=null; J.pr=null;
+  const it=n.it, w=J.plan.weeks.find(x=>x.week===n.week);
+  if(it.type==="video"){ S.vid=it.id; const v=D.videos.find(x=>x.id===it.id); if(v) S.skill=v.skill; }
+  else if(it.type==="material"){ S.mat=it.id; }
+  save();
+  if(["practice","writing","speaking"].includes(it.type)){ S.step=n.phase; save(); openPractice(w.items[n.idx], n.week); return; }
+  if(S.step!==n.phase) go(n.phase); else render();
+  window.scrollTo(0,0);
+}
+function kkNextBanner(){
+  const n=kkNextItem(); if(!n) return "";
+  if(n.diag) return `<div class="card kknext"><div class="row" style="align-items:center;gap:10px"><div style="flex:1;min-width:220px"><div class="eyebrow">Bài 1 của lộ trình</div><b>Chẩn đoán đầu vào (45 phút)</b><div class="mute">Học tuần tự: làm bài chẩn đoán trước để hệ thống xếp lịch 12 tuần đúng trình độ của bạn.</div></div>${S.step===0?"":`<button class="btn gold" onclick="go(0)">Vào bài 1</button>`}</div></div>`;
+  if(n.phase>=3) return `<div class="card kknext"><div class="row" style="align-items:center;gap:10px"><div style="flex:1;min-width:220px"><div class="eyebrow">Bài tiếp theo</div><b>Luyện đề và thi thử</b><div class="mute">Bạn đã qua Xây nền và Kỹ năng.</div></div><button class="btn gold" onclick="kkOpenNext()">Học tiếp</button></div></div>`;
+  const total=J.plan.weeks.filter(x=>x.phase<=2).reduce((a,w)=>a+w.items.length,0);
+  const done=J.plan.weeks.filter(x=>x.phase<=2).reduce((a,w)=>a+w.items.filter(it=>itemDone(it,w)).length,0);
+  return `<div class="card kknext"><div class="row" style="align-items:center;gap:10px"><div style="flex:1;min-width:220px"><div class="eyebrow">Bài tiếp theo · Chặng ${n.phase} · Tuần ${n.week} · mục ${n.idx+1}</div><b>${esc(kkItemLabel(n.it))}</b><div class="bar" style="margin-top:6px"><i style="width:${total?Math.round(100*done/total):0}%"></i></div><div class="mute">Đã xong ${done}/${total} mục của Xây nền và Kỹ năng. Học đúng thứ tự giúp mỗi bài dựa trên bài trước.</div></div><button class="btn gold" onclick="kkOpenNext()">Học bài tiếp theo</button></div></div>`;
+}
+(function(){
+  const _r=render;
+  render=function(){
+    _r.apply(this, arguments);
+    try{
+      if(typeof J==="undefined"||!J.plan) return;
+      if(S.vid||S.mat||J.pr||(S.test&&S.test.running)) return;
+      const m=document.getElementById("main"); if(!m||m.querySelector(".kknext")) return;
+      if(!m.querySelector(".jmap")) return;   // chỉ trên trang tổng quan chặng/tuần, không chen vào bài đang học
+      const h=kkNextBanner(); if(h) m.insertAdjacentHTML("afterbegin", h);
+    }catch(e){ console.warn("next", e); }
+  };
+  // Mở trang IELTS (không có địa chỉ cụ thể): đưa thẳng tới bài tiếp theo của lộ trình
+  const auto=!location.hash && !/[?&](noauto|step)=/.test(location.search);
+  if(!auto) return;
+  let tries=0; const t=setInterval(()=>{
+    tries++;
+    if(typeof J!=="undefined" && J.plan && D.videos && S.journey){
+      clearInterval(t);
+      if(S.vid||S.mat||J.pr||(S.test&&S.test.running)) return;
+      const n=kkNextItem(); if(!n) return;
+      if(n.diag){ if(S.step!==0){ S.step=0; save(); render(); } return; }
+      if(n.it && ["video","material"].includes(n.it.type)) kkOpenNext();
+      else if(n.phase && n.phase<3){ S.journey.weekView=n.week; save(); if(S.step!==n.phase) go(n.phase); else render(); }
+    } else if(tries>100) clearInterval(t);
+  }, 100);
+})();
+
 /* ===== KK-EDU: Ô tài khoản dùng chung cho các phân hệ (IELTS, Tiếng Trung) - cùng kiểu menu với trang chủ =====
    Tác giả : Nguyễn Duy Điển (KK-2026). Một tài khoản KK-EDU cho mọi phân hệ: tên lấy từ hồ sơ học viên, liên kết về Học tập của tôi, Quản trị. */
 const KK_ADMIN_EMAILS = ["nguyenduydien75@gmail.com"];
