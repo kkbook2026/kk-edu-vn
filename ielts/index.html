@@ -2120,6 +2120,28 @@ function kkNextBanner(){
   }, 100);
 })();
 
+/* ===== Liên kết sâu từ trang chủ / Trợ lý KK-EDU: /ielts/#go=<đích> =====
+   chan-doan, xay-nen, ky-nang, luyen-de, thi-thu, ket-qua, chung-chi (chặng 0-6; chặng chưa mở tự về chặng hiện tại),
+   phong-giam-khao, thu-thach, checklist, gia-dinh (phòng luyện). Tác giả : Nguyễn Duy Điển. */
+(function(){
+  const m=/^#go=([a-z-]+)/.exec(location.hash||""); if(!m) return;
+  const STEP={"chan-doan":0,"xay-nen":1,"ky-nang":2,"luyen-de":3,"thi-thu":4,"ket-qua":5,"chung-chi":6};
+  const LAB={"phong-giam-khao":"examiner","thu-thach":"challenge","checklist":"checklist","gia-dinh":"family"};
+  let tries=0; const t=setInterval(()=>{
+    tries++;
+    if(typeof J!=="undefined" && J.plan && typeof S!=="undefined" && S.journey && typeof render==="function"){
+      clearInterval(t);
+      try{
+        if(S.test && S.test.running) return;
+        const k=m[1]; S.vid=null; S.mat=null; J.pr=null;
+        if(k in STEP){ S.lab=null; S.step=STEP[k]; save(); render(); window.scrollTo(0,0); }
+        else if(LAB[k] && typeof labOpen==="function") labOpen(LAB[k]);
+        try{ history.replaceState(null, "", location.pathname+location.search); }catch(e){}
+      }catch(e){ console.warn("deeplink", e); }
+    } else if(tries>200) clearInterval(t);
+  }, 100);
+})();
+
 /* ===== KK-EDU: Ô tài khoản dùng chung cho các phân hệ (IELTS, Tiếng Trung) - cùng kiểu menu với trang chủ =====
    Tác giả : Nguyễn Duy Điển. Một tài khoản KK-EDU cho mọi phân hệ: tên lấy từ hồ sơ học viên, liên kết về Học tập của tôi, Quản trị. */
 const KK_ADMIN_EMAILS = ["nguyenduydien75@gmail.com"];

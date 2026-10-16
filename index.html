@@ -499,6 +499,82 @@ footer.ft .in span:last-child{margin-left:auto;font-style:italic}
 .statrow:not(.board .statrow) .stat{border-right-color:var(--line)}
 .statrow:not(.board .statrow) .stat b{color:var(--fg)}
 .statrow:not(.board .statrow) .stat span{color:var(--fg2)}
+
+/* KK-V54: giao diện v5.4 - Ngoại ngữ, Có gì mới, tối ưu di động */
+.lang2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.lcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r-l);padding:24px 24px 22px;display:flex;flex-direction:column;gap:14px;min-width:0;box-shadow:0 1px 0 rgba(15,42,74,.03)}
+.lcard .lhead{display:flex;gap:14px;align-items:center}
+.lcard .lico{flex:none;width:52px;height:52px;border-radius:14px;background:var(--navy);color:#fff;display:grid;place-items:center;font-family:"Playfair Display",Georgia,serif;font-weight:800;font-size:1.25rem;letter-spacing:.5px}
+.lcard .lico.zh{background:#9c1f1f;font-family:"Noto Serif SC","Songti SC",serif;font-size:1.5rem}
+.lcard h3{margin:0;font-size:1.3rem}
+.lcard .lsub{color:var(--fg2);font-size:.9rem;margin-top:2px}
+.lstats{display:flex;flex-wrap:wrap;gap:8px}
+.lstats span{background:var(--chip);border-radius:999px;padding:5px 11px;font-size:.82rem;color:var(--navy2);white-space:nowrap}
+.lstats b{color:var(--navy);font-weight:700}
+.lfeat{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.lfeat li{position:relative;padding-left:26px;font-size:.92rem;line-height:1.55;color:var(--fg)}
+.lfeat li::before{content:"";position:absolute;left:3px;top:.42em;width:13px;height:8px;border-left:2.5px solid var(--gold2);border-bottom:2.5px solid var(--gold2);transform:rotate(-45deg)}
+.lfeat li b{color:var(--navy)}
+.lcta{margin-top:auto;display:flex;gap:10px;flex-wrap:wrap;padding-top:4px}
+.lcta a.btn{text-decoration:none;display:inline-flex;align-items:center;min-height:42px}
+.btn.line{background:transparent;border:1px solid var(--line);color:var(--navy)}
+.btn.line:hover{border-color:var(--gold2)}
+.newlist{display:grid;gap:0;border:1px solid var(--line);border-radius:var(--r-l);background:var(--card);overflow:hidden}
+.newrow{display:grid;grid-template-columns:120px minmax(0,1fr);gap:16px;padding:16px 20px;border-top:1px solid var(--line)}
+.newrow:first-child{border-top:0}
+.newrow .nd{font-size:.82rem;color:var(--fg2);padding-top:2px}
+.newrow .nd b{display:block;color:var(--navy);font-size:.95rem}
+.newrow h4{margin:0 0 4px;font-size:1rem}
+.newrow p{margin:0;color:var(--fg2);font-size:.9rem;line-height:1.55}
+.ntag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.3px;text-transform:uppercase;border-radius:999px;padding:2px 8px;margin-right:6px;vertical-align:1px;background:var(--chip);color:var(--navy2)}
+.ntag.en{background:#e3edfb;color:#1f4f8f}.ntag.zh{background:#fbe6e3;color:#8f241f}.ntag.all{background:#f6ecd0;color:#7a5d0c}
+.abwrap{max-width:72em}
+.abwrap .card{padding:22px 24px}
+.abwrap p{max-width:56em}
+.abwrap .note{max-width:56em}
+.newrow p{max-width:56em}
+.zone .badge{font-size:.75rem}
+.mod5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:6px 0 20px}
+@media(max-width:1100px){.mod5{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.mod5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:440px){.mod5{grid-template-columns:1fr}}
+.mod5 .m{border:1px solid var(--line);border-radius:var(--r-m);padding:14px 16px;background:var(--bg);cursor:pointer;transition:border-color .15s,background .15s}
+.mod5 .m:hover{border-color:var(--gold2);background:var(--card)}
+.mod5 .m .mi{width:30px;height:30px;color:var(--navy);margin-bottom:6px}
+.mod5 .m h4{margin:0 0 4px;font-size:1rem}
+.mod5 .m p{margin:0;font-size:.86rem;color:var(--fg2);line-height:1.5}
+.abstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0 18px}
+@media(max-width:600px){.abstats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.abstats div{border:1px solid var(--line);border-radius:var(--r-m);padding:12px 14px;background:var(--bg)}
+.abstats b{display:block;font-family:"Playfair Display",Georgia,serif;font-size:1.45rem;color:var(--navy);line-height:1.2}
+.abstats span{font-size:.8rem;color:var(--fg2)}
+.abtbl{width:100%;border-collapse:collapse;font-size:.9rem;margin:8px 0 4px}
+.abtbl th,.abtbl td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+.abtbl th{background:var(--bg2);color:var(--navy);font-weight:600}
+.tblx{overflow-x:auto;-webkit-overflow-scrolling:touch}
+:root[data-theme="dark"] .lcard .lico{background:var(--gold2);color:#0b1626}
+:root[data-theme="dark"] .ntag.en,:root[data-theme="dark"] .ntag.zh,:root[data-theme="dark"] .ntag.all{background:var(--chip);color:var(--gold)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .lcard .lico{background:var(--gold2);color:#0b1626}:root:not([data-theme="light"]) .ntag.en,:root:not([data-theme="light"]) .ntag.zh,:root:not([data-theme="light"]) .ntag.all{background:var(--chip);color:var(--gold)}}
+/* nút Trợ lý không che thanh đồng ý dữ liệu */
+#cbFab{bottom:calc(18px + var(--consentH,0px))}
+#cbPanel{bottom:calc(84px + var(--consentH,0px));max-height:min(72vh,620px,calc(100vh - 110px - var(--consentH,0px)))}
+.badge{font-size:.75rem}
+@media(max-width:600px){#hNgoaiNgu .lfeat li:nth-child(n+4){display:none}}
+@media(max-width:820px){.lang2{grid-template-columns:1fr}.newrow{grid-template-columns:1fr;gap:4px}.newrow .nd b{display:inline;margin-right:6px}}
+@media(max-width:700px){
+  .tabbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .tabbar::-webkit-scrollbar{display:none}
+  .tabbar button{flex:none;white-space:nowrap;min-height:42px}
+  .abwrap .card{padding:18px 16px}
+  .lcard{padding:20px 18px}
+}
+nav.main{justify-content:safe flex-end}
+@media(max-width:640px){
+  nav.main{justify-content:flex-start}
+  nav.main button{min-height:40px;padding:9px 12px}
+  #cbFab{bottom:calc(12px + var(--consentH,0px))}
+  #cbPanel{bottom:calc(78px + var(--consentH,0px))}
+}
 </style>
 
 </head>
@@ -1492,6 +1568,7 @@ function parseHash(){
   if(p[0]==="book" && p[1]) return {name:"book", code:p.slice(1).join("_")};
   if(p[0]==="hoc" && p.length>=3){ const i=Number(p[p.length-1]); return {name:"hoc", code:p.slice(1,-1).join("_"), i:isNaN(i)?0:i}; }
   if(p[0]==="catalog") return {name:"video"};
+  if(p[0]==="about" && p[1]) return {name:"about", code:p[1]};
   if(["video","tailieu","live","dash","admin","about","thi","ngoaingu"].includes(p[0])) return {name:p[0]};
   return {name:"home"};
 }
@@ -1501,7 +1578,7 @@ function renderNav(){
   nav.innerHTML = items.map(n=>`<button data-r="${n.id}" class="${S.route.name===n.id||(n.id==="video"&&["book","hoc"].includes(S.route.name))?"on":""}${n.menu?" hasmenu":""}" ${n.menu?'aria-haspopup="true" aria-expanded="false"':''}>${n.label}${n.menu?'<svg class="car" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</button>`).join("");
   nav.querySelectorAll("button").forEach(b=>{ const n=items.find(x=>x.id===b.dataset.r); b.onclick=(e)=>{ if(n&&n.menu){ e.stopPropagation(); kkMenuToggle(b, n); } else go({name:b.dataset.r}); }; });
   nav.setAttribute("aria-label","Điều hướng chính");
-  const on=nav.querySelector("button.on"); if(on){ on.setAttribute("aria-current","page"); if(nav.scrollWidth>nav.clientWidth) nav.scrollLeft=Math.max(0,on.offsetLeft-nav.offsetLeft-16); }
+  const on=nav.querySelector("button.on"); if(on){ on.setAttribute("aria-current","page"); if(nav.scrollWidth>nav.clientWidth){ const a=on.getBoundingClientRect(), b=nav.getBoundingClientRect(); nav.scrollLeft=Math.max(0, nav.scrollLeft + a.left - b.left - 16); } }
 }
 /* ---------- Menu sổ xuống (Ngoại ngữ): popover cố định, đóng khi bấm ngoài/Esc ---------- */
 function kkMenuClose(){ const m=$("#kkMenu"); if(m) m.remove(); document.querySelectorAll('nav.main button[aria-expanded="true"]').forEach(b=>b.setAttribute("aria-expanded","false")); }
@@ -1533,11 +1610,14 @@ function viewNgoaiNgu(v){
   v.innerHTML=`
   <div class="sec" style="margin-top:26px"><div><div class="eyebrow">Phân hệ 5 · Ngoại ngữ</div><h2 style="margin:0">Ngoại ngữ trên KK-EDU</h2></div></div>
   <p class="note" style="max-width:52em">Cùng phương pháp 2.0: tài liệu chuẩn, video dừng để hỏi, thi thử đề ngẫu nhiên và chấm tự động. Đã mở Tiếng Anh (phân hệ IELTS) và Tiếng Trung (140 bài giao tiếp tương tác, học tuần tự); Tiếng Nhật đang biên soạn.</p>
-  <div class="zones" style="margin-top:14px">${LANGS.map(l=>`<div class="zone${l.soon?' soon':''}" ${l.soon?'':'role="button" tabindex="0" data-href="'+esc(l.items[0].href)+'"'}>
+  <div class="lang2" style="margin-top:14px">${kkLangCard("en")}${kkLangCard("zh")}</div>
+  <p style="margin:14px 0 0"><a href="#about_nn" style="color:var(--navy2);font-weight:600" onclick="event.preventDefault();go({name:'about',code:'nn'})">So sánh hai chương trình và câu hỏi thường gặp →</a></p>
+  <div class="zones" style="margin-top:18px">${LANGS.filter(l=>l.soon).map(l=>`<div class="zone${l.soon?' soon':''}" ${l.soon?'':'role="button" tabindex="0" data-href="'+esc(l.items[0].href)+'"'}>
       <div class="zi">${ICO[l.ico]||ICO.book}</div><h3>${esc(l.name)}${l.soon?' <span class="badge">Sắp ra mắt</span>':''}</h3>
       <div class="meta">${esc(l.desc)}</div>
       ${l.soon?'<span class="go" style="opacity:.55">Đang biên soạn</span>':l.items.map(it=>`<a class="go" href="${esc(it.href)}">${esc(it.label)}</a>`).join("")}
     </div>`).join("")}</div>`;
+  kkLangBind(v);
   v.querySelectorAll(".zone[data-href]").forEach(z=>{ const open=()=>{ kkTrack("ngoaingu_chon",{muc:z.querySelector("h3").textContent.trim()}); location.href=z.dataset.href; }; z.onclick=e=>{ if(e.target.tagName!=="A") open(); }; z.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } }; });
 }
 function render(){
@@ -1730,6 +1810,19 @@ function viewHome(v){
     </div>
   </section>
 
+  <section class="home-sec" id="hNgoaiNgu">
+    <div class="sec"><h2>Ngoại ngữ: Luyện thi IELTS và Tiếng Trung</h2></div>
+    <p class="sec-lead">Phân hệ thứ năm của KK-EDU, dùng chung tài khoản: ôn - luyện - thi thử IELTS 4 kỹ năng có AI chấm, và Tiếng Trung giao tiếp 140 bài cho người Việt đến HSK 4.</p>
+    <div class="lang2">${kkLangCard("en",5)}${kkLangCard("zh",5)}</div>
+    <p style="margin:12px 0 0"><a href="#about_nn" id="hLangAll" style="color:var(--navy2);font-weight:600">Xem đầy đủ tính năng và so sánh hai chương trình →</a></p>
+  </section>
+
+  <section class="home-sec">
+    <div class="sec"><h2>Có gì mới</h2></div>
+    ${kkNewsHTML(4)}
+    <p style="margin:12px 0 0"><a href="#about_moi" id="hNewsAll" style="color:var(--navy2);font-weight:600">Xem toàn bộ nhật ký cập nhật →</a></p>
+  </section>
+
   <section class="home-sec">
     <div class="sec"><h2>Một bài học diễn ra như thế nào</h2></div>
     <p class="sec-lead">Bốn bước của Phương pháp 2.0, lặp lại trong mọi bài học, dựa trên các nguyên lý khoa học học tập đã được kiểm chứng.</p>
@@ -1752,6 +1845,9 @@ function viewHome(v){
   $("#hDemo").onclick=()=>demo("hero"); $("#hDemo2").onclick=()=>demo("cta_cuoi_trang");
   const hd=$("#heroDemo"); if(hd) hd.onclick=()=>demo("demo_song");
   startHeroDemo();
+  kkLangBind(v);
+  const la=$("#hLangAll"); if(la) la.onclick=e=>{ e.preventDefault(); go({name:"about", code:"nn"}); };
+  const na=$("#hNewsAll"); if(na) na.onclick=e=>{ e.preventDefault(); go({name:"about", code:"moi"}); };
   const zones={zoneTL:"tailieu", zoneVD:"video", zoneLV:"live"};
   Object.entries(zones).forEach(([id,name])=>{ const z=$("#"+id); if(!z) return; z.onclick=()=>go({name}); z.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go({name}); } }; });
 }
@@ -2109,30 +2205,113 @@ function viewLive(v){
 
 /* ================= GIỚI THIỆU & HƯỚNG DẪN ================= */
 let aboutTab="gt";
+/* KK-V54: dữ liệu giới thiệu phân hệ Ngoại ngữ và nhật ký cập nhật (dùng chung cho trang chủ, Giới thiệu, Trợ lý) */
+const KK_LANG={
+  en:{name:"Luyện thi và thi thử IELTS", sub:"Tiếng Anh · IELTS Academic · lộ trình 12 tuần", ico:"EN", href:"/ielts/",
+    stats:[["12","tuần lộ trình"],["7","chặng"],["52","video tương tác"],["44","tài liệu"],["600","từ vựng"],["4","kỹ năng"]],
+    feat:[
+      "<b>Chẩn đoán đầu vào 4 kỹ năng</b> (khoảng 60 phút): Nghe, Đọc, Viết Task 2 và Nói, cho band khởi điểm từng kỹ năng để xếp lộ trình.",
+      "<b>Lộ trình 12 tuần, 7 chặng</b>: Chẩn đoán → Xây nền (tuần 1-4) → Kỹ năng (tuần 5-10) → Luyện đề → Thi thử → Kết quả → Chứng chỉ; tỉ lệ tiếng Anh tăng dần 50% → 70% → 100%, có cổng đánh giá giữa các giai đoạn.",
+      "<b>Ôn luyện nền tảng</b>: 600 từ vựng học thuật theo 12 chủ đề với flashcard lặp lại ngắt quãng (phát âm Anh-Anh, ví dụ có audio), 8 bài ngữ pháp, 6 bài phát âm có ghi âm so khớp.",
+      "<b>52 video tương tác</b> dừng đúng lúc để hỏi, phụ đề Tắt / Việt / Anh / Song ngữ; giọng đọc Anh-Anh cho bài nghe, giọng Việt cho lời giảng.",
+      "<b>Viết và Nói có AI chấm</b> theo tiêu chí IELTS (Writing 4 tiêu chí, Speaking 3 tiêu chí), kèm bài mẫu band cao, mã lỗi và “Chốt lỗi” để không lặp lại.",
+      "<b>Phòng luyện</b>: Phòng giám khảo Speaking mô phỏng đủ Part 1-2-3, Thử thách 3 phút mỗi ngày, Checklist 15 việc trước ngày thi.",
+      "<b>Thi thử trên máy như thật</b>: đủ 4 kỹ năng, Listening phát liền 4 Part không tua, đồng hồ đếm ngược, khóa dán ở bài viết; đề ngẫu nhiên từ kho 12 phần nghe, 9 bài đọc, 24 đề viết, 8 bộ nói; quy đổi band theo bảng chuẩn.",
+      "<b>Kết quả và chứng chỉ</b>: band từng kỹ năng và Overall, đường tiến bộ, bản đồ lỗi; Chứng chỉ KK-EDU thử nghiệm có mã tra cứu công khai tại trang Xác minh.",
+      "<b>Gia đình và giáo viên</b>: học viên tạo mã liên kết (8 ký tự, hiệu lực 7 ngày) để phụ huynh, giáo viên xem tổng quan tiến độ, không xem bài làm."],
+    cta:[["Vào luyện thi IELTS","/ielts/"],["Làm bài chẩn đoán","/ielts/#go=chan-doan"],["Phòng giám khảo Speaking","/ielts/#go=phong-giam-khao"]]},
+  zh:{name:"Tiếng Trung giao tiếp tương tác", sub:"Cho người Việt · HSK 1 đến HSK 4 · học tuần tự", ico:"中", href:"/tieng-trung/",
+    stats:[["140","bài học"],["140","video tương tác"],["412","chữ tập viết"],["24","tài liệu"],["HSK 1-4","cấp độ"],["3","lớp mỗi bài"]],
+    feat:[
+      "<b>Lộ trình 3 giai đoạn</b>: Giai đoạn 1 (HSK 1-3) gồm Phần A 6 bài nền tảng, Phần B 24 bài giao tiếp, 9 khối ngữ pháp C01-C90; Giai đoạn 2 (HSK 4) đã mở D01-D20; Giai đoạn 3 (HSK 7-9) đang biên soạn.",
+      "<b>Học tuần tự, vào thẳng bài tiếp theo</b>: mở trang là tới đúng bài cần học, thanh Bài n/140, bài trước - bài sau; học vượt được hỏi lại trước khi mở.",
+      "<b>Mỗi bài 3 lớp</b>: Trực quan hóa (từ vựng, chiết tự, sơ đồ ngữ pháp) - Thực hành tương tác (tập viết nhận diện nét, ghép câu, nghe nói) - Trợ lý AI (hội thoại nhập vai, hỏi đáp).",
+      "<b>Lợi thế người Việt</b>: tận dụng cầu nối âm Hán-Việt và chiết tự để nhớ chữ nhanh, luyện nghe nói theo nhịp lặp lại khoa học.",
+      "<b>140 video tương tác</b> với giọng Cô Lin chuẩn phổ thông, pinyin đọc đúng thanh điệu; giọng đọc được lưu sẵn nên phát liền mạch.",
+      "<b>Kiểm tra và thi thử</b>: kiểm tra cuối mỗi phần/khối (13 đề), thi thử theo cấu trúc HSK 1-2, HSK 3, HSK 4; Sổ điểm tổng hợp từng bài.",
+      "<b>HSK 4</b>: luyện Viết đoạn văn có AI chấm theo tiêu chí và Nghe bản tin ngắn.",
+      "<b>Chứng chỉ KK-EDU Thử nghiệm HSK 3 tự động</b>: hoàn thành 120 bài Giai đoạn 1 và đạt thi thử HSK 3 (từ 120/200) là được cấp ngay, có mã và QR xác minh.",
+      "<b>24 tài liệu bản quyền</b> (Tập 1 451 trang, Tập 2 147 trang, 20 tài liệu theo khối): chỉ xem hoặc in trong trình đọc có dấu bản quyền, không tải về."],
+    cta:[["Học Tiếng Trung","/tieng-trung/"],["Tài liệu xem / in","/tieng-trung/#tai-lieu"],["Chứng chỉ HSK 3","/tieng-trung/#chung-chi"]]}
+};
+const KK_NEWS=[
+  {d:"16/10/2026", t:"zh", h:"Chứng chỉ HSK 3 tự động, giọng đọc lưu sẵn", p:"Tiếng Trung: tự cấp Chứng chỉ KK-EDU Thử nghiệm HSK 3 khi đủ 120 bài và đạt thi thử; giọng đọc của 140 video được dựng sẵn nên phát mượt, không chờ."},
+  {d:"16/10/2026", t:"zh", h:"Tài liệu chỉ xem hoặc in, bảo vệ bản quyền", p:"24 tài liệu Tiếng Trung mở trong trình đọc riêng có dấu bản quyền và email người xem; in theo khoảng trang, không tải về."},
+  {d:"16/10/2026", t:"all", h:"Trợ lý KK-EDU hiểu cả IELTS và Tiếng Trung", p:"Thêm hơn 30 câu hỏi - trả lời, bấm là mở thẳng đúng chức năng: chẩn đoán, phòng giám khảo, tài liệu, chứng chỉ..."},
+  {d:"16/10/2026", t:"all", h:"Kho Sách PDF hoạt động trở lại cho học viên", p:"Khôi phục trình đọc Sách PDF qua máy chủ (kiểm tra đúng lớp, chỉ xem); cập nhật dòng tác giả trên 220 đầu sách."},
+  {d:"15/10/2026", t:"zh", h:"Hoàn thiện 140 bài Tiếng Trung tuần tự", p:"Đủ Giai đoạn 1 (A, B, C01-C90) và Giai đoạn 2 khối D01-D20; viết đoạn văn HSK 4 có AI chấm, nghe bản tin; pinyin đọc đúng thanh."},
+  {d:"15/10/2026", t:"en", h:"IELTS: Gia đình & giáo viên, trang Xác minh chứng chỉ", p:"Liên kết phụ huynh, giáo viên bằng mã; tra cứu công khai chứng chỉ tại trang Xác minh."},
+  {d:"15/10/2026", t:"en", h:"IELTS: Phòng giám khảo, Thử thách 3 phút, Checklist", p:"Mô phỏng phần thi Nói đủ 3 Part, ghi nhận lời nói và chấm AI 3 tiêu chí; thử thách nói mỗi ngày; 15 việc cần làm trước ngày thi."},
+  {d:"15/10/2026", t:"en", h:"IELTS: 600 từ vựng, ngữ pháp, phát âm", p:"Flashcard lặp lại ngắt quãng theo 12 chủ đề, 8 bài ngữ pháp có kiểm tra, 6 bài phát âm ghi âm so khớp; lời dẫn tiếng Anh và phụ đề 4 chế độ cho 52 video."},
+  {d:"15/10/2026", t:"all", h:"Một tài khoản cho mọi phân hệ, giọng đọc đúng ngữ cảnh", p:"Đăng nhập một lần dùng cho Trang chủ, IELTS, Tiếng Trung; giọng đọc tự chọn tiếng Việt hay tiếng Anh theo ngữ cảnh (ví dụ từ “so”)."}
+];
+function kkLangCard(k, n){
+  const L=KK_LANG[k]; const F=n?L.feat.slice(0,n):L.feat, CT=n?L.cta.slice(0,2):L.cta;
+  return `<div class="lcard"><div class="lhead"><div class="lico ${k}">${L.ico}</div><div><h3>${esc(L.name)}</h3><div class="lsub">${esc(L.sub)}</div></div></div>
+    <div class="lstats">${L.stats.map(([n,t])=>`<span><b>${esc(n)}</b> ${esc(t)}</span>`).join("")}</div>
+    <ul class="lfeat">${F.map(f=>`<li>${f}</li>`).join("")}</ul>
+    <div class="lcta">${CT.map(([t,h],i)=>`<a class="btn ${i?"line":"pri"}" href="${esc(h)}" data-kkl="${esc(k)}">${esc(t)}</a>`).join("")}</div></div>`;
+}
+function kkNewsHTML(n){
+  const T={en:"IELTS",zh:"Tiếng Trung",all:"Toàn hệ thống"};
+  return `<div class="newlist">${KK_NEWS.slice(0,n||KK_NEWS.length).map(x=>`<div class="newrow"><div class="nd"><b>${esc(x.d)}</b></div><div><h4><span class="ntag ${x.t}">${T[x.t]}</span>${esc(x.h)}</h4><p>${esc(x.p)}</p></div></div>`).join("")}</div>`;
+}
+function kkLangBind(root){ (root||document).querySelectorAll("a[data-kkl]").forEach(a=>a.addEventListener("click",()=>{ try{ kkTrack("ngoaingu_chon",{muc:a.dataset.kkl+":"+a.textContent.trim()}); }catch(e){} })); }
 function viewAbout(v){
   const AY=academicYear();
-  const TABS=[["gt","Giới thiệu"],["hd","Hướng dẫn học viên"],["kt","Kiểm tra & Học bạ"],["xt","Xác thực độ tuổi"],["ph","Phụ huynh & giáo viên"],["pl","Pháp lý & bản quyền"]];
+  const TABS=[["gt","Giới thiệu"],["nn","Ngoại ngữ"],["moi","Có gì mới"],["hd","Hướng dẫn học viên"],["kt","Kiểm tra & Học bạ"],["xt","Xác thực tuổi"],["ph","Phụ huynh & giáo viên"],["pl","Pháp lý"]];
+  if(S.route && S.route.code && TABS.some(t=>t[0]===S.route.code)){ aboutTab=S.route.code; S.route.code=null; }
+  const nBooks=CATALOG.length, nLessons=CATALOG.reduce((a,b)=>a+(b.lessons||0),0), nVQ=CATALOG.reduce((a,b)=>a+(b.videoQuiz||0),0), nMQ=CATALOG.reduce((a,b)=>a+(b.masteryQuiz||0),0);
   const C={};
   C.gt=`
-  <div class="card" style="max-width:56em">
+  <div class="card">
     <h3 style="margin-top:0">KK-EDU là gì?</h3>
-    <p>KK-EDU là <b>mô hình giáo dục số thử nghiệm</b> tại địa chỉ chính thức <b>www.kk-edu.com</b>: nền tảng học liệu tương tác xây dựng trên bộ KK-EDU 2.0 gồm <b>201 sách chuẩn và 19 bộ Nâng cao</b> (220 đầu sách, 6.872 bài học, 47.513 điểm tương tác video, 27.488 câu kiểm tra thành thạo), phủ từ Nhà trẻ đến Tiến sĩ, bám sát Chương trình GDPT 2018 và các chương trình đào tạo hiện hành, năm học ${AY}-${AY+1}.</p>
-    ${kkPhotoStrip("about")}
-    <h3>Bốn phân hệ</h3>
-    <p><b>1 · Kho Tài liệu</b> - tra cứu 220 đầu sách theo cấp học, môn học; đọc <b>Sách PDF (Bộ A)</b> ngay trên trang trong trình đọc bảo vệ bản quyền (chỉ xem - không tải, không sao chép), mở Kịch bản video (Bộ B).</p>
-    <p><b>2 · Video Online</b> - học bằng video tương tác: video dừng đúng giây để hỏi, sai thì nhận gợi ý nhẹ rồi gợi ý rõ, có mốc xem lại đúng đoạn; kết thúc bằng 4 câu kiểm tra thành thạo và câu suy ngẫm; <b>trợ giảng AI</b> trả lời theo đúng nội dung bài; <b>giọng đọc AI tiếng Việt</b> đọc mục tiêu và toàn bộ lời giảng (nút 🔊 Nghe giảng), kèm chế độ chữ chạy cho máy chưa có giọng Việt.</p>
-    <p><b>3 · Giáo viên dạy Online</b> - lớp học trực tuyến theo lịch với giáo viên qua Google Meet / Zoom: xem lịch, đăng ký chỗ, vào lớp đúng giờ.</p>
-    <p><b>4 · Kiểm tra - Đánh giá</b> - bài kiểm tra Cuối chương, Giữa năm và Thi Cuối năm tổng hợp tự động từ ngân hàng câu hỏi của chính các bài đã học, theo ma trận chuẩn; kết quả vào <b>Học bạ</b> với xếp loại cuối năm (xem tab "Kiểm tra &amp; Học bạ").</p>
+    <p>KK-EDU là <b>mô hình giáo dục số thử nghiệm</b> tại địa chỉ chính thức <b>www.kk-edu.com</b>: nền tảng học liệu tương tác xây dựng trên bộ KK-EDU 2.0 gồm <b>201 sách chuẩn và 19 bộ Nâng cao</b>, phủ từ Nhà trẻ đến Tiến sĩ, bám sát Chương trình GDPT 2018 và các chương trình đào tạo hiện hành, năm học ${AY}-${AY+1}. Từ tháng 10/2026, KK-EDU mở thêm phân hệ <b>Ngoại ngữ</b>: <b>Luyện thi và thi thử IELTS</b> và <b>Tiếng Trung giao tiếp</b> (HSK 1-4).</p>
+    <div class="abstats">
+      <div><b>${nBooks}</b><span>đầu sách</span></div>
+      <div><b>${nLessons.toLocaleString("vi-VN")}</b><span>bài học</span></div>
+      <div><b>${nVQ.toLocaleString("vi-VN")}</b><span>điểm tương tác video</span></div>
+      <div><b>${nMQ.toLocaleString("vi-VN")}</b><span>câu kiểm tra thành thạo</span></div>
+      <div><b>52</b><span>video IELTS · 600 từ vựng</span></div>
+      <div><b>140</b><span>bài và video Tiếng Trung</span></div>
+    </div>
+    <h3>Năm phân hệ</h3>
+    <div class="mod5">
+      <div class="m" data-go="tailieu"><div class="mi">${ICO.book}</div><h4>1 · Kho Tài liệu</h4><p>Tra cứu ${nBooks} đầu sách theo cấp học, môn học; đọc Sách PDF (Bộ A) trong trình đọc bảo vệ bản quyền, mở Kịch bản video (Bộ B).</p></div>
+      <div class="m" data-go="video"><div class="mi">${ICO.play}</div><h4>2 · Video Online</h4><p>Video dừng đúng giây để hỏi, gợi ý 2 mức khi sai, mốc xem lại; kiểm tra thành thạo, câu suy ngẫm, trợ giảng AI và giọng đọc AI tiếng Việt.</p></div>
+      <div class="m" data-go="live"><div class="mi">${ICO.teach}</div><h4>3 · Giáo viên dạy Online</h4><p>Lớp trực tuyến theo lịch với giáo viên qua Google Meet / Zoom: xem lịch, đăng ký chỗ, vào lớp đúng giờ.</p></div>
+      <div class="m" data-go="thi"><div class="mi">${ICO.chart}</div><h4>4 · Kiểm tra - Đánh giá</h4><p>Cuối chương, Giữa năm, Thi Cuối năm rút từ ngân hàng câu hỏi của chính bài đã học theo ma trận chuẩn; kết quả vào Học bạ.</p></div>
+      <div class="m" data-go="about_nn"><div class="mi">${ICO.abc}</div><h4>5 · Ngoại ngữ</h4><p>Luyện thi và thi thử IELTS 4 kỹ năng có AI chấm; Tiếng Trung giao tiếp 140 bài, thi thử HSK, chứng chỉ HSK 3 tự động.</p></div>
+    </div>
     <h3>Tài khoản thành viên & lộ trình học</h3>
-    <p><b>Đăng ký thành viên miễn phí</b> (menu tài khoản góc trên bên phải): đăng nhập bằng email hoặc Google; tiến độ, điểm thi và học bạ lưu trên đám mây, học liền mạch trên nhiều thiết bị. <b>Sang năm học mới tài khoản tự lên lớp theo năm sinh</b> - toàn bộ hồ sơ, xác thực và kết quả được kế thừa. Khách chưa đăng ký vẫn học được, dữ liệu lưu trên trình duyệt đang dùng.</p>
-    <p><b>Học tuần tự:</b> hoàn thành bài trước thì bài sau và Sách PDF mới mở - kiến thức nối mạch, không hổng (Mầm non được miễn).</p>
+    <p><b>Đăng ký thành viên miễn phí</b> (menu tài khoản góc trên bên phải): đăng nhập bằng email hoặc Google; <b>một tài khoản dùng chung cho mọi phân hệ</b> (Trang chủ, IELTS, Tiếng Trung). Tiến độ, điểm thi, học bạ lưu trên đám mây, học liền mạch trên nhiều thiết bị. <b>Sang năm học mới tài khoản tự lên lớp theo năm sinh</b> - toàn bộ hồ sơ, xác thực và kết quả được kế thừa. Khách chưa đăng ký vẫn học được, dữ liệu lưu trên trình duyệt đang dùng.</p>
+    <p><b>Học tuần tự:</b> hoàn thành bài trước thì bài sau và Sách PDF mới mở - kiến thức nối mạch, không hổng (Mầm non được miễn). IELTS và Tiếng Trung cũng mở thẳng bài tiếp theo của lộ trình.</p>
     <h3>Phương pháp sư phạm</h3>
-    <p>Mã hóa kép (một khái niệm = một sơ đồ xuất hiện cả trong sách lẫn video) - thực hành truy xuất (video dừng để trả lời, không xem thụ động) - phản hồi có hướng dẫn (2 mức gợi ý rồi mới giải thích) - bộc lộ quan niệm sai (thăm dò trước khi học) - siêu nhận thức (câu suy ngẫm cuối bài) - học theo mức thành thạo (mastery learning: đạt mới đi tiếp).</p>
+    <p>Mã hóa kép (một khái niệm = một sơ đồ xuất hiện cả trong sách lẫn video) - thực hành truy xuất (video dừng để trả lời, không xem thụ động) - phản hồi có hướng dẫn (2 mức gợi ý rồi mới giải thích) - bộc lộ quan niệm sai (thăm dò trước khi học) - siêu nhận thức (câu suy ngẫm cuối bài) - học theo mức thành thạo (mastery learning: đạt mới đi tiếp) - lặp lại ngắt quãng (flashcard từ vựng IELTS, ôn chữ Hán).</p>
     <h3>Quy tắc chấm điểm bài học</h3>
-    <p>Mỗi câu tối đa 2 lần làm (hệ số 1 và 0,8); xem gợi ý nhẹ trừ 10%, gợi ý rõ trừ tổng 25%; xem lại video không bị trừ. Tỉ trọng: Trong video 40% - Thành thạo 40% - Tự luận 20%. Ngưỡng Đạt 70%, Nâng cao 90%. Mầm non không chấm điểm (quan sát 3 mức); Tiểu học có điểm nhưng không xếp hạng.</p>
+    <p>Mỗi câu tối đa 2 lần làm (hệ số 1 và 0,8); xem gợi ý nhẹ trừ 10%, gợi ý rõ trừ tổng 25%; xem lại video không bị trừ. Tỉ trọng: Trong video 40% - Thành thạo 40% - Tự luận 20%. Ngưỡng Đạt 70%, Nâng cao 90%. Mầm non không chấm điểm (quan sát 3 mức); Tiểu học có điểm nhưng không xếp hạng. IELTS quy đổi band theo bảng chuẩn; Tiếng Trung chấm theo thang 100 mỗi bài và thang HSK cho bài thi thử.</p>
   </div>`;
+  C.nn=`
+  <p class="note" style="margin-top:0">Hai chương trình ngoại ngữ dùng chung tài khoản KK-EDU, cùng phương pháp 2.0 (tài liệu chuẩn, video dừng để hỏi, chấm tự động) và cùng nguyên tắc học tuần tự. Tiếng Nhật (JLPT N5-N3) đang biên soạn.</p>
+  <div class="lang2">${kkLangCard("en")}${kkLangCard("zh")}</div>
+  <div class="card" style="margin-top:18px">
+    <h3 style="margin-top:0">So sánh nhanh</h3>
+    <div class="tblx"><table class="abtbl">
+      <tr><th></th><th>Luyện thi IELTS</th><th>Tiếng Trung giao tiếp</th></tr>
+      <tr><td>Dành cho</td><td>Người cần band IELTS Academic (khuyến nghị từ 14 tuổi khi thi thử)</td><td>Người Việt bắt đầu từ con số 0 đến HSK 4</td></tr>
+      <tr><td>Bắt đầu</td><td>Bài chẩn đoán 4 kỹ năng → band khởi điểm</td><td>Bài A01 (phát âm, pinyin) → học tuần tự</td></tr>
+      <tr><td>Thời lượng</td><td>12 tuần, 7 chặng, 3 giai đoạn</td><td>120 bài Giai đoạn 1 (gói “HSK 3 trong 9 tháng”) + 20 bài HSK 4</td></tr>
+      <tr><td>Chấm điểm</td><td>Nghe, Đọc tự động; Viết, Nói có AI chấm theo tiêu chí IELTS</td><td>Mỗi bài thang 100; thi thử theo cấu trúc HSK; viết đoạn văn AI chấm</td></tr>
+      <tr><td>Chứng chỉ</td><td>KK-EDU thử nghiệm sau thi thử đủ 4 kỹ năng</td><td>KK-EDU Thử nghiệm HSK 3, cấp tự động</td></tr>
+      <tr><td>Tài liệu</td><td>44 tài liệu, 52 video, kho đề ngẫu nhiên</td><td>24 tài liệu chỉ xem / in, 140 video</td></tr>
+    </table></div>
+    <p class="note">Chứng chỉ KK-EDU là chứng chỉ nội bộ thử nghiệm, xác nhận quá trình học trên nền tảng; không thay thế chứng chỉ IELTS do British Council / IDP cấp hay chứng chỉ HSK chính thức. IELTS là nhãn hiệu của British Council, IDP và Cambridge; KK-EDU không liên kết với các tổ chức này. Mọi chứng chỉ tra cứu công khai tại <a href="/verify/">trang Xác minh</a>.</p>
+  </div>`;
+  C.moi=`
+  <p class="note" style="margin-top:0">Nhật ký cập nhật các tính năng mới nhất của KK-EDU.</p>
+  ${kkNewsHTML()}`;
   C.hd=`
-  <div class="card" style="max-width:56em">
+  <div class="card">
     <h3 style="margin-top:0">Bắt đầu học trong 5 bước</h3>
     <p><b>Bước 1 - Đăng ký thành viên (khuyên dùng) hoặc lập Hồ sơ Khách.</b> Bấm menu tài khoản ở góc trên bên phải → <b>Đăng ký thành viên</b>: nhập họ tên, <b>năm sinh</b>, email và mật khẩu (hoặc Đăng ký nhanh với Google). Năm sinh quyết định lớp: sinh ${AY-12} học Lớp 7, sinh ${AY-6} học Lớp 1, từ 18 tuổi học khối Đại học trở lên. Dưới 16 tuổi cần cha mẹ/người giám hộ đăng ký và tích ô xác nhận. Thành viên được: lưu đám mây, học đa thiết bị, gửi yêu cầu mở lớp trực tuyến, thi lấy học bạ, tự lên lớp mỗi năm học mới.</p>
     <p><b>Bước 2 - Vào đúng lớp của mình.</b> Ở Video Online, sách đúng lớp có nhãn "Đúng lớp của bạn". 7 bài đầu của mọi sách đúng lớp luôn học thử miễn phí, không cần đăng nhập. Muốn học lớp khác? Gửi "Yêu cầu mở lớp" để Quản trị viên phê duyệt.</p>
@@ -2145,7 +2324,7 @@ function viewAbout(v){
     <p>Quên mật khẩu: dùng liên kết "Quên mật khẩu?" ở hộp Đăng nhập - hệ thống gửi email đặt lại. Tốc độ video chỉnh 1x - 1,5x - 2x. Trang hỗ trợ giao diện sáng/tối theo máy. Email đăng ký nên xác minh (bấm liên kết trong hộp thư) để bảo vệ tài khoản.</p>
   </div>`;
   C.kt=`
-  <div class="card" style="max-width:56em">
+  <div class="card">
     <h3 style="margin-top:0">Hệ kiểm tra - đánh giá khoa học</h3>
     <p>Đề được rút tự động từ <b>ngân hàng câu hỏi của chính các bài bạn đã học</b> theo <b>ma trận chuẩn</b>: phủ đều các chương theo tỷ trọng, khoảng 65% câu nhận biết - thông hiểu và 35% câu vận dụng (thang Bloom). Mỗi học sinh nhận một đề trộn riêng (khác thứ tự câu và phương án) nhưng cùng độ khó - công bằng và hạn chế trao đổi bài.</p>
     <p><b>Ba kỳ đánh giá:</b> Cuối chương (sau mỗi chương) → Giữa năm (nửa đầu sách) → <b>Thi Cuối năm</b> (toàn sách). Thời gian 90 giây/câu, hết giờ tự nộp. Điều kiện dự thi: hoàn thành ≥70% số bài trong phạm vi. <b>Lần làm đầu là điểm chính thức</b>, các lần sau là luyện tập.</p>
@@ -2156,7 +2335,7 @@ function viewAbout(v){
     <p>Cuối mỗi khóa có phiếu khảo sát 6 câu (thang 1-5) và ô góp ý - chỉ tác giả xem được, dùng để cải tiến nội dung.</p>
   </div>`;
   C.xt=`
-  <div class="card" style="max-width:56em">
+  <div class="card">
     <h3 style="margin-top:0">Vì sao phải xác thực?</h3>
     <p>KK-EDU áp dụng nguyên tắc <b>"tuổi nào lớp đó"</b>: nội dung, cách hỏi và cách chấm được thiết kế riêng cho từng độ tuổi, nên hệ thống cần biết đúng năm sinh của người học. Xác thực gồm 3 lớp, từ đơn giản đến chặt chẽ:</p>
     <p><b>Lớp 1 - Khai báo năm sinh.</b> Bắt buộc trước khi vào học; hệ thống tự xếp lớp. Sau khi được xác thực, ô năm sinh bị <b>khóa</b> - đổi năm sinh đồng nghĩa mất trạng thái xác thực và phải xác thực lại, nên không thể "đổi tuổi để nhảy lớp".</p>
@@ -2167,7 +2346,7 @@ function viewAbout(v){
     <p class="note">Khi chưa xác thực (và chế độ bắt buộc đang bật), bạn vẫn học thử 7 bài đầu của các sách đúng lớp mình. Trạng thái xác thực hiện ở mục Học tập.</p>
   </div>`;
   C.ph=`
-  <div class="card" style="max-width:56em">
+  <div class="card">
     <h3 style="margin-top:0">Dành cho phụ huynh</h3>
     <p>Với <b>Mầm non</b>, nền tảng chạy chế độ "người lớn hỗ trợ": câu hỏi dạng chạm tranh, không chấm điểm, không xếp hạng. Sau bài học có <b>Bảng quan sát 3 mức</b> (Đạt - Đang hình thành - Cần hỗ trợ) để cha mẹ ghi nhận theo từng chỉ số - đây là cách đánh giá đúng lứa tuổi thay cho điểm số.</p>
     <p>Với <b>Tiểu học</b>, có điểm để tự theo dõi nhưng không xếp hạng. Phụ huynh xem tiến độ và kết quả của con trong mục Học tập trên chính thiết bị con học, và là người xác nhận mức rubric cho câu suy ngẫm.</p>
@@ -2176,7 +2355,7 @@ function viewAbout(v){
     <p class="note"><b>Lưu ý thẩm định:</b> toàn bộ là mô hình thử nghiệm, học liệu bổ trợ, không thay thế sách giáo khoa được phê duyệt. Lớp 2.0 được soạn có hỗ trợ AI và kiểm tra tự động về cấu trúc; giáo viên bộ môn cần thẩm định nội dung và đáp án trước khi dùng với học sinh.</p>
   </div>`;
   C.pl=`
-  <div class="card" style="max-width:56em">
+  <div class="card">
     <h3 style="margin-top:0">Bản quyền</h3>
     <p>Toàn bộ nội dung (sách, kịch bản, sơ đồ, câu hỏi, video) thuộc bản quyền của tác giả <b>Nguyễn Duy Điển</b>, hợp pháp trên toàn thế giới. Mọi hình thức sao chép, phát tán khi chưa được phép đều vi phạm pháp luật về sở hữu trí tuệ. <b>Sách PDF được mã hóa, đóng dấu bản quyền và chỉ đọc trong trình đọc bảo vệ</b> (không tải - không sao chép - không bôi đen, watermark mang tên người đang xem). Video có watermark động mang định danh người xem để truy vết phát tán.</p>
     <h3>Dữ liệu cá nhân - Nghị định 13/2023/NĐ-CP</h3>
@@ -2187,8 +2366,11 @@ function viewAbout(v){
   v.innerHTML=`
   <div class="sec" style="margin-top:26px"><div><div class="eyebrow">Mô hình giáo dục số thử nghiệm</div><h2 style="margin:0">Giới thiệu & Hướng dẫn KK-EDU</h2></div></div>
   <div class="tabbar">${TABS.map(([id,lb])=>`<button data-t="${id}" class="${aboutTab===id?"on":""}">${lb}</button>`).join("")}</div>
-  <div id="aboutBody">${C[aboutTab]||C.gt}</div>`;
-  v.querySelectorAll(".tabbar button").forEach(b=>b.onclick=()=>{aboutTab=b.dataset.t; viewAbout(v);});
+  <div id="aboutBody" class="abwrap">${C[aboutTab]||C.gt}</div>`;
+  v.querySelectorAll(".tabbar button").forEach(b=>b.onclick=()=>{ aboutTab=b.dataset.t; try{ history.replaceState(null,"","#about"+(aboutTab==="gt"?"":"_"+aboutTab)); }catch(e){} viewAbout(v); const tb=v.querySelector(".tabbar"); if(tb) tb.scrollIntoView({block:"nearest"}); });
+  const tbo=v.querySelector(".tabbar button.on"); if(tbo){ const tb=tbo.parentElement; if(tb.scrollWidth>tb.clientWidth){ const a=tbo.getBoundingClientRect(), r=tb.getBoundingClientRect(); tb.scrollLeft+=a.left-r.left-12; } }
+  v.querySelectorAll(".mod5 .m[data-go]").forEach(m=>{ m.setAttribute("role","button"); m.tabIndex=0; const f=()=>{ const g=m.dataset.go; if(g.startsWith("about_")){ aboutTab=g.slice(6); try{ history.replaceState(null,"","#"+g); }catch(e){} viewAbout(v); window.scrollTo({top:0}); } else go({name:g}); }; m.onclick=f; m.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); f(); } }; });
+  kkLangBind(v);
   kkPhotoBind(v);
 }
 </script>
@@ -4443,6 +4625,105 @@ function cbKB(){
   const lop=cbMyLop();
   const contact=S.settings.contactZalo?("Zalo "+S.settings.contactZalo):(S.settings.contactEmail||"mục liên hệ cuối trang");
   const KB=[
+  // ===== KK-V54: NGOẠI NGỮ - IELTS =====
+  {id:"ielts", chip:"Luyện thi IELTS", k:"ielts tieng anh luyen thi ielts thi thu ielts on thi ielts hoc ielts o dau band ielts academic",
+   a:`<b>Luyện thi và thi thử IELTS</b> (menu Ngoại ngữ → Tiếng Anh, địa chỉ /ielts/): lộ trình 12 tuần, 7 chặng từ <b>Chẩn đoán</b> đến <b>Chứng chỉ</b>; 52 video tương tác, 44 tài liệu, 600 từ vựng, 8 bài ngữ pháp, 6 bài phát âm; Viết và Nói có <b>AI chấm theo tiêu chí IELTS</b>; thi thử đủ 4 kỹ năng trên máy, đề ngẫu nhiên. Dùng chung tài khoản KK-EDU.`,
+   acts:[{l:"Vào luyện thi IELTS", href:"/ielts/"},{l:"Giới thiệu chi tiết", go:"about_nn"}]},
+  {id:"ielts_lotrinh", k:"lo trinh ielts 12 tuan 7 chang giai doan xay nen ky nang luyen de cong giai doan bao lau hoc ielts mat bao lau",
+   a:`Lộ trình IELTS gồm <b>7 chặng</b>: Chẩn đoán → Xây nền (tuần 1-4, 50% tiếng Anh) → Kỹ năng (tuần 5-10, 70%) → Luyện đề → Thi thử → Kết quả → Chứng chỉ. Giữa các giai đoạn có <b>cổng đánh giá</b> (ví dụ cổng 1: 12 video nền, bài làm quen và đề cổng 40 câu đạt 60%). Mở trang IELTS là vào thẳng bài tiếp theo của bạn.`,
+   acts:[{l:"Mở lộ trình IELTS", href:"/ielts/"}]},
+  {id:"ielts_chandoan", chip:"Chẩn đoán IELTS", k:"chan doan dau vao ielts kiem tra trinh do test dau vao band khoi diem bat dau ielts tu dau",
+   a:`Bắt đầu IELTS bằng <b>bài chẩn đoán 4 kỹ năng</b> (khoảng 60 phút): Nghe 10 câu, Đọc 13 câu, Viết Task 2 trong 20 phút (AI chấm 4 tiêu chí), Nói 3 câu Part 1 + Part 2 có ghi âm (AI chấm 3 tiêu chí). Kết quả là <b>band khởi điểm từng kỹ năng</b> để hệ thống xếp lộ trình.`,
+   acts:[{l:"Làm bài chẩn đoán", href:"/ielts/#go=chan-doan"}]},
+  {id:"ielts_tuvung", k:"tu vung ielts 600 tu flashcard on tu srs lap lai ngat quang hoc tu moi ngay chu de ipa",
+   a:`<b>600 từ vựng IELTS học thuật</b> (band 6-7,5) chia 12 chủ đề, mỗi từ có loại từ, phiên âm Anh-Anh, nghĩa, ví dụ có audio và collocation. Học bằng <b>flashcard lặp lại ngắt quãng</b> (Quên / Khó / Nhớ / Dễ; phím tắt Space, 1-4), mỗi phiên 20 từ mới + thẻ đến hạn, có kiểm tra nhanh 10 câu. Thẻ “Ôn từ vựng hôm nay” hiện trong tuần học.`,
+   acts:[{l:"Vào tuần học Xây nền", href:"/ielts/#go=xay-nen"}]},
+  {id:"ielts_nguphap", k:"ngu phap ielts phat am ielts luyen phat am cap tu toi thieu ghi am so khop grammar pronunciation",
+   a:`Giai đoạn Xây nền có <b>8 bài ngữ pháp</b> (quy tắc giải thích bằng tiếng Việt, ví dụ tiếng Anh có audio, 64 câu trắc nghiệm, đạt từ 75%) và <b>6 bài phát âm</b> (mẹo, 10 cặp từ tối thiểu nghe và nhại, 5 câu luyện ghi âm được so khớp từng từ - dùng Chrome hoặc Edge).`,
+   acts:[{l:"Mở Xây nền", href:"/ielts/#go=xay-nen"}]},
+  {id:"ielts_video", k:"video ielts phu de song ngu tieng anh tieng viet loi dan video ky nang 52 video",
+   a:`52 video IELTS tương tác: video dừng đúng lúc để hỏi, bắt buộc trả lời mới đi tiếp, có quiz cuối video. Ô <b>Phụ đề</b> chọn Tắt / Tiếng Việt / Tiếng Anh / Song ngữ (mặc định theo giai đoạn: Việt → Song ngữ → Anh); từ giai đoạn 2 lời dẫn đọc bằng giọng Anh.`,
+   acts:[{l:"Vào IELTS", href:"/ielts/"}]},
+  {id:"ielts_viet", k:"writing ielts viet ielts cham bai viet task 1 task 2 ai cham bai viet bai mau band 8 dem tu",
+   a:`Phần <b>Writing</b>: đếm từ trực tiếp, gợi ý dàn ý, khóa dán khi thi; bấm <b>“Chấm ngay theo 4 tiêu chí”</b> để AI chấm Task Response, Coherence, Lexical Resource, Grammar kèm nhận xét tiếng Việt và lỗi có trích dẫn; so sánh với <b>bài mẫu band cao</b>. Kho đề có 9 đề Task 1 và 15 đề Task 2.`,
+   acts:[{l:"Luyện kỹ năng", href:"/ielts/#go=ky-nang"}]},
+  {id:"ielts_noi", k:"speaking ielts luyen noi ghi am noi ai cham noi part 1 part 2 part 3 cue card phat am fluency",
+   a:`Phần <b>Speaking</b>: nghe câu hỏi bằng giọng giám khảo, ghi âm từng câu (nhận dạng giọng nói trên Chrome/Edge: đo giây, số từ, từ/phút, ngập ngừng), 1 phút chuẩn bị cho Part 2; đủ 3 câu là <b>AI chấm 3 tiêu chí</b> (Fluency & Coherence, Lexical Resource, Grammar). Kho có 8 bộ đề nói.`,
+   acts:[{l:"Phòng giám khảo Speaking", href:"/ielts/#go=phong-giam-khao"}]},
+  {id:"ielts_giamkhao", chip:"Phòng giám khảo", k:"phong giam khao speaking mo phong thi noi giam khao ao examiner thu thach 3 phut checklist truoc thi",
+   a:`<b>Phòng giám khảo</b> mô phỏng phần thi Nói thật: 2 chủ đề Part 1, Part 2 (60 giây chuẩn bị, tối đa 2 phút nói), 3 câu Part 3; giám khảo đọc bằng giọng Anh, đồng hồ từng câu, cảnh báo khi trả lời quá ngắn, ghi nhận lời nói và chấm AI. Kèm <b>Thử thách 3 phút</b> mỗi ngày (theo dõi chuỗi ngày) và <b>Checklist 15 việc</b> trước ngày thi.`,
+   acts:[{l:"Vào Phòng giám khảo", href:"/ielts/#go=phong-giam-khao"},{l:"Thử thách 3 phút", href:"/ielts/#go=thu-thach"},{l:"Checklist trước thi", href:"/ielts/#go=checklist"}]},
+  {id:"ielts_thithu", chip:"Thi thử IELTS", k:"thi thu ielts de thi ielts tren may computer delivered full test 4 ky nang listening reading phong thi ao dong ho",
+   a:`<b>Thi thử IELTS trên máy</b> như thật: Listening phát liền 4 Part (không tua, không phát lại, giọng dẫn chuyển Part), Reading 40 câu, Writing Task 1 + Task 2 (khóa dán), Speaking 16 câu có ghi âm; đồng hồ đếm ngược, hệ thống ghi nhận số lần rời màn hình. Đề rút ngẫu nhiên từ kho 12 phần nghe, 9 bài đọc, 24 đề viết, 8 bộ nói. Cần đăng nhập.`,
+   acts:[{l:"Vào Luyện đề", href:"/ielts/#go=luyen-de"},{l:"Vào Thi thử", href:"/ielts/#go=thi-thu"}]},
+  {id:"ielts_band", k:"band ielts tinh the nao quy doi diem overall cach tinh band so cau dung band bao nhieu ket qua ielts",
+   a:`Listening và Reading quy đổi band từ số câu đúng theo <b>bảng chuẩn phổ biến</b> (có thể lệch 1 câu giữa các đề); Writing, Nói chấm theo tiêu chí. <b>Overall</b> = trung bình cộng 4 kỹ năng, làm tròn theo quy tắc IELTS (đến 0,5 gần nhất). Trang Kết quả có band từng kỹ năng, mã lỗi, video và tài liệu gợi ý ôn đúng chỗ yếu, đường tiến bộ và bản đồ lỗi.`,
+   acts:[{l:"Xem Kết quả", href:"/ielts/#go=ket-qua"}]},
+  {id:"ielts_chungchi", k:"chung chi ielts kk edu chung chi thu nghiem dieu kien cap chung chi tieng anh ma xac minh",
+   a:`<b>Chứng chỉ KK-EDU thử nghiệm (IELTS)</b> cấp khi: hoàn thành đủ 4 kỹ năng trong một phiên thi thử trên máy, không vi phạm quy định phòng thi ảo; Writing/Speaking chưa được giáo viên duyệt thì chứng chỉ ghi “Chấm bởi AI, chưa duyệt”. Có mã tra cứu công khai. Đây là chứng chỉ nội bộ, không thay thế IELTS chính thức.`,
+   acts:[{l:"Chặng Chứng chỉ", href:"/ielts/#go=chung-chi"},{l:"Trang Xác minh", href:"/verify/"}]},
+  {id:"ielts_giadinh", k:"phu huynh theo doi ielts giao vien theo doi hoc vien ma lien ket gia dinh chia se tien do ielts",
+   a:`Trong IELTS mở <b>Gia đình &amp; giáo viên</b>: học viên tạo <b>mã liên kết 8 ký tự</b> (hiệu lực 7 ngày, dùng một lần, tối đa 5 mã) để phụ huynh hoặc giáo viên nhập; người theo dõi chỉ thấy tổng quan tiến độ, không thấy bài làm hay email. Học viên dưới 18 tuổi chỉ liên kết với phụ huynh có email đã xác minh; có thể tắt chia sẻ bất cứ lúc nào.`,
+   acts:[{l:"Mở Gia đình & giáo viên", href:"/ielts/#go=gia-dinh"}]},
+  {id:"ielts_tuoi", k:"ielts may tuoi duoc thi thu tre em hoc ielts khach co hoc ielts duoc khong dang nhap ielts",
+   a:`Khách xem được tài liệu và video IELTS; <b>thi thử và chứng chỉ cần đăng nhập</b> và khuyến nghị từ 14 tuổi. Tiến độ IELTS lưu theo tài khoản KK-EDU, học tiếp trên mọi thiết bị.`,
+   acts:S.uid?[{l:"Vào IELTS", href:"/ielts/"}]:[{l:"Đăng ký miễn phí", fn:"reg"},{l:"Vào IELTS", href:"/ielts/"}]},
+  {id:"ielts_ket", k:"toi ket ielts bi ket khong hieu bai chot loi ma loi sai lap lai lam sai nhieu",
+   a:`Trong bài luyện IELTS có nút <b>“Tôi kẹt”</b> (gợi ý cách làm, ghi nhận chỗ khó) và mục <b>Chốt lỗi</b>: mỗi lỗi gắn mã (36 mã lỗi), hệ thống nhắc ôn đúng video/tài liệu; cổng giai đoạn 2 yêu cầu không lặp lại cùng một lỗi 3 lần trong 2 tuần.`,
+   acts:[{l:"Luyện kỹ năng", href:"/ielts/#go=ky-nang"}]},
+  // ===== KK-V54: NGOẠI NGỮ - TIẾNG TRUNG =====
+  {id:"zh", chip:"Học Tiếng Trung", k:"tieng trung hoc tieng trung trung quoc hoa ngu hsk tieng hoa hoc chu han giao tiep tieng trung",
+   a:`<b>Tiếng Trung giao tiếp tương tác</b> (menu Ngoại ngữ → Tiếng Trung, địa chỉ /tieng-trung/): <b>140 bài và 140 video</b> cho người Việt, học tuần tự từ HSK 1 đến HSK 4; mỗi bài 3 lớp (Trực quan hóa - Thực hành tương tác - Trợ lý AI), tập viết 412 chữ, giọng Cô Lin chuẩn, kiểm tra và thi thử HSK, chứng chỉ HSK 3 tự động.`,
+   acts:[{l:"Học Tiếng Trung", href:"/tieng-trung/"},{l:"Giới thiệu chi tiết", go:"about_nn"}]},
+  {id:"zh_lotrinh", k:"lo trinh tieng trung giai doan hsk 1 hsk 2 hsk 3 hsk 4 phan a phan b khoi c d bao nhieu bai hoc bao lau",
+   a:`Lộ trình 3 giai đoạn: <b>Giai đoạn 1 (HSK 1-3)</b> 120 bài - Phần A 6 bài nền tảng, Phần B 24 bài giao tiếp, 9 khối ngữ pháp C01-C90 (bài cuối mỗi khối là ôn tập), gói “HSK 3 trong 9 tháng”; <b>Giai đoạn 2 (HSK 4)</b> đã mở D01-D20; <b>Giai đoạn 3 (HSK 7-9)</b> đang biên soạn.`,
+   acts:[{l:"Xem lộ trình", href:"/tieng-trung/#lo-trinh"}]},
+  {id:"zh_batdau", k:"bat dau hoc tieng trung tu dau nguoi moi bat dau so 0 pinyin phat am thanh dieu bai dau tien a01",
+   a:`Người mới bắt đầu từ <b>bài ZH-A01</b> (phát âm, pinyin, thanh điệu). Mở trang Tiếng Trung là hệ thống <b>đưa thẳng tới bài tiếp theo</b> của bạn; thanh “Bài n/140” có nút bài trước - bài sau; mở bài vượt quá xa sẽ được hỏi lại trước (vẫn xem trước được).`,
+   acts:[{l:"Mở bài A01", href:"/tieng-trung/#ZH-A01"},{l:"Danh sách bài", href:"/tieng-trung/#danh-sach"}]},
+  {id:"zh_3lop", k:"ba lop moi bai tieng trung truc quan hoa thuc hanh tuong tac tro ly ai chiet tu han viet role play hoi thoai nhap vai",
+   a:`Mỗi bài Tiếng Trung có <b>3 lớp</b>: (1) <b>Trực quan hóa</b> - từ vựng có âm Hán-Việt, chiết tự, sơ đồ ngữ pháp; (2) <b>Thực hành tương tác</b> - tập viết, ghép câu, nghe và nói theo; (3) <b>Trợ lý AI</b> - hội thoại nhập vai, hỏi đáp về bài. Thêm tab <b>Thẻ nhớ</b> để ôn từ và <b>Kiểm tra</b> cuối bài. Người Việt nhớ chữ nhanh nhờ cầu nối âm Hán-Việt.`,
+   acts:[{l:"Học Tiếng Trung", href:"/tieng-trung/"}]},
+  {id:"zh_tapviet", k:"tap viet chu han viet chu trung quoc thu tu net nhan dien net ve chu hanzi",
+   a:`Tab <b>Lớp 2: Tập viết</b> trong mỗi bài: xem hoạt họa thứ tự nét rồi tự viết bằng chuột hoặc ngón tay, hệ thống <b>nhận diện từng nét</b>, sai thì gợi ý nét đúng. Có dữ liệu nét cho 412 chữ dùng trong 140 bài.`,
+   acts:[{l:"Vào bài đang học", href:"/tieng-trung/"}]},
+  {id:"zh_giong", k:"giong doc tieng trung co lin phat am chuan tieng trung doi giong toc do doc pinyin doc sai",
+   a:`Tiếng Trung đọc bằng <b>giọng Cô Lin</b> chuẩn phổ thông (giọng máy chủ chất lượng cao), lời giảng tiếng Việt đọc bằng giọng Việt; pinyin đứng riêng được đọc đúng thanh điệu. Chọn giọng và tốc độ (0,7x-1,15x) ở đầu trang. Giọng đọc của 140 video đã <b>lưu sẵn</b> nên phát liền mạch.`,
+   acts:[{l:"Học Tiếng Trung", href:"/tieng-trung/"}]},
+  {id:"zh_kiemtra", chip:"Thi thử HSK", k:"kiem tra tieng trung thi thu hsk de thi hsk hsk 3 hsk 4 kiem tra khoi kiem tra phan",
+   a:`Trang Tiếng Trung có <b>Kiểm tra</b>: đề cuối mỗi phần/khối (13 đề, 20 câu) và <b>thi thử theo cấu trúc HSK 1-2, HSK 3, HSK 4</b> (nghe, đọc, viết; chấm tự động, thang 200 điểm với HSK 3). Kết quả lưu vào <b>Sổ điểm</b>.`,
+   acts:[{l:"Vào Kiểm tra", href:"/tieng-trung/#kiem-tra"},{l:"Sổ điểm", href:"/tieng-trung/#so-diem"}]},
+  {id:"zh_sodiem", k:"so diem tieng trung diem bai hoc tieng trung tien do tieng trung xem diem",
+   a:`<b>Sổ điểm</b> Tiếng Trung tổng hợp điểm từng bài (thang 100, gồm các thành phần luyện tập và kiểm tra cuối bài), kết quả kiểm tra khối và thi thử HSK; tiến độ đồng bộ theo tài khoản KK-EDU.`,
+   acts:[{l:"Mở Sổ điểm", href:"/tieng-trung/#so-diem"}]},
+  {id:"zh_hsk4", k:"hsk 4 viet doan van tieng trung nghe ban tin cham bai viet tieng trung tu noi giai doan 2 d01",
+   a:`Các bài <b>HSK 4 (D01-D20)</b> có thêm tab <b>Viết đoạn văn</b> (đếm từ nối và số câu, AI chấm theo tiêu chí, bài mẫu, lỗi thường gặp) và tab <b>Nghe bản tin</b> ngắn để luyện nghe thực tế.`,
+   acts:[{l:"Mở bài D01", href:"/tieng-trung/#ZH-D01"}]},
+  {id:"zh_chungchi", chip:"Chứng chỉ HSK 3", k:"chung chi tieng trung chung chi hsk 3 cap chung chi tu dong dieu kien chung chi tieng trung",
+   a:`<b>Chứng chỉ KK-EDU Thử nghiệm HSK 3</b> được <b>cấp tự động</b> khi bạn (1) hoàn thành 120 bài Giai đoạn 1 (A01-A06, B01-B24, C01-C90, đã làm kiểm tra cuối bài) và (2) đạt thi thử HSK 3 từ 120/200. Chứng chỉ có mã 10 ký tự, mã QR, in hoặc lưu PDF và tra cứu công khai. Cần đăng nhập. Chứng chỉ nội bộ, không thay thế HSK chính thức.`,
+   acts:[{l:"Xem tiến độ chứng chỉ", href:"/tieng-trung/#chung-chi"}]},
+  {id:"zh_tailieu", chip:"Tài liệu Tiếng Trung", k:"tai lieu tieng trung pdf tieng trung tap 1 tap 2 tai ve tai lieu in tai lieu xem tai lieu khong tai duoc",
+   a:`24 tài liệu Tiếng Trung (Tập 1 451 trang, Tập 2 147 trang, 20 tài liệu theo khối) <b>chỉ xem hoặc in</b> trong trình đọc của KK-EDU khi đã đăng nhập: có dấu bản quyền và email người xem, phóng to - toàn màn hình, nút <b>In</b> theo khoảng trang (tối đa 30 trang mỗi lần). <b>Không tải về</b> - tài liệu thuộc bản quyền tác giả Nguyễn Duy Điển.`,
+   acts:[{l:"Mở tài liệu", href:"/tieng-trung/#tai-lieu"}]},
+  {id:"zh_video", k:"video tieng trung video tuong tac tieng trung xem video bai tieng trung cau hoi trong video",
+   a:`Mỗi bài Tiếng Trung có <b>video tương tác</b> riêng (tab Video): lời giảng tiếng Việt và câu mẫu tiếng Trung, dừng ở điểm hỏi, câu hỏi cuối video; tải trước đoạn kế tiếp để phát liền mạch.`,
+   acts:[{l:"Học Tiếng Trung", href:"/tieng-trung/"}]},
+  {id:"zh_hanviet", k:"nguoi viet hoc tieng trung co kho khong han viet am han viet hoc nhanh meo nho chu han",
+   a:`Người Việt có lợi thế lớn: rất nhiều từ tiếng Việt có gốc Hán (thường được ước tính trên một nửa vốn từ). KK-EDU ghi <b>âm Hán-Việt</b> cạnh từ mới và dùng <b>chiết tự</b> (tách chữ thành bộ thủ có nghĩa) để nhớ nhanh, kết hợp nghe - nhại - nhắc lại theo nhịp ôn khoa học.`,
+   acts:[{l:"Học thử bài A01", href:"/tieng-trung/#ZH-A01"}]},
+  // ===== KK-V54: CHUNG =====
+  {id:"ngoaingu", chip:"Ngoại ngữ", k:"ngoai ngu hoc ngoai ngu tieng nhat jlpt cac ngoai ngu co nhung mon ngoai ngu nao",
+   a:`Phân hệ <b>Ngoại ngữ</b> hiện có <b>Tiếng Anh - Luyện thi và thi thử IELTS</b> và <b>Tiếng Trung giao tiếp</b> (HSK 1-4); <b>Tiếng Nhật</b> (JLPT N5-N3) đang biên soạn.`,
+   acts:[{l:"Trang Ngoại ngữ", go:"ngoaingu"},{l:"So sánh IELTS - Tiếng Trung", go:"about_nn"}]},
+  {id:"taikhoanchung", k:"mot tai khoan dung chung ielts tieng trung dang nhap lai tai khoan ielts tai khoan tieng trung dong bo",
+   a:`<b>Một tài khoản KK-EDU dùng cho mọi phân hệ</b>: đăng nhập ở Trang chủ là IELTS và Tiếng Trung nhận cùng phiên; tên lấy từ hồ sơ học viên; tiến độ từng phân hệ lưu đám mây riêng, học tiếp trên mọi thiết bị.`,
+   acts:S.uid?[{l:"Mở Học tập", go:"dash"}]:[{l:"Đăng nhập", fn:"login"},{l:"Đăng ký miễn phí", fn:"reg"}]},
+  {id:"xacminhcc", k:"xac minh chung chi tra cuu chung chi kiem tra chung chi that gia ma chung chi verify",
+   a:`Mọi chứng chỉ KK-EDU (IELTS thử nghiệm, Tiếng Trung HSK 3) có <b>mã tra cứu</b>. Nhà tuyển dụng, nhà trường nhập mã tại <b>trang Xác minh</b> (/verify/) hoặc quét QR trên chứng chỉ để xem tên, cấp độ, kết quả và ngày cấp.`,
+   acts:[{l:"Trang Xác minh", href:"/verify/"}]},
+  {id:"moi", chip:"Có gì mới", k:"co gi moi tinh nang moi cap nhat moi nhat phien ban moi thay doi gan day",
+   a:`Mới nhất: <b>chứng chỉ HSK 3 tự động</b> và giọng đọc 140 video Tiếng Trung lưu sẵn; <b>tài liệu chỉ xem/in</b> có dấu bản quyền; IELTS có <b>Phòng giám khảo</b>, Thử thách 3 phút, Gia đình &amp; giáo viên, 600 từ vựng flashcard; một tài khoản cho mọi phân hệ; Trợ lý trả lời cả IELTS và Tiếng Trung.`,
+   acts:[{l:"Xem nhật ký cập nhật", go:"about_moi"}]},
   // ===== TÀI KHOẢN =====
   {id:"dangky", chip:"Đăng ký tài khoản", k:"dang ky tai khoan thanh vien tao tai khoan lap tai khoan đang ki email mat khau google",
    a:`Bấm menu tài khoản ở <b>góc trên bên phải</b> → <b>Đăng ký thành viên</b>: nhập họ tên, năm sinh, email và mật khẩu (tối thiểu 8 ký tự), hoặc Đăng ký nhanh với Google. Năm sinh quyết định lớp học (sinh ${AY-12} → Lớp 7). Người học dưới 16 tuổi cần cha mẹ đăng ký và tích ô xác nhận. Thành viên được lưu đám mây, học đa thiết bị, thi lấy học bạ và tự lên lớp mỗi năm.`,
@@ -4541,7 +4822,7 @@ function cbKB(){
   {id:"lienhe", chip:"Liên hệ hỗ trợ", k:"lien he ho tro hotline zalo email gap nguoi that quan tri",
    a:`Liên hệ Quản trị qua ${esc(contact)}${S.settings.contactEmail&&S.settings.contactZalo?` hoặc email ${esc(S.settings.contactEmail)}`:""}. Góp ý về nội dung học: dùng phiếu khảo sát trong mục Kiểm tra.`},
   {id:"kkedu", k:"kk edu la gi gioi thieu web nay cua ai co gi mo hinh thu nghiem",
-   a:`KK-EDU là <b>mô hình giáo dục số thử nghiệm</b>: 220 đầu sách - 6.872 bài học từ Nhà trẻ đến Tiến sĩ, học bằng video tương tác dừng đúng giây để hỏi, có trợ giảng AI, giọng đọc AI, kiểm tra - học bạ tự động. Học liệu bổ trợ, không thay thế sách giáo khoa. Tác giả: Nguyễn Duy Điển.`,
+   a:`KK-EDU là <b>mô hình giáo dục số thử nghiệm</b>: 220 đầu sách - 6.872 bài học từ Nhà trẻ đến Tiến sĩ, học bằng video tương tác dừng đúng giây để hỏi, có trợ giảng AI, giọng đọc AI, kiểm tra - học bạ tự động; phân hệ Ngoại ngữ có <b>Luyện thi IELTS</b> và <b>Tiếng Trung giao tiếp</b>. Học liệu bổ trợ, không thay thế sách giáo khoa. Tác giả: Nguyễn Duy Điển.`,
    acts:[{l:"Trang Giới thiệu", go:"about"},{l:"Học thử ngay", go:"hoc_CS-TOAN-7_0"}]},
   ];
   return KB;
@@ -4592,6 +4873,8 @@ function cbPush(who, html, acts){
   b.scrollTop=b.scrollHeight;
 }
 function cbAct(a){
+  if(a.href){ try{ kkTrack("tro_ly_mo",{dich:a.href}); }catch(e){} location.href=a.href; return; }
+  if(a.go && a.go.startsWith("about_")){ go({name:"about", code:a.go.slice(6)}); const pn=$("#cbPanel"); if(pn&&window.innerWidth<700){ pn.hidden=true; CB.open=false; } return; }
   if(a.go){
     if(a.go.startsWith("hoc_")){ const p=a.go.split("_"); go({name:"hoc", code:p[1], i:Number(p[2]||0)}); }
     else go({name:a.go});
@@ -4612,6 +4895,7 @@ function cbChipsRender(){
   });
 }
 function cbHello(){
+  if(S.route && (S.route.name==="ngoaingu" || (S.route.name==="about" && aboutTab==="nn"))){ setTimeout(()=>cbPush("b", `Bạn đang xem phân hệ <b>Ngoại ngữ</b>. Hỏi mình về <b>IELTS</b> (chẩn đoán, lộ trình, phòng giám khảo, thi thử, band) hoặc <b>Tiếng Trung</b> (lộ trình HSK, tập viết, tài liệu, chứng chỉ HSK 3).`, [{l:"Luyện thi IELTS", kb:"ielts"},{l:"Học Tiếng Trung", kb:"zh"}]), 30); }
   const name=S.profile&&S.profile.name?S.profile.name.split(" ").slice(-1)[0]:null;
   cbPush("b", `Chào ${name?("bạn <b>"+esc(name)+"</b>"):("bạn")} 👋 Mình là Trợ lý KK-EDU. Bạn đang là <b>${cbRole()}</b>${cbMyLop()?`, lớp <b>${esc(cbMyLop())}</b>`:""}. Bấm một chủ đề bên dưới, hoặc gõ câu hỏi bất kỳ về cách dùng web - mình nắm rõ từng chức năng!`);
   cbChipsRender();
@@ -4654,6 +4938,12 @@ cbAct=function(a){
 };
 // Gắn bot khi trang sẵn sàng
 try{ cbMount(); }catch(e){}
+/* KK-V54: nút Trợ lý luôn nằm trên thanh đồng ý dữ liệu (không che nút) */
+(function(){
+  const upd=()=>{ const c=document.querySelector(".consent"); const h=(c && c.offsetParent!==null && getComputedStyle(c).display!=="none")?c.offsetHeight:0; document.documentElement.style.setProperty("--consentH", h+"px"); };
+  try{ new MutationObserver(upd).observe(document.body,{childList:true,subtree:false}); }catch(e){}
+  window.addEventListener("resize", upd); setTimeout(upd, 300); setTimeout(upd, 1500); upd();
+})();
 </script>
 
 <script>

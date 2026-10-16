@@ -843,7 +843,7 @@ home = function(m){
   const hb=m.querySelector(".bands"); if(hb && typeof zhAssessHomeCard==="function") hb.closest(".card").insertAdjacentHTML("afterend", zhAssessHomeCard());
   m.insertAdjacentHTML("beforeend", zhExtrasHTML());
   m.querySelectorAll("table").forEach(t=>{ if(!t.parentElement.classList.contains("tblwrap")){ const w=document.createElement("div"); w.className="tblwrap"; t.parentNode.insertBefore(w,t); w.appendChild(t); } });
-  if(/^#(tai-lieu|lo-trinh)$/.test(zhPendingAnchor||"")){ const el=document.getElementById(zhPendingAnchor.slice(1)); zhPendingAnchor=null; if(el) setTimeout(()=>el.scrollIntoView({behavior:"smooth", block:"start"}), 50); }
+  if(/^#(tai-lieu|lo-trinh|chung-chi)$/.test(zhPendingAnchor||"")){ const id=zhPendingAnchor.slice(1); zhPendingAnchor=null; setTimeout(()=>{ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:"smooth", block:"start"}); }, 80); }
 };
 let zhPendingAnchor=null;
 
@@ -853,7 +853,7 @@ function zhBoot(){
   if(/^#ZH-[A-Z]\d{2}$/.test(h)){ S.lesson=h.slice(1); S.tab=S.tab||"l1"; }
   else if(h==="#danh-sach"){ S.lesson=null; S.page=null; }
   else if(!h){ S.page=null; S.lesson=null; ZH.autoNext=true; }   // mở trang: vào thẳng bài tiếp theo khi đã có danh sách bài
-  else if(/^#(tai-lieu|lo-trinh)$/.test(h)){ zhPendingAnchor=h; S.lesson=null; S.page=null; }
+  else if(/^#(tai-lieu|lo-trinh|chung-chi)$/.test(h)){ zhPendingAnchor=h; S.lesson=null; S.page=null; }
   else if(h==="#so-diem"){ S.lesson=null; S.page="grades"; }
   else if(h==="#kiem-tra"){ S.lesson=null; S.page="test"; }
   if(S.voice && ZH_VOICES[S.voice]) KKV.voice=S.voice;
