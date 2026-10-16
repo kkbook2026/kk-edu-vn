@@ -9,7 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Luyện thi và thi thử IELTS - KK-EDU</title>
 <meta name="description" content="KK-EDU Ngoại ngữ - Tiếng Anh: luyện thi và thi thử IELTS theo luồng Kỹ năng - Tài liệu - Video tương tác - Thi thử đề ngẫu nhiên - Chấm tự động - Tổng hợp - Chứng chỉ KK-EDU thử nghiệm.">
-<meta name="author" content="Nguyễn Duy Điển (KK-2026)">
+<meta name="author" content="Nguyễn Duy Điển">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://www.kk-edu.com/ielts/">
 <meta name="theme-color" content="#142a4a">
@@ -233,7 +233,7 @@ i.en{font-style:italic;color:var(--navy)}
 <div class="hero"><div class="in"><div><div class="kick">Phân hệ Ngoại ngữ · bản thử nghiệm</div><h1>Luyện thi và thi thử <em>IELTS</em></h1><p>Lộ trình 12 tuần, 3 giai đoạn: Xây nền (Việt 50 / Anh 50) → Kỹ năng (30 / 70) → Luyện đề và Thi thử (100% tiếng Anh). Mỗi giai đoạn có cổng ra; tiến độ lưu theo tài khoản KK-EDU.</p></div><div class="tags"><span class="tag">Listening</span><span class="tag">Reading</span><span class="tag">Writing</span><span class="tag">Speaking</span></div></div></div>
 <nav class="steps" id="steps" aria-label="Các bước"></nav>
 <main id="main"><div class="card"><h1>Đang tải dữ liệu IELTS…</h1><p class="mute">Ngân hàng đề, tài liệu và kịch bản video được nạp từ máy chủ KK-EDU.</p></div></main>
-<footer>Tác giả: Nguyễn Duy Điển (KK-2026) · <a href="/">www.kk-edu.com</a> · Học liệu bổ trợ, mô hình thí điểm. IELTS là nhãn hiệu của British Council, IDP và Cambridge; hệ thống này không liên kết với các tổ chức đó. AI gợi ý, con người quyết định.</footer>
+<footer>Tác giả: Nguyễn Duy Điển · <a href="/">www.kk-edu.com</a> · Học liệu bổ trợ, mô hình thí điểm. IELTS là nhãn hiệu của British Council, IDP và Cambridge; hệ thống này không liên kết với các tổ chức đó. AI gợi ý, con người quyết định.</footer>
 <script>
 window.KK_API="/api";
 const KK_API_ALT="https://kk-edu-api.nguyenduydien75.workers.dev/api";
@@ -246,7 +246,7 @@ window.KK_API_READY=(async()=>{
 })();
 </script>
 <script>
-/* KK-EDU IELTS - Luyện thi và thi thử IELTS. Tác giả : Nguyễn Duy Điển (KK-2026). Dữ liệu nạp từ API KK-EDU (gói nội dung v1.0, repo riêng). */
+/* KK-EDU IELTS - Luyện thi và thi thử IELTS. Tác giả : Nguyễn Duy Điển. Dữ liệu nạp từ API KK-EDU (gói nội dung v1.0, repo riêng). */
 const D = {};
 /* Nạp dữ liệu theo nhu cầu: lúc mở trang chỉ tải phần lõi (~60 KB); kho video/tài liệu đầy đủ và kho đề tải khi chặng cần.
    URL có ?v=<sha nội dung> (từ /api/ielts/manifest) nên trình duyệt đệm dài mà vẫn tự cập nhật khi nội dung đổi. */
@@ -603,7 +603,7 @@ boot();
 </script>
 <script>
 /* ===== KK-EDU lớp tích hợp cho phân hệ IELTS: tài khoản dùng chung, giọng Azure đa ngôn ngữ, video liền mạch, AI tích hợp ===== */
-/* Ghi đè một số hàm của app.js (khai báo sau sẽ thắng). Tác giả : Nguyễn Duy Điển (KK-2026) */
+/* Ghi đè một số hàm của app.js (khai báo sau sẽ thắng). Tác giả : Nguyễn Duy Điển */
 
 const KK = { fb:null, user:null, profile:null, age:null, db:null, cloudLoaded:false, syncTimer:null, api:null };
 const KK_FIREBASE = { apiKey:"AIzaSyAL1bb3SQAabsWNB4Xyx-b_TzQdTvbyA8c", authDomain:"kk-edu.firebaseapp.com", projectId:"kk-edu", storageBucket:"kk-edu.firebasestorage.app", messagingSenderId:"916682871542", appId:"1:916682871542:web:974c6a2d8c49e3687352d7" };
@@ -916,7 +916,7 @@ document.addEventListener("visibilitychange", ()=>{ if(document.hidden && VP.pla
 </script>
 <script>
 /* ===== KK-EDU IELTS - Lộ trình 7 chặng, 12 tuần, 3 giai đoạn (lang_mix 50 -> 70 -> 100) ===== */
-/* Lớp này ghi đè điều hướng của app.js: chặng thay cho bước, cổng giai đoạn, Chốt lỗi, Tôi kẹt. Tác giả : Nguyễn Duy Điển (KK-2026) */
+/* Lớp này ghi đè điều hướng của app.js: chặng thay cho bước, cổng giai đoạn, Chốt lỗi, Tôi kẹt. Tác giả : Nguyễn Duy Điển */
 
 const J = { plan:null, pr:null };
 S.journey = Object.assign({diag:null, read:{}, practice:{}, writing:{}, speaking:{}, ticks:{}, stuck:{}, start:null, override:false}, S.journey||{});
@@ -1966,7 +1966,7 @@ function labFamilyHTML(){
 const ambigFix = (function(){
 /* KK-EDU: phân định từ viết giống nhau ở tiếng Việt (không dấu) và tiếng Anh theo ngữ cảnh.
    Ví dụ: "so sánh", "so với" -> tiếng Việt; "so that", "and so on", 'so' trong ngoặc -> tiếng Anh.
-   Dùng chung cho Worker (splitLang) và trang IELTS (kkSplitLang, giọng dự phòng). Tác giả : Nguyễn Duy Điển (KK-2026). */
+   Dùng chung cho Worker (splitLang) và trang IELTS (kkSplitLang, giọng dự phòng). Tác giả : Nguyễn Duy Điển. */
 // Cặp từ tiếng Việt: từ nhập nhằng + âm tiết đứng sau (n) hoặc đứng trước (p)
 const VI_PAIRS = {
   so: { n: "với sánh khớp le đo bì kè lại", p: "đem đối" },
@@ -2050,7 +2050,7 @@ kkSplitLang = function(text){
 };
 
 /* ===== KK-EDU IELTS: học tuần tự - mở thẳng bài tiếp theo của lộ trình, thanh "Bài tiếp theo" trên mỗi chặng =====
-   Tác giả : Nguyễn Duy Điển (KK-2026). Thứ tự khoa học: Chẩn đoán đầu vào -> Xây nền (tuần 1-4) -> Kỹ năng (tuần 5-10) -> Luyện đề, thi thử. */
+   Tác giả : Nguyễn Duy Điển. Thứ tự khoa học: Chẩn đoán đầu vào -> Xây nền (tuần 1-4) -> Kỹ năng (tuần 5-10) -> Luyện đề, thi thử. */
 function kkNextItem(){
   if(typeof J==="undefined" || !J.plan || !S.journey) return null;
   if(!S.journey.diag) return {diag:true};
@@ -2121,7 +2121,7 @@ function kkNextBanner(){
 })();
 
 /* ===== KK-EDU: Ô tài khoản dùng chung cho các phân hệ (IELTS, Tiếng Trung) - cùng kiểu menu với trang chủ =====
-   Tác giả : Nguyễn Duy Điển (KK-2026). Một tài khoản KK-EDU cho mọi phân hệ: tên lấy từ hồ sơ học viên, liên kết về Học tập của tôi, Quản trị. */
+   Tác giả : Nguyễn Duy Điển. Một tài khoản KK-EDU cho mọi phân hệ: tên lấy từ hồ sơ học viên, liên kết về Học tập của tôi, Quản trị. */
 const KK_ADMIN_EMAILS = ["nguyenduydien75@gmail.com"];
 const KK_MODULES = [["/ielts/","IELTS (Tiếng Anh)"],["/tieng-trung/","Tiếng Trung"]];
 function kkIsAdmin(){ const u=KK.user; return !!(u && u.email && KK_ADMIN_EMAILS.includes(u.email) && u.emailVerified); }
