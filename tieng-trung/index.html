@@ -24,6 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{--navy:#0f2a4a;--teal:#0E8F8A;--gold:#d4af37;--gold2:#a9871f;--bg:#f5f7fb;--card:#ffffff;--ink:#14213d;--mute:#5B6B7F;--line:#d8e0ea;--light:#EAF5F4;--bad:#B3261E;--good:#1B7F3B;--warn:#8a5a00;--warnbg:#FFF4D6;--font-d:"Playfair Display","Noto Serif",Georgia,serif;--font:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0b1626;--card:#132238;--ink:#e6edf5;--mute:#9FB0C3;--line:#2b3a4d;--light:#13303a;--navy:#dbe7f5;--warnbg:#3a2f12}}
@@ -299,6 +300,18 @@ i.en{font-style:italic;color:var(--navy)}
 .zhapp .zhnav{padding:10px 12px}
 .zhapp .pill{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:999px;background:var(--light);color:var(--navy);border:1px solid var(--line)}
 @media (max-width:640px){.user{flex-wrap:wrap!important;row-gap:6px}.user input#uname{flex:1 1 110px;min-width:0}.user select{max-width:46vw}}
+/* Chứng chỉ */
+.zhapp .zhcert{position:relative;border:3px double var(--gold);border-radius:12px;padding:22px 24px;background:#fffdf6;color:#1b2533;text-align:center;max-width:760px;margin:10px auto}
+.zhapp .zhcert h2{color:#142a4a;font-size:1.35rem;margin:10px 0 2px;letter-spacing:.04em}
+.zhapp .zcbrand{font-weight:800;font-size:22px;color:#142a4a}
+.zhapp .zcsub{color:#0E8F8A;font-size:13px}
+.zhapp .zcname{font-size:26px;font-weight:700;margin:4px 0 10px;font-family:var(--font-d)}
+.zhapp .zccode{font-family:ui-monospace,monospace;font-size:13.5px}
+.zhapp .zcfoot{display:flex;justify-content:space-between;margin-top:18px;font-size:13px;text-align:left}
+.zhapp .zcdis{margin-top:14px;font-size:11.5px;color:#5b6b7d;border-top:1px solid #e6dcc0;padding-top:8px}
+.zhapp .zcqr{position:absolute;right:16px;top:16px;width:84px;height:84px}
+@media (max-width:640px){.zhapp .zcqr{position:static;margin:0 auto 8px}}
+@media print{body.zcprint *{visibility:hidden}body.zcprint #zhCertDoc,body.zcprint #zhCertDoc *{visibility:visible}body.zcprint #zhCertDoc{position:absolute;left:0;top:0;width:100%;max-width:none;margin:0}}
 
 /* KK-EDU: ô tài khoản dùng chung (cùng kiểu trang chủ) */
 #kkUser{position:relative;display:flex;align-items:center}
@@ -892,14 +905,19 @@ function zhChunks(text){
   });
   return out;
 }
+const ZH_AUDIO_PEND = new Map();
 async function zhAudioSegs(segs){
   const key = "V|"+KKV.voice+"|"+KKV.rate+"|"+JSON.stringify(segs); let url = KKV.cache.get(key); if(url) return url;
-  const base = await kkApiBase();
-  const r = await fetch(base+"/tts", {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({segments:segs, voiceVi:ZH_VOICE_VI, voiceZh:KKV.voice, rate:Math.max(0.8, KKV.rate)})});
-  if(!r.ok) throw new Error("tts "+r.status);
-  url = URL.createObjectURL(await r.blob()); KKV.cache.set(key, url);
-  if(KKV.cache.size>150){ const k0=KKV.cache.keys().next().value; URL.revokeObjectURL(KKV.cache.get(k0)); KKV.cache.delete(k0); }
-  return url;
+  if(ZH_AUDIO_PEND.has(key)) return ZH_AUDIO_PEND.get(key);   // đang tải (tải trước): dùng chung, không gọi máy chủ hai lần
+  const job = (async()=>{
+    const base = await kkApiBase();
+    const r = await fetch(base+"/tts", {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({segments:segs, voiceVi:ZH_VOICE_VI, voiceZh:KKV.voice, rate:Math.max(0.8, KKV.rate), store:true})});
+    if(!r.ok) throw new Error("tts "+r.status);
+    const u = URL.createObjectURL(await r.blob()); KKV.cache.set(key, u);
+    if(KKV.cache.size>150){ const k0=KKV.cache.keys().next().value; URL.revokeObjectURL(KKV.cache.get(k0)); KKV.cache.delete(k0); }
+    return u;
+  })();
+  ZH_AUDIO_PEND.set(key, job); try{ return await job; } finally{ ZH_AUDIO_PEND.delete(key); }
 }
 function zhBrowserSegs(segs, seq){
   return segs.reduce((pr, s)=>pr.then(()=> seq!==KKV.seq ? null : new Promise(res=>{ try{ const u=new SpeechSynthesisUtterance(s.text); u.lang = s.lang==="zh"||s.lang==="py" ? "zh-CN" : "vi-VN"; u.rate = s.lang==="zh"||s.lang==="py" ? KKV.rate : 1; KKV.done=res; u.onend=()=>{ KKV.done=null; res(); }; u.onerror=()=>{ KKV.done=null; res(); }; speechSynthesis.speak(u); }catch(e){ res(); } })), Promise.resolve());
@@ -993,6 +1011,8 @@ function zvCopy(){ const t=$("#zvPrompt"); if(!t) return; try{ navigator.clipboa
 function zvBlocked(){ const cur = ZV.flat[ZV.i]; if(!cur) return false; if(cur.it.t==="cp") return !ZV.cp[ZV.i]; if(cur.it.t==="quiz") return true; return false; }
 function zvTickStart(){ clearInterval(ZV.tick); ZV.tick=setInterval(()=>{ if(!document.getElementById("zvTime")){ clearInterval(ZV.tick); zhStop(); ZV.playing=false; return; } ZV.elapsed++; const v=ZV.data[ZV.vid]; const el=$("#zvTime"); if(el) el.textContent = zvFmt(ZV.elapsed)+" / "+zvFmt((v.minutes||13)*60); }, 1000); }
 function zvToggle(){ if(ZV.playing){ ZV.playing=false; zhStop(); clearInterval(ZV.tick); render(); return; } ZV.playing=true; zvTickStart(); render(); zvPlayCurrent(); }
+/** Đoạn đọc đầu tiên của cảnh kế tiếp (để tải trước) */
+function zvNextSceneChunk(i){ const nx = ZV.flat[i+1]; if(!nx || nx.it.t!=="scene" || !nx.it.say) return null; return zhChunks(nx.it.say).find(x=>!x.pause) || null; }
 async function zvPlayCurrent(){
   const cur = ZV.flat[ZV.i]; if(!cur || !ZV.playing) return;
   if(cur.it.t!=="scene"){ return; }   // điểm dừng / prompt / kiểm tra: chờ người học
@@ -1003,6 +1023,8 @@ async function zvPlayCurrent(){
     const sub = $("#zvSub");
     if(c.pause){ if(sub) sub.classList.add("pause"); await new Promise(r=>setTimeout(r, c.pause*1000)); if(sub) sub.classList.remove("pause"); continue; }
     if(sub){ sub.innerHTML = zvBig(cur.it.say).replace(zvBig(c.text), `<mark>${zvBig(c.text)}</mark>`); }
+    const k = chunks.indexOf(c); const nx = chunks.slice(k+1).find(x=>!x.pause) || zvNextSceneChunk(myI);
+    if(nx && zhAzureOk()) zhAudioSegs(zhSegs(nx.text)).catch(()=>{});   // tải trước đoạn kế tiếp: phát liền mạch
     await zhSaySegs(zhSegs(c.text), seq);
   }
   if(seq===KKV.seq && ZV.playing && ZV.i===myI){ await new Promise(r=>setTimeout(r, 400)); if(ZV.playing && ZV.i===myI) zvNext(true); }
@@ -1407,6 +1429,87 @@ zvCpHTML = function(v, d, it){
   if(it.kind==="news" && d.layer2.news) return `<div class="zvcp"><h3>${esc(it.title)}</h3>${zhNewsHTML(d)}${cont}</div>`;
   return _zvCpD(v, d, it);
 };
+
+/* ===== KK-EDU Tiếng Trung: Chứng chỉ KK-EDU Thử nghiệm HSK 3 - tự động cấp khi đủ điều kiện =====
+   Tác giả : Nguyễn Duy Điển (KK-2026). Điều kiện: hoàn thành 120 bài Giai đoạn 1 (A01-A06, B01-B24, C01-C90: đã làm kiểm tra cuối bài)
+   và đạt thi thử HSK 3 (từ 120/200). Máy chủ kiểm lại điều kiện từ dữ liệu đám mây trước khi cấp; mã tra cứu tại /verify/. */
+const ZC = { cert:null, loaded:false, busy:false, err:"", tried:false, justIssued:false };
+const ZC_IDS = [].concat(
+  Array.from({length:6}, (_,i)=>"ZH-A"+String(i+1).padStart(2,"0")),
+  Array.from({length:24}, (_,i)=>"ZH-B"+String(i+1).padStart(2,"0")),
+  Array.from({length:90}, (_,i)=>"ZH-C"+String(i+1).padStart(2,"0")));
+function zcScore(t){ const m=/^(\d+)\s*\/\s*(\d+)/.exec(String(t&&t.scoreText||"")); return m?Number(m[1]):-1; }
+function zhCertLocal(){
+  const P=S.progress||{}; const done=ZC_IDS.filter(id=>P[id]&&P[id].quiz!=null);
+  const best=(S.tests||[]).filter(t=>t&&t.key==="HSK3"&&t.pass&&zcScore(t)>=120).sort((a,b)=>zcScore(b)-zcScore(a))[0]||null;
+  const next=ZC_IDS.find(id=>!(P[id]&&P[id].quiz!=null));
+  return {lessons:done.length, need:ZC_IDS.length, hsk3:best, next, ok:done.length===ZC_IDS.length && !!best};
+}
+async function zcApi(method){
+  const base=await kkApiBase(); const tok=await kkIdToken();
+  const r=await fetch(base+"/zh/cert", {method, headers:{authorization:"Bearer "+tok, "content-type":"application/json"}, body: method==="POST"?JSON.stringify({name:S.name||""}):undefined});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok){ const e=new Error(j.error==="not-eligible"?"Máy chủ chưa ghi nhận đủ điều kiện (dữ liệu trên đám mây chưa cập nhật). Hãy thử lại sau ít phút.":j.error==="need-name"?"Cần họ tên trong hồ sơ học viên KK-EDU.":"Chưa cấp được chứng chỉ (mã "+r.status+")."); e.data=j; throw e; }
+  return j;
+}
+/** Ghi ngay tiến độ lên đám mây (không chờ hẹn giờ) để máy chủ thấy điều kiện mới nhất */
+async function zhSyncNow(){
+  if(!KK.user||!KK.db) return;
+  const st={progress:S.progress, errors:(S.errors||[]).slice(-500), video:S.video||{}, tests:(S.tests||[]).slice(-50), sum:(typeof zhSummary==="function"?zhSummary():null)};
+  clearTimeout(KK.syncTimer);
+  await KK.db.doc(`data/users/${KK.user.uid}/zh-state`).set({state:JSON.stringify(st), updatedAt:S._updatedAt||Date.now()});
+}
+async function zhCertLoad(){ if(ZC.loaded||!KK.user) return; ZC.loaded=true; try{ const j=await zcApi("GET"); ZC.cert=j.cert||null; }catch(e){} if(!S.lesson) render(); }
+async function zhCertIssue(auto){
+  if(ZC.busy||!KK.user) return; ZC.busy=true; ZC.err=""; if(!auto) render();
+  try{ await zhSyncNow(); const j=await zcApi("POST"); ZC.cert=j.cert; ZC.justIssued=!j.existed; }
+  catch(e){ ZC.err=e.message; }
+  ZC.busy=false; render();
+}
+/** Tự động: đăng nhập, đủ điều kiện, chưa có chứng chỉ -> cấp ngay (một lần mỗi phiên) */
+function zhCertAuto(){
+  if(!KK.user||!KK.cloudLoaded) return;
+  if(!ZC.loaded){ zhCertLoad(); return; }
+  if(ZC.cert||ZC.tried||ZC.busy) return;
+  if(zhCertLocal().ok){ ZC.tried=true; zhCertIssue(true); }
+}
+function zhCertVerifyUrl(code){ return location.origin+"/verify/?code="+code; }
+function zhCertDocHTML(c){
+  return `<div class="zhcert" id="zhCertDoc"><div class="zcqr" id="zcQr"></div><div class="zcbrand">KK-EDU</div><div class="mute">www.kk-edu.com · Giáo dục số - Thử nghiệm</div>
+    <h2>CHỨNG CHỈ KK-EDU THỬ NGHIỆM</h2><div class="zcsub">TIẾNG TRUNG GIAO TIẾP - CẤP ĐỘ ${esc(c.level)} · KK-EDU Trial Certificate of Chinese (${esc(c.level)} level)</div>
+    <p style="margin-top:14px">Chứng nhận học viên</p><div class="zcname">${esc(c.name)}</div>
+    <p>đã hoàn thành <b>${c.lessons}/120 bài</b> Giai đoạn 1 (Phần A, Phần B, 9 khối ngữ pháp C01-C90) và đạt bài <b>thi thử theo cấu trúc ${esc(c.level)}</b> với kết quả <b>${esc(c.score)}</b>.</p>
+    <p class="zccode">Mã xác thực: <b>${esc(c.code)}</b> · ${esc(zhCertVerifyUrl(c.code))}</p>
+    <div class="zcfoot"><div>Ngày cấp: ${esc(c.issued)}</div><div style="text-align:right">Tác giả : Nguyễn Duy Điển (KK-2026)<br><i>KK-EDU</i></div></div>
+    <div class="zcdis">Chứng chỉ nội bộ thử nghiệm của KK-EDU, xác nhận quá trình học trên nền tảng; không thay thế chứng chỉ HSK chính thức do Trung tâm Hợp tác Giáo dục Ngôn ngữ Trung Quốc cấp. Bài thi thử chấm tự động.</div></div>`;
+}
+function zhCertMountQr(tries){ const el=document.getElementById("zcQr"); if(!el||!ZC.cert||el.dataset.done) return; if(typeof QRCode==="undefined"){ if((tries||0)<20) setTimeout(()=>zhCertMountQr((tries||0)+1), 500); return; } el.dataset.done="1"; try{ new QRCode(el, {text:zhCertVerifyUrl(ZC.cert.code), width:84, height:84}); }catch(e){ el.textContent=""; } }
+function zhCertPrint(){ document.body.classList.add("zcprint"); setTimeout(()=>{ window.print(); setTimeout(()=>document.body.classList.remove("zcprint"), 500); }, 50); }
+function zhCertCardHTML(){
+  const L=zhCertLocal(); const pct=Math.round(100*L.lessons/L.need);
+  if(ZC.cert) return `<div class="card" id="chung-chi"><h2>Chứng chỉ KK-EDU Thử nghiệm Tiếng Trung ${esc(ZC.cert.level)}</h2>${ZC.justIssued?'<div class="fb good">Chúc mừng! Bạn đủ điều kiện và chứng chỉ đã được cấp tự động.</div>':""}
+    ${zhCertDocHTML(ZC.cert)}<div class="row noprint" style="margin-top:10px"><button class="btn" onclick="zhCertPrint()">In hoặc lưu PDF</button><a class="btn sec" href="/verify/?code=${esc(ZC.cert.code)}" target="_blank" rel="noopener">Trang xác minh</a><button class="btn sec" onclick="navigator.clipboard&&navigator.clipboard.writeText('${esc(zhCertVerifyUrl(ZC.cert.code))}')">Sao chép liên kết xác minh</button></div></div>`;
+  return `<div class="card" id="chung-chi"><h2>Chứng chỉ KK-EDU Thử nghiệm Tiếng Trung HSK 3</h2><p class="mute">Cấp tự động khi đủ hai điều kiện. Chứng chỉ nội bộ, có mã xác minh công khai; không thay thế chứng chỉ HSK chính thức.</p>
+    <div class="box"><b>1. Hoàn thành 120 bài Giai đoạn 1</b> (làm kiểm tra cuối bài): ${L.lessons}/${L.need}<div class="prog"><i style="width:${pct}%"></i></div>${L.next?`<button class="btn sec sm" onclick="zhOpen('${L.next}')">Học tiếp ${esc(L.next)}</button>`:'<span class="zst ok">Đạt</span>'}</div>
+    <div class="box"><b>2. Đạt thi thử HSK 3</b> (từ 120/200): ${L.hsk3?`<span class="zst ok">Đạt ${esc(L.hsk3.scoreText)} (${esc(L.hsk3.date||"")})</span>`:`chưa đạt <button class="btn sec sm" onclick="S.lesson=null;S.page='test';save();ztStart('HSK3')">Thi thử HSK 3</button>`}</div>
+    ${!KK.user?`<div class="warnbox">Chứng chỉ gắn với tài khoản: <a href="${kkLoginUrl()}">đăng nhập KK-EDU</a> để được cấp tự động.</div>`:L.ok?`<div class="row"><button class="btn gold" ${ZC.busy?"disabled":""} onclick="zhCertIssue()">${ZC.busy?"Đang cấp...":"Nhận chứng chỉ"}</button></div>`:""}
+    ${ZC.err?`<p class="warnbox">${esc(ZC.err)}</p>`:""}</div>`;
+}
+(function(){
+  const _r=render;
+  render=function(){
+    _r.apply(this, arguments);
+    try{
+      const m=document.getElementById("main");
+      if(m && !S.lesson && (S.page==="grades" || !S.page) && ZH.meta && !m.querySelector("#chung-chi")){
+        const anchor=m.querySelector("#lo-trinh"); const h=zhCertCardHTML();
+        if(anchor) anchor.insertAdjacentHTML("beforebegin", h); else m.insertAdjacentHTML("beforeend", h);
+        zhCertMountQr();
+      }
+      zhCertAuto();
+    }catch(e){ console.warn("cert", e); }
+  };
+})();
 
 /* ===== KK-EDU: Ô tài khoản dùng chung cho các phân hệ (IELTS, Tiếng Trung) - cùng kiểu menu với trang chủ =====
    Tác giả : Nguyễn Duy Điển (KK-2026). Một tài khoản KK-EDU cho mọi phân hệ: tên lấy từ hồ sơ học viên, liên kết về Học tập của tôi, Quản trị. */

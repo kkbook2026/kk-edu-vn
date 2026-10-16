@@ -44,7 +44,7 @@ dd { margin:0; font-weight:600; }
     <button id="go" type="submit">Kiểm tra</button>
   </form>
   <div id="out" aria-live="polite"></div>
-  <p class="note">Chứng chỉ KK-EDU là chứng chỉ nội bộ thử nghiệm của KK-EDU. Đây không phải chứng chỉ IELTS chính thức do British Council hay IDP cấp. Trang này chỉ hiển thị tên, band và ngày cấp; không hiển thị thông tin liên hệ.</p>
+  <p class="note">Chứng chỉ KK-EDU là chứng chỉ nội bộ thử nghiệm của KK-EDU. Đây không phải chứng chỉ IELTS chính thức do British Council hay IDP cấp, cũng không thay thế chứng chỉ HSK chính thức. Trang này chỉ hiển thị tên, kết quả và ngày cấp; không hiển thị thông tin liên hệ.</p>
 </main>
 <script>
 (function () {
@@ -68,7 +68,8 @@ dd { margin:0; font-weight:600; }
       .then(function (r) { return r.json(); })
       .then(function (j) {
         if (j && j.valid === true) {
-          render("ok", "Chứng chỉ hợp lệ", [["Họ tên", j.name], ["Band", Number(j.band).toFixed(1)], ["Ngày cấp", j.issued]]);
+          if (j.type === "zh") render("ok", "Chứng chỉ hợp lệ - Tiếng Trung", [["Họ tên", j.name], ["Chứng chỉ", "KK-EDU Thử nghiệm Tiếng Trung " + j.level], ["Thi thử " + j.level, j.score], ["Bài đã hoàn thành", j.lessons + "/120 bài Giai đoạn 1"], ["Ngày cấp", j.issued]]);
+          else render("ok", "Chứng chỉ hợp lệ - IELTS", [["Họ tên", j.name], ["Band", Number(j.band).toFixed(1)], ["Ngày cấp", j.issued]]);
         } else if (j && j.status === "revoked") {
           render("bad", "Chứng chỉ đã bị thu hồi", []);
         } else {
