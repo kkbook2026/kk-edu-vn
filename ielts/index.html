@@ -1961,6 +1961,39 @@ function labFamilyHTML(){
 .kkuwarn{color:#a35a00}
 @media(max-width:760px){#kkUser{margin-left:auto}.kkavt{max-width:120px}.user.logged #kkUser{margin-left:0}}
 @media print{#kkUser{display:none}}
+
+/* KK-EDU Trợ lý trên trang học - Tác giả : Nguyễn Duy Điển */
+#kkaFab{position:fixed;right:18px;bottom:18px;z-index:900;width:56px;height:56px;border-radius:50%;border:2px solid #d4af37;background:#0f2a4a;color:#fff;cursor:pointer;display:grid;place-items:center;box-shadow:0 8px 24px rgba(15,42,74,.35);transition:transform .15s}
+#kkaFab:hover{transform:scale(1.07)}
+#kkaFab:focus-visible{outline:3px solid #d4af37;outline-offset:3px}
+#kkaPanel{position:fixed;right:18px;bottom:84px;z-index:901;width:min(380px,calc(100vw - 24px));max-height:min(74vh,640px);display:flex;flex-direction:column;background:var(--card,#fff);color:var(--ink,#14213d);border:1px solid var(--line,#d8e0ea);border-radius:18px;box-shadow:0 18px 50px rgba(15,42,74,.3);overflow:hidden;font-family:var(--font,"Be Vietnam Pro",system-ui,sans-serif)}
+#kkaPanel[hidden]{display:none}
+.kka-head{display:flex;align-items:center;gap:8px;padding:12px 12px 12px 16px;background:#0f2a4a;color:#fff}
+.kka-head>div{flex:1;min-width:0}
+.kka-head b{display:block;font-size:1rem}
+.kka-head span{font-size:.78rem;color:#c9d4e5}
+.kka-faq{color:#ffe9a3;font-size:.8rem;font-weight:600;text-decoration:none;border:1px solid rgba(255,233,163,.5);border-radius:999px;padding:5px 10px;white-space:nowrap}
+#kkaX{background:none;border:0;color:#fff;font-size:1.05rem;cursor:pointer;width:36px;height:36px;border-radius:50%}
+#kkaX:hover{background:rgba(255,255,255,.12)}
+.kka-body{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--bg,#f5f7fb)}
+.kka-msg{display:flex}
+.kka-msg.u{justify-content:flex-end}
+.kka-bub{max-width:88%;padding:9px 12px;border-radius:14px;font-size:.9rem;line-height:1.5;background:var(--card,#fff);border:1px solid var(--line,#d8e0ea);overflow-wrap:anywhere}
+.kka-msg.u .kka-bub{background:#0f2a4a;color:#fff;border-color:#0f2a4a}
+.kka-bub a{color:inherit;font-weight:600}
+.kka-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.kka-acts button,.kka-chips button{font:inherit;font-size:.8rem;font-weight:600;border:1px solid var(--line,#d8e0ea);background:var(--card,#fff);color:var(--ink,#14213d);border-radius:999px;padding:6px 11px;cursor:pointer;min-height:34px}
+.kka-acts button:hover,.kka-chips button:hover{border-color:#a9871f}
+.kka-chips{display:flex;gap:6px;overflow-x:auto;padding:8px 10px;border-top:1px solid var(--line,#d8e0ea);scrollbar-width:thin;flex:none}
+.kka-chips button{white-space:nowrap;flex:none}
+.kka-in{display:flex;gap:6px;padding:10px;border-top:1px solid var(--line,#d8e0ea);flex:none}
+.kka-in input{flex:1;min-width:0;font:inherit;font-size:.92rem;padding:10px 12px;border:1px solid var(--line,#d8e0ea);border-radius:10px;background:var(--card,#fff);color:var(--ink,#14213d)}
+.kka-in button{font:inherit;font-weight:700;border:0;background:#0f2a4a;color:#fff;border-radius:10px;padding:0 16px;cursor:pointer;min-height:42px}
+.kka-mute{color:var(--mute,#5b6b7f);font-size:.85em}
+.kka-ai{margin-top:6px;font-size:.74rem;color:var(--mute,#5b6b7f)}
+body.kka-off #kkaFab,body.kka-off #kkaPanel,body.zvwopen #kkaFab,body.zvwopen #kkaPanel,body.zvwprinting #kkaFab{display:none!important}
+@media print{#kkaFab,#kkaPanel{display:none!important}}
+@media(max-width:600px){#kkaPanel{right:8px;left:8px;width:auto;bottom:76px;max-height:70vh}#kkaFab{right:12px;bottom:12px;width:52px;height:52px}}
 </style>
 <script id="kkacct-js">
 const ambigFix = (function(){
@@ -2123,21 +2156,27 @@ function kkNextBanner(){
 /* ===== Liên kết sâu từ trang chủ / Trợ lý KK-EDU: /ielts/#go=<đích> =====
    chan-doan, xay-nen, ky-nang, luyen-de, thi-thu, ket-qua, chung-chi (chặng 0-6; chặng chưa mở tự về chặng hiện tại),
    phong-giam-khao, thu-thach, checklist, gia-dinh (phòng luyện). Tác giả : Nguyễn Duy Điển. */
+const KK_IELTS_STEP={"chan-doan":0,"xay-nen":1,"ky-nang":2,"luyen-de":3,"thi-thu":4,"ket-qua":5,"chung-chi":6};
+const KK_IELTS_LAB={"phong-giam-khao":"examiner","thu-thach":"challenge","checklist":"checklist","gia-dinh":"family"};
+/** Mở một đích trong trang IELTS (dùng cho liên kết sâu và Trợ lý). Trả false nếu không mở được. */
+function kkIeltsGo(k){
+  try{
+    if(typeof S==="undefined" || (S.test && S.test.running)) return false;
+    if(!(k in KK_IELTS_STEP) && !KK_IELTS_LAB[k]) return false;
+    S.vid=null; S.mat=null; if(typeof J!=="undefined") J.pr=null;
+    if(k in KK_IELTS_STEP){ S.lab=null; S.step=KK_IELTS_STEP[k]; save(); render(); window.scrollTo(0,0); }
+    else if(typeof labOpen==="function"){ labOpen(KK_IELTS_LAB[k]); window.scrollTo(0,0); }
+    return true;
+  }catch(e){ console.warn("kkIeltsGo", e); return false; }
+}
 (function(){
   const m=/^#go=([a-z-]+)/.exec(location.hash||""); if(!m) return;
-  const STEP={"chan-doan":0,"xay-nen":1,"ky-nang":2,"luyen-de":3,"thi-thu":4,"ket-qua":5,"chung-chi":6};
-  const LAB={"phong-giam-khao":"examiner","thu-thach":"challenge","checklist":"checklist","gia-dinh":"family"};
   let tries=0; const t=setInterval(()=>{
     tries++;
     if(typeof J!=="undefined" && J.plan && typeof S!=="undefined" && S.journey && typeof render==="function"){
       clearInterval(t);
-      try{
-        if(S.test && S.test.running) return;
-        const k=m[1]; S.vid=null; S.mat=null; J.pr=null;
-        if(k in STEP){ S.lab=null; S.step=STEP[k]; save(); render(); window.scrollTo(0,0); }
-        else if(LAB[k] && typeof labOpen==="function") labOpen(LAB[k]);
-        try{ history.replaceState(null, "", location.pathname+location.search); }catch(e){}
-      }catch(e){ console.warn("deeplink", e); }
+      kkIeltsGo(m[1]);
+      try{ history.replaceState(null, "", location.pathname+location.search); }catch(e){}
     } else if(tries>200) clearInterval(t);
   }, 100);
 })();
@@ -2185,6 +2224,163 @@ window.addEventListener("scroll",()=>{ const m=document.getElementById("kkUMenu"
 async function kkLogout(){
   try{ clearTimeout(KK.syncTimer); await KK.fb.auth().signOut(); }catch(e){}
 }
+
+window.KKA_KB=[{"id": "ielts", "q": "Luyện thi và thi thử IELTS trên KK-EDU gồm những gì?", "chip": "Luyện thi IELTS", "k": "ielts tieng anh luyen thi ielts thi thu ielts on thi ielts hoc ielts o dau band ielts academic", "a": "<b>Luyện thi và thi thử IELTS<\/b> (menu Ngoại ngữ → Tiếng Anh, địa chỉ /ielts/): lộ trình 12 tuần, 7 chặng từ <b>Chẩn đoán<\/b> đến <b>Chứng chỉ<\/b>; 52 video tương tác, 44 tài liệu, 600 từ vựng, 8 bài ngữ pháp, 6 bài phát âm; Viết và Nói có <b>AI chấm theo tiêu chí IELTS<\/b>; thi thử đủ 4 kỹ năng trên máy, đề ngẫu nhiên. Dùng chung tài khoản KK-EDU.", "acts": [{"l": "Vào luyện thi IELTS", "u": "/ielts/"}, {"l": "Giới thiệu chi tiết", "u": "/#about_nn"}]}, {"id": "ielts_lotrinh", "q": "Lộ trình luyện thi IELTS kéo dài bao lâu, gồm những chặng nào?", "chip": "", "k": "lo trinh ielts 12 tuan 7 chang giai doan xay nen ky nang luyen de cong giai doan bao lau hoc ielts mat bao lau", "a": "Lộ trình IELTS gồm <b>7 chặng<\/b>: Chẩn đoán → Xây nền (tuần 1-4, 50% tiếng Anh) → Kỹ năng (tuần 5-10, 70%) → Luyện đề → Thi thử → Kết quả → Chứng chỉ. Giữa các giai đoạn có <b>cổng đánh giá<\/b> (ví dụ cổng 1: 12 video nền, bài làm quen và đề cổng 40 câu đạt 60%). Mở trang IELTS là vào thẳng bài tiếp theo của bạn.", "acts": [{"l": "Mở lộ trình IELTS", "u": "/ielts/"}]}, {"id": "ielts_chandoan", "q": "Bắt đầu học IELTS từ đâu? Bài chẩn đoán đầu vào gồm gì?", "chip": "Chẩn đoán IELTS", "k": "chan doan dau vao ielts kiem tra trinh do test dau vao band khoi diem bat dau ielts tu dau", "a": "Bắt đầu IELTS bằng <b>bài chẩn đoán 4 kỹ năng<\/b> (khoảng 60 phút): Nghe 10 câu, Đọc 13 câu, Viết Task 2 trong 20 phút (AI chấm 4 tiêu chí), Nói 3 câu Part 1 + Part 2 có ghi âm (AI chấm 3 tiêu chí). Kết quả là <b>band khởi điểm từng kỹ năng<\/b> để hệ thống xếp lộ trình.", "acts": [{"l": "Làm bài chẩn đoán", "u": "/ielts/#go=chan-doan"}]}, {"id": "ielts_tuvung", "q": "Học 600 từ vựng IELTS bằng flashcard như thế nào?", "chip": "", "k": "tu vung ielts 600 tu flashcard on tu srs lap lai ngat quang hoc tu moi ngay chu de ipa", "a": "<b>600 từ vựng IELTS học thuật<\/b> (band 6-7,5) chia 12 chủ đề, mỗi từ có loại từ, phiên âm Anh-Anh, nghĩa, ví dụ có audio và collocation. Học bằng <b>flashcard lặp lại ngắt quãng<\/b> (Quên / Khó / Nhớ / Dễ; phím tắt Space, 1-4), mỗi phiên 20 từ mới + thẻ đến hạn, có kiểm tra nhanh 10 câu. Thẻ “Ôn từ vựng hôm nay” hiện trong tuần học.", "acts": [{"l": "Vào tuần học Xây nền", "u": "/ielts/#go=xay-nen"}]}, {"id": "ielts_nguphap", "q": "Có bài ngữ pháp và luyện phát âm IELTS không?", "chip": "", "k": "ngu phap ielts phat am ielts luyen phat am cap tu toi thieu ghi am so khop grammar pronunciation", "a": "Giai đoạn Xây nền có <b>8 bài ngữ pháp<\/b> (quy tắc giải thích bằng tiếng Việt, ví dụ tiếng Anh có audio, 64 câu trắc nghiệm, đạt từ 75%) và <b>6 bài phát âm<\/b> (mẹo, 10 cặp từ tối thiểu nghe và nhại, 5 câu luyện ghi âm được so khớp từng từ - dùng Chrome hoặc Edge).", "acts": [{"l": "Mở Xây nền", "u": "/ielts/#go=xay-nen"}]}, {"id": "ielts_video", "q": "Video IELTS có phụ đề tiếng Việt, tiếng Anh, song ngữ không?", "chip": "", "k": "video ielts phu de song ngu tieng anh tieng viet loi dan video ky nang 52 video", "a": "52 video IELTS tương tác: video dừng đúng lúc để hỏi, bắt buộc trả lời mới đi tiếp, có quiz cuối video. Ô <b>Phụ đề<\/b> chọn Tắt / Tiếng Việt / Tiếng Anh / Song ngữ (mặc định theo giai đoạn: Việt → Song ngữ → Anh); từ giai đoạn 2 lời dẫn đọc bằng giọng Anh.", "acts": [{"l": "Vào IELTS", "u": "/ielts/"}]}, {"id": "ielts_viet", "q": "Bài viết IELTS (Writing Task 1, Task 2) được AI chấm thế nào?", "chip": "", "k": "writing ielts viet ielts cham bai viet task 1 task 2 ai cham bai viet bai mau band 8 dem tu", "a": "Phần <b>Writing<\/b>: đếm từ trực tiếp, gợi ý dàn ý, khóa dán khi thi; bấm <b>“Chấm ngay theo 4 tiêu chí”<\/b> để AI chấm Task Response, Coherence, Lexical Resource, Grammar kèm nhận xét tiếng Việt và lỗi có trích dẫn; so sánh với <b>bài mẫu band cao<\/b>. Kho đề có 9 đề Task 1 và 15 đề Task 2.", "acts": [{"l": "Luyện kỹ năng", "u": "/ielts/#go=ky-nang"}]}, {"id": "ielts_noi", "q": "Luyện Speaking IELTS có ghi âm và chấm điểm không?", "chip": "", "k": "speaking ielts luyen noi ghi am noi ai cham noi part 1 part 2 part 3 cue card phat am fluency", "a": "Phần <b>Speaking<\/b>: nghe câu hỏi bằng giọng giám khảo, ghi âm từng câu (nhận dạng giọng nói trên Chrome/Edge: đo giây, số từ, từ/phút, ngập ngừng), 1 phút chuẩn bị cho Part 2; đủ 3 câu là <b>AI chấm 3 tiêu chí<\/b> (Fluency & Coherence, Lexical Resource, Grammar). Kho có 8 bộ đề nói.", "acts": [{"l": "Phòng giám khảo Speaking", "u": "/ielts/#go=phong-giam-khao"}]}, {"id": "ielts_giamkhao", "q": "Phòng giám khảo, Thử thách 3 phút và Checklist trước thi là gì?", "chip": "Phòng giám khảo", "k": "phong giam khao speaking mo phong thi noi giam khao ao examiner thu thach 3 phut checklist truoc thi", "a": "<b>Phòng giám khảo<\/b> mô phỏng phần thi Nói thật: 2 chủ đề Part 1, Part 2 (60 giây chuẩn bị, tối đa 2 phút nói), 3 câu Part 3; giám khảo đọc bằng giọng Anh, đồng hồ từng câu, cảnh báo khi trả lời quá ngắn, ghi nhận lời nói và chấm AI. Kèm <b>Thử thách 3 phút<\/b> mỗi ngày (theo dõi chuỗi ngày) và <b>Checklist 15 việc<\/b> trước ngày thi.", "acts": [{"l": "Vào Phòng giám khảo", "u": "/ielts/#go=phong-giam-khao"}, {"l": "Thử thách 3 phút", "u": "/ielts/#go=thu-thach"}, {"l": "Checklist trước thi", "u": "/ielts/#go=checklist"}]}, {"id": "ielts_thithu", "q": "Thi thử IELTS trên máy của KK-EDU diễn ra như thế nào?", "chip": "Thi thử IELTS", "k": "thi thu ielts de thi ielts tren may computer delivered full test 4 ky nang listening reading phong thi ao dong ho", "a": "<b>Thi thử IELTS trên máy<\/b> như thật: Listening phát liền 4 Part (không tua, không phát lại, giọng dẫn chuyển Part), Reading 40 câu, Writing Task 1 + Task 2 (khóa dán), Speaking 16 câu có ghi âm; đồng hồ đếm ngược, hệ thống ghi nhận số lần rời màn hình. Đề rút ngẫu nhiên từ kho 12 phần nghe, 9 bài đọc, 24 đề viết, 8 bộ nói. Cần đăng nhập.", "acts": [{"l": "Vào Luyện đề", "u": "/ielts/#go=luyen-de"}, {"l": "Vào Thi thử", "u": "/ielts/#go=thi-thu"}]}, {"id": "ielts_band", "q": "Band IELTS và điểm Overall được tính như thế nào?", "chip": "", "k": "band ielts tinh the nao quy doi diem overall cach tinh band so cau dung band bao nhieu ket qua ielts", "a": "Listening và Reading quy đổi band từ số câu đúng theo <b>bảng chuẩn phổ biến<\/b> (có thể lệch 1 câu giữa các đề); Writing, Nói chấm theo tiêu chí. <b>Overall<\/b> = trung bình cộng 4 kỹ năng, làm tròn theo quy tắc IELTS (đến 0,5 gần nhất). Trang Kết quả có band từng kỹ năng, mã lỗi, video và tài liệu gợi ý ôn đúng chỗ yếu, đường tiến bộ và bản đồ lỗi.", "acts": [{"l": "Xem Kết quả", "u": "/ielts/#go=ket-qua"}]}, {"id": "ielts_chungchi", "q": "Điều kiện cấp chứng chỉ KK-EDU (IELTS) là gì?", "chip": "", "k": "chung chi ielts kk edu chung chi thu nghiem dieu kien cap chung chi tieng anh ma xac minh", "a": "<b>Chứng chỉ KK-EDU thử nghiệm (IELTS)<\/b> cấp khi: hoàn thành đủ 4 kỹ năng trong một phiên thi thử trên máy, không vi phạm quy định phòng thi ảo; Writing/Speaking chưa được giáo viên duyệt thì chứng chỉ ghi “Chấm bởi AI, chưa duyệt”. Có mã tra cứu công khai. Đây là chứng chỉ nội bộ, không thay thế IELTS chính thức.", "acts": [{"l": "Chặng Chứng chỉ", "u": "/ielts/#go=chung-chi"}, {"l": "Trang Xác minh", "u": "/verify/"}]}, {"id": "ielts_giadinh", "q": "Phụ huynh, giáo viên theo dõi tiến độ IELTS của học viên bằng cách nào?", "chip": "", "k": "phu huynh theo doi ielts giao vien theo doi hoc vien ma lien ket gia dinh chia se tien do ielts", "a": "Trong IELTS mở <b>Gia đình &amp; giáo viên<\/b>: học viên tạo <b>mã liên kết 8 ký tự<\/b> (hiệu lực 7 ngày, dùng một lần, tối đa 5 mã) để phụ huynh hoặc giáo viên nhập; người theo dõi chỉ thấy tổng quan tiến độ, không thấy bài làm hay email. Học viên dưới 18 tuổi chỉ liên kết với phụ huynh có email đã xác minh; có thể tắt chia sẻ bất cứ lúc nào.", "acts": [{"l": "Mở Gia đình & giáo viên", "u": "/ielts/#go=gia-dinh"}]}, {"id": "ielts_tuoi", "q": "Mấy tuổi được thi thử IELTS? Khách có học IELTS được không?", "chip": "", "k": "ielts may tuoi duoc thi thu tre em hoc ielts khach co hoc ielts duoc khong dang nhap ielts", "a": "Khách xem được tài liệu và video IELTS; <b>thi thử và chứng chỉ cần đăng nhập<\/b> và khuyến nghị từ 14 tuổi. Tiến độ IELTS lưu theo tài khoản KK-EDU, học tiếp trên mọi thiết bị.", "acts": [{"l": "Đăng ký miễn phí", "u": "/?login=1"}, {"l": "Vào IELTS", "u": "/ielts/"}]}, {"id": "ielts_ket", "q": "Bị kẹt hoặc sai lặp lại khi luyện IELTS thì làm gì?", "chip": "", "k": "toi ket ielts bi ket khong hieu bai chot loi ma loi sai lap lai lam sai nhieu", "a": "Trong bài luyện IELTS có nút <b>“Tôi kẹt”<\/b> (gợi ý cách làm, ghi nhận chỗ khó) và mục <b>Chốt lỗi<\/b>: mỗi lỗi gắn mã (36 mã lỗi), hệ thống nhắc ôn đúng video/tài liệu; cổng giai đoạn 2 yêu cầu không lặp lại cùng một lỗi 3 lần trong 2 tuần.", "acts": [{"l": "Luyện kỹ năng", "u": "/ielts/#go=ky-nang"}]}, {"id": "zh", "q": "Học Tiếng Trung trên KK-EDU có gì?", "chip": "Học Tiếng Trung", "k": "tieng trung hoc tieng trung trung quoc hoa ngu hsk tieng hoa hoc chu han giao tiep tieng trung", "a": "<b>Tiếng Trung giao tiếp tương tác<\/b> (menu Ngoại ngữ → Tiếng Trung, địa chỉ /tieng-trung/): <b>140 bài và 140 video<\/b> cho người Việt, học tuần tự từ HSK 1 đến HSK 4; mỗi bài 3 lớp (Trực quan hóa - Thực hành tương tác - Trợ lý AI), tập viết 412 chữ, giọng Cô Lin chuẩn, kiểm tra và thi thử HSK, chứng chỉ HSK 3 tự động.", "acts": [{"l": "Học Tiếng Trung", "u": "/tieng-trung/"}, {"l": "Giới thiệu chi tiết", "u": "/#about_nn"}]}, {"id": "hoidap", "q": "Trang Hỏi đáp của KK-EDU ở đâu?", "chip": "Trang Hỏi đáp", "k": "trang hoi dap cau hoi thuong gap faq tat ca cau hoi tim cau hoi huong dan su dung", "a": "Trang <b>Hỏi đáp<\/b> (/hoi-dap/) gom toàn bộ câu hỏi thường gặp của Trợ lý theo 9 nhóm: Về KK-EDU, Luyện thi IELTS, Tiếng Trung, Tài khoản, Xếp lớp, Học bài, Sách PDF, Kiểm tra - học bạ - chứng chỉ, Hỗ trợ; có ô tìm kiếm và nút đi thẳng tới chức năng. Mở được từ chân trang hoặc đầu khung Trợ lý.", "acts": [{"l": "Mở trang Hỏi đáp", "u": "/hoi-dap/"}]}, {"id": "trolyhoc", "q": "Có hỏi Trợ lý được khi đang học IELTS hoặc Tiếng Trung không?", "chip": "", "k": "tro ly trong luc hoc hoi khi dang hoc ielts hoi khi dang hoc tieng trung chatbot trang ielts tieng trung ai tra loi", "a": "Trợ lý KK-EDU (nút 💬 góc phải) có mặt cả trên trang <b>IELTS<\/b> và <b>Tiếng Trung<\/b>: biết bạn đang ở chặng hay bài nào, chỉ <b>bài tiếp theo<\/b>, mở thẳng Phòng giám khảo, tài liệu, chứng chỉ hoặc tab AI của bài đang học. Câu chưa có sẵn: thành viên đăng nhập được <b>AI trả lời<\/b> dựa trên đúng hướng dẫn KK-EDU. Trợ lý tự ẩn khi bạn đang làm bài thi.", "acts": [{"l": "Mở IELTS", "u": "/ielts/"}, {"l": "Mở Tiếng Trung", "u": "/tieng-trung/"}]}, {"id": "ngoaingu", "q": "KK-EDU dạy những ngoại ngữ nào?", "chip": "Ngoại ngữ", "k": "ngoai ngu hoc ngoai ngu tieng nhat jlpt cac ngoai ngu co nhung mon ngoai ngu nao", "a": "Phân hệ <b>Ngoại ngữ<\/b> hiện có <b>Tiếng Anh - Luyện thi và thi thử IELTS<\/b> và <b>Tiếng Trung giao tiếp<\/b> (HSK 1-4); <b>Tiếng Nhật<\/b> (JLPT N5-N3) đang biên soạn.", "acts": [{"l": "Trang Ngoại ngữ", "u": "/#ngoaingu"}, {"l": "So sánh IELTS - Tiếng Trung", "u": "/#about_nn"}]}, {"id": "taikhoanchung", "q": "Có cần tài khoản riêng cho IELTS và Tiếng Trung không?", "chip": "", "k": "mot tai khoan dung chung ielts tieng trung dang nhap lai tai khoan ielts tai khoan tieng trung dong bo", "a": "<b>Một tài khoản KK-EDU dùng cho mọi phân hệ<\/b>: đăng nhập ở Trang chủ là IELTS và Tiếng Trung nhận cùng phiên; tên lấy từ hồ sơ học viên; tiến độ từng phân hệ lưu đám mây riêng, học tiếp trên mọi thiết bị.", "acts": [{"l": "Đăng nhập", "u": "/?login=1"}, {"l": "Đăng ký miễn phí", "u": "/?login=1"}]}, {"id": "xacminhcc", "q": "Làm sao xác minh một chứng chỉ KK-EDU là thật?", "chip": "", "k": "xac minh chung chi tra cuu chung chi kiem tra chung chi that gia ma chung chi verify", "a": "Mọi chứng chỉ KK-EDU (IELTS thử nghiệm, Tiếng Trung HSK 3) có <b>mã tra cứu<\/b>. Nhà tuyển dụng, nhà trường nhập mã tại <b>trang Xác minh<\/b> (/verify/) hoặc quét QR trên chứng chỉ để xem tên, cấp độ, kết quả và ngày cấp.", "acts": [{"l": "Trang Xác minh", "u": "/verify/"}]}, {"id": "moi", "q": "KK-EDU có tính năng gì mới?", "chip": "Có gì mới", "k": "co gi moi tinh nang moi cap nhat moi nhat phien ban moi thay doi gan day", "a": "Mới nhất: <b>trang Hỏi đáp<\/b> và <b>Trợ lý trong lúc học<\/b> trên IELTS, Tiếng Trung; <b>chứng chỉ HSK 3 tự động<\/b> và giọng đọc 140 video Tiếng Trung lưu sẵn; <b>tài liệu chỉ xem/in<\/b> có dấu bản quyền; IELTS có <b>Phòng giám khảo<\/b>, Thử thách 3 phút, Gia đình &amp; giáo viên, 600 từ vựng flashcard; một tài khoản cho mọi phân hệ; Trợ lý trả lời cả IELTS và Tiếng Trung.", "acts": [{"l": "Xem nhật ký cập nhật", "u": "/#about_moi"}]}, {"id": "dangky", "q": "Đăng ký tài khoản KK-EDU như thế nào?", "chip": "Đăng ký tài khoản", "k": "dang ky tai khoan thanh vien tao tai khoan lap tai khoan đang ki email mat khau google", "a": "Bấm menu tài khoản ở <b>góc trên bên phải<\/b> → <b>Đăng ký thành viên<\/b>: nhập họ tên, năm sinh, email và mật khẩu (tối thiểu 8 ký tự), hoặc Đăng ký nhanh với Google. Năm sinh quyết định lớp học (sinh 2014 → Lớp 7). Người học dưới 16 tuổi cần cha mẹ đăng ký và tích ô xác nhận. Thành viên được lưu đám mây, học đa thiết bị, thi lấy học bạ và tự lên lớp mỗi năm.", "acts": [{"l": "Đăng ký ngay", "u": "/?login=1"}]}, {"id": "dangnhap", "q": "Đăng nhập KK-EDU ở đâu?", "chip": "", "k": "dang nhap login sign in vao tai khoan", "a": "Menu tài khoản góc trên phải → <b>Đăng nhập<\/b>: dùng email + mật khẩu hoặc nút Đăng nhập với Google.", "acts": [{"l": "Đăng nhập", "u": "/?login=1"}]}, {"id": "quenmk", "q": "Quên mật khẩu thì làm thế nào?", "chip": "Quên mật khẩu", "k": "quen mat khau reset mat khau doi mat khau khong nho mat khau", "a": "Mở hộp <b>Đăng nhập<\/b> → nhập email → bấm liên kết <b>\"Quên mật khẩu?\"<\/b> - hệ thống gửi email đặt lại mật khẩu trong vài phút (kiểm tra cả hộp Spam).", "acts": [{"l": "Mở hộp Đăng nhập", "u": "/?login=1"}]}, {"id": "xoatk", "q": "Làm sao xóa tài khoản và toàn bộ dữ liệu?", "chip": "", "k": "xoa tai khoan xoa du lieu quyen rieng tu huy tai khoan", "a": "Vào <b>Học tập<\/b> → nút <b>\"Xóa tài khoản & toàn bộ dữ liệu\"<\/b> - xóa vĩnh viễn hồ sơ, tiến độ, điểm thi và tài khoản đăng nhập, đúng quyền của bạn theo Nghị định 13/2023/NĐ-CP. Không thể hoàn tác.", "acts": [{"l": "Mở Học tập", "u": "/#dash"}]}, {"id": "khach", "q": "Không đăng ký có học được không?", "chip": "", "k": "khach khong dang ky hoc khong can tai khoan guest", "a": "Không đăng ký vẫn học được: tiến độ lưu trên trình duyệt đang dùng. Hạn chế của Khách: không đồng bộ thiết bị khác, không gửi được yêu cầu mở lớp trực tuyến.", "acts": [{"l": "Đăng ký miễn phí", "u": "/?login=1"}]}, {"id": "nd13", "q": "KK-EDU bảo vệ dữ liệu cá nhân như thế nào?", "chip": "", "k": "du lieu ca nhan nghi dinh 13 an toan bao mat thong tin tre em duoi 16 quyen xoa", "a": "KK-EDU chỉ xử lý dữ liệu tối thiểu (tên, năm sinh, email, tiến độ học) cho đúng việc học - không chia sẻ bên thứ ba. Dưới 16 tuổi bắt buộc cha mẹ xác nhận (Điều 20, NĐ 13/2023/NĐ-CP). Bạn xem - tải xuống - xóa toàn bộ dữ liệu bất cứ lúc nào trong mục Học tập. Chi tiết ở tab \"Pháp lý & bản quyền\".", "acts": [{"l": "Đọc Pháp lý & bản quyền", "u": "/#about"}]}, {"id": "thietbi", "q": "Học KK-EDU trên thiết bị nào, có cần cài ứng dụng không?", "chip": "", "k": "dien thoai may tinh thiet bi nao dung duoc cai dat app tai app", "a": "Không cần cài gì - mở <b>www.kk-edu.com<\/b> trên mọi trình duyệt (điện thoại, máy tính bảng, máy tính). Giọng đọc AI chạy tự động trên mọi trình duyệt hiện đại (Chrome, Edge, Firefox, Safari). Thành viên đăng nhập thì học dở ở máy này, mở máy khác học tiếp.", "acts": []}, {"id": "banquyen", "q": "Nội dung KK-EDU thuộc bản quyền của ai?", "chip": "", "k": "ban quyen tac gia sao chep chia se noi dung ai lam web nay", "a": "Toàn bộ nội dung thuộc bản quyền tác giả <b>Nguyễn Duy Điển<\/b>. Sách và video có cơ chế bảo vệ + watermark truy vết; sao chép, phát tán khi chưa được phép là vi phạm pháp luật sở hữu trí tuệ.", "acts": [{"l": "Xem Giới thiệu", "u": "/#about"}]}, {"id": "lienhe", "q": "Liên hệ hỗ trợ KK-EDU bằng cách nào?", "chip": "Liên hệ hỗ trợ", "k": "lien he ho tro hotline zalo email gap nguoi that quan tri", "a": "Liên hệ Quản trị qua mục liên hệ ở cuối trang chủ. Góp ý về nội dung học: dùng phiếu khảo sát trong mục Kiểm tra.", "acts": []}, {"id": "kkedu", "q": "KK-EDU là gì?", "chip": "", "k": "kk edu la gi gioi thieu web nay cua ai co gi mo hinh thu nghiem", "a": "KK-EDU là <b>mô hình giáo dục số thử nghiệm<\/b>: 220 đầu sách - 6.872 bài học từ Nhà trẻ đến Tiến sĩ, học bằng video tương tác dừng đúng giây để hỏi, có trợ giảng AI, giọng đọc AI, kiểm tra - học bạ tự động; phân hệ Ngoại ngữ có <b>Luyện thi IELTS<\/b> và <b>Tiếng Trung giao tiếp<\/b>. Học liệu bổ trợ, không thay thế sách giáo khoa. Tác giả: Nguyễn Duy Điển.", "acts": [{"l": "Trang Giới thiệu", "u": "/#about"}, {"l": "Học thử ngay", "u": "/#hoc_CS-TOAN-7_0"}]}];
+/* ===== KK-EDU Trợ lý trên trang học (IELTS, Tiếng Trung): hỏi ngay trong lúc học =====
+   Tác giả : Nguyễn Duy Điển. Kho hỏi đáp chung (KKA_KB, dựng từ Trợ lý trang chủ bằng build_kb.py) + mục theo ngữ cảnh trang
+   (bài tiếp theo, chặng đang học, hỏi AI về bài đang học). Câu chưa có trong kho: thành viên đăng nhập được AI trả lời
+   (POST /api/assist, chỉ dựa trên các mục liên quan); khách được gợi ý và liên kết trang Hỏi đáp.
+   Ẩn khi đang làm bài thi (không hỗ trợ trong phòng thi) và khi mở trình đọc tài liệu. */
+const KKA = { open:false, booted:false, busy:false, page:/^\/ielts\//.test(location.pathname)?"ielts":"zh" };
+function kkaNorm(s){ return String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim(); }
+function kkaEsc(s){ return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+/* ---------- Bộ chuyển theo trang ---------- */
+const KKA_AD = {
+  ielts:{
+    name:"IELTS",
+    examRunning(){ return typeof S!=="undefined" && S.test && S.test.running; },
+    where(){ try{ const st=(typeof J!=="undefined"&&J.plan&&J.plan.stages||[]).find(x=>x.id===S.step); return st?("chặng "+(st.name||st.title)):""; }catch(e){ return ""; } },
+    dyn(){
+      const out=[];
+      try{
+        if(typeof kkNextItem==="function" && typeof J!=="undefined" && J.plan){
+          const n=kkNextItem();
+          if(n){
+            const a = n.diag ? `Bạn chưa làm <b>bài chẩn đoán 4 kỹ năng</b> - đây là bước đầu tiên để có band khởi điểm và lộ trình riêng.`
+              : n.phase>=3 ? `Bạn đã qua giai đoạn Xây nền và Kỹ năng - tiếp theo là <b>Luyện đề và Thi thử</b>.`
+              : `Bài tiếp theo của bạn: <b>${kkaEsc(kkItemLabel(n.it))}</b> (tuần ${n.week}).`;
+            out.push({id:"_next", chip:"Bài tiếp theo của tôi", k:"bai tiep theo hoc gi tiep tiep theo lam gi bay gio hom nay hoc gi nen hoc gi", a, acts:[{l:n.diag?"Làm bài chẩn đoán":"Mở bài tiếp theo", run:()=>{ if(typeof kkOpenNext==="function") kkOpenNext(); }}]});
+          }
+        }
+        const w=KKA_AD.ielts.where();
+        out.push({id:"_where", k:"toi dang o dau chang hien tai tien do cua toi dang hoc den dau", a:`Bạn đang ở <b>${kkaEsc(w||"trang IELTS")}</b>. Bản đồ 7 chặng ở đầu trang cho biết chặng đã mở; mở trang IELTS là tự vào bài tiếp theo của lộ trình.`, acts:[{l:"Bài tiếp theo", run:()=>{ if(typeof kkOpenNext==="function") kkOpenNext(); }}]});
+      }catch(e){}
+      return out;
+    },
+    local(h){ const m=/^#go=([a-z-]+)/.exec(h); if(m && typeof kkIeltsGo==="function"){ kkIeltsGo(m[1]); return true; } return false; }
+  },
+  zh:{
+    name:"Tiếng Trung",
+    examRunning(){ return typeof S!=="undefined" && S.page==="test" && typeof ZT!=="undefined" && ZT.cfg && !ZT.done && ZT.qs && ZT.qs.length>0; },
+    where(){ try{ if(S.lesson){ const L=(typeof LESSONS!=="undefined"?LESSONS:[]).find(x=>x.id===S.lesson); return "bài "+S.lesson+(L?" - "+L.title:""); } return S.page==="test"?"trang Kiểm tra":S.page==="grades"?"Sổ điểm":"danh sách bài"; }catch(e){ return ""; } },
+    dyn(){
+      const out=[];
+      try{
+        if(typeof zhNextId==="function" && typeof LESSONS!=="undefined" && LESSONS.length){
+          const id=zhNextId(), L=LESSONS.find(x=>x.id===id), done=LESSONS.filter(x=>typeof zhDone==="function"&&zhDone(x.id)).length;
+          out.push({id:"_next", chip:"Bài tiếp theo của tôi", k:"bai tiep theo hoc gi tiep tiep theo lam gi bay gio hom nay hoc gi nen hoc gi", a:`Bài tiếp theo của bạn: <b>${kkaEsc(id)}${L?" - "+kkaEsc(L.title):""}</b>. Bạn đã học xong <b>${done}/${LESSONS.length}</b> bài.`, acts:[{l:"Mở "+id, run:()=>zhOpen(id)}]});
+        }
+        if(S.lesson){
+          out.push({id:"_ai", chip:"Hỏi AI về bài này", k:"giai thich bai nay hoi ai bai nay khong hieu bai tro ly ai role play hoi thoai nhap vai luyen noi voi ai", a:`Trong bài <b>${kkaEsc(S.lesson)}</b>, tab <b>Lớp 3: AI</b> có Trợ lý AI hiểu đúng nội dung bài: hỏi nghĩa từ, ngữ pháp, nhập vai hội thoại và chấm câu nói.`, acts:[{l:"Mở tab Lớp 3: AI", run:()=>{ S.tab="l3"; if(typeof save==="function") save(); render(); window.scrollTo(0,0); }}]});
+        }
+        out.push({id:"_where", k:"toi dang o dau dang hoc den dau tien do cua toi", a:`Bạn đang ở <b>${kkaEsc(KKA_AD.zh.where()||"trang Tiếng Trung")}</b>. Danh sách bài có lộ trình và trạng thái từng bài; Sổ điểm tổng hợp điểm.`, acts:[{l:"Danh sách bài", u:"/tieng-trung/#danh-sach"},{l:"Sổ điểm", u:"/tieng-trung/#so-diem"}]});
+      }catch(e){}
+      return out;
+    },
+    local(h){
+      if(typeof render!=="function" || typeof S==="undefined") return false;
+      if(/^#ZH-[A-Z]\d{2}$/.test(h)){ zhOpen(h.slice(1)); return true; }
+      if(h==="#danh-sach"){ S.lesson=null; S.page=null; }
+      else if(/^#(tai-lieu|lo-trinh|chung-chi)$/.test(h)){ S.lesson=null; S.page=null; zhPendingAnchor=h; }
+      else if(h==="#kiem-tra"){ S.lesson=null; S.page="test"; }
+      else if(h==="#so-diem"){ S.lesson=null; S.page="grades"; }
+      else return false;
+      if(typeof save==="function") save(); render(); if(!/^#(tai-lieu|lo-trinh|chung-chi)$/.test(h)) window.scrollTo(0,0); return true;
+    }
+  }
+};
+const KKA_A = KKA_AD[KKA.page];
+function kkaKB(){ return KKA_A.dyn().concat(window.KKA_KB||[]); }
+const KKA_STOP=new Set("lam sao the nao co khong duoc toi em minh ban la gi o dau nhu cach can phai bi va voi cho cua mot nhung cac de khi bao gio hay roi nay do kia nen giup thay vay a nhe oi ah uh va ma neu".split(" "));
+function kkaMatch(qRaw){ const r=kkaMatch0(qRaw, true); const n=(typeof cbNorm==="function"&&"kkaMatch"==="cbMatch"?cbNorm:kkNormAny)(qRaw).split(" ").filter(w=>w.length>1&&!KKA_STOP.has(w)).length; return (r.best||n>1)?r:kkaMatch0(qRaw, false); }
+function kkNormAny(s){ return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim(); }
+function kkaMatch0(qRaw, stop){
+  const q=kkaNorm(qRaw); if(!q) return {best:null, alts:[]};
+  const qw=q.split(" ").filter(w=>w.length>1&&!(stop&&KKA_STOP.has(w))); if(!qw.length) return {best:null, alts:[]};
+  const sc=kkaKB().map(it=>{ const kw=" "+kkaNorm((it.k||"")+" "+(it.q||"")+" "+(it.chip||""))+" "; let s=0, h=0;
+    qw.forEach(w=>{ if(kw.includes(" "+w+" ")){ s+=(w.length>=4?2:1); h++; } });
+    for(let i=0;i<qw.length-1;i++){ if(kw.includes(" "+qw[i]+" "+qw[i+1]+" ")) s+=3; }
+    if(it.id.startsWith("_") && s>0) s+=1;                                  // ưu tiên mục theo ngữ cảnh trang
+    if(KKA.page==="ielts" && it.id.startsWith("ielts") && s>0) s+=1;
+    if(KKA.page==="zh" && /^zh/.test(it.id) && s>0) s+=1;
+    return {it, s, cov:h/qw.length}; }).sort((a,b)=>b.s-a.s||b.cov-a.cov);
+  const top=sc[0], ok=top && top.s>=3 && (top.cov>=0.5 || top.s>=8);
+  return {best:ok?top.it:null, alts:sc.slice(0,4).filter(x=>x.s>=2).map(x=>x.it)};
+}
+/* ---------- Giao diện ---------- */
+function kkaMount(){
+  if(document.getElementById("kkaFab")) return;
+  const fab=document.createElement("button"); fab.id="kkaFab"; fab.type="button"; fab.setAttribute("aria-label","Trợ lý KK-EDU - hỏi đáp"); fab.title="Trợ lý KK-EDU";
+  fab.innerHTML=`<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-4.5 3.6A.6.6 0 0 1 3.5 21V18H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm3 6.2a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Zm5 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Zm5 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Z"/></svg>`;
+  const p=document.createElement("div"); p.id="kkaPanel"; p.hidden=true; p.setAttribute("role","dialog"); p.setAttribute("aria-label","Trợ lý KK-EDU");
+  p.innerHTML=`<div class="kka-head"><div><b>Trợ lý KK-EDU</b><span>${kkaEsc(KKA_A.name)} · hỏi ngay trong lúc học</span></div><a href="/hoi-dap/" target="_blank" rel="noopener" class="kka-faq" title="Toàn bộ câu hỏi thường gặp">Hỏi đáp</a><button type="button" id="kkaX" aria-label="Đóng">✕</button></div>
+    <div class="kka-body" id="kkaBody" aria-live="polite"></div><div class="kka-chips" id="kkaChips"></div>
+    <form class="kka-in" id="kkaForm"><input id="kkaInput" maxlength="300" autocomplete="off" placeholder="Gõ câu hỏi... VD: bài tiếp theo, band tính thế nào?" aria-label="Câu hỏi"><button type="submit" id="kkaSend">Gửi</button></form>`;
+  document.body.appendChild(fab); document.body.appendChild(p);
+  fab.onclick=()=>kkaToggle(); document.getElementById("kkaX").onclick=()=>kkaToggle(false);
+  document.getElementById("kkaForm").onsubmit=e=>{ e.preventDefault(); kkaAsk(); };
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape" && KKA.open) kkaToggle(false); });
+  setInterval(kkaGuard, 1000);
+}
+function kkaGuard(){ const off=!!KKA_A.examRunning(); document.body.classList.toggle("kka-off", off); if(off && KKA.open) kkaToggle(false); }
+function kkaToggle(v){
+  const p=document.getElementById("kkaPanel"); if(!p) return;
+  KKA.open = v==null ? p.hidden : !!v; p.hidden=!KKA.open; document.getElementById("kkaFab").setAttribute("aria-expanded", String(KKA.open));
+  if(KKA.open && !KKA.booted){ KKA.booted=true; kkaHello(); }
+  if(KKA.open){ kkaChips(); if(window.innerWidth>700) setTimeout(()=>{ const i=document.getElementById("kkaInput"); if(i) i.focus(); }, 40); }
+}
+function kkaPush(who, html, acts){
+  const b=document.getElementById("kkaBody"); if(!b) return;
+  const row=document.createElement("div"); row.className="kka-msg "+who;
+  row.innerHTML=`<div class="kka-bub">${html}${acts&&acts.length?`<div class="kka-acts">${acts.map((a,i)=>`<button type="button" data-i="${i}">${kkaEsc(a.l)}</button>`).join("")}</div>`:""}</div>`;
+  b.appendChild(row); if(acts) row.querySelectorAll("[data-i]").forEach(x=>x.onclick=()=>kkaAct(acts[Number(x.dataset.i)]));
+  b.scrollTop=b.scrollHeight; return row;
+}
+function kkaAct(a){
+  if(!a) return;
+  try{ if(typeof kkTrack==="function") kkTrack("tro_ly_mo",{trang:KKA.page, dich:a.u||a.l}); }catch(e){}
+  if(a.run){ a.run(); if(window.innerWidth<700) kkaToggle(false); return; }
+  if(a.kb){ const it=kkaKB().find(x=>x.id===a.kb); if(it){ kkaPush("u", kkaEsc(it.chip||it.q||a.l)); kkaShow(it); } return; }
+  let u=a.u||""; if(!u) return;
+  if(u==="/?login=1"){ location.href=(typeof kkLoginUrl==="function")?kkLoginUrl():"/?login=1"; return; }
+  const here=location.pathname, i=u.indexOf("#"), path=i>=0?u.slice(0,i):u, hash=i>=0?u.slice(i):"";
+  if(path===here && hash && KKA_A.local(hash)){ if(window.innerWidth<700) kkaToggle(false); return; }
+  if(path===here && !hash){ return; }
+  location.href=u;
+}
+function kkaShow(it){ kkaPush("b", it.a, it.acts||[]); }
+function kkaChips(){
+  const h=document.getElementById("kkaChips"); if(!h) return;
+  const L=kkaKB().filter(x=>x.chip).sort((a,b)=>(b.id.startsWith("_")-a.id.startsWith("_")) || ((KKA.page==="ielts"?/^ielts/:/^zh/).test(b.id)-(KKA.page==="ielts"?/^ielts/:/^zh/).test(a.id))).slice(0,10);
+  h.innerHTML=L.map(c=>`<button type="button" data-id="${kkaEsc(c.id)}">${kkaEsc(c.chip)}</button>`).join("");
+  h.querySelectorAll("[data-id]").forEach(x=>x.onclick=()=>{ const it=kkaKB().find(k=>k.id===x.dataset.id); if(!it) return; kkaPush("u", kkaEsc(it.chip)); kkaShow(it); });
+}
+function kkaHello(){
+  const u=typeof KK!=="undefined"&&KK.user; const w=KKA_A.where();
+  kkaPush("b", `Chào bạn 👋 Mình là Trợ lý KK-EDU trong phân hệ <b>${kkaEsc(KKA_A.name)}</b>${w?` - bạn đang ở <b>${kkaEsc(w)}</b>`:""}. Bấm một chủ đề bên dưới hoặc gõ câu hỏi.${u?"":" <span class=\"kka-mute\">Đăng nhập để được AI trả lời thêm những câu chưa có sẵn.</span>"}`);
+  const nx=kkaKB().find(x=>x.id==="_next"); if(nx) kkaShow(nx);
+}
+async function kkaAsk(){
+  const inp=document.getElementById("kkaInput"); const q=(inp.value||"").trim(); if(!q||KKA.busy) return;
+  inp.value=""; kkaPush("u", kkaEsc(q));
+  const m=kkaMatch(q);
+  if(m.best){ kkaShow(m.best); const o=m.alts.filter(x=>x.id!==m.best.id && (x.chip||x.q)).slice(0,2); if(o.length) kkaPush("b","Có thể bạn cũng quan tâm:", o.map(x=>({l:x.chip||x.q, kb:x.id}))); return; }
+  if(typeof KK!=="undefined" && KK.user && typeof kkApiBase==="function"){
+    KKA.busy=true; const wait=kkaPush("b", `<span class="kka-mute">Đang tìm câu trả lời...</span>`);
+    try{
+      const ctx=(m.alts.length?m.alts:kkaKB().filter(x=>x.chip).slice(0,3)).slice(0,4).map(x=>({t:x.q||x.chip||x.id, a:x.a}));
+      const base=await kkApiBase(); const tok=await kkIdToken();
+      const r=await fetch(base+"/assist",{method:"POST", headers:{"content-type":"application/json", authorization:"Bearer "+tok}, body:JSON.stringify({q, page:KKA.page, ctx, where:KKA_A.where()})});
+      const j=await r.json().catch(()=>({})); wait.remove();
+      if(r.ok && j.text){ kkaPush("b", kkaEsc(j.text)+`<div class="kka-ai">Trả lời bởi AI dựa trên hướng dẫn KK-EDU</div>`, m.alts.slice(0,2).map(x=>({l:x.chip||x.q, kb:x.id}))); KKA.busy=false; return; }
+    }catch(e){ try{ wait.remove(); }catch(e2){} }
+    KKA.busy=false;
+  }
+  const sug=m.alts.slice(0,3).map(x=>({l:x.chip||x.q, kb:x.id}));
+  kkaPush("b", `Mình chưa chắc đã hiểu đúng câu này. Bạn thử diễn đạt ngắn hơn, chọn gợi ý dưới đây hoặc tìm trong <a href="/hoi-dap/?q=${encodeURIComponent(q)}" target="_blank" rel="noopener">trang Hỏi đáp</a>.`,
+    sug.concat(typeof KK!=="undefined"&&KK.user?[]:[{l:"Đăng nhập để hỏi AI", u:"/?login=1"}]));
+}
+try{ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", kkaMount); else kkaMount(); }catch(e){}
 
 if(typeof KK!=="undefined"&&KK.authReady!==false) try{kkRenderUser()}catch(e){}
 </script>

@@ -468,6 +468,9 @@ footer.ft .in span:last-child{margin-left:auto;font-style:italic}
 /* ---------- KK-Bot ---------- */
 #cbFab{position:fixed;right:18px;bottom:18px;z-index:140;width:56px;height:56px;border-radius:50%;border:2px solid var(--gold);background:#0f2a4a;color:#fff;font-size:1.5rem;line-height:1;cursor:pointer;box-shadow:0 8px 24px rgba(15,42,74,.35);transition:transform .15s}
 #cbFab:hover{transform:scale(1.08)}
+/* KK-V55 */
+.cbFaq{margin-left:auto;margin-right:6px;color:#ffe9a3;font-size:.8rem;font-weight:600;text-decoration:none;border:1px solid rgba(255,233,163,.5);border-radius:999px;padding:5px 10px;white-space:nowrap;align-self:center}
+.cbAi{margin-top:6px;font-size:.74rem;color:var(--fg2)}
 #cbPanel{position:fixed;right:18px;bottom:84px;z-index:141;width:min(370px,calc(100vw - 24px));max-height:min(72vh,620px);display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r-l);box-shadow:0 18px 50px rgba(15,42,74,.3);overflow:hidden}
 #cbPanel[hidden]{display:none}
 .cbHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:linear-gradient(135deg,#0f2a4a,#17406e);color:#fff}
@@ -603,7 +606,7 @@ nav.main{justify-content:safe flex-end}
 <main id="view" class="wrap" aria-live="polite"></main>
 
 <footer class="ft"><div class="wrap in">
-  <span>© 2026 KK-EDU - Học liệu bổ trợ, mô hình thí điểm. Không thay thế sách giáo khoa được phê duyệt. <a href="#about" style="color:inherit">Giới thiệu & pháp lý</a></span>
+  <span>© 2026 KK-EDU - Học liệu bổ trợ, mô hình thí điểm. Không thay thế sách giáo khoa được phê duyệt. <a href="#about" style="color:inherit">Giới thiệu & pháp lý</a> · <a href="/hoi-dap/" style="color:inherit">Hỏi đáp</a></span>
   <span id="ftContact"></span>
   <span>Tác giả : Nguyễn Duy Điển</span>
 </div><div class="wrap ftv" id="ftVisits" aria-live="polite"></div></footer>
@@ -2235,6 +2238,7 @@ const KK_LANG={
     cta:[["Học Tiếng Trung","/tieng-trung/"],["Tài liệu xem / in","/tieng-trung/#tai-lieu"],["Chứng chỉ HSK 3","/tieng-trung/#chung-chi"]]}
 };
 const KK_NEWS=[
+  {d:"16/10/2026", t:"all", h:"Trang Hỏi đáp và Trợ lý trong lúc học", p:"Trang Hỏi đáp gom toàn bộ câu hỏi thường gặp, có tìm kiếm; Trợ lý có mặt trên trang IELTS và Tiếng Trung, chỉ bài tiếp theo, thành viên được AI trả lời thêm."},
   {d:"16/10/2026", t:"zh", h:"Chứng chỉ HSK 3 tự động, giọng đọc lưu sẵn", p:"Tiếng Trung: tự cấp Chứng chỉ KK-EDU Thử nghiệm HSK 3 khi đủ 120 bài và đạt thi thử; giọng đọc của 140 video được dựng sẵn nên phát mượt, không chờ."},
   {d:"16/10/2026", t:"zh", h:"Tài liệu chỉ xem hoặc in, bảo vệ bản quyền", p:"24 tài liệu Tiếng Trung mở trong trình đọc riêng có dấu bản quyền và email người xem; in theo khoảng trang, không tải về."},
   {d:"16/10/2026", t:"all", h:"Trợ lý KK-EDU hiểu cả IELTS và Tiếng Trung", p:"Thêm hơn 30 câu hỏi - trả lời, bấm là mở thẳng đúng chức năng: chẩn đoán, phòng giám khảo, tài liệu, chứng chỉ..."},
@@ -4711,6 +4715,13 @@ function cbKB(){
   {id:"zh_hanviet", k:"nguoi viet hoc tieng trung co kho khong han viet am han viet hoc nhanh meo nho chu han",
    a:`Người Việt có lợi thế lớn: rất nhiều từ tiếng Việt có gốc Hán (thường được ước tính trên một nửa vốn từ). KK-EDU ghi <b>âm Hán-Việt</b> cạnh từ mới và dùng <b>chiết tự</b> (tách chữ thành bộ thủ có nghĩa) để nhớ nhanh, kết hợp nghe - nhại - nhắc lại theo nhịp ôn khoa học.`,
    acts:[{l:"Học thử bài A01", href:"/tieng-trung/#ZH-A01"}]},
+  // ===== KK-V55 =====
+  {id:"hoidap", chip:"Trang Hỏi đáp", k:"trang hoi dap cau hoi thuong gap faq tat ca cau hoi tim cau hoi huong dan su dung",
+   a:`Trang <b>Hỏi đáp</b> (/hoi-dap/) gom toàn bộ câu hỏi thường gặp của Trợ lý theo 9 nhóm: Về KK-EDU, Luyện thi IELTS, Tiếng Trung, Tài khoản, Xếp lớp, Học bài, Sách PDF, Kiểm tra - học bạ - chứng chỉ, Hỗ trợ; có ô tìm kiếm và nút đi thẳng tới chức năng. Mở được từ chân trang hoặc đầu khung Trợ lý.`,
+   acts:[{l:"Mở trang Hỏi đáp", href:"/hoi-dap/"}]},
+  {id:"trolyhoc", k:"tro ly trong luc hoc hoi khi dang hoc ielts hoi khi dang hoc tieng trung chatbot trang ielts tieng trung ai tra loi",
+   a:`Trợ lý KK-EDU (nút 💬 góc phải) có mặt cả trên trang <b>IELTS</b> và <b>Tiếng Trung</b>: biết bạn đang ở chặng hay bài nào, chỉ <b>bài tiếp theo</b>, mở thẳng Phòng giám khảo, tài liệu, chứng chỉ hoặc tab AI của bài đang học. Câu chưa có sẵn: thành viên đăng nhập được <b>AI trả lời</b> dựa trên đúng hướng dẫn KK-EDU. Trợ lý tự ẩn khi bạn đang làm bài thi.`,
+   acts:[{l:"Mở IELTS", href:"/ielts/"},{l:"Mở Tiếng Trung", href:"/tieng-trung/"}]},
   // ===== KK-V54: CHUNG =====
   {id:"ngoaingu", chip:"Ngoại ngữ", k:"ngoai ngu hoc ngoai ngu tieng nhat jlpt cac ngoai ngu co nhung mon ngoai ngu nao",
    a:`Phân hệ <b>Ngoại ngữ</b> hiện có <b>Tiếng Anh - Luyện thi và thi thử IELTS</b> và <b>Tiếng Trung giao tiếp</b> (HSK 1-4); <b>Tiếng Nhật</b> (JLPT N5-N3) đang biên soạn.`,
@@ -4722,7 +4733,7 @@ function cbKB(){
    a:`Mọi chứng chỉ KK-EDU (IELTS thử nghiệm, Tiếng Trung HSK 3) có <b>mã tra cứu</b>. Nhà tuyển dụng, nhà trường nhập mã tại <b>trang Xác minh</b> (/verify/) hoặc quét QR trên chứng chỉ để xem tên, cấp độ, kết quả và ngày cấp.`,
    acts:[{l:"Trang Xác minh", href:"/verify/"}]},
   {id:"moi", chip:"Có gì mới", k:"co gi moi tinh nang moi cap nhat moi nhat phien ban moi thay doi gan day",
-   a:`Mới nhất: <b>chứng chỉ HSK 3 tự động</b> và giọng đọc 140 video Tiếng Trung lưu sẵn; <b>tài liệu chỉ xem/in</b> có dấu bản quyền; IELTS có <b>Phòng giám khảo</b>, Thử thách 3 phút, Gia đình &amp; giáo viên, 600 từ vựng flashcard; một tài khoản cho mọi phân hệ; Trợ lý trả lời cả IELTS và Tiếng Trung.`,
+   a:`Mới nhất: <b>trang Hỏi đáp</b> và <b>Trợ lý trong lúc học</b> trên IELTS, Tiếng Trung; <b>chứng chỉ HSK 3 tự động</b> và giọng đọc 140 video Tiếng Trung lưu sẵn; <b>tài liệu chỉ xem/in</b> có dấu bản quyền; IELTS có <b>Phòng giám khảo</b>, Thử thách 3 phút, Gia đình &amp; giáo viên, 600 từ vựng flashcard; một tài khoản cho mọi phân hệ; Trợ lý trả lời cả IELTS và Tiếng Trung.`,
    acts:[{l:"Xem nhật ký cập nhật", go:"about_moi"}]},
   // ===== TÀI KHOẢN =====
   {id:"dangky", chip:"Đăng ký tài khoản", k:"dang ky tai khoan thanh vien tao tai khoan lap tai khoan đang ki email mat khau google",
@@ -4828,18 +4839,23 @@ function cbKB(){
   return KB;
 }
 /* ---------- Tìm câu trả lời: chấm điểm trùng từ khóa ---------- */
-function cbMatch(qRaw){
+const KK_STOP=new Set("lam sao the nao co khong duoc toi em minh ban la gi o dau nhu cach can phai bi va voi cho cua mot nhung cac de khi bao gio hay roi nay do kia nen giup thay vay a nhe oi ah uh va ma neu".split(" "));
+function cbMatch(qRaw){ const r=cbMatch0(qRaw, true); const n=(typeof cbNorm==="function"&&"cbMatch"==="cbMatch"?cbNorm:kkNormAny)(qRaw).split(" ").filter(w=>w.length>1&&!KK_STOP.has(w)).length; return (r.best||n>1)?r:cbMatch0(qRaw, false); }
+function kkNormAny(s){ return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim(); }
+function cbMatch0(qRaw, stop){
   const q=cbNorm(qRaw); if(!q) return {best:null, score:0, alts:[]};
-  const qw=q.split(" ").filter(w=>w.length>1);
+  const qw=q.split(" ").filter(w=>w.length>1&&!(stop&&KK_STOP.has(w)));
+  if(!qw.length) return {best:null, score:0, alts:[]};
   const scored=cbKB().map(item=>{
-    const kw=cbNorm(item.k+" "+(item.chip||""));
-    let s=0;
-    qw.forEach(w=>{ if(kw.includes(w)) s+=(w.length>=4?2:1); });
+    const kw=" "+cbNorm(item.k+" "+(item.chip||""))+" ";
+    let s=0, h=0;
+    qw.forEach(w=>{ if(kw.includes(" "+w+" ")){ s+=(w.length>=4?2:1); h++; } });
     // cụm 2 từ liền nhau trúng thì thưởng
-    for(let i=0;i<qw.length-1;i++){ if(kw.includes(qw[i]+" "+qw[i+1])) s+=3; }
-    return {item, s};
-  }).sort((a,b)=>b.s-a.s);
-  return {best:scored[0].s>=3?scored[0].item:null, score:scored[0].s, alts:scored.slice(0,3).filter(x=>x.s>=2).map(x=>x.item)};
+    for(let i=0;i<qw.length-1;i++){ if(kw.includes(" "+qw[i]+" "+qw[i+1]+" ")) s+=3; }
+    return {item, s, cov:h/qw.length};
+  }).sort((a,b)=>b.s-a.s||b.cov-a.cov);
+  const top=scored[0], ok=top.s>=3 && (top.cov>=0.5 || top.s>=8);
+  return {best:ok?top.item:null, score:top.s, alts:scored.slice(0,3).filter(x=>x.s>=2).map(x=>x.item)};
 }
 /* ---------- Giao diện ---------- */
 let CB={open:false, booted:false, busy:false};
@@ -4852,7 +4868,7 @@ function cbMount(){
   const panel=document.createElement("div");
   panel.id="cbPanel"; panel.hidden=true;
   panel.innerHTML=`
-    <div class="cbHead"><div><b>Trợ lý KK-EDU</b><span>hỏi đáp mọi chức năng · trả lời tức thì</span></div>
+    <div class="cbHead"><div><b>Trợ lý KK-EDU</b><span>hỏi đáp mọi chức năng · trả lời tức thì</span></div><a href="/hoi-dap/" target="_blank" rel="noopener" class="cbFaq" title="Toàn bộ câu hỏi thường gặp">Hỏi đáp</a>
       <button id="cbX" aria-label="Đóng">✕</button></div>
     <div class="cbBody" id="cbBody"></div>
     <div class="cbChips" id="cbChips"></div>
@@ -4907,7 +4923,7 @@ async function cbAsk(){
   if(m.best){
     cbPush("b", m.best.a, m.best.acts);
     const others=m.alts.filter(x=>x.id!==m.best.id);
-    if(others.length) cbPush("b", `Có thể bạn cũng quan tâm:`, others.slice(0,2).map(o=>({l:o.chip||o.id, go:null, fn:null, _kb:o.id})).map(o=>({l:(cbKB().find(k=>k.id===o._kb).chip||"Xem thêm"), _kb:o._kb})).map(o=>({l:o.l, kb:o._kb})));
+    if(others.filter(x=>x.chip).length) cbPush("b", `Có thể bạn cũng quan tâm:`, others.filter(x=>x.chip).slice(0,2).map(o=>({l:o.chip||o.id, go:null, fn:null, _kb:o.id})).map(o=>({l:(cbKB().find(k=>k.id===o._kb).chip||"Xem thêm"), _kb:o._kb})).map(o=>({l:o.l, kb:o._kb})));
     return;
   }
   // Tầng 3: AI (chỉ bản chạy trong hạ tầng Claude có caps.sample)
@@ -4923,11 +4939,22 @@ async function cbAsk(){
     CB.busy=false;
     return;
   }
-  cbFallback(m);
+  if(S.uid && S.fb && window.KK_API){
+    CB.busy=true; cbPush("b", `<i>Đang tìm câu trả lời...</i>`);
+    try{
+      const ctx=(m.alts.length?m.alts:cbKB().filter(x=>x.chip).slice(0,3)).slice(0,4).map(x=>({t:x.chip||x.id, a:x.a}));
+      const u=S.fb.auth().currentUser; const tok=u?await u.getIdToken():"";
+      const r=await fetch(window.KK_API+"/assist",{method:"POST", headers:{"content-type":"application/json", authorization:"Bearer "+tok}, body:JSON.stringify({q, page:"home", ctx, where:S.route&&S.route.name||""})});
+      const j=await r.json().catch(()=>({})); const b=$("#cbBody"); if(b&&b.lastChild) b.lastChild.remove();
+      if(r.ok && j.text){ cbPush("b", esc(j.text)+`<div class="cbAi">Trả lời bởi AI dựa trên hướng dẫn KK-EDU</div>`, m.alts.filter(x=>x.chip).slice(0,2).map(x=>({l:x.chip, kb:x.id}))); CB.busy=false; return; }
+    }catch(e){ const b=$("#cbBody"); if(b&&b.lastChild&&/Đang tìm/.test(b.lastChild.textContent)) b.lastChild.remove(); }
+    CB.busy=false;
+  }
+  cbFallback(m, q);
 }
-function cbFallback(m){
+function cbFallback(m, q){
   const sug=(m&&m.alts||[]).filter(x=>x.chip).slice(0,3);
-  cbPush("b", `Mình chưa chắc đã hiểu đúng câu này 🤔 Bạn thử diễn đạt ngắn gọn hơn (VD: "quên mật khẩu", "điều kiện dự thi"), xem trang <b>Giới thiệu</b> có đủ hướng dẫn chi tiết, hoặc chọn chủ đề gần nhất:`,
+  cbPush("b", `Mình chưa chắc đã hiểu đúng câu này 🤔 Bạn thử diễn đạt ngắn gọn hơn (VD: "quên mật khẩu", "điều kiện dự thi"), tìm trong <a href="/hoi-dap/${q?"?q="+encodeURIComponent(q):""}" target="_blank" rel="noopener"><b>trang Hỏi đáp</b></a> (${cbKB().length} câu), hoặc chọn chủ đề gần nhất:${S.uid?"":" <i>Thành viên đăng nhập được AI trả lời thêm.</i>"}`,
     sug.length?sug.map(s=>({l:s.chip, kb:s.id})):[{l:"Trang Giới thiệu", go:"about"},{l:"Liên hệ hỗ trợ", kb:"lienhe"}]);
 }
 // nút hành động loại "kb": mở lại câu trả lời trong kho
