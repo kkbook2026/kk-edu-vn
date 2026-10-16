@@ -313,6 +313,21 @@ i.en{font-style:italic;color:var(--navy)}
 @media (max-width:640px){.zhapp .zcqr{position:static;margin:0 auto 8px}}
 @media print{body.zcprint *{visibility:hidden}body.zcprint #zhCertDoc,body.zcprint #zhCertDoc *{visibility:visible}body.zcprint #zhCertDoc{position:absolute;left:0;top:0;width:100%;max-width:none;margin:0}}
 
+.zvw{position:fixed;inset:0;z-index:9999;background:#1f2633;display:flex;flex-direction:column;-webkit-user-select:none;user-select:none}
+.zvwbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:8px 12px;background:#142a4a;color:#fff}
+.zvwbar b{color:#fff}.zvwnote{font-size:12px;color:#c9d4e5}.zvwbtns{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.zvwask{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 12px;background:#e9eef6;color:#142a4a}.zvwask[hidden]{display:none}.zvwask input{width:70px}.zvwask .zvwnote{color:#556}
+.zvwbody{position:relative;flex:1;min-height:0}.zvwpages{position:absolute;inset:0;overflow:auto;padding:10px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.zvwpage{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.4);flex:none}.zvwpage canvas{width:100%;height:100%;display:block;pointer-events:none}
+.zvwload{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;text-align:center;padding:20px}
+.zvwwm{position:absolute;right:14px;bottom:10px;pointer-events:none;color:rgba(255,255,255,.55);font-size:12px;text-shadow:0 1px 2px #000}
+body.zvwopen{overflow:hidden}#zvwPrint{display:none}
+@media print{body.zvwprinting>*{display:none!important}body.zvwprinting>#zvwPrint{display:block!important}.zvwprintpage{width:100%;page-break-after:always;break-after:page;display:block}body:not(.zvwprinting):not(.zcprint) .zvw{display:none!important}}
+.zvwbar .btn{background:#fff;color:#142a4a;border:1px solid #fff;min-width:36px}.zvwbar .btn.sec{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6)}
+.zvwwm{left:0;right:0;bottom:0;text-align:center;padding:4px 8px;background:rgba(20,42,74,.82);color:#e6ecf5}
+.zvwpages{padding-bottom:34px}
+@media(max-width:600px){.zvwbar{padding:6px 8px}.zvwbar b{font-size:14px}.zvwnote{font-size:11px}.zvwwm{font-size:10.5px}}
+
 /* KK-EDU: ô tài khoản dùng chung (cùng kiểu trang chủ) */
 #kkUser{position:relative;display:flex;align-items:center}
 .kkava{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px 12px 3px 3px;cursor:pointer;color:var(--ink);font-family:var(--font);font-size:13px;max-width:230px}
@@ -356,7 +371,7 @@ i.en{font-style:italic;color:var(--navy)}
 </div>
 <div class="hero"><div class="in"><div><div class="kick">Phân hệ Ngoại ngữ · bản thử nghiệm</div><h1>Tiếng Trung <em>giao tiếp tương tác</em></h1><p>140 bài cho người Việt theo lộ trình tuần tự (Giai đoạn 1: HSK 1-3, Giai đoạn 2: HSK 4), mỗi bài ba lớp: Trực quan hóa, Thực hành tương tác, Trợ lý AI. Cô Lin đọc mẫu tiếng Trung; tiến độ lưu theo tài khoản KK-EDU.</p></div><div class="tags"><span class="tag">Chữ Hán</span><span class="tag">Pinyin và thanh điệu</span><span class="tag">Ghép câu</span><span class="tag">Role-play</span></div></div></div>
 <main id="main" class="zhapp"><div class="card"><h1>Đang tải bài học tiếng Trung...</h1><p class="mute">Bài học, hình minh họa và dữ liệu nét chữ được nạp từ máy chủ KK-EDU.</p></div></main>
-<footer>Tác giả: Nguyễn Duy Điển (KK-2026) · <a href="/">www.kk-edu.com</a> · Phát triển từ sách Chinh phục tiếng Trung bằng khoa học (Phan Thị Hồng Quyên, Tủ sách KK-2026). Học liệu bổ trợ, mô hình thí điểm; chứng chỉ KK-EDU không thay thế chứng chỉ HSK chính thức. Tập viết dùng Hanzi Writer (MIT). AI gợi ý, con người quyết định.</footer>
+<footer>Tác giả và bản quyền © Nguyễn Duy Điển (KK-2026) · <a href="/">www.kk-edu.com</a> · Toàn bộ bài học, video và tài liệu thuộc bản quyền tác giả. Học liệu bổ trợ, mô hình thí điểm; chứng chỉ KK-EDU không thay thế chứng chỉ HSK chính thức. Tập viết dùng Hanzi Writer (MIT). AI gợi ý, con người quyết định.</footer>
 <script>
 window.KK_API="/api";
 const KK_API_ALT="https://kk-edu-api.nguyenduydien75.workers.dev/api";
@@ -636,7 +651,7 @@ function zhStatus(id, nx){ const p=(S.progress||{})[id]; const r=typeof zhLesson
   return zhOrder().indexOf(id) > zhOrder().indexOf(nx) ? `<span class="zst lock">Mở sau</span>` : ""; }
 function zhItemHTML(x, nx){ return `<div class="item ${x.id===nx?"next":""}" onclick="zhOpen('${x.id}')"><span class="code">${x.id}</span><span>${esc(x.title)} <span class="zh mute">${esc(x.title_zh||"")}</span></span><span class="done">${zhStatus(x.id, nx)}</span></div>`; }
 function zhBlockStats(ids){ const done=ids.filter(zhDone).length; const sc=ids.map(id=>typeof zhLessonScore==="function"?zhLessonScore(id):null).filter(r=>r&&r.started).map(r=>r.score); return {done, n:ids.length, avg: sc.length?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):null}; }
-function zhDocBtns(ids){ return (ids||[]).map(id=>{ const d=ZH_DOCS.find(x=>x.id===id); return d?`<button class="btn sec sm" onclick="event.stopPropagation();zhDownload('${id}', this)" title="${esc(d.d)}">${esc(d.short||d.t)}</button>`:""; }).join(""); }
+function zhDocBtns(ids){ return (ids||[]).map(id=>{ const d=ZH_DOCS.find(x=>x.id===id); return d?`<button class="btn sec sm" onclick="event.stopPropagation();zhViewDoc('${id}')" title="${esc(d.d)}">${esc(d.short||d.t)}</button>`:""; }).join(""); }
 home = function(m){
   const o=zhOrder(); const nx=zhNextId(); const nxL=LESSONS.find(x=>x.id===nx); const doneAll=o.filter(zhDone).length; const nb=nx?zhBlockOf(nx):null;
   const ask = S.lockAsk && LESSONS.find(x=>x.id===S.lockAsk);
@@ -748,7 +763,7 @@ function kkSyncCloud(){
 function zhAccountHTML(){
   if(!KK.authReady) return "";
   if(KK.user) return `<div class="card chot acct"><div class="row"><b>Tiến độ đang lưu theo tài khoản KK-EDU</b><span class="mute">Học tiếp trên mọi thiết bị: tiến độ từng bài, sổ lỗi và thẻ ghi nhớ đồng bộ tự động.</span></div></div>`;
-  return `<div class="warnbox acct"><b>Bạn đang học ở chế độ khách.</b> Tiến độ chỉ lưu trên trình duyệt này. <a href="${kkLoginUrl()}">Đăng nhập hoặc đăng ký KK-EDU miễn phí</a> để lưu tiến độ lên đám mây và tải tài liệu PDF. Tài khoản dùng chung cho mọi phân hệ của KK-EDU.</div>`;
+  return `<div class="warnbox acct"><b>Bạn đang học ở chế độ khách.</b> Tiến độ chỉ lưu trên trình duyệt này. <a href="${kkLoginUrl()}">Đăng nhập hoặc đăng ký KK-EDU miễn phí</a> để lưu tiến độ lên đám mây và xem, in tài liệu. Tài khoản dùng chung cho mọi phân hệ của KK-EDU.</div>`;
 }
 
 /* ---------- 3. Giọng đọc: Cô Lin (Azure zh-CN, qua Worker KK-EDU), dự phòng giọng máy của trình duyệt ---------- */
@@ -784,7 +799,7 @@ function zhSetRate(r){ r=Number(r); if(r>=0.7&&r<=1.3){ KKV.rate=r; S.rate=r; sa
 
 /* ---------- 4. Lộ trình, tài liệu PDF (thành viên), chứng chỉ ---------- */
 const ZH_DOCS = [
-  {id:"tap1", short:"Tập 1 (PDF)", t:"Tập 1 - Tài liệu học tương tác (30 bài A, B)", d:"451 trang, 19,6 MB. Lý thuyết, từ vựng, chiết tự, ngữ pháp, bài luyện và đáp án của 30 bài nền tảng và giao tiếp."},
+  {id:"tap1", short:"Tập 1 - Tài liệu học", t:"Tập 1 - Tài liệu học tương tác (30 bài A, B)", d:"451 trang. Lý thuyết, từ vựng, chiết tự, ngữ pháp, bài luyện và đáp án của 30 bài nền tảng và giao tiếp."},
   {id:"tap2", short:"Tập 2 - Kịch bản video", t:"Tập 2 - Kịch bản video tương tác (30 video A, B)", d:"147 trang. Lời dẫn, điểm dừng câu hỏi và gợi ý dựng video cho 30 bài."},
   {id:"gd1-k1-tailieu", short:"Tài liệu khối 1", t:"Giai đoạn 1 - Khối 1 (C01-C10): Tài liệu học", d:"103 trang. Đi lại và kế hoạch."},
   {id:"gd1-k1-video", short:"Kịch bản video khối 1", t:"Giai đoạn 1 - Khối 1 (C01-C10): Kịch bản video", d:"39 trang. Kịch bản 10 video tương tác V-ZH-C01 đến C10."},
@@ -809,28 +824,17 @@ const ZH_DOCS = [
   {id:"gd2-k2-tailieu", short:"Tài liệu khối D2", t:"Giai đoạn 2 - Khối 2 (D11-D20): Tài liệu học", d:"109 trang. Nhượng bộ, tăng tiến, điều kiện và kết luận (HSK 4), có module viết đoạn văn và nghe bản tin."},
   {id:"gd2-k2-video", short:"Kịch bản video khối D2", t:"Giai đoạn 2 - Khối 2 (D11-D20): Kịch bản video", d:"46 trang. Kịch bản 10 video tương tác V-ZH-D11 đến D20."},
 ];
-async function zhDownload(id, btn){
-  if(!KK.user){ location.href=kkLoginUrl(); return; }
-  const fb=document.getElementById("df_"+id); const old=btn.textContent; btn.disabled=true; btn.textContent="Đang tải...";
-  try{
-    const base=await kkApiBase(); const tok=await kkIdToken();
-    const r=await fetch(base+"/zh/doc/"+encodeURIComponent(id), {headers:{authorization:"Bearer "+tok}});
-    if(!r.ok) throw new Error(r.status===401?"Phiên đăng nhập đã hết, hãy đăng nhập lại.":"Máy chủ chưa trả tài liệu (mã "+r.status+").");
-    const blob=await r.blob(); const cd=r.headers.get("content-disposition")||""; const m=/filename="([^"]+)"/.exec(cd);
-    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=m?m[1]:("KK-EDU_TiengTrung_"+id+".pdf"); document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 4000);
-    if(fb) fb.innerHTML=`<div class="fb good">Đã tải xong. Tài liệu thuộc bản quyền tác giả, chỉ dùng cho học tập cá nhân.</div>`;
-  }catch(e){ if(fb) fb.innerHTML=`<div class="fb bad">${esc(e.message||"Chưa tải được tài liệu.")}</div>`; }
-  finally{ btn.disabled=false; btn.textContent=old; }
-}
+/* Tài liệu chỉ XEM hoặc IN trong trình đọc bảo vệ (zh_viewer.js), không có tải về */
+function zhDownload(id){ return zhViewDoc(id); }
 function zhExtrasHTML(){
-  const docs=ZH_DOCS.map(x=>`<div class="box"><b>${esc(x.t)}</b><div class="mute">${esc(x.d)}</div><div class="row" style="margin-top:6px"><button class="btn sec" onclick="zhDownload('${x.id}', this)">${KK.user?"Tải PDF":"Đăng nhập để tải PDF"}</button></div><div id="df_${x.id}"></div></div>`).join("");
+  const docs=ZH_DOCS.map(x=>`<div class="box"><b>${esc(x.t)}</b><div class="mute">${esc(x.d)}</div><div class="row" style="margin-top:6px"><button class="btn sec" onclick="zhViewDoc('${x.id}')">${KK.user?"Xem / In":"Đăng nhập để xem"}</button></div></div>`).join("");
   return `<div class="card" id="lo-trinh"><h2>Lộ trình 3 giai đoạn</h2>
     <div class="tblwrap"><table><tr><th>Giai đoạn</th><th>Cấp độ</th><th>Nội dung</th><th>Trạng thái</th></tr>
     <tr><td>Giai đoạn 1</td><td>HSK 1 đến 3</td><td>120 bài và 120 video: Phần A (6 bài nền tảng), Phần B (24 bài giao tiếp), 9 khối ngữ pháp C01-C90 (mỗi khối 10 bài, bài cuối khối là ôn tập). Gói "HSK 3 trong 9 tháng".</td><td>Đã mở đủ 120 bài</td></tr>
     <tr><td>Giai đoạn 2</td><td>HSK 4 đến 6</td><td>Khoảng 120 bài D01-D120: đọc và viết đoạn văn, diễn đạt quan điểm, giao tiếp công việc; chấm bài viết theo tiêu chí, nghe bản tin ngắn.</td><td>Đã mở khối 1-2 (D01-D20, HSK 4)</td></tr>
     <tr><td>Giai đoạn 3</td><td>HSK 7 đến 9</td><td>Trình độ cao cấp, đọc hiểu văn bản chuyên ngành. Phạm vi chốt sau khi giáo viên cấp cao duyệt Giai đoạn 2.</td><td>Đang lập danh mục</td></tr></table></div>
     <p class="mute">Chứng chỉ KK-EDU Thử nghiệm cấp HSK 3 cấp khi hoàn thành 120 bài của Giai đoạn 1 và đạt bài thi thử HSK 3; đây là chứng chỉ nội bộ, không thay thế chứng chỉ HSK chính thức.</p></div>
-    <div class="card" id="tai-lieu"><h2>Tài liệu PDF dành cho thành viên</h2><p class="mute">Tài liệu lưu trên máy chủ riêng của KK-EDU, chỉ tải được khi đã đăng nhập. Bản quyền thuộc tác giả Nguyễn Duy Điển (KK-2026); vui lòng không phát tán lại.</p><div class="grid">${docs}</div></div>`;
+    <div class="card" id="tai-lieu"><h2>Tài liệu dành cho thành viên</h2><p class="mute">Tài liệu chỉ xem hoặc in trực tuyến trong trình đọc của KK-EDU khi đã đăng nhập, không tải về. Bản quyền © Nguyễn Duy Điển (KK-2026); nghiêm cấm sao chép, phát tán.</p><div class="grid">${docs}</div></div>`;
 }
 const _zhHome0 = home;
 home = function(m){
@@ -1510,6 +1514,83 @@ function zhCertCardHTML(){
     }catch(e){ console.warn("cert", e); }
   };
 })();
+
+/* ===== KK-EDU Tiếng Trung: trình đọc tài liệu bảo vệ bản quyền - chỉ XEM hoặc IN, không tải về =====
+   Tác giả và bản quyền: Nguyễn Duy Điển (KK-2026). Tài liệu nạp qua máy chủ KK-EDU (cần đăng nhập), vẽ từng trang bằng PDF.js trên canvas;
+   không có nút tải, chặn chuột phải, chọn chữ, Ctrl+S/Ctrl+P; in qua nút In (tối đa 30 trang mỗi lần, có dấu bản quyền). */
+const ZVW = { doc:null, id:null, zoom:1, io:null, slots:[], printing:false };
+const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+function zvwLoadLib(){ return new Promise((res, rej)=>{ if(window.pdfjsLib) return res(); const s=document.createElement("script"); s.src=PDFJS+"pdf.min.js"; s.onload=()=>res(); s.onerror=()=>rej(new Error("pdfjs")); document.head.appendChild(s); }); }
+function zvwMark(){ const u=KK.user; return `${S.name||"Thành viên"}${u&&u.email?" · "+u.email:""} · KK-EDU · Bản quyền © Nguyễn Duy Điển (KK-2026)`; }
+function zvwClose(){ const h=document.getElementById("zvwHost"); if(h) h.remove(); try{ ZVW.io&&ZVW.io.disconnect(); ZVW.doc&&ZVW.doc.destroy(); }catch(e){} ZVW.doc=null; ZVW.slots=[]; document.removeEventListener("keydown", zvwKeys, true); document.body.classList.remove("zvwopen"); }
+function zvwKeys(e){
+  const k=(e.key||"").toLowerCase();
+  if((e.ctrlKey||e.metaKey) && ["s","p","c","a","u"].includes(k)){ e.preventDefault(); e.stopPropagation(); if(k==="p") zvwPrintAsk(); return; }
+  if(k==="escape" && !document.fullscreenElement) zvwClose();
+}
+async function zhViewDoc(id){
+  const d=ZH_DOCS.find(x=>x.id===id); if(!d) return;
+  if(!KK.user){ location.href=kkLoginUrl(); return; }
+  zvwClose();
+  document.body.insertAdjacentHTML("beforeend", `<div id="zvwHost" class="zvw" oncontextmenu="return false" ondragstart="return false">
+    <div class="zvwbar"><div class="zvwt"><b>${esc(d.t)}</b><div class="zvwnote">Chỉ xem hoặc in · không tải về · Bản quyền © Nguyễn Duy Điển (KK-2026)</div></div>
+      <div class="zvwbtns"><span id="zvwPg" class="zvwnote"></span><button class="btn sec sm" onclick="zvwZoom(-.2)" aria-label="Thu nhỏ">−</button><button class="btn sec sm" onclick="zvwZoom(.2)" aria-label="Phóng to">+</button><button class="btn sec sm" onclick="zvwPrintAsk()">In</button><button class="btn sec sm" onclick="zvwFull()">Toàn màn hình</button><button class="btn sm" onclick="zvwClose()">Đóng</button></div></div>
+    <div id="zvwPrintAsk" class="zvwask" hidden></div>
+    <div class="zvwbody"><div id="zvwPages" class="zvwpages"></div><div id="zvwLoad" class="zvwload">Đang mở tài liệu...</div><div class="zvwwm">${esc(zvwMark())}</div></div></div>`);
+  document.body.classList.add("zvwopen"); document.addEventListener("keydown", zvwKeys, true);
+  ZVW.id=id; ZVW.zoom=1;
+  const say=t=>{ const l=document.getElementById("zvwLoad"); if(l){ l.style.display="flex"; l.innerHTML=t; } };
+  let buf=null;
+  try{
+    const base=await kkApiBase(); const tok=await kkIdToken();
+    const r=await fetch(base+"/zh/doc/"+encodeURIComponent(id), {headers:{authorization:"Bearer "+tok}, cache:"no-store"});
+    if(r.status===401) throw new Error("Phiên đăng nhập đã hết, hãy đăng nhập lại.");
+    if(!r.ok) throw new Error("Máy chủ chưa trả tài liệu (mã "+r.status+").");
+    buf=await r.arrayBuffer();
+    await zvwLoadLib(); window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+"pdf.worker.min.js";
+    const doc=await window.pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise; buf=null;
+    if(!document.getElementById("zvwPages")){ doc.destroy(); return; }
+    ZVW.doc=doc; document.getElementById("zvwLoad").style.display="none";
+    const box=document.getElementById("zvwPages"); const p1=await doc.getPage(1); const v1=p1.getViewport({scale:1});
+    ZVW.slots=[]; for(let i=1;i<=doc.numPages;i++){ const el=document.createElement("div"); el.className="zvwpage"; el.dataset.p=i; box.appendChild(el); ZVW.slots.push({el, i, ratio:v1.height/v1.width, done:false, w:0}); }
+    zvwLayout();
+    ZVW.io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ const sl=ZVW.slots[Number(e.target.dataset.p)-1]; if(sl) zvwRender(sl); const pg=document.getElementById("zvwPg"); if(pg) pg.textContent="Trang "+e.target.dataset.p+"/"+doc.numPages; } }), {root:box, rootMargin:"500px 0px"});
+    ZVW.slots.forEach(sl=>ZVW.io.observe(sl.el));
+    document.getElementById("zvwPg").textContent="Trang 1/"+doc.numPages;
+  }catch(e){ say(`<div>${esc(e.message||"Chưa mở được tài liệu.")}<br><br><button class="btn" onclick="zhViewDoc('${id}')">Thử lại</button></div>`); }
+}
+function zvwLayout(){ const box=document.getElementById("zvwPages"); if(!box) return; const W=Math.max(220, Math.min(1100, (box.clientWidth-20))*ZVW.zoom); ZVW.slots.forEach(sl=>{ sl.el.style.width=W+"px"; sl.el.style.height=(W*sl.ratio)+"px"; if(sl.done && Math.abs(sl.w-W)>2){ sl.done=false; sl.el.innerHTML=""; } }); }
+async function zvwRender(sl){
+  if(sl.done||sl.busy||!ZVW.doc) return; sl.busy=true;
+  try{ const pg=await ZVW.doc.getPage(sl.i); const W=sl.el.clientWidth; const vp0=pg.getViewport({scale:1}); sl.ratio=vp0.height/vp0.width; sl.el.style.height=(W*sl.ratio)+"px";
+    const dpr=Math.min(window.devicePixelRatio||1, 2); const vp=pg.getViewport({scale:W/vp0.width*dpr}); const cv=document.createElement("canvas"); cv.width=Math.floor(vp.width); cv.height=Math.floor(vp.height);
+    await pg.render({canvasContext:cv.getContext("2d"), viewport:vp}).promise; sl.el.innerHTML=""; sl.el.appendChild(cv); sl.done=true; sl.w=W; }catch(e){}
+  sl.busy=false;
+}
+function zvwZoom(d){ const box=document.getElementById("zvwPages"); if(!box) return; const t=box.scrollTop/(box.scrollHeight||1); ZVW.zoom=Math.max(.6, Math.min(3, Math.round((ZVW.zoom+d)*10)/10)); zvwLayout(); box.scrollTop=t*box.scrollHeight; ZVW.slots.forEach(sl=>{ const r=sl.el.getBoundingClientRect(), R=box.getBoundingClientRect(); if(r.bottom>R.top-500 && r.top<R.bottom+500) zvwRender(sl); }); }
+function zvwFull(){ const h=document.getElementById("zvwHost"); if(!h) return; if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); else (h.requestFullscreen||h.webkitRequestFullscreen||(()=>{})).call(h); setTimeout(zvwLayout, 300); }
+/* In: chọn khoảng trang (tối đa 30 trang/lần), vẽ thành ảnh kèm dấu bản quyền rồi mở hộp thoại in của trình duyệt */
+function zvwPrintAsk(){
+  const a=document.getElementById("zvwPrintAsk"); if(!a||!ZVW.doc) return; const n=ZVW.doc.numPages; const cur=Number((document.getElementById("zvwPg").textContent.match(/\d+/)||[1])[0]);
+  a.hidden=false; a.innerHTML=`<span>In từ trang</span><input id="zvwFrom" type="number" min="1" max="${n}" value="${cur}"><span>đến</span><input id="zvwTo" type="number" min="1" max="${n}" value="${Math.min(n, cur+9)}"><span class="zvwnote">(tối đa 30 trang mỗi lần)</span><button class="btn sm" onclick="zvwPrint()">In</button><button class="btn sec sm" onclick="document.getElementById('zvwPrintAsk').hidden=true">Hủy</button><span id="zvwPmsg" class="zvwnote"></span>`;
+}
+async function zvwPrint(){
+  if(ZVW.printing||!ZVW.doc) return; const n=ZVW.doc.numPages;
+  let a=Math.max(1, Math.min(n, Number(document.getElementById("zvwFrom").value)||1)), b=Math.max(a, Math.min(n, Number(document.getElementById("zvwTo").value)||a)); if(b-a>29) b=a+29;
+  const msg=document.getElementById("zvwPmsg"); ZVW.printing=true;
+  let pc=document.getElementById("zvwPrint"); if(pc) pc.remove(); pc=document.createElement("div"); pc.id="zvwPrint"; document.body.appendChild(pc);
+  try{
+    for(let i=a;i<=b;i++){ if(msg) msg.textContent="Đang chuẩn bị trang "+i+"/"+b+"...";
+      const pg=await ZVW.doc.getPage(i); const vp=pg.getViewport({scale:1.6}); const cv=document.createElement("canvas"); cv.width=Math.floor(vp.width); cv.height=Math.floor(vp.height);
+      const ctx=cv.getContext("2d"); await pg.render({canvasContext:ctx, viewport:vp}).promise;
+      ctx.save(); ctx.fillStyle="rgba(20,42,74,.55)"; ctx.font=Math.round(cv.width/70)+"px sans-serif"; ctx.fillText(zvwMark()+" · in ngày "+new Date().toISOString().slice(0,10), cv.width*0.04, cv.height-cv.height*0.012); ctx.restore();
+      const img=document.createElement("img"); img.src=cv.toDataURL("image/jpeg", .85); img.className="zvwprintpage"; pc.appendChild(img); }
+    await Promise.all([...pc.querySelectorAll("img")].map(im=>im.decode?im.decode().catch(()=>{}):null));
+    if(msg) msg.textContent="";
+    document.body.classList.add("zvwprinting"); window.print();
+  }catch(e){ if(msg) msg.textContent="Chưa in được: "+(e.message||e); }
+  setTimeout(()=>{ document.body.classList.remove("zvwprinting"); const x=document.getElementById("zvwPrint"); if(x) x.remove(); ZVW.printing=false; }, 800);
+}
 
 /* ===== KK-EDU: Ô tài khoản dùng chung cho các phân hệ (IELTS, Tiếng Trung) - cùng kiểu menu với trang chủ =====
    Tác giả : Nguyễn Duy Điển (KK-2026). Một tài khoản KK-EDU cho mọi phân hệ: tên lấy từ hồ sơ học viên, liên kết về Học tập của tôi, Quản trị. */
