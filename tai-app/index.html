@@ -17,6 +17,9 @@
 <meta property="og:url" content="https://www.kk-edu.com/tai-app/"><meta property="og:title" content="Tải ứng dụng KK-EDU cho Android - học offline, đồng bộ với website"><meta property="og:description" content="Ứng dụng KK-EDU miễn phí: 220 bộ sách từ nhà trẻ đến tiến sĩ, video tương tác, kiểm tra thành thạo, Trợ giảng AI, IELTS, Tiếng Trung HSK. Học được khi mất mạng, đồng bộ cùng tài khoản website.">
 <meta property="og:image" content="https://www.kk-edu.com/luyen-thi-ielts/og.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='1' y='1' width='46' height='46' rx='11' fill='%230f2a4a'/%3E%3Cpath d='M24 15.2 C20.4 11.2 15.4 10.4 11.6 12.3 C13.7 7.3 20.2 6 24 9.5 C27.8 6 34.3 7.3 36.4 12.3 C32.6 10.4 27.6 11.2 24 15.2 Z' fill='%23faf6ec'/%3E%3Cpath transform='translate(15 -2.2)' d='M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z' fill='%234f7bab'/%3E%3Cpath transform='translate(10.4 0)' d='M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z' fill='%23e0b941' stroke='%230f2a4a' stroke-width='1.2' paint-order='stroke'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
 <style>
 :root{--bg:#f5f7fb;--bg2:#eaeff6;--card:#fff;--ink:#14213d;--mute:#4f5d73;--line:#d8e0ea;--navy:#0f2a4a;--gold:#d4af37;--gold2:#a9871f;--chip:#e9eff8}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0b1626;--bg2:#101f33;--card:#132540;--ink:#eef2f8;--mute:#a3b2c6;--line:#243b58;--navy:#eef2f8;--gold:#e6c75f;--gold2:#d4af37;--chip:#1a2f4b}}
@@ -131,7 +134,7 @@ code.fp{word-break:break-all;font-size:.8rem}
 </div>
 </main>
 <footer><div class="wrap"><span>© 2026 KK-EDU - Học liệu bổ trợ, mô hình thí điểm. Cập nhật 2026-10-19. Tác giả : Nguyễn Duy Điển</span>
-<nav aria-label="Liên kết khác"><a href="/hoc-tieng-trung/">Học tiếng Trung cho người Việt</a><a href="/huong-dan/">Hướng dẫn</a><a href="/hoi-dap/">Hỏi đáp</a><a href="/verify/">Xác minh chứng chỉ</a><a href="/#about">Giới thiệu</a></nav></div></footer>
+<nav aria-label="Liên kết khác"><a href="/hoc-tieng-trung/">Học tiếng Trung cho người Việt</a><a href="/huong-dan/">Hướng dẫn</a><a href="/hoi-dap/">Hỏi đáp</a><a href="/tai-app/">Tải ứng dụng</a><a href="/verify/">Xác minh chứng chỉ</a><a href="/#about">Giới thiệu</a></nav></div></footer>
 <script>
 fetch("/api/app/latest").then(r=>r.ok?r.json():null).then(d=>{if(!d||!d.android)return;const a=d.android,mb=(a.size/1048576).toFixed(0),dt=a.published?new Date(a.published).toLocaleDateString("vi-VN"):"";document.getElementById("dlMeta").textContent="Phiên bản "+a.version+" · Android 7.0 trở lên · "+mb+" MB"+(dt?" · cập nhật "+dt:"");document.getElementById("dlBtn").textContent="Tải cho Android (APK) - "+a.version;}).catch(()=>{});
 </script>
