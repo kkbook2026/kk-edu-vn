@@ -84,9 +84,25 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap}
 @media(max-width:900px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.feats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.who,.feats{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{padding:28px 0 36px}.btn{flex:1 1 100%;justify-content:center}.top nav{margin-left:0;width:100%}}
 </style>
+<style id="kkBrand">
+.top{background:color-mix(in srgb,var(--card,#fff) 94%,transparent)!important;color:var(--ink,#14213d)!important;border-bottom:1px solid var(--line,#d8e0ea)!important;position:sticky;top:0;z-index:30;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.top nav a{color:var(--mute,#4f5d73)!important}
+.top nav a:hover,.top nav a[aria-current]{background:var(--chip,#e9eff8)!important;color:var(--navy,#0f2a4a)!important}
+.brand{display:flex!important;flex:none;align-items:center;gap:10px;text-decoration:none!important;color:var(--navy,#0f2a4a)!important;font-family:inherit!important;font-size:inherit!important;letter-spacing:0!important}
+.brand .logo{width:46px;height:46px;flex:none;filter:drop-shadow(0 2px 6px rgba(15,42,74,.25))}
+.brand .brandtx{display:grid;grid-template-columns:max-content;align-content:center}
+.brand b{font-family:"Playfair Display",Georgia,serif;font-size:1.75rem;line-height:1;letter-spacing:.02em;font-weight:800;display:block;white-space:nowrap;color:var(--navy,#0f2a4a)}
+.brand .tagline{display:block;width:0;min-width:100%;height:auto;margin-top:4px;fill:var(--gold2,#a9871f);font-family:"Be Vietnam Pro",system-ui,sans-serif;font-weight:700}
+header.kkb{position:fixed;top:0;left:0;right:0;z-index:30;background:#fff;border-bottom:1px solid #d8e0ea;padding:10px 16px;margin:0;text-align:left}
+body:has(> header.kkb){padding-top:84px!important}
+header.kkb .brand,header.kkb .brand:hover{background:none!important;border:0!important;padding:0!important;border-radius:0!important;box-shadow:none!important;min-height:0!important;width:auto!important}
+header.kkb .brand b{color:#0f2a4a!important}
+header.kkb .brand{max-width:1080px;margin:0 auto}
+@media (max-width:560px){.brand .logo{width:40px;height:40px}.brand b{font-size:1.45rem}}
+</style>
 </head>
 <body>
-<header class="top"><div class="wrap"><a class="brand" href="/">KK-EDU</a>
+<header class="top"><div class="wrap"><a class="brand" href="/" aria-label="Về trang chủ KK-EDU"><svg class="logo" viewBox="0 0 48 48" role="img" aria-label="Logo KK-EDU"><defs><linearGradient id="kkSg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6d93bf"/><stop offset="1" stop-color="#2d5583"/></linearGradient><linearGradient id="kkGg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0cf63"/><stop offset="1" stop-color="#c79a26"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="11" fill="#0f2a4a"/><path d="M24 15.2 C20.4 11.2 15.4 10.4 11.6 12.3 C13.7 7.3 20.2 6 24 9.5 C27.8 6 34.3 7.3 36.4 12.3 C32.6 10.4 27.6 11.2 24 15.2 Z" fill="#faf6ec"/><path d="M24 9.5 L24 15.2" stroke="#d4af37" stroke-width="1.1" stroke-linecap="round"/><path d="M15.6 11.3 C18.4 10.3 21.4 10.9 24 12.9" stroke="#d4af37" stroke-width=".7" fill="none" opacity=".85"/><path d="M32.4 11.3 C29.6 10.3 26.6 10.9 24 12.9" stroke="#d4af37" stroke-width=".7" fill="none" opacity=".85"/><path transform="translate(15 -2.2)" d="M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z" fill="url(#kkSg)"/><path transform="translate(10.4 0)" d="M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z" fill="url(#kkGg)" stroke="#0f2a4a" stroke-width="1.2" stroke-linejoin="round" paint-order="stroke"/></svg><span class="brandtx"><b>KK-EDU</b><svg class="tagline" viewBox="0 0 200 15" aria-label="Giáo dục số - Thử nghiệm" role="img"><text x="0" y="12.6" textLength="200" lengthAdjust="spacingAndGlyphs" font-size="13.5">GIÁO DỤC SỐ - THỬ NGHIỆM</text></svg></span></a>
 <nav aria-label="Liên kết chính"><a href="/">Trang chủ</a><a href="/luyen-thi-ielts/" aria-current="page">Luyện thi IELTS</a><a href="/hoc-tieng-trung/">Học tiếng Trung</a><a href="/huong-dan/">Hướng dẫn</a><a href="/hoi-dap/">Hỏi đáp</a></nav></div></header>
 <main>
 <div class="hero"><div class="wrap">
