@@ -167,6 +167,10 @@ nav.main button.on{background:var(--navy);color:#fff;font-weight:600}
 .hero{padding-block:52px 48px;display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
 .hero h1{font-size:clamp(2rem,4.2vw,3.1rem);color:#fff;margin-bottom:.45em;font-weight:700;line-height:1.16;letter-spacing:-.01em;text-wrap:balance}
 .hero .gold{color:var(--gold);background:linear-gradient(92deg,#ffe9a3 0%,#f3c84a 45%,#e0a21c 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none}
+.hero h1.hero-title{font-size:clamp(2.3rem,5vw,3.7rem);font-weight:800;line-height:1.08;letter-spacing:-.015em;margin-bottom:.25em}
+.hero h1.hero-title .gold{white-space:nowrap}
+.hero .gold.glow{filter:drop-shadow(0 0 14px rgba(243,200,74,.45))}
+.hero .hero-sub{color:#e8eefb;font-size:clamp(1.05rem,1.8vw,1.3rem);font-weight:600;margin:0 0 .8em;opacity:.92}
 :root[data-theme="dark"] .hero .gold{color:var(--gold);background:linear-gradient(92deg,#ffe9a3 0%,#f3c84a 45%,#e0a21c 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none}
 .hero p.lead{color:#cfdbea;font-size:1.08rem;max-width:32em;margin:0 0 20px}
 .hero .kicker{display:inline-flex;align-items:center;gap:8px;font-size:.84rem;font-weight:600;color:var(--gold);margin-bottom:14px}
@@ -1761,7 +1765,8 @@ function viewHome(v){
   <section class="board"><div class="wrap hero">
     <div>
       <div class="kicker">Mô hình giáo dục số thử nghiệm · phiên bản 2.0</div>
-      <h1>Học bằng video tương tác, từ <span class="gold">nhà trẻ</span> đến <span class="gold">tiến sĩ</span></h1>
+      <h1 class="hero-title">Hệ sinh thái<br><span class="gold">giáo dục số</span> <span class="gold glow">trọn đời</span></h1>
+      <p class="hero-sub">Học bằng video tương tác, từ nhà trẻ đến tiến sĩ</p>
       <p class="lead">${nBooks} đầu sách bám sát Chương trình GDPT 2018 và các chương trình đào tạo hiện hành. Video dừng đúng giây để hỏi, sơ đồ chuẩn hiện đúng lúc, kiểm tra thành thạo cuối bài và trợ giảng AI theo từng bài.</p>
       <div class="rowline">
         <button class="btn pri" id="hExplore">Vào học Video Online</button>
