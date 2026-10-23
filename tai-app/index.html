@@ -134,7 +134,7 @@ code.fp{word-break:break-all;font-size:.8rem}
 </div>
 </main>
 <footer><div class="wrap"><span>© 2026 KK-EDU - Học liệu bổ trợ, mô hình thí điểm. Cập nhật 2026-10-19. Tác giả : Nguyễn Duy Điển</span>
-<nav aria-label="Liên kết khác"><a href="/hoc-tieng-trung/">Học tiếng Trung cho người Việt</a><a href="/huong-dan/">Hướng dẫn</a><a href="/hoi-dap/">Hỏi đáp</a><a href="/tai-app/">Tải ứng dụng</a><a href="/verify/">Xác minh chứng chỉ</a><a href="/#about">Giới thiệu</a></nav></div></footer>
+<nav aria-label="Liên kết khác"><a href="/hoc-tieng-trung/">Học tiếng Trung cho người Việt</a><a href="/huong-dan/">Hướng dẫn</a><a href="/hoi-dap/">Hỏi đáp</a><a href="/thi-thu/">Thi thử</a><a href="/tai-app/">Tải ứng dụng</a><a href="/verify/">Xác minh chứng chỉ</a><a href="/#about">Giới thiệu</a></nav></div></footer>
 <script>
 fetch("/api/app/latest").then(r=>r.ok?r.json():null).then(d=>{if(!d||!d.android)return;const a=d.android,mb=(a.size/1048576).toFixed(0),dt=a.published?new Date(a.published).toLocaleDateString("vi-VN"):"";document.getElementById("dlMeta").textContent="Phiên bản "+a.version+" · Android 7.0 trở lên · "+mb+" MB"+(dt?" · cập nhật "+dt:"");document.getElementById("dlBtn").textContent="Tải cho Android (APK) - "+a.version;}).catch(()=>{});
 </script>

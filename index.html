@@ -173,6 +173,10 @@ nav.main button.on{background:var(--navy);color:#fff;font-weight:600}
 .hero .hero-sub{color:#e8eefb;font-size:clamp(1.05rem,1.8vw,1.3rem);font-weight:600;margin:0 0 .8em;opacity:.92}
 :root[data-theme="dark"] .hero .gold{color:var(--gold);background:linear-gradient(92deg,#ffe9a3 0%,#f3c84a 45%,#e0a21c 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none}
 .hero p.lead{color:#cfdbea;font-size:1.08rem;max-width:32em;margin:0 0 20px}
+.hero .examcta{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 16px;padding:9px 16px;border-radius:999px;background:rgba(212,175,55,.16);border:1px solid rgba(255,233,163,.55);color:#fff;text-decoration:none;font-size:.92rem;font-weight:600;line-height:1.35}
+.hero .examcta b{background:#d4af37;color:#14213d;border-radius:999px;padding:2px 10px;font-size:.78rem;letter-spacing:.3px}
+.hero .examcta span{color:#ffe9a3;font-weight:800}
+.hero .examcta:hover{background:rgba(212,175,55,.28)}
 .hero .kicker{display:inline-flex;align-items:center;gap:8px;font-size:.84rem;font-weight:600;color:var(--gold);margin-bottom:14px}
 .hero .kicker i{display:inline-block;width:26px;height:2px;background:var(--gold);border-radius:2px}
 .hero .btn.pri{background:var(--gold);color:#14213d}
@@ -610,7 +614,7 @@ nav.main{justify-content:safe flex-end}
 <main id="view" class="wrap" aria-live="polite"></main>
 
 <footer class="ft"><div class="wrap in">
-  <span>© 2026 KK-EDU - Học liệu bổ trợ, mô hình thí điểm. Không thay thế sách giáo khoa được phê duyệt. <a href="#about" style="color:inherit">Giới thiệu & pháp lý</a> · <a href="/hoi-dap/" style="color:inherit">Hỏi đáp</a> · <a href="/luyen-thi-ielts/" style="color:inherit">Luyện thi IELTS</a> · <a href="/hoc-tieng-trung/" style="color:inherit">Học tiếng Trung</a> · <a href="/huong-dan/" style="color:inherit">Hướng dẫn</a> · <a href="/tai-app/" style="color:inherit">Tải ứng dụng</a> · <a href="/chinh-sach-rieng-tu/" style="color:inherit">Quyền riêng tư</a><!-- KK-V57 --></span>
+  <span>© 2026 KK-EDU - Học liệu bổ trợ, mô hình thí điểm. Không thay thế sách giáo khoa được phê duyệt. <a href="#about" style="color:inherit">Giới thiệu & pháp lý</a> · <a href="/hoi-dap/" style="color:inherit">Hỏi đáp</a> · <a href="/luyen-thi-ielts/" style="color:inherit">Luyện thi IELTS</a> · <a href="/hoc-tieng-trung/" style="color:inherit">Học tiếng Trung</a> · <a href="/huong-dan/" style="color:inherit">Hướng dẫn</a> · <a href="/thi-thu/" style="color:inherit">Thi thử</a> · <a href="/tai-app/" style="color:inherit">Tải ứng dụng</a> · <a href="/chinh-sach-rieng-tu/" style="color:inherit">Quyền riêng tư</a><!-- KK-V57 --></span>
   <span id="ftContact"></span>
   <span>Tác giả : Nguyễn Duy Điển</span>
 </div><div class="wrap ftv" id="ftVisits" aria-live="polite"></div></footer>
@@ -1764,6 +1768,7 @@ function viewHome(v){
   ${S.settings.announcement?`<div class="alertbox" style="margin-top:14px">${esc(S.settings.announcement)}</div>`:""}
   <section class="board"><div class="wrap hero">
     <div>
+      <a class="examcta" id="hExam" href="/thi-thu/"><b>Mới</b> Phòng thi thử miễn phí: gõ tên và tuổi là thi, bấm giờ, chấm ngay, chỉ rõ chỗ mạnh, chỗ yếu<span aria-hidden="true">→</span></a>
       <div class="kicker">Mô hình giáo dục số thử nghiệm · phiên bản 2.0</div>
       <h1 class="hero-title">Hệ sinh thái<br><span class="gold">giáo dục số</span> <span class="gold glow">trọn đời</span></h1>
       <p class="hero-sub">Học bằng Video tương tác và giáo trình số</p>
@@ -5102,6 +5107,7 @@ function viewAdmin(v){
     <button data-t="kq" class="${adminTab==="kq"?"on":""}">Thi & Khảo sát</button>
     <button data-t="cl" class="${adminTab==="cl"?"on":""}">Chất lượng dạy-học</button>
     <button data-t="tl" class="${adminTab==="tl"?"on":""}">Trợ lý</button>
+    <button data-t="tt" class="${adminTab==="tt"?"on":""}">Thi thử 500</button>
     <button data-t="hd" class="${adminTab==="hd"?"on":""}">Hướng dẫn</button>
   </div>
   <div id="adminBody"></div>`;
@@ -5115,6 +5121,7 @@ function viewAdmin(v){
   else if(adminTab==="kq") adminResults(body);
   else if(adminTab==="cl") adminQuality(body);
   else if(adminTab==="tl") adminAssist(body);
+  else if(adminTab==="tt") adminExam(body);
   else adminHelp(body);
 }
 function adminSettings(el){
@@ -5557,6 +5564,43 @@ async function adminQuality(el){
 
 /* KK-V56: câu hỏi Trợ lý chưa trả lời được (ẩn danh), gộp theo tuần */
 let AA={weeks:1, data:null, err:"", busy:false, hideDone:true};
+/* ---------- Quản trị: Phòng thi thử (tính năng mồi, mục tiêu 500 bạn đầu tiên) ---------- */
+const AX={data:null,busy:false,err:""};
+async function adminExam(el, reload){
+  const LV={MN:"Mầm non",TH:"Tiểu học",CS:"THCS",PT:"THPT",DH:"Đại học",THS:"Thạc sĩ",TS:"Tiến sĩ",NC:"Nâng cao"};
+  const csv=(rows,name)=>{const t="﻿"+rows.map(r=>r.map(c=>'"'+String(c==null?"":c).replace(/"/g,'""')+'"').join(",")).join("\r\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv;charset=utf-8"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);};
+  const draw=()=>{
+    const d=AX.data, st=d?d.stats||{}:{}, at=d?d.attempts:[], fb=d?d.feedback:[];
+    const avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length*10)/10:0;
+    const nps=st.npsN?Math.round(((st.npsPro||0)-(st.npsDet||0))/st.npsN*100):null;
+    const by=(arr,k)=>{const m={};arr.forEach(x=>{const v=(typeof k==="function"?k(x):x[k])||"(trực tiếp)";m[v]=(m[v]||0)+1;});return Object.entries(m).sort((a,b)=>b[1]-a[1]);};
+    const star=k=>{const v=fb.map(x=>x[k]).filter(x=>x>0);return v.length?avg(v)+"/5 ("+v.length+")":"-";};
+    const goal=d?d.goal:500, ppl=st.people||0;
+    el.innerHTML=`<div class="card"><h3 style="margin-top:0">Phòng thi thử - đợt trải nghiệm 500 bạn đầu tiên</h3>
+      <p class="note">Trang công khai: <a href="/thi-thu/" target="_blank" rel="noopener">www.kk-edu.com/thi-thu</a> (không cần đăng ký). Máy chủ không lưu họ tên, không lưu IP. Link theo kênh: thêm <code>?ref=ten-kenh</code> (ví dụ <code>?ref=zalo-lop7a</code>, <code>?ref=fb-kktech</code>) để đo kênh nào hiệu quả.</p>
+      <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"><button class="btn sm" id="axReload">Tải lại</button><button class="btn sm" id="axCsvA" ${at.length?"":"disabled"}>CSV lượt thi</button><button class="btn sm" id="axCsvF" ${fb.length?"":"disabled"}>CSV góp ý</button></div>
+      ${AX.err?`<div class="alertbox">${esc(AX.err)}</div>`:""}${AX.busy?`<p class="note">Đang tải...</p>`:""}
+      ${d?`<div style="height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin:6px 0"><div style="height:100%;width:${Math.min(100,ppl/goal*100)}%;background:var(--gold)"></div></div>
+      <div class="abstats" style="margin:8px 0 14px"><div><b>${ppl}/${goal}</b><span>người tham gia (ẩn danh)</span></div><div><b>${st.attempts||0}</b><span>lượt thi</span></div><div><b>${st.feedback||0}</b><span>lượt góp ý</span></div><div><b>${nps==null?"-":nps}</b><span>NPS (${st.npsN||0} trả lời)</span></div><div><b>${at.length?String(avg(at.map(x=>x.score))).replace(".",","):"-"}</b><span>điểm TB (1000 lượt gần nhất)</span></div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+        <div><b>Theo cấp học</b>${by(at,x=>LV[(x.book||"").split("-")[0]]||x.level).map(([k,v])=>`<div>${esc(k)}: <b>${v}</b></div>`).join("")||"<div>-</div>"}</div>
+        <div><b>Theo kênh (ref)</b>${by(at,"ref").slice(0,12).map(([k,v])=>`<div>${esc(k)}: <b>${v}</b></div>`).join("")||"<div>-</div>"}</div>
+        <div><b>Môn thi nhiều nhất</b>${by(at,x=>x.subject+" - "+x.grade).slice(0,10).map(([k,v])=>`<div>${esc(k)}: <b>${v}</b></div>`).join("")||"<div>-</div>"}</div>
+        <div><b>Đánh giá trung bình</b><div>Đề sát bài học: <b>${star("de")}</b></div><div>Phân tích có ích: <b>${star("phantich")}</b></div><div>Giao diện: <b>${star("giaodien")}</b></div><div>Thời gian hợp lý: <b>${star("thoigian")}</b></div></div>
+      </div>
+      <h4>Góp ý mới nhất</h4>${fb.filter(x=>x.txt).length?`<div class="tblx"><table class="abtbl"><tr><th>Lúc</th><th>NPS</th><th>Sao</th><th>Ý kiến</th><th>Liên hệ</th></tr>${fb.filter(x=>x.txt).slice(0,100).map(x=>`<tr><td>${esc((x.at||"").slice(0,16).replace("T"," "))}</td><td>${x.nps>=0?x.nps:"-"}</td><td>${[x.de,x.phantich,x.giaodien,x.thoigian].map(v=>v||"-").join("/")}</td><td>${esc(x.txt)}</td><td>${esc(x.contact||"")}</td></tr>`).join("")}</table></div>`:`<p class="note">Chưa có góp ý bằng chữ.</p>`}
+      <h4>Lượt thi gần nhất</h4>${at.length?`<div class="tblx"><table class="abtbl"><tr><th>Lúc</th><th>Tuổi</th><th>Lớp xếp</th><th>Sách</th><th>Phạm vi</th><th>Điểm</th><th>Thời gian</th><th>Trống/Vội</th><th>Kênh</th></tr>${at.slice(0,60).map(x=>`<tr><td>${esc((x.at||"").slice(0,16).replace("T"," "))}</td><td>${x.age||"-"}</td><td>${esc(x.place||"")}</td><td>${esc(x.book)}</td><td>${esc(x.scope)}</td><td><b>${String(x.score).replace(".",",")}</b> (${x.ok}/${x.n})</td><td>${Math.round((x.used||0)/60)}/${Math.round((x.dur||0)/60)}′${x.over?" ⚠":""}</td><td>${x.blank||0}/${x.rushed||0}</td><td>${esc(x.ref||"")}</td></tr>`).join("")}</table></div>`:`<p class="note">Chưa có lượt thi.</p>`}`:""}
+    </div>`;
+    const rl=$("#axReload"); if(rl) rl.onclick=()=>adminExam(el,true);
+    const ca=$("#axCsvA"); if(ca) ca.onclick=()=>csv([["luc","tuoi","lop_xep","sach","mon","lop","pham_vi","so_cau","dung","diem","giay_dung","giay_cho_phep","qua_gio","bo_trong","lam_voi","NB%","TH%","VD%","VDC%","chuong_yeu","kenh","ma_an_danh"]].concat(at.map(x=>[x.at,x.age,x.place,x.book,x.subject,x.grade,x.scope,x.n,x.ok,x.score,x.used,x.dur,x.over?1:0,x.blank,x.rushed,(x.byLevel||{}).L1,(x.byLevel||{}).L2,(x.byLevel||{}).L3,(x.byLevel||{}).L4,x.weak,x.ref,x.pid]))),"thi-thu-luot-thi.csv");
+    const cf=$("#axCsvF"); if(cf) cf.onclick=()=>csv([["luc","ma_luot_thi","de_sat","phan_tich","giao_dien","thoi_gian","nps","muon_them","y_kien","lien_he"]].concat(fb.map(x=>[x.at,x.aid,x.de,x.phantich,x.giaodien,x.thoigian,x.nps,x.want,x.txt,x.contact]))),"thi-thu-gop-y.csv");
+  };
+  if(!AX.data||reload){ AX.busy=true; AX.err=""; draw();
+    try{ const r=await adminAssistFetch("/admin/exam"); const j=await r.json().catch(()=>({}));
+      if(!r.ok) throw new Error(j.error==="admin-only"?"Chỉ tài khoản quản trị xem được.":j.error==="not-configured"?"Máy chủ chưa cấu hình tài khoản dịch vụ.":"Lỗi máy chủ ("+r.status+")"); AX.data=j;
+    }catch(e){ AX.err="Chưa tải được: "+e.message; } AX.busy=false; }
+  draw();
+}
 async function adminAssistFetch(path, opt){
   try{ await window.KK_API_READY; }catch(e){}
   const u=S.fb&&S.fb.auth&&S.fb.auth().currentUser; const tok=u?await u.getIdToken():"";
