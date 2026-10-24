@@ -647,10 +647,11 @@ linear-gradient(155deg,#132f5a 0%,#10264a 48%,#0a1a33 100%)}
 .hero h1,.hero h1.hero-title{font-family:var(--font-d);font-weight:700;letter-spacing:-.02em}
 .hero .kicker{font-weight:600;letter-spacing:.01em;color:var(--gold-hi)}
 .hero .lead{font-size:1.05rem;color:#d6e0ef;max-width:58ch}
-.statrow{gap:10px;border-top:0;padding-top:6px}
-.stat{border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.05);padding:10px 16px;margin:0;backdrop-filter:blur(4px)}
+.statrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;border-top:0;padding-top:6px}
+.stat{border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.05);padding:10px 12px;margin:0;min-width:0;backdrop-filter:blur(4px)}
 .stat:last-child{border-right:1px solid rgba(255,255,255,.14)}
-.stat b{font-family:var(--font-d);font-weight:700;color:#fff;font-size:1.5rem}
+.stat b{font-family:var(--font-d);font-weight:700;color:#fff;font-size:clamp(1.15rem,1.9vw,1.45rem)}
+.stat span{display:block;line-height:1.35}
 .stat span{color:#b9c8dc;font-size:var(--t-xs)}
 @media(max-width:640px){.statrow{grid-template-columns:1fr 1fr;gap:8px}.stat:nth-child(odd){border-right:1px solid rgba(255,255,255,.14)}}
 /* Nút */
