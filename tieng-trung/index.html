@@ -14,7 +14,7 @@
 <link rel="canonical" href="https://www.kk-edu.com/tieng-trung/">
 <meta name="theme-color" content="#0d2f2a">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://static.cloudflareinsights.com; worker-src 'self' blob: https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https:; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
 <script>(function(){try{if(/(^|\.)kk-edu\.(com|vn)$/.test(location.hostname)&&window.top!==window.self){window.top.location=window.self.location.href;}}catch(e){document.documentElement.style.display="none";}})();</script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KK-EDU">
@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
 :root{--navy:#0f2a4a;--teal:#0E8F8A;--gold:#d4af37;--gold2:#a9871f;--bg:#f5f7fb;--card:#ffffff;--ink:#14213d;--mute:#5B6B7F;--line:#d8e0ea;--light:#EAF5F4;--bad:#B3261E;--good:#1B7F3B;--warn:#8a5a00;--warnbg:#FFF4D6;--font-d:"Playfair Display","Noto Serif",Georgia,serif;--font:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0b1626;--card:#132238;--ink:#e6edf5;--mute:#9FB0C3;--line:#2b3a4d;--light:#13303a;--navy:#dbe7f5;--warnbg:#3a2f12}}
@@ -728,7 +728,7 @@ const KK = { fb:null, user:null, profile:null, db:null, cloudLoaded:false, syncT
 const KK_FIREBASE = { apiKey:"AIzaSyAL1bb3SQAabsWNB4Xyx-b_TzQdTvbyA8c", authDomain:"kk-edu.firebaseapp.com", projectId:"kk-edu", storageBucket:"kk-edu.firebasestorage.app", messagingSenderId:"916682871542", appId:"1:916682871542:web:974c6a2d8c49e3687352d7" };
 const ZH_PATH = "/tieng-trung/";
 const kkLoginUrl = () => "/?login=1&next=" + encodeURIComponent(ZH_PATH + (location.hash||""));
-function kkLoadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; s.async=true; s.onload=res; s.onerror=()=>rej(new Error("script "+src)); document.head.appendChild(s); }); }
+function kkLoadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; const _sri={"https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js":"sha384-ZaR6mWzmJtrRibZ1Vm7SoHFr8OXjyAuGAXalGDKqbxFT18oi/z+oZLIRFkpeNor1","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js":"sha384-I1LYojsZ5RM1cOda44Z2h42Qa6YfsQ1XkXxREnhp4ueYBR/4d1pG1K+NZM537Vsj","https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js":"sha384-Ke0FJhH7LyRqDxZ0wt+/OXV38yfQVu7g9VPEEGjYmB4RVOY/ta04uecRhsMwT7V3","https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js":"sha384-b5Ya4Bq3qCyz39m2ISh+4DxjAIljdeFwK/BsXLuj9gugaNwAcj/ia15fxNZL9Nlx","https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js":"sha384-rNlaE5fs9dGIjmxWDALQh/RBAaGRYT5ChrzHo6tRfgrZ36iRFAiquP5g41Jsv+0j","https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js":"sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e","https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js":"sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1","https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js":"sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU"}[src]; if(_sri){ s.integrity=_sri; s.crossOrigin="anonymous"; s.referrerPolicy="no-referrer"; } s.async=true; s.onload=res; s.onerror=()=>rej(new Error("script "+src)); document.head.appendChild(s); }); }
 async function kkApiBase(){ if(KK.api) return KK.api; KK.api = (await (window.KK_API_READY||Promise.resolve(null))) || window.KK_API || "/api"; return KK.api; }
 async function kkIdToken(){ try{ return KK.user ? await KK.user.getIdToken() : null; }catch(e){ return null; } }
 

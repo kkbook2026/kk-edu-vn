@@ -14,7 +14,7 @@
 <link rel="canonical" href="https://www.kk-edu.com/">
 <meta name="theme-color" content="#0d2f2a">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://static.cloudflareinsights.com; worker-src 'self' blob: https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https:; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
 <script>/* chống clickjacking: không cho trang khác nhúng kk-edu.com trong iframe */
 (function(){try{if(/(^|\.)kk-edu\.(com|vn)$/.test(location.hostname)&&window.top!==window.self){window.top.location=window.self.location.href;}}catch(e){document.documentElement.style.display="none";}})();</script>
 <meta name="format-detection" content="telephone=no">
@@ -768,7 +768,7 @@ footer.ft a{color:var(--lapis);text-decoration-color:color-mix(in srgb,var(--lap
 <div id="toastHost"></div>
 <div id="consentHost"></div>
 
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 "use strict";
 /* ============================================================
@@ -855,7 +855,7 @@ window.KK_API_READY=(async()=>{
   }
   return null;
 })();
-function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; s.async=true; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
+function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; const _sri={"https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js":"sha384-ZaR6mWzmJtrRibZ1Vm7SoHFr8OXjyAuGAXalGDKqbxFT18oi/z+oZLIRFkpeNor1","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js":"sha384-I1LYojsZ5RM1cOda44Z2h42Qa6YfsQ1XkXxREnhp4ueYBR/4d1pG1K+NZM537Vsj","https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js":"sha384-Ke0FJhH7LyRqDxZ0wt+/OXV38yfQVu7g9VPEEGjYmB4RVOY/ta04uecRhsMwT7V3","https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js":"sha384-b5Ya4Bq3qCyz39m2ISh+4DxjAIljdeFwK/BsXLuj9gugaNwAcj/ia15fxNZL9Nlx","https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js":"sha384-rNlaE5fs9dGIjmxWDALQh/RBAaGRYT5ChrzHo6tRfgrZ36iRFAiquP5g41Jsv+0j","https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js":"sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e","https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js":"sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1","https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js":"sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU"}[src]; if(_sri){ s.integrity=_sri; s.crossOrigin="anonymous"; s.referrerPolicy="no-referrer"; } s.async=true; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
 function applyFbUser(u){
   S.fbUser = u||null;
   S.uid = u ? u.uid : null;
@@ -5222,12 +5222,12 @@ function openUnlockCode(code){
     const v=$("#ulIn").value.trim().toUpperCase(); if(!v) return;
     const c=S.content[code]||{};
     const h=await sha256(v);
-    if(!(c.codeHash && h===c.codeHash)){ $("#ulFb").innerHTML=`<div class="feedback bad">Mã không đúng. Kiểm tra lại hoặc liên hệ quản trị viên.</div>`; return; }
+    if(S.mode!=="firebase" && !(c.codeHash && h===c.codeHash)){ $("#ulFb").innerHTML=`<div class="feedback bad">Mã không đúng. Kiểm tra lại hoặc liên hệ quản trị viên.</div>`; return; }
     if(S.mode==="firebase"){
       // Máy chủ (Firestore rules) tự băm lại mã và chỉ cấp quyền đọc gói khi đúng - không thể giả mạo từ trình duyệt
       if(!S.uid){ closeModal(); toast("Hãy đăng nhập trước, rồi nhập lại mã."); openLogin(); return; }
       try{ await S.caps.db.doc("data/users/"+S.uid+"/unlock-"+code).set({book:code, code:v, at:new Date().toISOString()}); }
-      catch(e){ $("#ulFb").innerHTML=`<div class="feedback bad">Máy chủ chưa xác nhận mã (${esc(e&&e.code||"lỗi mạng")}). Thử lại sau.</div>`; return; }
+      catch(e){ $("#ulFb").innerHTML=(e&&e.code==="permission-denied")?`<div class="feedback bad">Mã không đúng. Kiểm tra lại hoặc liên hệ quản trị viên.</div>`:`<div class="feedback bad">Máy chủ chưa xác nhận mã (${esc(e&&e.code||"lỗi mạng")}). Thử lại sau.</div>`; return; }
       S.enroll[S.uid+"-"+code]=true; delete S.goiCache[code];
     } else {
       S.enroll["local-"+code]=true;
@@ -5362,7 +5362,7 @@ function editContent(code, back){
     <div class="fld"><label>Miễn phí?</label><select id="eFree"><option value="">Theo giá</option><option value="1" ${c.free?"selected":""}>Miễn phí</option></select></div>
   </div>
   <div class="fld"><label>Mã mở khóa thủ công (cấp cho người mua chuyển khoản ngoài; sẽ lưu dạng băm SHA-256)</label><input id="eCode" placeholder="VD: KKEDU2026" value=""></div>
-  ${c.codeHash?'<div class="note">Đã có mã mở khóa (nhập mã mới để thay, bỏ trống để giữ nguyên).</div>':""}
+  ${(c.codeHash||c.hasCode)?'<div class="note">Đã có mã mở khóa (nhập mã mới để thay, bỏ trống để giữ nguyên).</div>':""}
   <div class="mrow"><button class="btn pri" id="eSave">Lưu</button><button class="btn ghost" id="eNo">Đóng</button></div>`);
   $("#eNo").onclick=closeModal;
   $("#eSave").onclick=async()=>{
@@ -5370,9 +5370,9 @@ function editContent(code, back){
     d.sachUrl=$("#eSach").value.trim(); d.scriptUrl=$("#eScript").value.trim(); d.videoUrl=$("#eVideo").value.trim();
     const pv=$("#ePrice").value.trim(); if(pv==="") delete d.price; else d.price=Number(pv)||0;
     d.free=!!$("#eFree").value;
-    const nc=$("#eCode").value.trim(); if(nc) d.codeHash=await sha256(nc.toUpperCase());
+    const nc=$("#eCode").value.trim(); const ch=nc?await sha256(nc.toUpperCase()):(d.codeHash||""); delete d.codeHash; if(ch) d.hasCode=true;
     S.content[code]=d;
-    if(S.caps.db){ try{ await S.caps.db.doc("content/"+code).set(d); toast("Đã lưu"); }catch(e){ toast("Lỗi lưu: "+(e&&e.code||"")); } }
+    if(S.caps.db){ try{ if(ch) await S.caps.db.doc("codehash/"+code).set({h:ch, at:new Date().toISOString()}); await S.caps.db.doc("content/"+code).set(d); toast("Đã lưu"); }catch(e){ toast("Lỗi lưu: "+(e&&e.code||"")); } }
     closeModal(); adminContent(back);
   };
 }
