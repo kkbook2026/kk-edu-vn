@@ -234,6 +234,7 @@ i.en{font-style:italic;color:var(--navy)}
 <nav class="steps" id="steps" aria-label="Các bước"></nav>
 <main id="main"><div class="card"><h1>Đang tải dữ liệu IELTS…</h1><p class="mute">Ngân hàng đề, tài liệu và kịch bản video được nạp từ máy chủ KK-EDU.</p></div></main>
 <footer>Tác giả: Nguyễn Duy Điển · <a href="/">www.kk-edu.com</a> · <a href="/luyen-thi-ielts/">Giới thiệu chương trình</a> · <a href="/hoi-dap/">Hỏi đáp</a> · Học liệu bổ trợ, mô hình thí điểm. IELTS là nhãn hiệu của British Council, IDP và Cambridge; hệ thống này không liên kết với các tổ chức đó. AI gợi ý, con người quyết định.</footer>
+<script src="/kk-doc.js?v=20261025"></script>
 <script>
 window.KK_API="/api";
 const KK_API_ALT="https://kk-edu-api.nguyenduydien75.workers.dev/api";
@@ -393,7 +394,7 @@ function videoPlayer(v){
   <div class="seg"><h3>${seg.n}. ${seg.name} <span class="mute">(${esc(seg.time)})</span></h3>${seg.visual.map(x=>`<p class="vis">Hình: ${rich(x)}</p>`).join('')}${seg.narration.map(x=>`<p>${rich(x)}</p>`).join('')}${extra}</div>
   <div class="row noprint"><button class="btn sec" onclick="speak(${JSON.stringify(seg.narration.join(' ')).replace(/"/g,'&quot;')})">Nghe lời thoại (giọng máy)</button><button class="btn sec" onclick="speechSynthesis.cancel()">Dừng</button>${!last?`<button class="btn" ${blocked?'disabled':''} onclick="vstate.i++;speechSynthesis.cancel();render();window.scrollTo(0,0)">${blocked?'Trả lời checkpoint để tiếp tục':'Phân đoạn tiếp theo'}</button>`:''}</div></div>${quizHTML}`;
 }
-function speak(t){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='vi-VN'; u.rate=1; speechSynthesis.speak(u);}catch(e){ alert('Trình duyệt không hỗ trợ đọc văn bản.'); } }
+function speak(t){ if(typeof kkSay==='function'){ try{ kkSay([t],{ta:true,rate:1}); return; }catch(e){} } try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='vi-VN'; u.rate=1; speechSynthesis.speak(u);}catch(e){ alert('Trình duyệt không hỗ trợ đọc văn bản.'); } }
 function speakEN(t, cb){ try{ const u=new SpeechSynthesisUtterance(t); u.lang='en-GB'; u.rate=0.95; if(cb) u.onend=cb; speechSynthesis.speak(u); return u; }catch(e){ if(cb) cb(); } }
 
 /* ---------- 4. Mock test ---------- */
