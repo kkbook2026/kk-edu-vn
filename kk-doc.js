@@ -196,7 +196,13 @@ function viEnMark(s,isTA,store){
       /* từ mơ hồ ("song", "hay"...) ở mép: theo từ bên ngoài; ở giữa: tiếng Anh */
       const strong=run.some(x=>x.k==="E");
       const FN=/^(to|the|a|an|in|on|at|it|is|am|be|by|me|he|we|so|no|go|do|my|up|us|i)$/i;
-      run.forEach((x,i)=>{ if(x.k!=="?") return;
+      run.forEach((x,i)=>{
+        if(run.length===1&&(x.k==="?"||x.k==="E")){ /* to, no, in kẹp giữa hai từ Việt (nói to theo, đã no rồi, chữ in hoa): đọc tiếng Việt */
+          const ti=toks.indexOf(x), pv=toks[ti-1], nx=toks[ti+1];
+          const pV=isVi(pv)&&/^\s+$/.test(s.slice(pv.b,x.a)), nV=isVi(nx)&&/^\s+$/.test(s.slice(x.b,nx.a));
+          if(/^in$/i.test(x.t)&&nV&&/^(hoa|thường|đậm|nghiêng|ấn|màu|ra)$/i.test(nx.t)){ x.k="V2"; return; }
+          if(/^(to|no|in)$/.test(x.t)&&pV&&nV&&!/^(chữ|từ)$/i.test(pv.t)&&!/^cộng$/i.test(nx.t)){ x.k="V2"; return; } }
+        if(x.k!=="?") return;
         if(strong){
           /* ở mép cụm, sát ngay từ tiếng Việt (song ngữ, Nam đáp): đọc tiếng Việt - trừ hư từ tiếng Anh (used to cộng...) */
           const ti=toks.indexOf(x), prev=toks[ti-1], next=toks[ti+1];
@@ -304,6 +310,12 @@ function viPre(s,isTA){
   s=s.replace(/\^\s*\(?\s*-\s*(\d+)\s*\)?/g," mũ âm $1 ");
   s=s.replace(/½/g," 1/2 ").replace(/¼/g," 1/4 ").replace(/¾/g," 3/4 ").replace(/⅓/g," 1/3 ").replace(/⅔/g," 2/3 ");
   /* chỗ trống */
+  /* số có dấu cách ngăn nhóm nghìn (100 000, 1 700, 2 026) → ghép lại để đọc đúng giá trị */
+  s=s.replace(/(^|[^\d.,])(\d{1,3})((?:[ \u00a0]\d{3})+)(?![\d]|[.,]\d)/g,(m,p,a,b)=>p+a+b.replace(/[ \u00a0]/g,""));
+  /* lớp 5A, lớp 10A2: tên lớp, không phải đơn vị ampe */
+  s=s.replace(/(lớp|Lớp|LỚP)\s+(\d{1,2})([A-Z])(\d{0,2})(?![A-Za-zÀ-ỹ\d])/g,(m,k,n,c,d)=>k+" "+n+" "+(VI_LET[c.toLowerCase()]||c)+(d?" "+d:""));
+  /* chỗ trống điền chữ: “...ế gỗ”, a...? */
+  s=s.replace(/(?:\.{3}|…)(?=[A-Za-zÀ-ỹĐđ])/g," chỗ trống ").replace(/([A-Za-zÀ-ỹĐđ])(?:\.{3}|…)(?=\s*[?!])/g,"$1 chỗ trống");
   s=s.replace(/([=+×÷<>:]|\s-)\s*(?:\.{3,}|…)/g,"$1 chỗ trống, ");
   s=s.replace(/_{2,}/g," chỗ trống ").replace(/\[\s*(?:\.{3}|…)\s*\]/g," chỗ trống ").replace(/\(\s*(?:\.{3}|…)\s*\)/g," ba chấm ");
   s=s.replace(/([A-Za-zÀ-ỹ])\s+(?:\.{3,}|…)(?=\s+[a-zà-ỹđ])/g,"$1 chỗ trống ");
@@ -467,7 +479,7 @@ function viNorm(raw,opt){
   s=s.replace(/\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/g,(m,d,mo,y)=>"ngày "+viNum(d)+" tháng "+viNum(mo)+" năm "+viNum(y));
   VI_TERM_RES.forEach(t=>{ s=s.replace(t.re,(m,pre)=>pre+" "+t.v+" "); });
   /* 3. số La Mã: sau từ khóa, hoặc kiểu copper(II) / dạng nhiều kí tự */
-  s=s.replace(/(thế kỉ|thế kỷ|chương|phần|tập|khóa|khoá|bài|mục|học kì|học kỳ|kì|kỳ|quyển|đại hội|loại|nhóm|cấp|vua|giai đoạn|phiên bản)\s+([IVXLC]{1,6})(?![A-Za-z])/gi,(m,k,r)=>{ const n=viRoman(r); return n?k+" "+viNum(String(n)):m; });
+  s=s.replace(/(thế kỉ|thế kỷ|chương|phần|tập|khóa|khoá|bài|mục|học kì|học kỳ|kì|kỳ|quyển|đại hội|loại|nhóm|cấp|vua|giai đoạn|phiên bản)\s+([IVXLC]{1,6})(?![A-Za-zÀ-ỹ\u0300-\u036f])/gi,(m,k,r)=>{ if(r!==r.toUpperCase()) return m; const n=viRoman(r); return n?k+" "+viNum(String(n)):m; });
   s=s.replace(/\(\s*([IVX]{1,4})\s*\)/g,(m,r)=>{ const n=viRoman(r); return n?" "+viNum(String(n))+" ":m; });
   s=s.replace(/(^|[^A-Za-zÀ-ỹ])([IVXLC]{2,6})(?![A-Za-zÀ-ỹ])/g,(m,pre,r)=>{ const n=viRoman(r); return n?pre+viNum(String(n)):m; });
   /* 4a. nhóm nghìn viết cách: 100 000 → 100000 */
