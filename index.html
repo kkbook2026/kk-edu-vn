@@ -5358,7 +5358,10 @@ async function adminStudents(el, pre){
       if(approve){
         const gref=S.caps.db.doc("grants/"+r.uid);
         const cur=await gref.get(); const data=cur.exists?JSON.parse(JSON.stringify(cur.data())):{grades:[]};
-        data.grades=data.grades||[]; const val=r.grade||r.level;
+        data.grades=data.grades||[];
+        // Chỉ cấp đúng mục học viên xin (r.key), phải là lớp/cấp có trong CATALOG và khớp lớp/cấp lưu kèm (chặn yêu cầu bị sửa tay qua console, 31/10/2026)
+        const val=r.key; const VALID=new Set(CATALOG.flatMap(b=>[b.grade,b.level]));
+        if(!VALID.has(val) || ((r.grade||r.level) && (r.grade||r.level)!==val)){ toast("Yêu cầu không hợp lệ (mục xin và lớp không khớp) - không cấp quyền"); return; }
         if(!data.grades.includes(val)) data.grades.push(val);
         data.by=S.name; data.at=new Date().toISOString();
         await gref.set(data); S.grants[r.uid]=data;
@@ -5413,7 +5416,7 @@ async function adminStudents(el, pre){
       await S.caps.db.doc("vcodes/"+h).set({namSinh:y, at:now}); // công khai chỉ có năm sinh + thời điểm
       try{ await S.caps.db.doc("vnotes/"+h).set({note:note, by:S.name, at:now}); }catch(e){} // ghi chú để riêng, chỉ admin đọc
       $("#vcOut").innerHTML=`<div class="feedback good" style="margin-top:10px">Mã xác thực (hiện 1 lần - gửi ngay cho người học):
-      <div style="font-size:22px;font-weight:800;letter-spacing:2px;margin-top:6px">${esc(code)} <button class="btn sm" onclick="copyText('${esc(code)}')">Sao chép</button></div></div>`;
+      <div style="font-size:22px;font-weight:800;letter-spacing:2px;margin-top:6px">${esc(code)} <button class="btn sm" onclick="copyText(${esc(JSON.stringify(String(code)))})">Sao chép</button></div></div>`;
       toast("Đã tạo mã - nhớ sao chép trước khi rời trang");
     }catch(e){ toast("Lỗi tạo mã: "+(e&&e.code||"")); }
   };
