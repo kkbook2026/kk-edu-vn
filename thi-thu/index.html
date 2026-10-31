@@ -309,7 +309,7 @@ footer a{color:var(--lapis)}</style>
   <div>
     <div class="kicker">Đợt trải nghiệm sớm · miễn phí · không cần đăng ký</div>
     <h1>Phòng thi thử trực tuyến <span>Bấm giờ - chấm ngay - chỉ rõ chỗ mạnh, chỗ yếu</span></h1>
-    <p class="lead">Gõ tên và tuổi, hệ thống tự xếp đúng lớp từ Mầm non đến Tiến sĩ. Đề rút theo ma trận 4 mức độ (Nhận biết - Thông hiểu - Vận dụng - Vận dụng cao) từ 60.102 câu hỏi của 220 bộ sách bám Chương trình GDPT 2018.</p>
+    <p class="lead">Gõ tên và tuổi, hệ thống tự xếp đúng lớp từ Mầm non đến Tiến sĩ. Đề rút theo ma trận 4 mức độ (Nhận biết - Thông hiểu - Vận dụng - Vận dụng cao) từ 60.116 câu hỏi của 220 bộ sách bám Chương trình GDPT 2018.</p>
     <div class="goal" aria-live="polite"><div class="bar"><i id="goalBar"></i></div><p id="goalTxt">Dành riêng <b>500 bạn đầu tiên</b> tham gia trải nghiệm và góp ý.</p></div>
   </div>
   <form class="entry" id="entry" novalidate>
@@ -369,7 +369,7 @@ const COLORS=["#1f6f8b","#b5523b","#2f9e5b","#7b5ea7","#c47f17","#0f2a4a","#a33a
 function toast(t,ms){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),ms||2600);}
 function pid(){let p=LS.get("pid","");if(!/^[a-z0-9]{12,40}$/.test(p)){const a=new Uint8Array(12);crypto.getRandomValues(a);p=[...a].map(x=>x.toString(36).padStart(2,"0")).join("").slice(0,20);LS.set("pid",p);}return p;}
 function ref(){try{const q=new URLSearchParams(location.search);const r=(q.get("ref")||q.get("utm_source")||"").toLowerCase().replace(/[^a-z0-9_-]/g,"").slice(0,32);if(r){sessionStorage.setItem("kkx_ref",r);return r;}return sessionStorage.getItem("kkx_ref")||"";}catch(e){return "";}}
-const S={name:"",by:0,age:0,place:null,book:null,scope:null,ex:null,res:null};
+const S={name:"",by:0,age:0,place:null,book:null,scope:null,ex:null,res:null,mode:LS.get("mode","fix")==="cat"?"cat":"fix"};
 
 /* ---------- Xếp lớp theo năm sinh (cùng quy tắc trang chủ) ---------- */
 function placement(by){
@@ -402,8 +402,8 @@ async function loadMeta(){
 function initEntry(){
   const pr=LS.get("me",{}); if(pr.name) $("#fName").value=pr.name; if(pr.raw) $("#fAge").value=pr.raw;
   const run=LS.get("run",null);
-  if(run&&run.deadline>Date.now()-5000&&run.items){ $("#resumeBox").innerHTML=`<div class="resume">Bạn đang làm dở bài <b>${esc(run.subject)} - ${esc(run.grade)}</b>.<br><button type="button" class="btn pri sm" id="resGo">Tiếp tục làm bài</button> <button type="button" class="btn sec sm" id="resNo">Bỏ bài này</button></div>`;
-    $("#resGo").onclick=()=>{S.ex=run;S.name=run.name||pr.name||"";room();}; $("#resNo").onclick=()=>{LS.del("run");$("#resumeBox").innerHTML="";}; }
+  if(run&&run.deadline>Date.now()-5000&&(run.items||run.item)){ $("#resumeBox").innerHTML=`<div class="resume">Bạn đang làm dở bài <b>${esc(run.subject)} - ${esc(run.grade)}</b>.<br><button type="button" class="btn pri sm" id="resGo">Tiếp tục làm bài</button> <button type="button" class="btn sec sm" id="resNo">Bỏ bài này</button></div>`;
+    $("#resGo").onclick=()=>{S.ex=run;S.name=run.name||pr.name||"";if(run.mode==="cat")catRoom();else room();}; $("#resNo").onclick=()=>{LS.del("run");$("#resumeBox").innerHTML="";}; }
   else if(run) LS.del("run");
   $("#entry").onsubmit=e=>{e.preventDefault();
     const name=$("#fName").value.trim().replace(/\s+/g," "), raw=$("#fAge").value.trim(); const v=Number(raw.replace(/\D+/g,""));
@@ -432,12 +432,16 @@ function pick(){
     ${books.length?"":`<p class="note">Chưa có sách cho lớp này. Hãy bấm "Đổi lớp".</p>`}
     <h3 style="margin:8px 0 0">Phạm vi kiến thức</h3>
     <div class="seg" role="group" aria-label="Phạm vi">${Object.entries(SCOPES).map(([k,v])=>`<button type="button" data-s="${k}" aria-pressed="${k===S.scope}">${v}</button>`).join("")}</div>
-    ${plan?`<div class="sumrow"><span class="chip">${plan.n} câu</span><span class="chip">${plan.min} phút</span><span class="chip">Tự nộp khi hết giờ</span><span class="chip">${b.l==="Mầm non"?"Có nút đọc to":"Dễ đến khó"}</span></div>`:""}
+    ${plan&&!plan.kids?`<h3 style="margin:8px 0 0">Hình thức thi</h3>
+    <div class="seg" role="group" aria-label="Hình thức thi"><button type="button" data-m="fix" aria-pressed="${S.mode!=="cat"}">Đề cố định</button><button type="button" data-m="cat" aria-pressed="${S.mode==="cat"}">Thi thích ứng (thử nghiệm)</button></div>
+    <p class="note" style="margin:6px 0 0">${S.mode==="cat"?"Máy chọn câu tiếp theo theo câu trả lời của bạn: đúng thì câu khó hơn, sai thì câu vừa sức hơn, dừng khi đã đo đủ chính xác (tối thiểu 10 câu). Thường ít câu hơn đề cố định; không quay lại câu trước.":"Đề theo ma trận 4 mức độ, xếp từ dễ đến khó, được xem lại và sửa trước khi nộp."}</p>`:""}
+    ${plan?(S.mode==="cat"&&!plan.kids?`<div class="sumrow"><span class="chip">10-${plan.n} câu</span><span class="chip">${plan.min} phút</span><span class="chip">Độ khó tự điều chỉnh</span><span class="chip">Điểm quy đổi theo năng lực</span></div>`:`<div class="sumrow"><span class="chip">${plan.n} câu</span><span class="chip">${plan.min} phút</span><span class="chip">Tự nộp khi hết giờ</span><span class="chip">${b.l==="Mầm non"?"Có nút đọc to":"Dễ đến khó"}</span></div>`):""}
     ${plan&&plan.kids?`<p class="note">Lứa tuổi nhỏ: phụ huynh ngồi cùng, bấm <b>Đọc to</b> để máy đọc câu hỏi, bé chọn đáp án. Kết quả đánh giá theo mức hoàn thành, không chấm điểm số xếp hạng.</p>`:""}
     <div class="act"><button class="btn pri" id="go" type="button" ${b?"":"disabled"}>Vào phòng thi ${b?"- "+esc(subjName(b)):""}</button><button class="btn sec" type="button" id="back">Sửa tên, tuổi</button></div>
   </div>`;
   $$("[data-b]").forEach(x=>x.onclick=()=>{S.book=x.dataset.b;pick();});
   $$("[data-s]").forEach(x=>x.onclick=()=>{S.scope=x.dataset.s;pick();});
+  $$("[data-m]").forEach(x=>x.onclick=()=>{S.mode=x.dataset.m==="cat"?"cat":"fix";LS.set("mode",S.mode);pick();});
   $("#back").onclick=()=>{window.scrollTo({top:0,behavior:"smooth"});$("#fName").focus();};
   $("#chg").onclick=()=>{const opts=gradeOptions();$("#chg").setAttribute("aria-expanded","true");$("#chgBox").innerHTML=`<label class="sr" for="chgSel">Chọn lớp</label><select id="chgSel"><option value="">Chọn lớp...</option>${opts.map((o,i)=>`<option value="${i}">${esc(o.l)} - ${esc(o.g)}</option>`).join("")}</select>`;
     $("#chgSel").onchange=e=>{const o=opts[Number(e.target.value)];if(!o)return;S.place={kind:"pick",level:o.l,grade:o.g,label:o.g};S.book=null;S.scope=defScope(S.place);pick();};$("#chgSel").focus();};
@@ -447,7 +451,8 @@ function pick(){
 
 /* ---------- Bắt đầu thi ---------- */
 async function start(){
-  const b=CAT.find(x=>x.c===S.book); if(!b) return; const btn=$("#go"); btn.disabled=true; btn.textContent="Đang soạn đề...";
+  const b=CAT.find(x=>x.c===S.book); if(!b) return; if(S.mode==="cat"&&!PLAN(b.l,b.g).kids) return catStart(b);
+  const btn=$("#go"); btn.disabled=true; btn.textContent="Đang soạn đề...";
   try{
     const r=await fetch(API+"/start",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({book:S.book,scope:S.scope,pid:pid(),age:S.age,place:S.place.label,ref:ref()})});
     const d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.error==="rate"?"Bạn thao tác hơi nhanh, đợi một chút rồi thử lại.":"Máy chủ chưa soạn được đề ("+(d.error||r.status)+").");
@@ -476,7 +481,7 @@ function tick(){
   el.className="timer"+(left<=60?" crit":left<=300?" warn":"");
   if(left===300&&!E.w5){E.w5=1;toast("Còn 5 phút - kiểm tra các câu còn trống nhé.");}
   if(left===60&&!E.w1){E.w1=1;toast("Còn 1 phút!");}
-  if(left<=0){clearInterval(TICK);submit(true);}
+  if(left<=0){clearInterval(TICK);if(E.mode==="cat")catSend(false,true);else submit(true);}
 }
 function accTime(){const E=S.ex;if(QT0&&E){E.sec[E.cur]=(E.sec[E.cur]||0)+Math.round((performance.now()-QT0)/1000);}QT0=performance.now();}
 function lvTag(b){return `<span class="lv lv${b}">${LVN[b]}</span>`;}
@@ -543,9 +548,85 @@ async function submit(auto){
   for(let k=0;k<3;k++){
     try{const r=await fetch(API+"/submit",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({tok:E.tok,ans,sec:E.sec})});
       const d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.error||("http "+r.status));
-      window.onbeforeunload=null; LS.del("run"); S.res={...d,name:E.name||S.name,subject:E.subject}; S.ex=null; LS.set("last",S.res); result(); return;
+      window.onbeforeunload=null; LS.del("run"); S.res={...d,name:E.name||S.name,subject:E.subject,at:Date.now()}; S.ex=null; LS.set("last",S.res); result(); return;
     }catch(e){ if(k===2){ E.sending=false; $("#qc").innerHTML=`<p>Chưa gửi được bài (${esc(e.message)}). Bài làm vẫn được lưu trên máy.</p><button class="btn pri" id="retry" type="button">Gửi lại</button>`; $("#retry").onclick=()=>submit(auto); } else await new Promise(r=>setTimeout(r,1500*(k+1))); }
   }
+}
+
+/* ---------- Thi thích ứng (CAT): mỗi câu gửi máy chủ chấm, máy chủ chọn câu kế tiếp theo năng lực ---------- */
+async function catStart(b){
+  const btn=$("#go"); if(btn){btn.disabled=true;btn.textContent="Đang chuẩn bị câu đầu tiên...";}
+  try{
+    const r=await fetch(API+"/cat-start",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({book:S.book,scope:S.scope,pid:pid(),age:S.age,place:S.place.label,ref:ref()})});
+    const d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.error==="rate"?"Bạn thao tác hơi nhanh, đợi một chút rồi thử lại.":d.error==="cat-kids"?"Lứa tuổi này dùng đề cố định có phụ huynh đi cùng.":"Máy chủ chưa soạn được đề ("+(d.error||r.status)+").");
+    S.ex={...d,mode:"cat",name:S.name,subject:subjName(b),deadline:Date.now()+d.dur*1000,a:null,se:1,kids:false,cur:0};
+    LS.set("run",S.ex); catRoom();
+  }catch(e){toast(e.message||"Lỗi mạng, thử lại nhé.",4000);if(btn){btn.disabled=false;btn.textContent="Vào phòng thi";}}
+}
+function catRoom(){
+  const E=S.ex; document.body.classList.add("room"); window.scrollTo({top:0});
+  $("#app").innerHTML=`<div class="rbar"><div class="wrap"><b style="flex:1;font-size:.95rem">Thi thích ứng · ${esc(E.subject)} · ${esc(E.grade)}</b>
+    <div class="timer" id="tm" role="timer" aria-live="off">--:--</div><button class="btn sec sm" id="sub" type="button">Kết thúc</button></div><div class="prog"><i id="pg"></i></div></div>
+    <div class="roomgrid"><div><div class="qcard" id="qc"></div></div>
+    <aside class="pal" aria-label="Tiến trình"><h3>Tiến trình</h3><div id="catProg"></div><div class="leg">Câu tiếp theo được chọn theo câu trả lời của bạn: đúng thì khó hơn, sai thì vừa sức hơn. Bài dừng khi đã đo đủ chính xác (tối thiểu 10 câu) hoặc hết giờ. Không quay lại câu trước.</div></aside></div>`;
+  $("#sub").onclick=()=>{ const n=(E.k||1)-1;
+    const d=dlg(`<h3>Kết thúc bài thi?</h3><p>${n>=3?`Kết quả sẽ tính trên ${n+1} câu (câu đang làm tính là ${E.a===null?"bỏ trống":"đã trả lời"}). Làm thêm câu thì kết quả chính xác hơn.`:"Cần làm ít nhất 3 câu mới có kết quả."}</p><div class="row"><button class="btn sec sm" id="dNo" type="button">Làm tiếp</button>${n>=2?`<button class="btn pri sm" id="dOk" type="button">Kết thúc và xem kết quả</button>`:""}</div>`);
+    $("#dNo").onclick=()=>d.close(); const ok=$("#dOk"); if(ok) ok.onclick=()=>{d.close();catSend(true);}; };
+  window.onbeforeunload=e=>{if(S.ex){e.preventDefault();e.returnValue="";}};
+  clearInterval(TICK); TICK=setInterval(tick,500); tick(); catShowQ();
+}
+function catProg(){ const E=S.ex, el=$("#catProg"); if(!el) return;
+  const conf=Math.max(0,Math.min(100,Math.round((1-Math.pow(E.se==null?1:E.se,2))*100)));
+  el.innerHTML=`<p style="margin:0 0 6px">Câu <b>${E.k}</b> (tối đa ${E.max})</p><p style="margin:0 0 4px;font-size:.88rem">Độ tin cậy của phép đo: <b>${conf}%</b></p><div class="prog" style="position:static;height:8px;border-radius:99px;background:var(--chip)"><i style="width:${conf}%;border-radius:99px"></i></div>`;
+  const pg=$("#pg"); if(pg) pg.style.width=Math.round(((E.k||1)-1)/E.max*100)+"%"; }
+function catShowQ(){
+  sayStop(); const E=S.ex, q=E.item, a=E.a; E.qt0=performance.now();
+  let body="";
+  if(q.k==="mcq") body=`<div class="opts" role="radiogroup" aria-label="Các lựa chọn">${q.o.map((o,j)=>`<button type="button" class="opt" role="radio" aria-checked="${a===j}" data-v="${j}"><span class="k">${"ABCDEFGH"[j]}</span><span>${esc(o)}</span></button>`).join("")}</div>`;
+  else if(q.k==="tf") body=`<div class="opts tf" role="radiogroup" aria-label="Đúng hay sai">${[[true,"Đúng"],[false,"Sai"]].map(([v,t])=>`<button type="button" class="opt" role="radio" aria-checked="${a===v}" data-tf="${v}"><span class="k">${t[0]}</span><span>${t}</span></button>`).join("")}</div>`;
+  else if(q.k==="num") body=`<div class="num"><label class="sr" for="numIn">Đáp số</label><input id="numIn" inputmode="decimal" autocomplete="off" placeholder="Nhập đáp số" value="${esc(a==null?"":a)}"><small>Số thập phân dùng dấu phẩy (ví dụ 1,75); phân số viết a/b (ví dụ 3/4).</small></div>`;
+  else if(q.k==="order"){const cur=Array.isArray(a)?a:(E.ordTmp||q.o.map((_,j)=>j));
+    body=`<div class="ord"><ol>${cur.map((j,pos)=>`<li><span>${esc(q.o[j])}</span><button type="button" aria-label="Đưa lên" data-up="${pos}" ${pos===0?"disabled":""}>↑</button><button type="button" aria-label="Đưa xuống" data-dn="${pos}" ${pos===cur.length-1?"disabled":""}>↓</button></li>`).join("")}</ol></div>`;}
+  $("#qc").innerHTML=`<div class="qhead"><span class="qno">Câu ${E.k}</span>${lvTag(q.b)}<button class="say" type="button" id="say">🔊 Đọc to</button></div>
+    <div class="qtext" id="qt">${esc(q.h)}</div>${body}
+    <div class="qnav"><span class="sp"></span><button class="btn sec sm" type="button" id="catSkip">Bỏ qua câu này</button><button class="btn pri sm" type="button" id="catOk" ${a===null&&q.k!=="order"?"disabled":""}>Trả lời, sang câu tiếp →</button></div>`;
+  const set=v=>{E.a=v;saveRun();const ok=$("#catOk");if(ok)ok.disabled=(v===null||v==="");};
+  $$("#qc [data-v]").forEach(x=>x.onclick=()=>{set(Number(x.dataset.v));$$("#qc [data-v]").forEach(y=>y.setAttribute("aria-checked",y===x));});
+  $$("#qc [data-tf]").forEach(x=>x.onclick=()=>{set(x.dataset.tf==="true");$$("#qc [data-tf]").forEach(y=>y.setAttribute("aria-checked",y===x));});
+  const ni=$("#numIn"); if(ni){ni.oninput=()=>set(ni.value.trim()===""?null:ni.value.trim());ni.onkeydown=e=>{if(e.key==="Enter"&&E.a!==null)catSend(false);};}
+  if(q.k==="order"){const cur=()=>(Array.isArray(E.a)?E.a:(E.ordTmp||q.o.map((_,j)=>j))).slice();
+    const mv=(p,d)=>{const c=cur();[c[p],c[p+d]]=[c[p+d],c[p]];E.ordTmp=c;E.a=c;saveRun();catShowQ();};
+    $$("#qc [data-up]").forEach(x=>x.onclick=()=>mv(Number(x.dataset.up),-1)); $$("#qc [data-dn]").forEach(x=>x.onclick=()=>mv(Number(x.dataset.dn),1));
+    if(E.a===null){E.a=cur();}}
+  $("#catOk").onclick=()=>catSend(false); $("#catSkip").onclick=()=>{E.a=null;catSend(false);};
+  const sy=$("#say"); if(sy) sy.onclick=()=>speak(q);
+  catProg();
+}
+async function catSend(stop,auto){
+  const E=S.ex; if(!E||E.sending) return; E.sending=true;
+  const sec=E.qt0?Math.round((performance.now()-E.qt0)/1000):0;
+  const btn=$("#catOk"); if(btn){btn.disabled=true;btn.textContent="Đang chấm...";}
+  if(auto) $("#qc").innerHTML=`<p style="font-size:1.1rem">Hết giờ! Đang chấm bài và phân tích...</p>`;
+  for(let k=0;k<3;k++){
+    try{const r=await fetch(API+"/cat-next",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({tok:E.tok,ans:E.a===undefined?null:E.a,sec,stop:!!stop})});
+      const d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.error||("http "+r.status));
+      E.sending=false;
+      if(d.done){ clearInterval(TICK); window.onbeforeunload=null; LS.del("run"); S.res={...d,name:E.name||S.name,subject:E.subject,at:Date.now()}; S.ex=null; LS.set("last",S.res); result(); return; }
+      E.tok=d.tok; E.item=d.item; E.k=d.k; E.max=d.max; E.se=d.se; E.a=null; E.ordTmp=null; saveRun(); catShowQ(); return;
+    }catch(e){ if(k===2){ E.sending=false; $("#qc").insertAdjacentHTML("beforeend",`<p class="note">Chưa gửi được (${esc(e.message)}). Bài làm vẫn được lưu trên máy.</p><button class="btn pri sm" id="retry" type="button">Gửi lại</button>`); $("#retry").onclick=()=>catSend(stop,auto); } else await new Promise(r=>setTimeout(r,1500*(k+1))); }
+  }
+}
+function catPanel(R){
+  const c=R.cat; if(!c) return "";
+  const W=Math.max(260,c.path.length*26), H=90, x=i=>14+i*((W-28)/Math.max(1,c.path.length-1)), y=b=>H-14-(b-1)*((H-28)/3);
+  const line=c.path.map((p,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(p.b).toFixed(1)}`).join(" ");
+  const dots=c.path.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.b).toFixed(1)}" r="6" fill="${p.u?"#2f9e5b":"#d0533f"}"><title>Câu ${i+1}: ${LVN[p.b]} - ${p.u?"đúng":"chưa đúng"}</title></circle>`).join("");
+  const why={precision:"đã đo đủ chính xác",max:"đủ số câu tối đa",time:"hết giờ",stop:"bạn kết thúc sớm"}[c.reason]||"";
+  return `<div class="panel"><h3 style="margin-top:0">Thi thích ứng: đo năng lực theo từng câu</h3>
+    <p style="margin:0 0 8px">Bạn làm <b>${c.n}</b> câu (tối đa ${c.max}), bài dừng vì ${why}. <b>Điểm quy đổi ${fmt(c.score)}/10</b> (khoảng tin cậy ${fmt(c.lo)} - ${fmt(c.hi)}): là điểm dự đoán nếu bạn làm toàn bộ câu trong phạm vi.</p>
+    <p class="note" style="margin:0 0 8px">Đúng ${R.ok}/${R.n} câu đã làm. Đề thích ứng chọn câu vừa sức nên tỉ lệ đúng thường quanh 50-70% với mọi người; điểm được tính theo độ khó của các câu bạn làm được, không phải số câu đúng.</p>
+    <div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Đường độ khó các câu đã làm">${[1,2,3,4].map(b=>`<line x1="10" x2="${W-6}" y1="${y(b)}" y2="${y(b)}" stroke="var(--chip)" stroke-dasharray="3 4"/><text x="0" y="${y(b)+4}" font-size="9" fill="var(--mute)">${b}</text>`).join("")}<path d="${line}" fill="none" stroke="var(--mute)" stroke-width="1.5"/>${dots}</svg></div>
+    <p class="leg2" style="margin:4px 0 0">Trục đứng: mức độ câu (1 Nhận biết đến 4 Vận dụng cao) · chấm xanh: đúng, chấm đỏ: chưa đúng.</p></div>`;
 }
 
 /* ---------- Kết quả và phân tích ---------- */
@@ -561,17 +642,18 @@ function result(){
   const used=R.time.used, mm=Math.floor(used/60), ss=used%60;
   const plan=R.review.length?R.review.map((r,k)=>`<li><b>${k===0?"Hôm nay":k===1?"Ngày mai":"Ngày kia"}:</b> ôn <a href="/#hoc_${encodeURIComponent(R.book)}_${r.l}">Bài ${r.no}: ${esc(r.bai)}</a> (sai ${r.wrong} câu) - xem lại video, làm kiểm tra thành thạo cuối bài.</li>`).join("")+`<li><b>Sau 3 ngày:</b> thi lại cùng phạm vi để đo tiến bộ.</li>`:`<li>Bạn không sai câu nào! Thử phạm vi rộng hơn hoặc sách Nâng cao.</li>`;
   $("#app").innerHTML=`<div class="panel">
-    <div class="res-top"><div class="ring" aria-hidden="true"><svg viewBox="0 0 190 190"><circle cx="95" cy="95" r="80" fill="none" stroke="var(--chip)" stroke-width="16"/><circle cx="95" cy="95" r="80" fill="none" stroke="${col}" stroke-width="16" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-R.ok/R.n)}"/></svg>
+    <div class="res-top"><div class="ring" aria-hidden="true"><svg viewBox="0 0 190 190"><circle cx="95" cy="95" r="80" fill="none" stroke="var(--chip)" stroke-width="16"/><circle cx="95" cy="95" r="80" fill="none" stroke="${col}" stroke-width="16" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-(R.mode==="cat"?R.score/10:R.ok/R.n))}"/></svg>
       <div class="v"><div>${isKid?`<b>${R.ok}/${R.n}</b><small>câu đúng</small>`:`<b>${fmt(R.score)}</b><small>điểm / 10</small>`}</div></div></div>
       <div><p class="kicker" style="color:var(--gold2);margin:0">${esc(R.name)} · ${esc(R.subject)} · ${esc(R.grade)} · ${esc(R.scopeLabel)}</p>
         <p class="verd">${esc(band(R))}</p>
-        <p style="margin:0;color:var(--mute)">Đúng <b>${R.ok}/${R.n}</b> câu (${pctOk}%). ${R.vsExpected>=0?`Cao hơn mức kỳ vọng của đề <b>${fmt(R.vsExpected)}</b> câu.`:`Thấp hơn mức kỳ vọng của đề <b>${fmt(-R.vsExpected)}</b> câu.`}${R.over?" (Nộp sau giờ quy định.)":""}</p>
+        <p style="margin:0;color:var(--mute)">${R.mode==="cat"?`Thi thích ứng ${R.n} câu, đúng <b>${R.ok}/${R.n}</b>. Điểm quy đổi theo năng lực (khoảng ${fmt(R.cat.lo)} - ${fmt(R.cat.hi)}).`:`Đúng <b>${R.ok}/${R.n}</b> câu (${pctOk}%). `+(R.vsExpected>=0?`Cao hơn mức kỳ vọng của đề <b>${fmt(R.vsExpected)}</b> câu.`:`Thấp hơn mức kỳ vọng của đề <b>${fmt(-R.vsExpected)}</b> câu.`)}${R.over?" (Nộp sau giờ quy định.)":""}</p>
         ${!isKid&&R.rank?`<p style="margin:6px 0 0">Bạn làm tốt hơn <b>${R.rank.pct}%</b> trong ${R.rank.n} lượt thi cùng bộ sách (điểm trung bình ${fmt(R.rank.avg)}).</p>`:""}
       </div></div>
     <div class="kpis"><div><b>${mm}:${String(ss).padStart(2,"0")}</b><span>thời gian làm bài / ${Math.round(R.time.dur/60)} phút</span></div><div><b>${R.time.avg}s</b><span>trung bình mỗi câu</span></div><div><b>${R.time.blank}</b><span>câu bỏ trống</span></div><div><b>${R.time.rushed}</b><span>câu sai do làm vội</span></div></div>
     ${R.participant?`<div class="badge500"><span class="no">#${R.participant}</span><span>${R.participant<=R.goal?`Bạn là người thứ <b>${R.participant}</b> trong <b>${R.goal} bạn đầu tiên</b> trải nghiệm Phòng thi thử KK-EDU. Cảm ơn bạn!`:`Bạn là người thứ <b>${R.participant}</b> tham gia Phòng thi thử KK-EDU.`}</span></div>`:""}
     <div class="act"><button class="btn pri" id="cert" type="button">Tải giấy chứng nhận</button><button class="btn sec" id="share" type="button">Rủ bạn thi cùng</button><button class="btn sec" id="again" type="button">Làm đề mới cùng môn</button><button class="btn sec" id="other" type="button">Thi môn khác</button></div>
   </div>
+  ${R.mode==="cat"?catPanel(R):""}
   <div class="panel fb" id="fbBox"></div>
   <div class="two"><div class="panel sw good" style="margin-top:0"><h3>Điểm mạnh</h3>${R.strengths.length?`<ul>${R.strengths.map(s=>`<li>${esc(s)}</li>`).join("")}</ul>`:`<p class="note">Chưa đủ dữ liệu để kết luận điểm mạnh (mỗi chương cần ít nhất 2 câu). Thử phạm vi rộng hơn.</p>`}</div>
     <div class="panel sw bad" style="margin-top:0"><h3>Cần cải thiện</h3>${R.weaknesses.length?`<ul>${R.weaknesses.map(s=>`<li>${esc(s)}</li>`).join("")}</ul>`:`<p class="note">Không có chương hay mức độ nào dưới ngưỡng. Rất tốt!</p>`}</div></div>
@@ -635,7 +717,7 @@ async function cert(){
   g.fillStyle="#ffe9a3";g.font='800 52px "Playfair Display", Georgia, serif';g.fillText("KK-EDU",W/2,118); g.fillStyle="#dbe4f0";g.font='500 24px "Be Vietnam Pro", Arial';g.fillText("Hệ sinh thái giáo dục số trọn đời · www.kk-edu.com",W/2,164);
   g.fillStyle="#a9871f";g.font='700 30px "Be Vietnam Pro", Arial';g.fillText("GIẤY CHỨNG NHẬN THAM GIA THI THỬ",W/2,272);
   g.fillStyle="#0f2a4a";g.font='italic 700 92px "Playfair Display", Georgia, serif';g.fillText(R.name||"Bạn",W/2,400);
-  g.fillStyle="#14213d";g.font='500 32px "Be Vietnam Pro", Arial';g.fillText(`đã hoàn thành bài thi thử ${R.subject} - ${R.grade}`,W/2,480); g.fillText(`Phạm vi: ${R.scopeLabel} · ${R.n} câu · ${Math.round(R.time.dur/60)} phút`,W/2,530);
+  g.fillStyle="#14213d";g.font='500 32px "Be Vietnam Pro", Arial';g.fillText(`đã hoàn thành bài thi thử ${R.subject} - ${R.grade}`,W/2,480); g.fillText(`Phạm vi: ${R.scopeLabel} · ${R.mode==="cat"?"thi thích ứng "+R.n+" câu":R.n+" câu · "+Math.round(R.time.dur/60)+" phút"}`,W/2,530);
   const isKid=R.level==="Mầm non"||R.level==="Tiểu học";
   g.fillStyle="#0f2a4a";g.font='700 54px "Playfair Display", Georgia, serif';g.fillText(isKid?`Đúng ${R.ok}/${R.n} câu`:R.score>=5?`Điểm ${fmt(R.score)}/10 · ${band(R)}`:`Điểm ${fmt(R.score)}/10 · Đã hoàn thành`,W/2,640);
   if(R.participant){g.fillStyle="#d4af37";g.beginPath();g.arc(W/2,770,70,0,Math.PI*2);g.fill();g.fillStyle="#0f2a4a";g.font='800 44px "Playfair Display", Georgia, serif';g.fillText("#"+R.participant,W/2,786);

@@ -732,7 +732,9 @@ footer.ft{background:linear-gradient(180deg,var(--card),var(--bg2));border-top:1
 footer.ft a{color:var(--lapis);text-decoration-color:color-mix(in srgb,var(--lapis) 35%,transparent);text-underline-offset:3px}
 :root[data-theme="dark"] footer.ft a{color:var(--navy2)}
 :focus-visible{outline:3px solid var(--gold-hi);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){.card.click:hover,.step:hover,.lessitem:hover{transform:none}}</style>
+@media (prefers-reduced-motion:reduce){.card.click:hover,.step:hover,.lessitem:hover{transform:none}}
+.wrk{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin:10px 0}.wrk div{background:var(--chip,#eef3f8);border:1px solid var(--line);border-radius:10px;padding:8px 10px}.wrk b{display:block;font-size:1.25rem;line-height:1.3}.wrk span{display:block;font-size:.78rem;opacity:.8;line-height:1.35}
+@media print{body.wrprint *{visibility:hidden!important}body.wrprint #wrDoc,body.wrprint #wrDoc *{visibility:visible!important}body.wrprint #wrDoc{position:absolute;left:0;top:0;width:100%;padding:0 6mm}body.wrprint #wrDoc .noprint{display:none!important}}</style>
 </head>
 <body>
 <header class="top"><div class="wrap topbar">
@@ -1920,7 +1922,7 @@ function viewHome(v){
   <section class="board"><div class="wrap hero">
     <div>
       <a class="examcta" id="hExam" href="/thi-thu/"><b>Mới</b><em><i>Thi thử miễn phí</i><s> · </s><i>Chấm ngay · Rõ điểm mạnh, yếu</i></em><span aria-hidden="true">→</span></a>
-      <div class="kicker">Mô hình giáo dục số thử nghiệm · phiên bản 2.0</div>
+      <div class="kicker">Mô hình giáo dục số thử nghiệm · phiên bản 3.0</div>
       <h1 class="hero-title">Hệ sinh thái<br><span class="gold">giáo dục số</span> <span class="gold glow">trọn đời</span></h1>
       <p class="hero-sub">Học bằng Video tương tác và giáo trình số</p>
       <p class="lead">${nBooks} đầu sách bám sát Chương trình GDPT 2018 và các chương trình đào tạo hiện hành. Video dừng đúng giây để hỏi, sơ đồ chuẩn hiện đúng lúc, kiểm tra thành thạo cuối bài và trợ giảng AI theo từng bài.</p>
@@ -2230,6 +2232,7 @@ function viewDash(v){
     :`<div class="alertbox">Bạn đang ở chế độ Khách - tiến độ chỉ lưu trên trình duyệt này.</div>`):""}
   ${(S.mode==="firebase"&&S.fbUser&&S.fbUser.email&&!S.fbUser.emailVerified)?`<div class="alertbox">Email <b>${esc(S.fbUser.email)}</b> chưa xác minh - hãy mở hộp thư bấm liên kết xác nhận. <button class="btn sm" id="dResend">Gửi lại email</button></div>`:""}
   ${krCardHTML()}
+  ${wrCardHTML()}
   ${entries.length? `<div class="grid bk">${entries.map(x=>bookCard(x.b)).join("")}</div>` : `<div class="card"><h3>Chưa có dữ liệu học tập</h3><div class="note">Hãy vào Thư viện chọn một cuốn sách và bắt đầu bài học đầu tiên - bài 1 của mọi sách đều học thử miễn phí.</div><div style="margin-top:12px"><button class="btn pri" id="dGo">Vào thư viện</button></div></div>`}
   ${(()=>{ const trs=entries.map(x=>transcriptOf(x.code)).filter(t=>t&&(t.qt!=null||t.cn!=null||t.gn!=null||t.chAvg!=null));
     if(!trs.length) return "";
@@ -3318,7 +3321,7 @@ function krCardHTML(){
     <div class="note" style="margin:8px 0">${st.due?"Ôn ngay 5-10 phút: trả lời lại từng câu, đúng thì lịch ôn giãn ra, sai thì ôn lại sớm.":(nx?`Hôm nay đã ôn xong. Lượt ôn tiếp theo: <b>${esc(fmtDate(nx))}</b>.`:"")}</div>
     <div class="mrow"><button class="btn pri" id="krGo" ${st.due?"":"disabled"}>Ôn ngay${st.due?" ("+Math.min(st.due,15)+" câu)":""}</button>${st.active>st.due?`<button class="btn ghost sm" id="krEarly">Ôn sớm các câu khác</button>`:""}</div></div>`;
 }
-function krBind(){ const g=$("#krGo"); if(g) g.onclick=()=>krStart(false); const e=$("#krEarly"); if(e) e.onclick=()=>krStart(true); }
+function krBind(){ const w=$("#wrGo"); if(w) w.onclick=()=>wrOpen(); const g=$("#krGo"); if(g) g.onclick=()=>krStart(false); const e=$("#krEarly"); if(e) e.onclick=()=>krStart(true); }
 async function krStart(early){
   const now=Date.now(), d=krLoad();
   let keys=Object.keys(d.items).filter(k=>d.items[k]&&!d.items[k].done&&(early||Number(d.items[k].due||0)<=now)).sort((a,b)=>Number(d.items[a].due||0)-Number(d.items[b].due||0)).slice(0,15);
@@ -3360,6 +3363,97 @@ function krShow(){
   };
   document.querySelectorAll("#modalHost .opt").forEach(o=>o.onclick=()=>answer(o.dataset.ix!=null?Number(o.dataset.ix):(o.dataset.tf==="1")));
   const nb=$("#krNumOk"); if(nb) nb.onclick=()=>{ const v=$("#krNum").value; if(!String(v).trim()){ toast("Hãy nhập đáp số"); return; } answer(v); };
+}
+
+/* ================= BÁO CÁO TUẦN CHO PHỤ HUYNH =================
+   Tổng hợp 7 ngày gần nhất từ dữ liệu học của chính tài khoản (trên máy + đám mây): ngày học, bài học, câu trả lời, đúng ngay lần đầu,
+   điểm trung bình, Sổ ôn tập, bài kiểm tra, bài cần củng cố, lời khuyên. Gửi phụ huynh qua Zalo/Messenger (chia sẻ), email, in PDF,
+   hoặc LINK XEM BÁO CÁO: dữ liệu nằm sau dấu # của link (không gửi lên máy chủ, KK-EDU không lưu). */
+function wrLessonInfo(code, ma){
+  const pk=S.goiCache&&S.goiCache[code]; const i=pk&&pk.lessons?pk.lessons.findIndex(L=>L.ma===ma):-1;
+  if(i>=0) return {title:"Bài "+(i+1)+": "+(pk.lessons[i].bai||""), href:"/#hoc_"+code+"_"+i};
+  const m=/\.B(\d+)$/.exec(ma||""); return {title:m?"Bài "+Number(m[1]):String(ma||""), href:"/#book_"+code};
+}
+function wrData(now){
+  now=now||Date.now(); const start=now-7*864e5, inW=t=>{ const x=typeof t==="string"?Date.parse(t):Number(t||0); return x>=start&&x<=now; };
+  const day=t=>new Date((typeof t==="string"?Date.parse(t):Number(t))+7*3600e3).toISOString().slice(0,10);
+  const D={start, end:now, days:new Set(), les:0, done:0, sc:[], q:0, first:0, books:[], weak:[], exams:[], mn:false};
+  for(const [code,pg] of Object.entries(S.progress||{})){
+    const b=(typeof CATALOG!=="undefined"?CATALOG:[]).find(x=>x.code===code); if(!b||!pg||!pg.lessons) continue;
+    let bt=0, bd=0;
+    for(const [ma,l] of Object.entries(pg.lessons)){
+      if(!l||!inW(l.ts)) continue;
+      bt++; D.les++; D.days.add(day(l.ts)); if(b.level==="Mầm non") D.mn=true;
+      if(l.done){ bd++; D.done++; }
+      if(l.total!=null&&Number.isFinite(Number(l.total))){ D.sc.push(Number(l.total)); if(Number(l.total)<0.7){ const li=wrLessonInfo(code,ma); D.weak.push({t:(b.subject||"")+" - "+li.title, p:Math.round(Number(l.total)*100), href:li.href}); } }
+      for(const a of Object.values(l.answers||{})){ if(a&&a.done){ D.q++; if(a.correct&&a.attempts===1) D.first++; } }
+    }
+    if(bt) D.books.push({n:(b.subject||code)+" - "+(b.grade||b.level||""), t:bt, d:bd});
+  }
+  const ex=Object.assign({}, LS.get("exams",{}), S.examCache||{});
+  for(const [k,r] of Object.entries(ex)){ if(r&&r.at&&inW(r.at)){ const b=(typeof CATALOG!=="undefined"?CATALOG:[]).find(x=>x.code===k.split("|")[0]); D.exams.push({t:(b?b.subject+" - ":"")+(r.ten||r.defId||"Bài kiểm tra"), p:kkNum(r.pct)}); D.days.add(day(r.at)); } }
+  try{ const tt=JSON.parse(localStorage.getItem("kkx_last")||"null"); if(tt&&tt.aid&&tt.score!=null&&inW(tt.at)){ D.thi={s:String(tt.subject||""), g:String(tt.grade||""), sc:Number(tt.score), n:kkNum(tt.n), mode:tt.mode==="cat"?"thích ứng":"cố định"}; } }catch(e){}
+  const kr=krLoad(), its=Object.values(kr.items||{}).filter(x=>x&&typeof x==="object");
+  D.rev=its.filter(x=>inW(x.last)&&Number(x.n||0)>0).length; its.filter(x=>inW(x.last)&&Number(x.n||0)>0).forEach(x=>D.days.add(day(x.last)));
+  const ks=krStats(now); D.due=ks.due; D.mas=ks.mastered; D.act=ks.active;
+  D.avg=D.sc.length?Math.round(D.sc.reduce((a,x)=>a+x,0)/D.sc.length*100):null;
+  D.firstPct=D.q?Math.round(D.first/D.q*100):null; D.nDays=D.days.size;
+  const A=[];
+  if(!D.les&&!D.rev&&!D.exams.length) A.push("Tuần này chưa có buổi học nào. Mỗi ngày 15-20 phút là đủ: xem 1 video tương tác và làm kiểm tra thành thạo cuối bài.");
+  if(D.due) A.push(`Có ${D.due} câu đến hạn trong Sổ ôn tập: ôn 5-10 phút để nhớ lâu (mục Học tập > Ôn ngay).`);
+  if(D.firstPct!=null&&D.q>=5&&D.firstPct<60) A.push(`Tỉ lệ đúng ngay lần đầu còn thấp (${D.firstPct}%): xem kĩ đoạn video trước câu hỏi, dùng gợi ý trước khi trả lời.`);
+  if(D.weak.length) A.push(`Học lại ${D.weak.length>1?D.weak.length+" bài":"bài"} dưới 70%: ${D.weak.slice(0,3).map(w=>w.t).join("; ")}.`);
+  if(D.avg!=null&&D.avg>=85&&D.done>=3) A.push("Kết quả rất tốt: thử bài kiểm tra cuối chương hoặc sách Nâng cao để thử thách thêm.");
+  if(D.nDays>=5) A.push(`Học đều ${D.nDays}/7 ngày - một thói quen rất đáng khen!`);
+  A.push(D.mn?"Phụ huynh: cùng bé kể lại điều bé thích trong bài, khen sự cố gắng của bé.":"Phụ huynh: hỏi con một điều con học được trong tuần, khen sự cố gắng thay vì chỉ nhìn điểm số.");
+  D.advice=A; return D;
+}
+function wrRange(D){ const f=t=>{ const d=new Date(t+7*3600e3); return String(d.getUTCDate()).padStart(2,"0")+"/"+String(d.getUTCMonth()+1).padStart(2,"0")+"/"+d.getUTCFullYear(); }; return f(D.start+864e5)+" - "+f(D.end); }
+function wrCardHTML(){
+  const D=wrData(); const seen=LS.get("wrSeen",0), fresh=Date.now()-Number(seen||0)>6*864e5;
+  return `<div class="card" style="margin-bottom:18px"><h3 style="margin-top:0">📨 Báo cáo tuần cho phụ huynh ${fresh&&(D.les||D.rev)?'<span class="badge gold">Mới</span>':""}</h3>
+    <div class="note">7 ngày gần nhất (${esc(wrRange(D))}): học ${D.nDays} ngày, ${D.les} bài${D.avg!=null?", điểm trung bình "+D.avg+"%":""}${D.rev?", ôn "+D.rev+" câu":""}. Gửi phụ huynh qua Zalo, Messenger, email hoặc in ra.</div>
+    <div class="mrow"><button class="btn pri sm" id="wrGo">Xem và gửi báo cáo tuần</button></div></div>`;
+}
+function wrText(D){
+  const who=(S.profile&&S.profile.name)||S.name||"Học viên";
+  const L=[`Báo cáo học tập tuần ${wrRange(D)} - ${who} (KK-EDU)`, `- Số ngày học: ${D.nDays}/7`, `- Bài học: ${D.les} bài (hoàn thành ${D.done})`];
+  if(D.q) L.push(`- Câu đã trả lời: ${D.q}${D.firstPct!=null?", đúng ngay lần đầu "+D.firstPct+"%":""}`);
+  if(D.avg!=null) L.push(`- Điểm trung bình các bài: ${D.avg}%`);
+  if(D.rev||D.due) L.push(`- Sổ ôn tập: đã ôn ${D.rev} câu, còn ${D.due} câu đến hạn, đã thuộc ${D.mas} câu`);
+  D.exams.forEach(e=>L.push(`- Kiểm tra: ${e.t}${e.p!=null?" - "+e.p+"%":""}`));
+  if(D.thi) L.push(`- Thi thử gần nhất (${D.thi.mode}): ${D.thi.s} ${D.thi.g} - ${String(D.thi.sc).replace(".",",")}/10`);
+  if(D.weak.length) L.push(`- Cần củng cố: ${D.weak.slice(0,3).map(w=>w.t+" ("+w.p+"%)").join("; ")}`);
+  L.push("Lời khuyên:"); D.advice.forEach(a=>L.push("  + "+a));
+  return L.join("\n");
+}
+function wrLink(D){
+  const who=(S.profile&&S.profile.name)||S.name||""; const g=myGrade();
+  const o={v:1,n:String(who).slice(0,60),g:g?String(g.label).slice(0,40):"",r:wrRange(D),k:[D.nDays,D.les,D.done,D.q,D.firstPct,D.avg,D.rev,D.due,D.mas],
+    b:D.books.slice(0,8).map(x=>[String(x.n).slice(0,70),x.t,x.d]),w:D.weak.slice(0,5).map(x=>[String(x.t).slice(0,90),x.p]),e:D.exams.slice(0,5).map(x=>[String(x.t).slice(0,80),x.p]),
+    x:D.thi?[D.thi.s.slice(0,50),D.thi.g.slice(0,30),D.thi.sc,D.thi.mode]:null,a:D.advice.slice(0,6).map(x=>String(x).slice(0,220)),m:D.mn?1:0};
+  const b64=btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  return location.origin+"/bao-cao/#d="+b64;
+}
+function wrOpen(){
+  const D=wrData(); LS.set("wrSeen",Date.now()); const who=(S.profile&&S.profile.name)||S.name||"Học viên"; const g=myGrade();
+  const tile=(v,l)=>`<div><b>${v==null?"-":esc(String(v))}</b><span>${esc(l)}</span></div>`;
+  modal(`<div id="wrDoc"><div class="eyebrow">KK-EDU · Báo cáo học tập tuần</div><h3 style="margin:4px 0">${esc(who)}${g?" · "+esc(g.label):""}</h3><div class="note">7 ngày gần nhất: ${esc(wrRange(D))}</div>
+    <div class="wrk">${tile(D.nDays+"/7","ngày có học")}${tile(D.les,"bài đã học")}${tile(D.done,"bài hoàn thành")}${D.mn?"":tile(D.q,"câu đã trả lời")}${D.mn?"":tile(D.firstPct!=null?D.firstPct+"%":null,"đúng ngay lần đầu")}${D.mn?"":tile(D.avg!=null?D.avg+"%":null,"điểm trung bình")}${tile(D.rev,"câu đã ôn")}${tile(D.due,"câu đến hạn ôn")}</div>
+    ${D.books.length?`<b>Môn đã học</b><ul style="margin:4px 0 10px">${D.books.map(x=>`<li>${esc(x.n)}: ${x.t} bài${x.d?", hoàn thành "+x.d:""}</li>`).join("")}</ul>`:""}
+    ${D.exams.length?`<b>Bài kiểm tra trong tuần</b><ul style="margin:4px 0 10px">${D.exams.map(e=>`<li>${esc(e.t)}${e.p!=null?": <b>"+e.p+"%</b>":""}</li>`).join("")}</ul>`:""}
+    ${D.thi?`<p style="margin:4px 0 10px"><b>Thi thử gần nhất</b> (${esc(D.thi.mode)}): ${esc(D.thi.s)} ${esc(D.thi.g)} - <b>${esc(String(D.thi.sc).replace(".",","))}/10</b></p>`:""}
+    ${D.weak.length?`<b>Cần củng cố</b><ul style="margin:4px 0 10px">${D.weak.slice(0,5).map(w=>`<li><a href="${esc(w.href)}">${esc(w.t)}</a> - ${w.p}%</li>`).join("")}</ul>`:""}
+    <b>Lời khuyên</b><ul style="margin:4px 0 10px">${D.advice.map(a=>`<li>${esc(a)}</li>`).join("")}</ul>
+    <div class="note">Số liệu tính từ hoạt động học trên KK-EDU của tài khoản này${S.uid?"":" (chế độ Khách: chỉ dữ liệu trên máy này)"}. Bản quyền nội dung: Nguyễn Duy Điển.</div>
+    <div class="mrow noprint" style="flex-wrap:wrap"><button class="btn pri sm" id="wrShare">Gửi qua Zalo, Messenger</button><button class="btn ghost sm" id="wrLinkB">Chép link xem báo cáo</button><button class="btn ghost sm" id="wrMail">Gửi email</button><button class="btn ghost sm" id="wrPrint">In hoặc lưu PDF</button><button class="btn ghost sm" id="wrClose">Đóng</button></div></div>`);
+  const txt=wrText(D), link=wrLink(D);
+  $("#wrClose").onclick=closeModal;
+  $("#wrShare").onclick=async()=>{ try{ if(navigator.share){ await navigator.share({title:"Báo cáo học tập tuần - KK-EDU", text:txt, url:link}); return; } }catch(e){ if(e&&e.name==="AbortError") return; }
+    try{ await navigator.clipboard.writeText(txt+"\n"+link); toast("Đã chép báo cáo và link - dán vào Zalo, Messenger để gửi phụ huynh"); }catch(e){ toast("Chưa chép được, hãy dùng nút In hoặc Gửi email"); } };
+  $("#wrLinkB").onclick=async()=>{ try{ await navigator.clipboard.writeText(link); toast("Đã chép link xem báo cáo"); }catch(e){ toast("Chưa chép được link"); } };
+  $("#wrMail").onclick=()=>{ location.href="mailto:?subject="+encodeURIComponent("Báo cáo học tập tuần "+wrRange(D)+" - "+who)+"&body="+encodeURIComponent(txt+"\n\nXem báo cáo: "+link); };
+  $("#wrPrint").onclick=()=>{ document.body.classList.add("wrprint"); setTimeout(()=>{ window.print(); setTimeout(()=>document.body.classList.remove("wrprint"),600); },60); };
 }
 
 /* ----- Câu suy ngẫm (tự luận) ----- */
@@ -4716,6 +4810,15 @@ function cbKB(){
   {id:"ketquathi", k:"ket qua thi phan tich diem sai o dau on tap xem lai bai thi",
    a:`Nộp bài xong bạn nhận ngay: điểm /10, biểu đồ đúng-sai theo <b>từng chương</b> và theo <b>mức tư duy Bloom</b>, danh sách câu sai kèm nút <b>"ôn lại"</b> đưa về đúng bài - đúng phút, và lời giải chi tiết từng câu.`,
    acts:[{l:"Vào Kiểm tra", go:"thi"}]},
+  {id:"thithu", chip:"Thi thử miễn phí", k:"thi thu mien phi phong thi thu khong can dang ky de thi thu thi online cham ngay giay chung nhan thi thu 500 kiem tra thu",
+   a:`<b>Phòng thi thử</b> (www.kk-edu.com/thi-thu) miễn phí, <b>không cần đăng ký</b>: gõ tên và năm sinh, hệ thống tự xếp lớp; chọn môn, phạm vi (Giữa kỳ I, Cuối kỳ I, Giữa kỳ II, Cả năm) và hình thức: <b>đề cố định</b> theo ma trận 4 mức độ hoặc <b>thi thích ứng</b>. Chấm ngay ở máy chủ: điểm, so sánh với bạn cùng sách, phân tích theo chương và mức độ, lời giải từng câu, lộ trình ôn 3 ngày và giấy chứng nhận. Tên chỉ lưu trên trình duyệt để in giấy chứng nhận; máy chủ không lưu họ tên, không lưu IP.`,
+   acts:[{l:"Vào Phòng thi thử", href:"/thi-thu/"}]},
+  {id:"thichung", k:"thi thich ung cat adaptive de thich ung cau kho dan theo nang luc khoang tin cay ngan hon de co dinh",
+   a:`<b>Thi thích ứng</b> (thử nghiệm, trong Phòng thi thử): máy chọn câu tiếp theo theo câu trả lời của em: đúng thì câu khó hơn, sai thì câu vừa sức hơn, và dừng khi đã đo đủ chính xác (tối thiểu 10 câu). Với THCS, THPT, Đại học, bài thường ngắn hơn đề cố định khoảng 10-30%; Tiểu học lớp 3-5 làm đủ 15 câu nhưng câu được chọn vừa sức. Kết quả là điểm quy đổi thang 10 kèm <b>khoảng tin cậy</b>. Không quay lại câu trước; xem lại lời giải từng câu sau khi thi. Không áp dụng cho Mầm non và lớp 1-2.`,
+   acts:[{l:"Thử thi thích ứng", href:"/thi-thu/"}]},
+  {id:"baocaotuan", chip:"Báo cáo tuần", k:"bao cao tuan phu huynh gui bao cao cho bo me zalo messenger email tong ket tuan hoc cua con link bao cao in pdf",
+   a:`Mục <b>Học tập → Báo cáo tuần cho phụ huynh</b> tổng hợp 7 ngày: số ngày học, bài đã học và hoàn thành, số câu trả lời, tỉ lệ đúng ngay lần đầu, điểm trung bình, Sổ ôn tập, bài kiểm tra, bài cần củng cố và lời khuyên. Gửi qua Zalo, Messenger (nút Chia sẻ), email, <b>link xem báo cáo</b> (dữ liệu nằm sau dấu # của link, không gửi lên máy chủ, KK-EDU không lưu) hoặc in, lưu PDF; chọn được khoảng ngày khác.`,
+   acts:[{l:"Mở Báo cáo tuần", go:"dash"}]},
   {id:"ontap", chip:"Sổ ôn tập", k:"on tap so on tap cau sai on lai lap lai ngat quang nhac on quen bai nho lau hoc lai cau sai",
    a:`Câu em làm <b>sai</b>, hoặc phải làm <b>lần 2 mới đúng</b>, trong bài học tự vào <b>Sổ ôn tập</b> (mục Học tập). Hệ thống nhắc ôn đúng lúc sắp quên theo phương pháp <b>lặp lại ngắt quãng</b>: sau 1, 3, 7, 16, 35 ngày; trả lời đúng thì lịch ôn giãn ra, sai thì ôn lại sớm, đúng ở hộp cuối là đã thuộc. Mỗi lượt 5-10 phút, không tính vào điểm chính thức. Thứ tự phương án trắc nghiệm được xáo để em nhớ kiến thức, không nhớ vị trí đáp án.`,
    acts:[{l:"Mở Sổ ôn tập", go:"dash"}]},
@@ -5015,6 +5118,7 @@ function viewAdmin(v){
     <button data-t="tl" class="${adminTab==="tl"?"on":""}">Trợ lý</button>
     <button data-t="tt" class="${adminTab==="tt"?"on":""}">Thi thử 500</button>
     <button data-t="cc" class="${adminTab==="cc"?"on":""}">Chứng chỉ</button>
+    <button data-t="bm" class="${adminTab==="bm"?"on":""}">Bảo mật</button>
     <button data-t="hd" class="${adminTab==="hd"?"on":""}">Hướng dẫn</button>
   </div>
   <div id="adminBody"></div>`;
@@ -5030,6 +5134,7 @@ function viewAdmin(v){
   else if(adminTab==="tl") adminAssist(body);
   else if(adminTab==="tt") adminExam(body);
   else if(adminTab==="cc") adminCerts(body);
+  else if(adminTab==="bm") adminSecurity(body);
   else adminHelp(body);
 }
 function adminSettings(el){
@@ -5124,11 +5229,13 @@ function editContent(code, back){
     <div class="fld"><label for="ePrice">Giá (VND, trống = giá mặc định)</label><input id="ePrice" inputmode="numeric" value="${c.price!=null?c.price:""}"></div>
     <div class="fld"><label for="eFree">Miễn phí?</label><select id="eFree"><option value="">Theo giá</option><option value="1" ${c.free?"selected":""}>Miễn phí</option></select></div>
   </div>
-  <div class="fld"><label for="eCode">Mã mở khóa thủ công (cấp cho người mua chuyển khoản ngoài; sẽ lưu dạng băm SHA-256)</label><input id="eCode" placeholder="VD: KKEDU2026" value=""></div>
+  <div class="fld"><label for="eCode">Mã mở khóa thủ công (cấp cho người mua chuyển khoản ngoài; lưu dạng băm SHA-256; tối thiểu 10 ký tự để không bị dò)</label><div class="rowline"><input id="eCode" placeholder="Bấm Tạo mã để có mã ngẫu nhiên an toàn" value="" style="flex:1" autocomplete="off"><button class="btn ghost sm" id="eGen" type="button">Tạo mã</button></div></div>
   ${(c.codeHash||c.hasCode)?'<div class="note">Đã có mã mở khóa (nhập mã mới để thay, bỏ trống để giữ nguyên).</div>':""}
   <div class="mrow"><button class="btn pri" id="eSave">Lưu</button><button class="btn ghost" id="eNo">Đóng</button></div>`);
   $("#eNo").onclick=closeModal;
+  $("#eGen").onclick=()=>{ const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789", b=crypto.getRandomValues(new Uint8Array(12)); const t=[...b].map(x=>A[x%A.length]).join(""); $("#eCode").value="KK-"+t.slice(0,4)+"-"+t.slice(4,8)+"-"+t.slice(8); };
   $("#eSave").onclick=async()=>{
+    const ncChk=$("#eCode").value.trim(); if(ncChk&&ncChk.replace(/[^A-Za-z0-9]/g,"").length<10){ toast("Mã quá ngắn, dễ bị dò: dùng từ 10 ký tự hoặc bấm Tạo mã"); return; }
     const d=Object.assign({},S.content[code]||{});
     d.sachUrl=$("#eSach").value.trim(); d.scriptUrl=$("#eScript").value.trim(); d.videoUrl=$("#eVideo").value.trim();
     const pv=$("#ePrice").value.trim(); if(pv==="") delete d.price; else d.price=Number(pv)||0;
@@ -5548,6 +5655,21 @@ async function adminCerts(el){
   el.querySelectorAll("[data-zrv]").forEach(b=>b.onclick=async()=>{ b.disabled=true;
     try{ const r=await adminAssistFetch("/family/cert/revoke",{method:"POST", body:JSON.stringify({code:b.dataset.zrv})}); if(!r.ok) throw new Error("http "+r.status); toast("Đã chuyển sang trạng thái thu hồi"); adminCerts(el); }
     catch(e){ toast("Chưa cập nhật được: "+e.message); b.disabled=false; } });
+}
+/* Bảo mật: vi phạm CSP ở chế độ chỉ báo cáo (header do Worker gắn cho trang HTML) - đủ 7 ngày không còn vi phạm hợp lệ thì bật bắt buộc */
+async function adminSecurity(el){
+  el.innerHTML=`<div class="note">Đang tải báo cáo bảo mật...</div>`;
+  let d=null, err="";
+  try{ const r=await adminAssistFetch("/admin/csp?days=7"); d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.error==="admin-only"?"Chỉ tài khoản quản trị xem được.":"Lỗi máy chủ ("+r.status+")"); }catch(e){ err="Chưa tải được: "+e.message; d=null; }
+  el.innerHTML=`<div class="card"><h3 style="margin-top:0">Chính sách bảo mật nội dung (CSP) - chế độ chỉ báo cáo</h3>
+    <p class="note">Trang HTML của www.kk-edu.com đi qua Cloudflare Worker: đã bật HSTS, chống nhúng trang (frame-ancestors), nosniff, Referrer-Policy, Permissions-Policy. Chính sách CSP chặt hơn đang chạy ở chế độ <b>chỉ báo cáo</b> (không chặn gì), trình duyệt gửi vi phạm về đây (lấy mẫu 1/5, không lưu IP). Khi 7 ngày không còn vi phạm từ nguồn hợp lệ, có thể chuyển chính sách sang bắt buộc.</p>
+    ${err?`<div class="alertbox">${esc(err)}</div>`:""}
+    ${d?`<details><summary>Chính sách đang thử</summary><pre style="white-space:pre-wrap;font-size:.8rem">${esc(String(d.policy||"").split("; ").join(";\n"))}</pre></details>
+    <div class="tbwrap" style="margin-top:10px"><table class="tb"><thead><tr><th>Chỉ thị</th><th>Nguồn bị chặn</th><th>Trang</th><th>Số lần (ước tính)</th><th>Lần cuối</th></tr></thead><tbody>
+    ${(d.items||[]).map(x=>`<tr><td><code>${esc(x.dir)}</code></td><td>${esc(x.blocked)}</td><td class="note">${(x.pages||[]).map(esc).join("<br>")}</td><td><b>${kkNum(x.n)??0}</b></td><td class="note">${esc(String(x.last||"").slice(0,16).replace("T"," "))}</td></tr>`).join("")||`<tr><td colspan="5" class="note">Chưa có vi phạm nào trong 7 ngày.</td></tr>`}
+    </tbody></table></div>`:""}
+    <div class="mrow"><button class="btn sm" id="bmReload">Tải lại</button></div></div>`;
+  const rl=$("#bmReload"); if(rl) rl.onclick=()=>adminSecurity(el);
 }
 async function adminAssistFetch(path, opt){
   try{ await window.KK_API_READY; }catch(e){}
