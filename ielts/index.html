@@ -19,7 +19,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KK-EDU">
 <meta property="og:title" content="Luyện thi và thi thử IELTS - KK-EDU">
-<meta property="og:description" content="Luyện 4 kỹ năng, video tương tác, thi thử đề ngẫu nhiên, chấm tự động và chứng chỉ KK-EDU thử nghiệm.">
+<meta property="og:description" content="Luyện 4 kỹ năng, video tương tác, thi thử đề ngẫu nhiên, chấm tự động và chứng chỉ KK-EDU thử nghiệm."><meta property="og:url" content="https://www.kk-edu.com/ielts/"><meta property="og:image" content="https://www.kk-edu.com/luyen-thi-ielts/og.png"><meta name="twitter:card" content="summary_large_image"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="KK-EDU - giáo dục số trọn đời">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='1' y='1' width='46' height='46' rx='11' fill='%230f2a4a'/%3E%3Cpath d='M24 15.2 C20.4 11.2 15.4 10.4 11.6 12.3 C13.7 7.3 20.2 6 24 9.5 C27.8 6 34.3 7.3 36.4 12.3 C32.6 10.4 27.6 11.2 24 15.2 Z' fill='%23faf6ec'/%3E%3Cpath transform='translate(15 -2.2)' d='M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z' fill='%234f7bab'/%3E%3Cpath transform='translate(10.4 0)' d='M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z' fill='%23e0b941' stroke='%230f2a4a' stroke-width='1.2' paint-order='stroke'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -234,7 +234,7 @@ i.en{font-style:italic;color:var(--navy)}
 <nav class="steps" id="steps" aria-label="Các bước"></nav>
 <main id="main"><div class="card"><h1>Đang tải dữ liệu IELTS…</h1><p class="mute">Ngân hàng đề, tài liệu và kịch bản video được nạp từ máy chủ KK-EDU.</p></div></main>
 <footer>Tác giả: Nguyễn Duy Điển · <a href="/">www.kk-edu.com</a> · <a href="/luyen-thi-ielts/">Giới thiệu chương trình</a> · <a href="/hoi-dap/">Hỏi đáp</a> · Học liệu bổ trợ, mô hình thí điểm. IELTS là nhãn hiệu của British Council, IDP và Cambridge; hệ thống này không liên kết với các tổ chức đó. AI gợi ý, con người quyết định.</footer>
-<script src="/kk-doc.js?v=20261027b"></script>
+<script src="/kk-doc.js?v=20261031"></script>
 <script>
 window.KK_API="/api";
 const KK_API_ALT="https://kk-edu-api.nguyenduydien75.workers.dev/api";
@@ -279,7 +279,7 @@ let S = {step:0, skill:'LIS', mat:null, vid:null, progress:{}, test:null, result
 try{ const s = localStorage.getItem('kkedu_ielts_v1'); if(s){ Object.assign(S, JSON.parse(s)); S.step = S.step||0; } }catch(e){}
 function save(){ try{ localStorage.setItem('kkedu_ielts_v1', JSON.stringify(S)); }catch(e){} }
 const $ = s => document.querySelector(s);
-const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const rich = s => esc(s).replace(/&lt;(\/?)(b|i|u)&gt;/g,'<$1$2>').replace(/&lt;br\/?&gt;/g,'<br>');
 const fmtT = s => { s=Math.max(0,Math.round(s)); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); };
 const TODAY = () => new Date().toISOString().slice(0,10);
@@ -429,10 +429,12 @@ function renderTest(m){
   if(t.running && !tick) startTimer();
   if(k==='WR'){ document.querySelectorAll('textarea.noPaste').forEach(ta=>ta.addEventListener('paste',e=>{e.preventDefault(); t.violations=(t.violations||0)+1; kkToast('Dán văn bản bị khóa trong phòng thi.');})); }
 }
-function qInput(key, g, q, idx){
-  const val = S.test.answers[key]||'';
+function qInput(key, g, q, idx, ns){
+  const NS = ns==="J.pr.answers" ? "J.pr.answers" : "S.test.answers";      /* bài luyện lưu đáp án ở J.pr, bài thi ở S.test (không dùng new Function - tương thích CSP) */
+  const src = NS==="J.pr.answers" ? J.pr.answers : S.test.answers;
+  const val = src[key]||'';
   const t = g.type;
-  const onch = `S.test.answers['${key}']=this.value`;
+  const onch = `${NS}['${key}']=this.value`;
   if(['multiple_choice'].includes(t)){ const ch = mcChoices(q,g); return `<div class="q"><b>${idx}.</b> ${esc(mcStem(q))}<br>${Object.entries(ch||{}).map(([kk,v])=>`<label style="display:block"><input type="radio" name="${key}" value="${kk}" ${val===kk?'checked':''} onchange="${onch}"> ${kk}. ${esc(v)}</label>`).join('')}</div>`; }
   if(['matching','matching_features','matching_information','matching_headings','map_labelling','list_selection'].includes(t)){
     const opts = t==='matching_headings'?g.headings:(t==='matching_information'?Object.fromEntries((g._labels||[]).map(l=>[l,'Paragraph '+l])):g.options);
@@ -745,7 +747,7 @@ async function kkAi(task, prompt){
   const base=await kkApiBase(); const tok=await kkIdToken();
   const r=await fetch(base+"/ielts/ai",{method:"POST",headers:{"content-type":"application/json","authorization":"Bearer "+tok},body:JSON.stringify({task,prompt})});
   const j=await r.json().catch(()=>({}));
-  if(!r.ok) throw new Error(j.error==="ai-not-configured"?"AI chưa được bật trên máy chủ.":j.error==="auth"?"Phiên đăng nhập hết hạn, hãy đăng nhập lại.":("Lỗi AI: "+(j.error||r.status)));
+  if(!r.ok) throw new Error(j.error==="ai-not-configured"?"AI chưa được bật trên máy chủ.":j.error==="auth"?"Phiên đăng nhập hết hạn, hãy đăng nhập lại.":(j.error==="quota"||j.error==="rate")?(j.detail||"Bạn dùng AI quá nhanh hoặc đã hết lượt hôm nay. Hãy thử lại sau ít phút."):("Lỗi AI: "+(j.error||r.status)));
   return j;
 }
 function kkMd(t){ return esc(t).replace(/\n{2,}/g,"</p><p>").replace(/\n/g,"<br>").replace(/\*\*(.+?)\*\*/g,"<b>$1</b>"); }
@@ -1070,7 +1072,7 @@ function openReview(week){ const codes=repeatedCodes(28); const F=D.feedback; co
   const m=$("#main"); m.innerHTML=`<div class="card"><div class="row"><button class="btn sec" onclick="render()">Về tuần học</button></div><h1>Ôn theo mã lỗi của tôi</h1>${codes.length?`<p>Mã lỗi lặp trong 4 tuần: ${codes.map(c=>`<span class="tag">${c}</span>`).join(" ")}</p><div class="list">${[...vids].map(v=>{ const x=D.videos.find(y=>y.id===v); return x?`<div class="item" onclick="S.vid='${v}';S.skill='${x.skill}';save();render()"><span class="code">${v}</span><span>${esc(x.title)}</span></div>`:""; }).join("")}</div>`:`<p>Không có mã lỗi lặp - bạn có thể dùng tuần này để làm các bài luyện nâng cao bên dưới.</p>`}</div>`; }
 
 /* ---------- 6. Bài luyện (practice) - 10 câu, chấm ngay, Chốt lỗi, Tôi kẹt ---------- */
-const qInputP = new Function("mcChoices","mcStem","esc","return "+qInput.toString().replace(/S\.test\.answers/g,"J.pr.answers"))(mcChoices, mcStem, esc);
+const qInputP = (key, g, q, idx) => qInput(key, g, q, idx, "J.pr.answers");
 function openPractice(it, week, opts){
   kkStop(); J.pr=Object.assign({it, week, answers:{}, graded:null, started:Date.now(), stuckShown:{}}, opts||{}); S.vid=null; S.mat=null;
   if(!(opts&&opts.diag) && ![1,2].includes(S.step)){ const w=week&&J.plan.weeks[week-1]; S.step = (w&&w.phase>=2)?2:1; }   // bài luyện luôn mở trong chặng Xây nền / Kỹ năng
@@ -1143,7 +1145,7 @@ async function gradeWriting(){
   try{ const j=await kkAi("grade_wr", prompt); const b=j.json&&j.json.bands; if(!b) throw new Error("AI chưa trả về điểm hợp lệ, hãy thử lại.");
     const band=floorHalf(Object.values(b).reduce((a,x)=>a+Number(x),0)/Object.keys(b).length);
     S.journey.writing[it.bank]={date:TODAY(), text, words, bands:b, band, week:pr.week}; (j.json.top_errors||[]).forEach(e=>{ if(e.code) (S.errorLog=S.errorLog||[]).push({date:TODAY(), code:String(e.code).split(/[-,\s]/)[0], count:1, source:"writing:"+it.bank}); });
-    pr.graded=true; pr.wrOut=`<div class="bands">${Object.entries(b).map(([k,v])=>`<div class="band"><div class="v">${Number(v).toFixed(1)}</div>${k}</div>`).join("")}<div class="band ov"><div class="v">${band.toFixed(1)}</div>Task band</div></div>${(j.json.top_errors||[]).map(e=>`<div class="q"><b>${esc(e.code||'')}</b> "${esc(e.quote||'')}" → ${esc(e.fix||'')}</div>`).join("")}${j.json.rewrite_band8?`<div class="box"><b class="t">Weakest paragraph rewritten at Band 8</b><p>${esc(j.json.rewrite_band8)}</p></div>`:''}${phaseNow()<=2&&j.json.comment_vi?`<div class="chot"><div class="eyebrow">Chốt lỗi</div><p>${esc(j.json.comment_vi)}</p></div>`:''}`;
+    pr.graded=true; pr.wrOut=`<div class="bands">${Object.entries(b).map(([k,v])=>`<div class="band"><div class="v">${Number(v).toFixed(1)}</div>${esc(k)}</div>`).join("")}<div class="band ov"><div class="v">${band.toFixed(1)}</div>Task band</div></div>${(j.json.top_errors||[]).map(e=>`<div class="q"><b>${esc(e.code||'')}</b> "${esc(e.quote||'')}" → ${esc(e.fix||'')}</div>`).join("")}${j.json.rewrite_band8?`<div class="box"><b class="t">Weakest paragraph rewritten at Band 8</b><p>${esc(j.json.rewrite_band8)}</p></div>`:''}${phaseNow()<=2&&j.json.comment_vi?`<div class="chot"><div class="eyebrow">Chốt lỗi</div><p>${esc(j.json.comment_vi)}</p></div>`:''}`;
     save(); kkTrackIelts("ielts_writing_ai",{band}); render();
   }catch(e){ out.innerHTML=`<p class="warnbox">${esc(e.message)}</p>`; }
 }
@@ -1171,7 +1173,7 @@ async function gradeSpeakingPractice(){
     const vals=Object.values(b).map(Number); const band=floorHalf(vals.reduce((a,x)=>a+x,0)/vals.length);
     const cur=S.journey.speaking[it.bank]||{}; S.journey.speaking[it.bank]=Object.assign(cur,{date:TODAY(), ai:b, aiBand:band, metrics, week:pr.week});
     (j.json.top_errors||[]).forEach(e=>{ if(e.code) (S.errorLog=S.errorLog||[]).push({date:TODAY(), code:String(e.code).split(/[-,\s]/)[0], count:1, source:'speaking:'+it.bank}); });
-    pr.spOut=`<div class="bands">${Object.entries(b).map(([k,v])=>`<div class="band"><div class="v">${Number(v).toFixed(1)}</div>${k}</div>`).join('')}<div class="band ov"><div class="v">${band.toFixed(1)}</div>Ước tính</div></div><p class="mute">${metrics.wpm} từ/phút · ${metrics.pauses} ngập ngừng dài · ${metrics.answers} câu · ${metrics.seconds}s. Pronunciation lấy từ ô tự chấm bên dưới (tối đa 7.0).</p>${(j.json.top_errors||[]).map(e=>`<div class="q"><b>${esc(e.code||'')}</b> "${esc(e.quote||'')}" → ${esc(e.fix||'')}</div>`).join('')}${phaseNow()<=2&&j.json.comment_vi?`<div class="chot"><div class="eyebrow">Chốt lỗi</div><p>${esc(j.json.comment_vi)}</p></div>`:''}`;
+    pr.spOut=`<div class="bands">${Object.entries(b).map(([k,v])=>`<div class="band"><div class="v">${Number(v).toFixed(1)}</div>${esc(k)}</div>`).join('')}<div class="band ov"><div class="v">${band.toFixed(1)}</div>Ước tính</div></div><p class="mute">${metrics.wpm} từ/phút · ${metrics.pauses} ngập ngừng dài · ${metrics.answers} câu · ${metrics.seconds}s. Pronunciation lấy từ ô tự chấm bên dưới (tối đa 7.0).</p>${(j.json.top_errors||[]).map(e=>`<div class="q"><b>${esc(e.code||'')}</b> "${esc(e.quote||'')}" → ${esc(e.fix||'')}</div>`).join('')}${phaseNow()<=2&&j.json.comment_vi?`<div class="chot"><div class="eyebrow">Chốt lỗi</div><p>${esc(j.json.comment_vi)}</p></div>`:''}`;
     save(); kkTrackIelts('ielts_speaking_ai',{band}); render();
   }catch(e){ out.innerHTML=`<p class="warnbox">${esc(e.message)}</p>`; }
 }

@@ -8,6 +8,22 @@
    câu tiếng Anh trong bài Tiếng Anh đọc bằng giọng tiếng Anh.
    Dùng: viNorm(văn bản, {digits, en, ta}) · kkSay([câu...], {ta, rate, onend}) · kkSayStop()
    ===================================================================== */
+/* Thay cho lookbehind (?<![...]): Safari iOS < 16.4 không hiểu cú pháp này, cả tệp sẽ lỗi.
+   kkNB(/mẫu/g, /kí tự đứng trước bị cấm/) dùng trong .replace(), cùng ngữ nghĩa với /(?<![...])mẫu/g */
+function kkNB(re, bad){
+  return { [Symbol.replace](str, repl){
+    str=String(str); let out="", last=0, m; re.lastIndex=0;
+    while((m=re.exec(str))){
+      const i=m.index;
+      if(i>0&&bad.test(str[i-1])){ re.lastIndex=i+1; continue; }
+      const rep=typeof repl==="function"?repl(...m,i,str):String(repl).replace(/\$(\d|&)/g,(x,k)=>k==="&"?m[0]:(m[+k]==null?"":m[+k]));
+      out+=str.slice(last,i)+rep; last=i+m[0].length;
+      if(!m[0].length) re.lastIndex++;
+    }
+    return out+str.slice(last);
+  } };
+}
+
 const VI_D=["không","một","hai","ba","bốn","năm","sáu","bảy","tám","chín"];
 function viGroup(n,full){
   const h=Math.floor(n/100), t=Math.floor(n%100/10), u=n%10, s=[];
@@ -296,7 +312,7 @@ function viPre(s,isTA){
   s=s.replace(/(^|[^A-Za-zÀ-ỹ])([ℕℤℚℝNZQR])\s?\*/g,(m,p,c)=>p+" "+(/[ℕℤℚℝ]/.test(c)?"tập ":"")+viLetName(c)+" sao ");
   /* đồng vị ³⁵₁₇Cl, ion Fe²⁺ / CN⁻ / [Cu(NH₃)₄]²⁺ */
   s=s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]+)([₀₁₂₃₄₅₆₇₈₉]+)([A-Z][a-z]?)/g,(m,a,z,el)=>" "+el+" có số khối "+viSupA(a)+", số hiệu nguyên tử "+viSubA(z)+" ");
-  s=s.replace(/(?<![A-Za-z])log([₀₁₂₃₄₅₆₇₈₉][₀₁₂₃₄₅₆₇₈₉,.]*)\s*/g,(m,b)=>" lốc cơ số "+viSubA(b)+" của ");
+  s=s.replace(kkNB(/log([₀₁₂₃₄₅₆₇₈₉][₀₁₂₃₄₅₆₇₈₉,.]*)\s*/g,/[A-Za-z]/),(m,b)=>" lốc cơ số "+viSubA(b)+" của ");
   s=s.replace(/((?:[A-Z][a-z]?[₀₁₂₃₄₅₆₇₈₉\d]*)+|[a-z)\]])([¹²³⁴⁵⁶⁷⁸⁹]*)([⁺⁻])(?![⁰¹²³⁴⁵⁶⁷⁸⁹])/g,(m,a,d,sg)=>{
     const us=a.match(/[A-Z][a-z]?[₀₁₂₃₄₅₆₇₈₉\d]*/g);
     const f=(us&&us.join("")===a&&us.every(u=>VI_EL.has(u.replace(/[₀₁₂₃₄₅₆₇₈₉\d]+/,""))))?" "+us.map(u=>{ const sy=u.replace(/[₀₁₂₃₄₅₆₇₈₉\d]+/,""), n=viSubA(u.slice(sy.length)); return viSpell(sy)+(n?" "+n:""); }).join(" "):a;
@@ -324,7 +340,7 @@ function viPre(s,isTA){
   s=s.replace(/\b([A-Z]):\\/g," ổ $1, ").replace(/\\/g," gạch chéo ngược ");
   s=s.replace(/\*(?=[\w]*\.[a-z]{2,4}\b)/g," dấu sao ");
   s=s.replace(/#DIV\/0!/g," lỗi chia cho 0 ").replace(/#N\/A/g," lỗi không có giá trị ").replace(/#VALUE!/g," lỗi giá trị ").replace(/#REF!/g," lỗi tham chiếu ").replace(/#NAME\?/g," lỗi tên ").replace(/#{2,}/g," dấu thăng dấu thăng ").replace(/#/g," dấu thăng ");
-  s=s.replace(/(?<![A-Za-z0-9$])(\$?[A-Z]{1,2}\$?\d+):(\$?[A-Z]{1,2}\$?\d+)(?![\w])/g,"$1 đến $2");
+  s=s.replace(kkNB(/(\$?[A-Z]{1,2}\$?\d+):(\$?[A-Z]{1,2}\$?\d+)(?![\w])/g,/[A-Za-z0-9$]/),"$1 đến $2");
   s=s.replace(/\$(\d[\d.,]*)/g,"$1 đô la").replace(/\$/g," đô la ");
   s=s.replace(/@/g," a còng ").replace(/\s&\s/g," và ").replace(/¶/g," dấu đoạn văn ").replace(/✓|✔/g," đúng ").replace(/✗|✘/g," sai ");
   s=s.replace(/\s?\/\/=\s?/g," chia nguyên rồi gán ").replace(/(\w)\s+\/\/\s+(?=\w)/g,"$1 chia lấy phần nguyên ");
@@ -332,7 +348,7 @@ function viPre(s,isTA){
   s=s.replace(/\s?\+=\s?/g," cộng thêm ").replace(/\s-=\s/g," trừ bớt ").replace(/\s\*=\s/g," nhân với ");
   s=s.replace(/\s?==\s?/g," bằng bằng ").replace(/\s?!=\s?/g," khác ").replace(/\s?<=\s?/g," nhỏ hơn hoặc bằng ").replace(/\s?>=\s?/g," lớn hơn hoặc bằng ");
   { const code=/==|print\(|\bif\b|\bwhile\b|\bfor\b|\belif\b|\bdef\b|đoạn mã|lập trình|Python|biểu thức|toán tử|\/\/|\bkq\b|\btong\b/.test(s);
-    s=s.replace(/(?<![A-Za-zÀ-ỹ])([A-Za-z_]\w{0,8}|\d+|\))\s+%\s+(?=(\d+|[A-Za-z_]\w*)(?![À-ỹ]))/g,(m,a,b)=>(code||(/^\d+$/.test(a)&&/^\d+$/.test(b)))?a+" chia lấy dư ":m); }
+    s=s.replace(kkNB(/([A-Za-z_]\w{0,8}|\d+|\))\s+%\s+(?=(\d+|[A-Za-z_]\w*)(?![À-ỹ]))/g,/[A-Za-zÀ-ỹ]/),(m,a,b)=>(code||(/^\d+$/.test(a)&&/^\d+$/.test(b)))?a+" chia lấy dư ":m); }
   /* dấu hai chấm: tỉ lệ bản đồ, giờ, phép chia */
   s=s.replace(/(\d+)(?::|\s:\s)(\d{1,3}(?:[ .]\d{3})+|\d+)(?![\d:])/g,(m,a,b,off,str)=>{
     const L=str.slice(Math.max(0,off-24),off);
@@ -384,9 +400,9 @@ function viPre(s,isTA){
     return " giá trị tuyệt đối của "+x+", ";
   });
   s=s.replace(/\s*\|\s*/g,", ");
-  s=s.replace(/(?<![A-Za-zÀ-ỹ])(SAI|SAU|TRONG|CHO|CAO|NHAU|HAI|BA|BAO|XA|MOI|CON|SAO)(?![A-Za-zÀ-ỹ])/g,w=>w.toLowerCase());
-  s=s.replace(/(?<![A-Za-zÀ-ỹ])ch\s?\.\s?cgv(?![A-Za-z])/g," cạnh huyền cạnh góc vuông ").replace(/(?<![A-Za-zÀ-ỹ])ch\s?\.\s?gn(?![A-Za-z])/g," cạnh huyền góc nhọn ");
-  s=s.replace(/(?<![A-Za-zÀ-ỹ])([cg])\.([cg])\.([cg])(?![A-Za-zÀ-ỹ])\.?/g,(m,a,b,c)=>" "+[a,b,c].map(x=>x==="c"?"cạnh":"góc").join(" ")+" ").replace(/(?<![A-Za-zÀ-ỹ])g\.g(?![A-Za-zÀ-ỹ])\.?/g," góc góc ");
+  s=s.replace(kkNB(/(SAI|SAU|TRONG|CHO|CAO|NHAU|HAI|BA|BAO|XA|MOI|CON|SAO)(?![A-Za-zÀ-ỹ])/g,/[A-Za-zÀ-ỹ]/),w=>w.toLowerCase());
+  s=s.replace(kkNB(/ch\s?\.\s?cgv(?![A-Za-z])/g,/[A-Za-zÀ-ỹ]/)," cạnh huyền cạnh góc vuông ").replace(kkNB(/ch\s?\.\s?gn(?![A-Za-z])/g,/[A-Za-zÀ-ỹ]/)," cạnh huyền góc nhọn ");
+  s=s.replace(kkNB(/([cg])\.([cg])\.([cg])(?![A-Za-zÀ-ỹ])\.?/g,/[A-Za-zÀ-ỹ]/),(m,a,b,c)=>" "+[a,b,c].map(x=>x==="c"?"cạnh":"góc").join(" ")+" ").replace(kkNB(/g\.g(?![A-Za-zÀ-ỹ])\.?/g,/[A-Za-zÀ-ỹ]/)," góc góc ");
   /* hình học: tam giác, đồng dạng, góc phẩy */
   s=s.replace(/[∆△Δ]\s*(?=[A-Z]['’]?[A-Z])/g," tam giác ").replace(/△/g," hình tam giác ").replace(/∆/g," đen ta ");
   s=s.replace(/∽|∼/g," đồng dạng với ").replace(/≅/g," bằng ").replace(/⟂/g," vuông góc với ").replace(/∝/g," tỉ lệ với ");

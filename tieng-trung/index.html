@@ -19,7 +19,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KK-EDU">
 <meta property="og:title" content="Tiếng Trung giao tiếp tương tác - KK-EDU">
-<meta property="og:description" content="140 bài tiếng Trung giao tiếp cho người Việt: chữ Hán, phát âm, ghép câu, nghe hiểu, role-play với AI.">
+<meta property="og:description" content="140 bài tiếng Trung giao tiếp cho người Việt: chữ Hán, phát âm, ghép câu, nghe hiểu, role-play với AI."><meta property="og:url" content="https://www.kk-edu.com/tieng-trung/"><meta property="og:image" content="https://www.kk-edu.com/hoc-tieng-trung/og.png"><meta name="twitter:card" content="summary_large_image"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="KK-EDU - giáo dục số trọn đời">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='1' y='1' width='46' height='46' rx='11' fill='%230f2a4a'/%3E%3Cpath d='M24 15.2 C20.4 11.2 15.4 10.4 11.6 12.3 C13.7 7.3 20.2 6 24 9.5 C27.8 6 34.3 7.3 36.4 12.3 C32.6 10.4 27.6 11.2 24 15.2 Z' fill='%23faf6ec'/%3E%3Cpath transform='translate(15 -2.2)' d='M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z' fill='%234f7bab'/%3E%3Cpath transform='translate(10.4 0)' d='M0 42 V18.5 h6.2 v10.1 L15.6 18.5 h7.3 L12.7 29.9 23.6 42 h-7.5 l-7.6-8.7 -2.3 2.5 V42 Z' fill='%23e0b941' stroke='%230f2a4a' stroke-width='1.2' paint-order='stroke'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -430,7 +430,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 /* Dữ liệu bài học nạp từ API KK-EDU (zh_kk.js), không nhúng trong trang */
 let LESSONS = []; const STROKES = {};
 const $ = s => document.querySelector(s);
-const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const rich = s => esc(s).replace(/&lt;(\/?)(b|i|u)&gt;/g,'<$1$2>').replace(/&lt;br\/?&gt;/g,'<br>');
 let S = {lesson:null, tab:'l1', progress:{}, name:'', errors:[]};
 try{ const s=localStorage.getItem('kkedu_zh_v1'); if(s) Object.assign(S, JSON.parse(s)); }catch(e){}
@@ -1318,7 +1318,7 @@ function zhSummary(){
    Tác giả : Nguyễn Duy Điển. Gọi /api/zh/ai (Workers AI; ngữ cảnh bài học do máy chủ dựng). AI gợi ý, con người quyết định. */
 
 const ZA = { chat:{}, busy:false, prac:{}, grade:null, err:"" };
-const ZA_ERR = {401:"Phiên đăng nhập đã hết, hãy đăng nhập lại.", 403:"Trang này không được phép gọi trợ lý AI.", 503:"Trợ lý AI tạm thời chưa sẵn sàng trên máy chủ. Hãy thử lại sau.", 413:"Câu hỏi quá dài.", 400:"Yêu cầu chưa hợp lệ."};
+const ZA_ERR = {429:"Bạn dùng AI quá nhanh hoặc đã hết lượt AI hôm nay. Hãy thử lại sau ít phút (hạn mức đặt lại lúc 0 giờ).", 401:"Phiên đăng nhập đã hết, hãy đăng nhập lại.", 403:"Trang này không được phép gọi trợ lý AI.", 503:"Trợ lý AI tạm thời chưa sẵn sàng trên máy chủ. Hãy thử lại sau.", 413:"Câu hỏi quá dài.", 400:"Yêu cầu chưa hợp lệ."};
 async function zaApi(body){
   if(!KK.user) throw new Error("login");
   const base = await kkApiBase(); const tok = await kkIdToken();
@@ -1467,7 +1467,7 @@ zvCpHTML = function(v, d, it){
   return _zvCpD(v, d, it);
 };
 
-/* ===== KK-EDU Tiếng Trung: Chứng chỉ KK-EDU Thử nghiệm HSK 3 - tự động cấp khi đủ điều kiện =====
+/* ===== KK-EDU Tiếng Trung: Chứng chỉ KK-EDU Thử nghiệm HSK 3 - tự động gửi hồ sơ khi đủ điều kiện, Quản trị viên xác nhận =====
    Tác giả : Nguyễn Duy Điển. Điều kiện: hoàn thành 120 bài Giai đoạn 1 (A01-A06, B01-B24, C01-C90: đã làm kiểm tra cuối bài)
    và đạt thi thử HSK 3 (từ 120/200). Máy chủ kiểm lại điều kiện từ dữ liệu đám mây trước khi cấp; mã tra cứu tại /verify/. */
 const ZC = { cert:null, loaded:false, busy:false, err:"", tried:false, justIssued:false };
@@ -1524,12 +1524,15 @@ function zhCertMountQr(tries){ const el=document.getElementById("zcQr"); if(!el|
 function zhCertPrint(){ document.body.classList.add("zcprint"); setTimeout(()=>{ window.print(); setTimeout(()=>document.body.classList.remove("zcprint"), 500); }, 50); }
 function zhCertCardHTML(){
   const L=zhCertLocal(); const pct=Math.round(100*L.lessons/L.need);
+  if(ZC.cert&&ZC.cert.status==="pending") return `<div class="card" id="chung-chi"><h2>Chứng chỉ KK-EDU Thử nghiệm Tiếng Trung ${esc(ZC.cert.level||"HSK 3")}</h2>
+    <div class="fb good">Bạn đã đủ điều kiện. Hồ sơ cấp chứng chỉ đã được gửi và <b>đang chờ Quản trị viên KK-EDU xác nhận</b> (thường trong 1-2 ngày làm việc). Sau khi xác nhận, chứng chỉ hiện ở đây để in và tra cứu công khai tại trang xác minh.</div>
+    <p class="mute">Mã hồ sơ: <b>${esc(ZC.cert.code)}</b> · Kết quả thi thử: ${esc(ZC.cert.score||"")} · ${esc(String(ZC.cert.lessons||0))}/120 bài</p></div>`;
   if(ZC.cert) return `<div class="card" id="chung-chi"><h2>Chứng chỉ KK-EDU Thử nghiệm Tiếng Trung ${esc(ZC.cert.level)}</h2>${ZC.justIssued?'<div class="fb good">Chúc mừng! Bạn đủ điều kiện và chứng chỉ đã được cấp tự động.</div>':""}
     ${zhCertDocHTML(ZC.cert)}<div class="row noprint" style="margin-top:10px"><button class="btn" onclick="zhCertPrint()">In hoặc lưu PDF</button><a class="btn sec" href="/verify/?code=${esc(ZC.cert.code)}" target="_blank" rel="noopener">Trang xác minh</a><button class="btn sec" onclick="navigator.clipboard&&navigator.clipboard.writeText('${esc(zhCertVerifyUrl(ZC.cert.code))}')">Sao chép liên kết xác minh</button></div></div>`;
-  return `<div class="card" id="chung-chi"><h2>Chứng chỉ KK-EDU Thử nghiệm Tiếng Trung HSK 3</h2><p class="mute">Cấp tự động khi đủ hai điều kiện. Chứng chỉ nội bộ, có mã xác minh công khai; không thay thế chứng chỉ HSK chính thức.</p>
+  return `<div class="card" id="chung-chi"><h2>Chứng chỉ KK-EDU Thử nghiệm Tiếng Trung HSK 3</h2><p class="mute">Xét cấp tự động khi đủ hai điều kiện; quản trị viên KK-EDU xác nhận hồ sơ (thường 1-2 ngày) trước khi chứng chỉ có giá trị tra cứu. Chứng chỉ nội bộ, có mã xác minh công khai; không thay thế chứng chỉ HSK chính thức.</p>
     <div class="box"><b>1. Hoàn thành 120 bài Giai đoạn 1</b> (làm kiểm tra cuối bài): ${L.lessons}/${L.need}<div class="prog"><i style="width:${pct}%"></i></div>${L.next?`<button class="btn sec sm" onclick="zhOpen('${L.next}')">Học tiếp ${esc(L.next)}</button>`:'<span class="zst ok">Đạt</span>'}</div>
     <div class="box"><b>2. Đạt thi thử HSK 3</b> (từ 120/200): ${L.hsk3?`<span class="zst ok">Đạt ${esc(L.hsk3.scoreText)} (${esc(L.hsk3.date||"")})</span>`:`chưa đạt <button class="btn sec sm" onclick="S.lesson=null;S.page='test';save();ztStart('HSK3')">Thi thử HSK 3</button>`}</div>
-    ${!KK.user?`<div class="warnbox">Chứng chỉ gắn với tài khoản: <a href="${kkLoginUrl()}">đăng nhập KK-EDU</a> để được cấp tự động.</div>`:L.ok?`<div class="row"><button class="btn gold" ${ZC.busy?"disabled":""} onclick="zhCertIssue()">${ZC.busy?"Đang cấp...":"Nhận chứng chỉ"}</button></div>`:""}
+    ${!KK.user?`<div class="warnbox">Chứng chỉ gắn với tài khoản: <a href="${kkLoginUrl()}">đăng nhập KK-EDU</a> để được xét cấp tự động.</div>`:L.ok?`<div class="row"><button class="btn gold" ${ZC.busy?"disabled":""} onclick="zhCertIssue()">${ZC.busy?"Đang cấp...":"Nhận chứng chỉ"}</button></div>`:""}
     ${ZC.err?`<p class="warnbox">${esc(ZC.err)}</p>`:""}</div>`;
 }
 (function(){
