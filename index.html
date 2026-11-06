@@ -5179,11 +5179,11 @@ function adminSettings(el){
   el.innerHTML=`<div class="card" style="max-width:720px">
   <div class="formgrid">
     <div class="fld"><label for="aSite">Tên nền tảng</label><input id="aSite" value="${esc(s.siteName)}"></div>
-    <div class="fld"><label for="aPrice">Khóa sách sau ${trialN()} bài học thử (VND > 0 = cần gói; 0 = mở miễn phí toàn bộ)</label><input id="aPrice" inputmode="numeric" value="${esc(s.defaultPrice||0)}"></div>
-    <div class="fld"><label for="aPlanPt">Giá gói 1 năm: Mầm non đến THPT (VND)</label><input id="aPlanPt" inputmode="numeric" value="${esc((s.plans&&s.plans.pt)||KKP.DEF.pt)}"></div>
-    <div class="fld"><label for="aPlanDh">Giá gói 1 năm: Đại học (VND)</label><input id="aPlanDh" inputmode="numeric" value="${esc((s.plans&&s.plans.dh)||KKP.DEF.dh)}"></div>
-    <div class="fld"><label for="aPlanThs">Giá gói 1 năm: Thạc sĩ (VND)</label><input id="aPlanThs" inputmode="numeric" value="${esc((s.plans&&s.plans.ths)||KKP.DEF.ths)}"></div>
-    <div class="fld"><label for="aPlanTs">Giá gói 1 năm: Tiến sĩ (VND)</label><input id="aPlanTs" inputmode="numeric" value="${esc((s.plans&&s.plans.ts)||KKP.DEF.ts)}"></div>
+    <div class="fld"><label for="aPrice">Khóa sách sau ${trialN()} bài học thử (VND > 0 = cần gói; 0 = mở miễn phí toàn bộ)</label><input id="aPrice" data-money value="${esc(s.defaultPrice||0)}"></div>
+    <div class="fld"><label for="aPlanPt">Giá gói 1 năm: Mầm non đến THPT (VND)</label><input id="aPlanPt" data-money value="${esc((s.plans&&s.plans.pt)||KKP.DEF.pt)}"></div>
+    <div class="fld"><label for="aPlanDh">Giá gói 1 năm: Đại học (VND)</label><input id="aPlanDh" data-money value="${esc((s.plans&&s.plans.dh)||KKP.DEF.dh)}"></div>
+    <div class="fld"><label for="aPlanThs">Giá gói 1 năm: Thạc sĩ (VND)</label><input id="aPlanThs" data-money value="${esc((s.plans&&s.plans.ths)||KKP.DEF.ths)}"></div>
+    <div class="fld"><label for="aPlanTs">Giá gói 1 năm: Tiến sĩ (VND)</label><input id="aPlanTs" data-money value="${esc((s.plans&&s.plans.ts)||KKP.DEF.ts)}"></div>
     <div class="fld"><label for="aAY">Năm bắt đầu năm học (xếp lớp theo tuổi; VD 2026 cho năm học 2026-2027)</label><input id="aAY" inputmode="numeric" value="${esc(s.academicYear||2026)}"></div>
     <div class="fld"><label for="aRV">Bắt buộc xác thực độ tuổi để học tiếp (bài 2 trở đi)</label><select id="aRV"><option value="">Tắt (thí điểm - chỉ khai năm sinh)</option><option value="1" ${s.requireVerify?"selected":""}>Bật (cần ADMIN xác thực hoặc Mã xác thực)</option></select></div>
     <div class="fld"><label for="aSeq">Học tuần tự (xong bài trước mới mở bài sau + sách PDF)</label><select id="aSeq"><option value="1">Bật (mặc định)</option><option value="0" ${s.sequential===false?"selected":""}>Tắt (học tự do)</option></select></div>
@@ -5204,6 +5204,7 @@ function adminSettings(el){
   <div class="note">Dữ liệu lưu 2 nơi: Firestore (chính) và kho GitHub private <b>kk-edu-content</b> (dự phòng). Cloudflare Worker tự sao lưu Firestore → GitHub mỗi ngày; khi Firestore lỗi, bài học tự tải từ GitHub qua <code>/api/pack</code>.</div>
   <div class="mrow"><button class="btn ghost" id="aHealth">Kiểm tra hệ thống</button><button class="btn ghost" id="aBackup">Sao lưu ngay</button></div><div id="aBkOut" class="note"></div></div>
   <div class="note" style="margin-top:8px">BIN + số tài khoản dùng để sinh mã VietQR động chuẩn EMVCo ngay trên trình duyệt người mua - không cần cổng trung gian. Kích hoạt <b>tự động</b> khi ngân hàng báo tiền về qua webhook (SePay / Casso, cài trên Cloudflare: PAY_WEBHOOK_SECRET); email mã kích hoạt tự gửi khi có BREVO_API_KEY (hoặc RESEND_API_KEY) + MAIL_FROM. Chưa cài webhook: xác nhận tay trong tab Người mua.</div></div>`;
+  moneyInputs(el);
   const bkOut=m=>{ const el=$("#aBkOut"); if(el) el.innerHTML=m; };
   $("#aHealth").onclick=async()=>{ bkOut("Đang kiểm tra...");
     try{ const r=await fetch(window.KK_API+"/health",{cache:"no-store"}); const j=await r.json();
@@ -5216,7 +5217,7 @@ function adminSettings(el){
       bkOut(r.ok?`✓ Đã sao lưu ${j.docCount} tài liệu (ngày ${esc(j.day)}, ${j.ms} ms).`:`Lỗi: ${esc(j.error||r.status)} ${esc(j.detail||"")}`);
     }catch(e){ bkOut("Lỗi: "+esc(e&&e.message||"mạng")); } };
   $("#aSave").onclick=async()=>{
-    Object.assign(S.settings,{siteName:$("#aSite").value.trim(),defaultPrice:Number($("#aPrice").value)||0,plans:{pt:Number($("#aPlanPt").value)||KKP.DEF.pt,dh:Number($("#aPlanDh").value)||KKP.DEF.dh,ths:Number($("#aPlanThs").value)||KKP.DEF.ths,ts:Number($("#aPlanTs").value)||KKP.DEF.ts},academicYear:Number($("#aAY").value)||2026,requireVerify:!!$("#aRV").value,sequential:$("#aSeq").value==="1",bankBin:$("#aBin").value.trim(),bankAccount:$("#aAcct").value.trim(),bankHolder:$("#aHolder").value.trim(),contactEmail:$("#aEmail").value.trim(),contactZalo:$("#aZalo").value.trim(),announcement:$("#aAnn").value.trim(),azKey:$("#aAzKey").value.trim(),azRegion:($("#aAzReg").value.trim()||"southeastasia")});
+    Object.assign(S.settings,{siteName:$("#aSite").value.trim(),defaultPrice:moneyVal("aPrice"),plans:{pt:moneyVal("aPlanPt")||KKP.DEF.pt,dh:moneyVal("aPlanDh")||KKP.DEF.dh,ths:moneyVal("aPlanThs")||KKP.DEF.ths,ts:moneyVal("aPlanTs")||KKP.DEF.ts},academicYear:Number($("#aAY").value)||2026,requireVerify:!!$("#aRV").value,sequential:$("#aSeq").value==="1",bankBin:$("#aBin").value.trim(),bankAccount:$("#aAcct").value.trim(),bankHolder:$("#aHolder").value.trim(),contactEmail:$("#aEmail").value.trim(),contactZalo:$("#aZalo").value.trim(),announcement:$("#aAnn").value.trim(),azKey:$("#aAzKey").value.trim(),azRegion:($("#aAzReg").value.trim()||"southeastasia")});
     if(S.caps.db){ try{
       const {azKey, azRegion, ...pub} = S.settings;   // khóa Azure KHÔNG ghi vào settings/main (công khai)
       await S.caps.db.doc("settings/main").set(pub);
@@ -5267,19 +5268,19 @@ function editContent(code, back){
   <div class="fld"><label for="eScript">Link Kịch bản video - Bộ B</label><input id="eScript" value="${esc(c.scriptUrl||"")}" placeholder="https://1drv.ms/..."></div>
   <div class="fld"><label for="eVideo">Link thư mục Video bài giảng (YouTube/Drive)</label><input id="eVideo" value="${esc(c.videoUrl||"")}"></div>
   <div class="formgrid">
-    <div class="fld"><label for="ePrice">Giá (VND, trống = giá mặc định)</label><input id="ePrice" inputmode="numeric" value="${c.price!=null?c.price:""}"></div>
+    <div class="fld"><label for="ePrice">Giá (VND, trống = giá mặc định)</label><input id="ePrice" data-money value="${c.price!=null?c.price:""}"></div>
     <div class="fld"><label for="eFree">Miễn phí?</label><select id="eFree"><option value="">Theo giá</option><option value="1" ${c.free?"selected":""}>Miễn phí</option></select></div>
   </div>
   <div class="fld"><label for="eCode">Mã mở khóa thủ công (cấp cho người mua chuyển khoản ngoài; lưu dạng băm SHA-256; tối thiểu 10 ký tự để không bị dò)</label><div class="rowline"><input id="eCode" placeholder="Bấm Tạo mã để có mã ngẫu nhiên an toàn" value="" style="flex:1" autocomplete="off"><button class="btn ghost sm" id="eGen" type="button">Tạo mã</button></div></div>
   ${(c.codeHash||c.hasCode)?'<div class="note">Đã có mã mở khóa (nhập mã mới để thay, bỏ trống để giữ nguyên).</div>':""}
   <div class="mrow"><button class="btn pri" id="eSave">Lưu</button><button class="btn ghost" id="eNo">Đóng</button></div>`);
-  $("#eNo").onclick=closeModal;
+  moneyInputs(); $("#eNo").onclick=closeModal;
   $("#eGen").onclick=()=>{ const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789", b=crypto.getRandomValues(new Uint8Array(12)); const t=[...b].map(x=>A[x%A.length]).join(""); $("#eCode").value="KK-"+t.slice(0,4)+"-"+t.slice(4,8)+"-"+t.slice(8); };
   $("#eSave").onclick=async()=>{
     const ncChk=$("#eCode").value.trim(); if(ncChk&&ncChk.replace(/[^A-Za-z0-9]/g,"").length<10){ toast("Mã quá ngắn, dễ bị dò: dùng từ 10 ký tự hoặc bấm Tạo mã"); return; }
     const d=Object.assign({},S.content[code]||{});
     d.sachUrl=$("#eSach").value.trim(); d.scriptUrl=$("#eScript").value.trim(); d.videoUrl=$("#eVideo").value.trim();
-    const pv=$("#ePrice").value.trim(); if(pv==="") delete d.price; else d.price=Number(pv)||0;
+    const pv=$("#ePrice").value.trim(); if(pv==="") delete d.price; else d.price=moneyVal("ePrice");
     d.free=!!$("#eFree").value;
     const nc=$("#eCode").value.trim(); const ch=nc?await sha256(nc.toUpperCase()):(d.codeHash||""); delete d.codeHash; if(ch) d.hasCode=true;
     S.content[code]=d;
@@ -6043,15 +6044,15 @@ function openAdminNewCode(after){
     <div class="fld"><label for="ncName">Tên người mua</label><input id="ncName" maxlength="80"></div>
     <div class="fld"><label for="ncEmail">Email (tự gửi mã nếu có)</label><input id="ncEmail" type="email" maxlength="120"></div>
     <div class="fld"><label for="ncPhone">SĐT / Zalo</label><input id="ncPhone" inputmode="tel" maxlength="20"></div>
-    <div class="fld"><label for="ncAmount">Số tiền đã thu (VND, ghi sổ)</label><input id="ncAmount" inputmode="numeric" value="${KKP.price("pt")}"></div>
+    <div class="fld"><label for="ncAmount">Số tiền đã thu (VND, ghi sổ)</label><input id="ncAmount" data-money value="${KKP.price("pt")}"></div>
   </div>
   <div class="fld"><label for="ncNote">Ghi chú</label><input id="ncNote" maxlength="200"></div>
   <div class="mrow"><button class="btn pri" id="ncOk">Tạo mã</button><button class="btn ghost" id="ncNo">Đóng</button></div><div id="ncFb"></div>`);
   $("#ncNo").onclick=()=>{ closeModal(); if(after) after(); };
-  $("#ncTier").onchange=e=>{ $("#ncAmount").value=KKP.price(e.target.value); };
+  $("#ncTier").onchange=e=>{ $("#ncAmount").value=fmtVN(KKP.price(e.target.value)); }; moneyInputs();
   $("#ncOk").onclick=async()=>{
     $("#ncOk").disabled=true;
-    try{ const r=await KKP.api("/admin/pay/action",{op:"newcode", tier:$("#ncTier").value, days:Number($("#ncDays").value)||365, name:$("#ncName").value.trim(), email:$("#ncEmail").value.trim(), phone:$("#ncPhone").value.trim(), amount:Number($("#ncAmount").value)||0, note:$("#ncNote").value.trim()});
+    try{ const r=await KKP.api("/admin/pay/action",{op:"newcode", tier:$("#ncTier").value, days:Number($("#ncDays").value)||365, name:$("#ncName").value.trim(), email:$("#ncEmail").value.trim(), phone:$("#ncPhone").value.trim(), amount:moneyVal("ncAmount"), note:$("#ncNote").value.trim()});
       const msg=`Ma kich hoat KK-EDU GIA SU SO goi ${KKP.NAME[$("#ncTier").value]}: ${r.code}. Dang nhap www.kk-edu.com > Hoc tap > "Toi co ma kich hoat" de kich hoat.`;
       $("#ncFb").innerHTML=`<div class="feedback good">Mã: <b style="font-size:1.2em;letter-spacing:1px">${esc(r.code)}</b> <button class="btn sm ghost" id="ncCp">copy mã</button> <button class="btn sm ghost" id="ncCpMsg">copy tin nhắn</button><br><span class="note">Mã đơn ${esc(r.oc)} · Email: ${r.mail.ok?"đã gửi tự động":"chưa gửi"+(r.mail.err?" ("+esc(r.mail.err)+")":"")}</span>
         ${r.zalo?`<div class="mrow" style="margin-top:6px"><a class="btn sm pri" target="_blank" rel="noopener" href="${esc(r.zalo)}">Mở Zalo gửi mã</a><a class="btn sm ghost" href="${esc(r.sms)}">Gửi SMS</a></div>`:""}</div>`;
@@ -6060,6 +6061,13 @@ function openAdminNewCode(after){
   };
 }
 
+/* Ô nhập SỐ TIỀN (06/11/2026): hiển thị ngăn cách hàng nghìn bằng dấu chấm theo quy ước Việt Nam (199.000), gõ tự định dạng, đọc về số nguyên */
+const fmtVN = n=>{ n=Number(n); return Number.isFinite(n)?new Intl.NumberFormat("vi-VN").format(Math.round(n)):""; };
+const moneyVal = id=>{ const el=document.getElementById(id); if(!el) return 0; const t=String(el.value||"").replace(/[^\d]/g,""); return t?Number(t):0; };
+function moneyInputs(root){ (root||document).querySelectorAll('input[data-money]').forEach(el=>{ if(el._money) return; el._money=true; el.inputMode="numeric"; el.autocomplete="off";
+  const fmt=()=>{ const t=el.value.replace(/[^\d]/g,""); el.value=t?fmtVN(t):""; };
+  el.addEventListener("input",()=>{ const end=el.selectionEnd===el.value.length; fmt(); if(end) el.setSelectionRange(el.value.length,el.value.length); });
+  el.addEventListener("blur",fmt); fmt(); }); }
 function fitBrand(){
   return;   // 06/11/2026: nhãn GIA SƯ SỐ tự rộng bằng chữ KK-EDU (CSS), không co giãn chữ nữa
   const t=document.querySelector(".brandtx b"), m=document.querySelector(".brandtx small"); if(!t||!m) return;
