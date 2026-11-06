@@ -742,6 +742,7 @@ footer.ft a{color:var(--lapis);text-decoration-color:color-mix(in srgb,var(--lap
 :focus-visible{outline:3px solid var(--gold-hi);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.card.click:hover,.step:hover,.lessitem:hover{transform:none}}
 .wrk{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin:10px 0}.wrk div{background:var(--chip,#eef3f8);border:1px solid var(--line);border-radius:10px;padding:8px 10px}.wrk b{display:block;font-size:1.25rem;line-height:1.3}.wrk span{display:block;font-size:.78rem;opacity:.8;line-height:1.35}
+@media print{body.rcprint *{visibility:hidden!important}body.rcprint #rcDoc,body.rcprint #rcDoc *{visibility:visible!important}body.rcprint #rcDoc{position:absolute;left:0;top:0;width:100%;padding:0 6mm}body.rcprint .noprint{display:none!important}}
 @media print{body.wrprint *{visibility:hidden!important}body.wrprint #wrDoc,body.wrprint #wrDoc *{visibility:visible!important}body.wrprint #wrDoc{position:absolute;left:0;top:0;width:100%;padding:0 6mm}body.wrprint #wrDoc .noprint{display:none!important}}</style>
 </head>
 <body>
@@ -4662,7 +4663,7 @@ function cbKB(){
    a:`<b>Gói học KK-EDU GIA SƯ SỐ giá bao nhiêu? Học thử có mất phí không?</b> <b>Học thử miễn phí</b> 10 bài đầu của mọi sách đúng lớp và <b>Thi thử miễn phí</b> không giới hạn. Học trọn bộ cần <b>gói 1 năm</b> theo bậc: <b>Mầm non đến THPT 199.000 đ</b>, <b>Đại học 299.000 đ</b>, <b>Thạc sĩ 399.000 đ</b>, <b>Tiến sĩ 499.000 đ</b>. Gói mở toàn bộ sách của bậc (bậc phổ thông: đúng lớp theo năm sinh), dùng trên mọi thiết bị, gia hạn nối tiếp ngày còn lại.`,
    acts:[{l:"Xem bảng giá", href:"/#goi"},{l:"Học thử ngay", href:"/#video"}]},
   {id:"goi_mua", k:"mua goi cach thanh toan vietqr chuyen khoan kich hoat bao lau quet ma qr nap tien dong tien",
-   a:`<b>Mua gói như thế nào? Bao lâu thì được kích hoạt?</b> Đăng nhập, khai hồ sơ, vào <b>Gói học</b> (hoặc bấm Kích hoạt gói ở trang sách) rồi <b>quét mã VietQR</b> bằng app ngân hàng bất kỳ, giữ nguyên nội dung chuyển khoản (mã đơn KKG...). Tiền về là hệ thống <b>tự khớp và kích hoạt trong vài giây</b>; email biên nhận kèm <b>mã kích hoạt</b> gửi về hộp thư. Nếu chưa tự mở, bấm "Tôi đã chuyển khoản" - Quản trị viên xác nhận hoặc gửi mã qua Zalo/SĐT.`,
+   a:`<b>Mua gói như thế nào? Bao lâu thì được kích hoạt?</b> Đăng nhập, khai hồ sơ, vào <b>Gói học</b> (hoặc bấm Kích hoạt gói ở trang sách) rồi <b>quét mã VietQR</b> bằng app ngân hàng bất kỳ, giữ nguyên nội dung chuyển khoản (mã đơn KKG...). Tiền về là hệ thống <b>tự khớp và kích hoạt trong vài giây</b>; email biên nhận kèm <b>mã kích hoạt</b> gửi về hộp thư. Nếu chưa tự mở, bấm "Tôi đã chuyển khoản" - Quản trị viên xác nhận hoặc gửi mã qua Zalo/SĐT. Có <b>mã giảm giá</b> (trường học, nhóm phụ huynh) thì nhập ngay trong hộp thanh toán; phụ huynh đã liên kết tài khoản với con có thể chọn <b>Mua cho</b> con. Đơn đã kích hoạt có <b>biên nhận</b> in được trong Học tập.`,
    acts:[{l:"Mua gói", href:"/#goi"},{l:"Gói học của tôi", href:"/#dash"}]},
   {id:"goi_ma", k:"ma kich hoat nhap ma o dau kkgs ma mo khoa nhan ma qua zalo email ma code",
    a:`<b>Tôi có mã kích hoạt thì nhập ở đâu?</b> Đăng nhập đúng tài khoản, vào <b>Học tập</b> → thẻ <b>Gói học của tôi</b> → <b>Tôi có mã kích hoạt</b>, dán mã dạng <b>KKGS-XXXX-XXXX-XXXX</b>. Gói có hiệu lực ngay. Mỗi mã dùng cho một tài khoản; mã trong email biên nhận là bằng chứng mua gói, giữ lại để kích hoạt lại khi cần.`,
@@ -5867,10 +5868,10 @@ function planCardHTML(){
   const hedL=(S.grants[S.uid]&&S.grants[S.uid].hed&&S.grants[S.uid].hed.levels)||{};
   const hedTxt=g&&g.kind==="adult"?KKP.HED.map(L=>{ const st=hedApproved(L)?"ok":(hedL[L]&&hedL[L].status==="pending")?"pending":""; return `<span class="badge ${st==="ok"?"ok":""}">${esc(L)}: ${st==="ok"?"đã duyệt":st==="pending"?"chờ Admin":"chưa khai báo"}</span>`; }).join(" "):"";
   return `<div class="card" id="planCard"><div class="rowline" style="justify-content:space-between;align-items:flex-start"><div><div class="eyebrow">KK-EDU GIA SƯ SỐ</div><h3 style="margin:.15em 0">Gói học của tôi</h3></div><button class="btn ghost sm" id="plRedeem">Tôi có mã kích hoạt</button></div>
-  ${act.length?act.map(([t,x])=>`<div class="feedback good">Gói <b>${esc(KKP.NAME[t])}</b>: còn <b>${x.days}</b> ngày (đến ${esc(KKP.fmtDay(x.exp))}), ${x.n} sách đang mở. <button class="btn sm ghost" data-buy="${t}">Gia hạn</button></div>`).join("")
+  ${act.length?act.map(([t,x])=>`<div class="feedback ${x.days<=14?"hint":"good"}">${x.days<=14?"⏰ ":""}Gói <b>${esc(KKP.NAME[t])}</b>: còn <b>${x.days}</b> ngày (đến ${esc(KKP.fmtDay(x.exp))}), ${x.n} sách đang mở.${x.days<=14?" Gia hạn ngay để không gián đoạn - ngày còn lại được cộng nối tiếp.":""} <button class="btn sm ${x.days<=14?"pri":"ghost"}" data-buy="${t}">Gia hạn 1 năm</button></div>`).join("")
     :`<div class="note">Chưa có gói nào. Bạn vẫn học thử miễn phí ${trialN()} bài đầu mỗi sách và thi thử không giới hạn. Kích hoạt gói để học trọn bộ:</div><div class="rowline" style="margin-top:8px">${mine.map(t=>`<button class="btn sm pri" data-buy="${t}">${esc(KKP.NAME[t])} · ${fmtMoney(KKP.price(t))}/năm</button>`).join("")}</div>`}
   ${hedTxt?`<div class="note" style="margin-top:8px">Bậc cao: ${hedTxt} <button class="btn sm ghost" id="plHed">Khai báo / cập nhật</button></div>`:""}
-  ${m&&m.orders&&m.orders.length?`<details style="margin-top:8px"><summary class="note" style="cursor:pointer">Lịch sử đơn (${m.orders.length})</summary><div class="tbwrap"><table class="tb"><thead><tr><th>Mã đơn</th><th>Gói</th><th>Số tiền</th><th>Trạng thái</th><th>Ngày</th></tr></thead><tbody>${m.orders.map(o=>`<tr><td><b>${esc(o.oc)}</b></td><td>${esc(KKP.NAME[o.tier]||o.tier)}</td><td>${fmtMoney(Number(o.amount)||0)}</td><td>${planStatusBadge(o.status)}</td><td class="note">${o.at?fmtDate(o.at):""}</td></tr>`).join("")}</tbody></table></div></details>`:""}
+  ${m&&m.orders&&m.orders.length?`<details style="margin-top:8px"><summary class="note" style="cursor:pointer">Lịch sử đơn (${m.orders.length})</summary><div class="tbwrap"><table class="tb"><thead><tr><th>Mã đơn</th><th>Gói</th><th>Số tiền</th><th>Trạng thái</th><th>Ngày</th><th></th></tr></thead><tbody>${m.orders.map(o=>`<tr><td><b>${esc(o.oc)}</b>${o.byMe?`<br><span class="note">mua cho ${esc(o.forName)}</span>`:""}</td><td>${esc(KKP.NAME[o.tier]||o.tier)}</td><td>${fmtMoney(Number(o.amount)||0)}${o.discount?`<br><span class="note">giảm ${fmtMoney(o.discount)}</span>`:""}</td><td>${planStatusBadge(o.status)}</td><td class="note">${o.at?fmtDate(o.at):""}</td><td>${o.status==="paid"?`<button class="btn sm ghost" data-receipt="${esc(o.oc)}">Biên nhận</button>`:(["pending","reported"].includes(o.status)?`<button class="btn sm ghost" data-buy="${esc(o.tier)}">Thanh toán</button>`:"")}</td></tr>`).join("")}</tbody></table></div></details>`:""}
   ${!m?`<div class="note" style="margin-top:6px">Đang tải trạng thái gói...</div>`:(m._err?`<div class="note" style="margin-top:6px">Chưa đọc được trạng thái gói (${esc(m._err)}) - thử tải lại trang.</div>`:"")}</div>`;
 }
 function planStatusBadge(st){ const M={paid:["ok","Đã kích hoạt"],pending:["","Chờ thanh toán"],reported:["","Đã báo chuyển khoản - chờ xác nhận"],underpaid:["lock","Thiếu tiền - liên hệ"],expired:["","Hết hạn đơn"],cancelled:["","Đã hủy"],revoked:["lock","Đã thu hồi"],manual:["","Mã do Admin cấp"]}; const x=M[st]||["",st]; return `<span class="badge ${x[0]}">${esc(x[1])}</span>`; }
@@ -5879,7 +5880,28 @@ function planCardBind(v){
   c.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>openBuyPlan(b.dataset.buy));
   const r=c.querySelector("#plRedeem"); if(r) r.onclick=()=>openRedeem();
   const h=c.querySelector("#plHed"); if(h) h.onclick=()=>openHedForm();
+  c.querySelectorAll("[data-receipt]").forEach(b=>b.onclick=()=>openReceipt(b.dataset.receipt));
   if(!KKP.me) KKP.load().then(()=>{ if(S.route.name==="dash") viewDash(v); });
+}
+/* ---------- Biên nhận (xem / in) cho đơn đã kích hoạt ---------- */
+function openReceipt(oc){
+  const o=(KKP.me&&KKP.me.orders||[]).find(x=>x.oc===oc); if(!o){ toast("Không tìm thấy đơn"); return; }
+  const site=(KKP.me&&KKP.me.siteName)||S.settings.siteName||"KK-EDU GIA SƯ SỐ"; const bank=KKP.me&&KKP.me.bankInfo;
+  modal(`<div id="rcDoc"><div class="eyebrow">${esc(site)} · Biên nhận thanh toán</div><h3 style="margin:4px 0">Biên nhận ${esc(o.oc)}</h3>
+  <div class="kv" style="margin-top:8px">
+    <span>Người học</span><b>${esc(o.name||"")}${o.email?` · ${esc(o.email)}`:""}</b>
+    <span>Gói</span><b>${esc(KKP.NAME[o.tier]||o.tier)} (1 năm)</b>
+    ${o.discount?`<span>Giá niêm yết</span><b>${fmtMoney(Number(o.amount)+Number(o.discount))}</b><span>Giảm giá${o.coupon?" (mã "+esc(o.coupon)+")":""}</span><b>- ${fmtMoney(o.discount)}</b>`:""}
+    <span>Đã thanh toán</span><b style="font-size:1.1em">${fmtMoney(Number(o.amount)||0)}</b>
+    <span>Ngày thanh toán</span><b>${o.paidAt?fmtDate(o.paidAt):""}</b>
+    <span>Hiệu lực đến</span><b>${o.planExp?esc(KKP.fmtDay(o.planExp)):""}</b>
+    <span>Mã kích hoạt</span><b>${esc(o.license||"")}</b>
+    ${bank?`<span>Bên nhận</span><b>${esc(bank.holder||"")} · ${esc(KKP.bankName(bank.bin))} ${esc(bank.account||"")}</b>`:""}
+  </div>
+  <div class="note" style="margin-top:10px">Biên nhận điện tử do hệ thống ${esc(site)} lập tự động từ dữ liệu thanh toán. Nội dung và học liệu: bản quyền Nguyễn Duy Điển (KK-2026). Liên hệ: ${esc(S.settings.contactZalo?"Zalo "+S.settings.contactZalo:"")} ${esc(S.settings.contactEmail||"")}</div></div>
+  <div class="mrow noprint"><button class="btn pri" id="rcPrint">In / Lưu PDF</button><button class="btn ghost" id="rcNo">Đóng</button></div>`);
+  $("#rcNo").onclick=closeModal;
+  $("#rcPrint").onclick=()=>{ document.body.classList.add("rcprint"); const done=()=>{ document.body.classList.remove("rcprint"); window.removeEventListener("afterprint",done); }; window.addEventListener("afterprint",done); setTimeout(()=>window.print(),50); setTimeout(done,4000); };
 }
 /* ---------- Mua gói: VietQR + theo dõi tự động ---------- */
 let _payPoll=null;
@@ -5895,14 +5917,25 @@ function openBuyPlan(tier, fromCode){
   const act=KKP.active(tier), x=act&&KKP.me.tiers[tier];
   modal(`<div class="eyebrow">KK-EDU GIA SƯ SỐ · Thanh toán VietQR (Napas 247)</div><h3 style="margin:.2em 0">Gói ${esc(KKP.NAME[tier])} · ${fmtMoney(KKP.price(tier))} / năm</h3>
   <div class="note">${act?`Bạn đang có gói này đến ${esc(KKP.fmtDay(x.exp))} - thanh toán sẽ <b>gia hạn nối tiếp</b> thêm 1 năm.`:`Mở trọn bộ mọi sách bậc ${esc(KKP.NAME[tier])}${tier==="pt"?" đúng lớp <b>"+esc(g.label)+"</b>":""} trong 1 năm, trên mọi thiết bị.`}</div>
-  <div class="formgrid" style="margin-top:10px"><div class="fld"><label for="bpPhone">Số điện thoại / Zalo (tùy chọn - để nhận mã nếu email trục trặc)</label><input id="bpPhone" inputmode="tel" maxlength="20" value="${esc((KKP.me&&KKP.me.hed&&KKP.me.hed.phone)||"")}"></div></div>
+  <div class="formgrid" style="margin-top:10px"><div class="fld"><label for="bpPhone">Số điện thoại / Zalo (tùy chọn - để nhận mã nếu email trục trặc)</label><input id="bpPhone" inputmode="tel" maxlength="20" value="${esc((KKP.me&&KKP.me.hed&&KKP.me.hed.phone)||"")}"></div>
+    <div class="fld"><label for="bpCoupon">Mã giảm giá (nếu có)</label><div class="rowline" style="gap:6px"><input id="bpCoupon" maxlength="24" autocapitalize="characters" spellcheck="false" style="flex:1" placeholder="VD: TRUONG-A"><button class="btn sm ghost" id="bpApply">Áp dụng</button></div></div></div>
+  <div id="bpFor"></div>
   <div id="bpBody"><div class="note">Đang tạo mã QR...</div></div>
   <div class="mrow"><button class="btn ghost sm" id="bpNo">Đóng</button></div>`,{lock:true});
   $("#bpNo").onclick=()=>{ clearInterval(_payPoll); closeModal(); };
-  (async()=>{
-    let o; try{ o=await KKP.api("/pay/create",{tier, phone:$("#bpPhone").value.trim()}); }
-    catch(e){ if(e.code==="profile"){ closeModal(); openProfileForm(()=>openBuyPlan(tier)); return; } $("#bpBody").innerHTML=`<div class="feedback bad">${KKP.err(e)}</div>`; return; }
+  let forRef=""; const opts=()=>({tier, phone:$("#bpPhone").value.trim(), coupon:$("#bpCoupon").value.trim(), forRef});
+  // mua hộ người học đã liên kết (phụ huynh / giáo viên): hiện khi có liên kết
+  KKP.api("/pay/family").then(f=>{ const box=$("#bpFor"); if(!box||!f.learners||!f.learners.length) return;
+    box.innerHTML=`<div class="fld"><label for="bpWho">Mua cho</label><select id="bpWho"><option value="">Tôi (${esc((S.profile&&S.profile.name)||S.name)})</option>${f.learners.map(l=>`<option value="${esc(l.ref)}">${esc(l.name)}${l.grade?" - "+esc(l.grade):""}</option>`).join("")}</select></div>`;
+    $("#bpWho").onchange=e=>{ forRef=e.target.value; makeOrder(); }; }).catch(()=>{});
+  $("#bpApply").onclick=()=>makeOrder();
+  $("#bpCoupon").onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); makeOrder(); } };
+  async function makeOrder(){
+    clearInterval(_payPoll); const body0=$("#bpBody"); if(!body0) return; body0.innerHTML=`<div class="note">Đang tạo mã QR...</div>`;
+    let o; try{ o=await KKP.api("/pay/create",opts()); }
+    catch(e){ if(e.code==="profile"){ closeModal(); openProfileForm(()=>openBuyPlan(tier)); return; } if(e.code==="not-linked"){ body0.innerHTML=`<div class="feedback bad">Người học này chưa liên kết với bạn.</div>`; return; } body0.innerHTML=`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}</div>`; return; }
     const body=$("#bpBody"); if(!body) return;
+    if(o.free){ await KKP.reloadEnroll(); body.innerHTML=`<div class="feedback good" style="font-size:1rem">🎉 Mã giảm giá 100% - <b>đã kích hoạt gói ${esc(KKP.NAME[tier])}</b> đến ${esc(KKP.fmtDay(o.planExp))}. Mã kích hoạt: <b>${esc(o.license)}</b>.</div><div class="mrow"><button class="btn pri" id="bpGo">Vào học</button></div>`; $("#bpGo").onclick=()=>{ closeModal(); go(fromCode?{name:"book",code:fromCode}:{name:"video"}); }; return; }
     if(!o.bank){
       body.innerHTML=`<div class="alertbox">Kênh VietQR chưa được cấu hình. Để kích hoạt gói <b>${esc(KKP.NAME[tier])}</b> (${fmtMoney(o.amount)}), liên hệ ${esc(o.contactZalo?"Zalo "+o.contactZalo:"")} ${esc(o.contactEmail||"")} với <b>mã đơn ${esc(o.oc)}</b>; bạn sẽ nhận <b>mã kích hoạt</b> qua Zalo/email rồi nhập ở nút "Tôi có mã kích hoạt".</div><div class="mrow"><button class="btn pri" id="bpRedeem">Tôi có mã kích hoạt</button></div>`;
       $("#bpRedeem").onclick=()=>{ closeModal(); openRedeem(); }; return;
@@ -5914,6 +5947,8 @@ function openBuyPlan(tier, fromCode){
         <span>Ngân hàng</span><b>${esc(KKP.bankName(o.bank.bin))}</b>
         <span>Chủ tài khoản</span><b>${esc(o.bank.holder||"")}</b>
         <span>Số tài khoản</span><b>${esc(o.bank.account)} <button class="btn ghost sm" id="cpA">copy</button></b>
+        ${o.forName?`<span>Mua cho</span><b>${esc(o.forName)}</b>`:""}
+        ${o.discount?`<span>Giá gói</span><b><s style="color:var(--fg2)">${fmtMoney(o.listPrice||0)}</s> giảm ${fmtMoney(o.discount)} (mã ${esc(o.coupon)})</b>`:""}
         <span>Số tiền</span><b>${fmtMoney(o.amount)} <button class="btn ghost sm" id="cpM">copy</button></b>
         <span>Nội dung CK</span><b style="color:var(--navy)">${esc(o.memo)} <button class="btn ghost sm" id="cpC">copy</button></b></div>
       <div class="note" style="margin-top:10px">Giữ <b>đúng nội dung chuyển khoản</b> <b>${esc(o.memo)}</b> và đúng số tiền để hệ thống tự khớp. Thường kích hoạt trong <b>5-60 giây</b> sau khi tiền về. Đơn có hiệu lực 48 giờ; trả muộn vẫn được ghi nhận.</div>
@@ -5932,8 +5967,9 @@ function openBuyPlan(tier, fromCode){
       }catch(e){} };
     clearInterval(_payPoll); _payPoll=setInterval(check, 4000); setTimeout(()=>clearInterval(_payPoll), 30*60e3);
     $("#bpPaid").onclick=async()=>{ try{ const st=await KKP.api("/pay/reported",{oc:o.oc, phone:$("#bpPhone")?$("#bpPhone").value.trim():""}); if(st.status==="paid") return done(await KKP.api("/pay/status/"+o.oc)); $("#bpSt").innerHTML=`✓ Đã ghi nhận <b>mã đơn ${esc(o.oc)}</b>. Hệ thống đang khớp tự động; nếu chưa mở sau vài phút, Quản trị viên sẽ xác nhận hoặc gửi mã qua Zalo/SĐT. Bạn có thể đóng cửa sổ này, gói sẽ tự mở khi được ghi nhận.`; $("#bpPaid").disabled=true; }catch(e){ toast(KKP.err(e)); } };
-    kkTrack("goi_tao_don",{goi:tier});
-  })();
+    kkTrack("goi_tao_don",{goi:tier, giam:o.discount||0});
+  }
+  makeOrder();
 }
 KKP.bankName=bin=>({ "970422":"MB Bank","970436":"Vietcombank","970415":"VietinBank","970418":"BIDV","970405":"Agribank","970407":"Techcombank","970416":"ACB","970432":"VPBank","970423":"TPBank","970403":"Sacombank","970441":"VIB","970443":"SHB","970437":"HDBank","970426":"MSB","970448":"OCB","970440":"SeABank","970431":"Eximbank","970429":"SCB","970454":"VietCapital","970414":"Oceanbank","970406":"DongA Bank","970438":"BaoViet Bank","970425":"ABBANK","970409":"BacA Bank","970412":"PVcomBank","970449":"LPBank","970452":"KienlongBank","970424":"Shinhan Bank","970433":"VietBank","970430":"PGBank","970419":"NCB","970400":"SaigonBank","970408":"GPBank","546034":"CAKE","546035":"Ubank","963388":"Timo","971005":"Viettel Money","971011":"VNPT Money" }[String(bin)]||("BIN "+bin));
 /* ---------- Nhập mã kích hoạt ---------- */
@@ -6001,7 +6037,9 @@ async function adminBuyers(el){
     <div class="rowline"><select id="abDays"><option value="30" ${abDays===30?"selected":""}>30 ngày</option><option value="90" ${abDays===90?"selected":""}>90 ngày</option><option value="365" ${abDays===365?"selected":""}>365 ngày</option></select>
     <select id="abFilter"><option value="">Tất cả</option><option value="open" ${abFilter==="open"?"selected":""}>Cần xử lý</option><option value="paid" ${abFilter==="paid"?"selected":""}>Đã kích hoạt</option><option value="manual" ${abFilter==="manual"?"selected":""}>Mã Admin cấp</option></select>
     <button class="btn sm pri" id="abNew">+ Tạo mã kích hoạt</button><button class="btn sm ghost" id="abCsv">Xuất CSV</button><button class="btn sm ghost" id="abReload">Tải lại</button></div></div>
-  <div class="note" style="margin-top:8px">Tự động: ${cfg.bank?'<span class="badge ok">VietQR sẵn sàng</span>':'<span class="badge lock">Chưa có số tài khoản (Cài đặt)</span>'} ${d.webhook===false?'':''}</div></div>
+  <div class="note" style="margin-top:8px">Tự động: ${cfg.bank?'<span class="badge ok">VietQR sẵn sàng</span>':'<span class="badge lock">Chưa có số tài khoản (Cài đặt)</span>'}</div>
+  ${revenueChartHTML(d.byDay||{}, abDays)}</div>
+  <div id="abCoupons" class="card" style="margin-top:12px"><div class="note">Đang tải mã giảm giá...</div></div>
   <div class="tbwrap" style="margin-top:12px"><table class="tb"><thead><tr><th>Thời gian</th><th>Người mua</th><th>Gói</th><th>Số tiền</th><th>Mã đơn / CK</th><th>Trạng thái</th><th>Mã kích hoạt</th><th>Email</th><th></th></tr></thead><tbody>
   ${rows.map(o=>`<tr>
     <td class="note">${o.at?fmtDate(o.at):""}${o.paidAt?`<br>✓ ${fmtDate(o.paidAt)}`:""}</td>
@@ -6021,6 +6059,7 @@ async function adminBuyers(el){
   ${d.unmatched&&d.unmatched.length?`<div class="card" style="margin-top:12px"><h3 style="margin-top:0">Giao dịch ngân hàng chưa khớp mã (${d.unmatched.length})</h3><div class="note">Tiền về nhưng nội dung CK không có mã đơn. Đối chiếu tay: tìm người mua rồi bấm Xác nhận ở đơn tương ứng, hoặc tạo mã gửi cho họ.</div>
     <div class="tbwrap"><table class="tb"><thead><tr><th>Nhận lúc</th><th>Số tiền</th><th>Nội dung</th><th>Mã giao dịch</th></tr></thead><tbody>${d.unmatched.map(t=>`<tr><td class="note">${esc(t.at||t.received||"")}</td><td>${fmtMoney(Number(t.amount)||0)}</td><td>${esc(t.content||"")}</td><td class="note">${esc(t.id)}</td></tr>`).join("")}</tbody></table></div></div>`:""}
   <div class="note" style="margin-top:10px"><b>Quy trình tự động:</b> người mua quét VietQR (nội dung CK = mã đơn) → ngân hàng báo qua webhook → hệ thống khớp mã + số tiền → kích hoạt + email mã trong vài giây. <b>Dự phòng:</b> đơn "Đã báo chuyển khoản" → mở app ngân hàng đối chiếu → bấm <b>Xác nhận</b> (hệ thống tự ghi quyền, gửi email). Người mua không có email hoạt động: <b>Tạo mã kích hoạt</b> rồi gửi qua Zalo/SĐT.</div>`;
+  adminCoupons($("#abCoupons"));
   $("#abDays").onchange=e=>{ abDays=Number(e.target.value); adminBuyers(el); };
   $("#abFilter").onchange=e=>{ abFilter=e.target.value; adminBuyers(el); };
   $("#abReload").onclick=()=>adminBuyers(el);
@@ -6036,6 +6075,49 @@ async function adminBuyers(el){
     try{ const r=await KKP.api("/admin/pay/action",{op, oc, days:30}); toast(op==="resend"?(r.ok?"Đã gửi lại email":"Chưa gửi được: "+(r.mail&&r.mail.err||"")):"Đã thực hiện"); adminBuyers(el); }
     catch(e){ b.disabled=false; toast(KKP.err(e)); }
   });
+}
+/* Biểu đồ doanh thu theo ngày (SVG thuần, không thư viện) */
+function revenueChartHTML(byDay, days){
+  const n=Math.min(days,60); const today=new Date(); const cols=[];
+  for(let i=n-1;i>=0;i--){ const d=new Date(today.getTime()-i*86400e3); const k=KKP.fmtDay(d.getTime()); cols.push({k, v:(byDay[k]&&byDay[k].vnd)||0, c:(byDay[k]&&byDay[k].n)||0}); }
+  const max=Math.max(1,...cols.map(c=>c.v)); const W=720,H=120,bw=W/n;
+  if(!cols.some(c=>c.v)) return `<div class="note" style="margin-top:8px">Chưa có doanh thu trong ${n} ngày gần nhất.</div>`;
+  return `<div style="margin-top:10px"><div class="note">Doanh thu ${n} ngày gần nhất (cột = ngày; cao nhất ${fmtMoney(max)})</div>
+  <svg viewBox="0 0 ${W} ${H+18}" style="width:100%;max-width:${W}px;height:auto" role="img" aria-label="Doanh thu theo ngày">${cols.map((c,i)=>{ const h=Math.round(c.v/max*H); return `<rect x="${(i*bw+1).toFixed(1)}" y="${H-h}" width="${Math.max(1,bw-2).toFixed(1)}" height="${h}" fill="${c.v?"var(--gold2,#c79a26)":"#e4e9ef"}"><title>${esc(c.k)}: ${fmtMoney(c.v)} (${c.c} đơn)</title></rect>`; }).join("")}
+  <text x="0" y="${H+14}" font-size="11" fill="currentColor">${esc(cols[0].k)}</text><text x="${W}" y="${H+14}" font-size="11" text-anchor="end" fill="currentColor">${esc(cols[cols.length-1].k)}</text></svg></div>`;
+}
+/* Mã giảm giá: danh sách + tạo/sửa/xóa (Admin) */
+async function adminCoupons(box){
+  if(!box) return;
+  let list=[]; try{ list=(await KKP.api("/admin/pay/coupons")).coupons||[]; }catch(e){ box.innerHTML=`<div class="note">Không đọc được mã giảm giá: ${KKP.err(e)}</div>`; return; }
+  const tierOpts=Object.keys(KKP.NAME);
+  box.innerHTML=`<div class="rowline" style="justify-content:space-between"><h3 style="margin:0">Mã giảm giá (${list.length})</h3><button class="btn sm ghost" id="cpNew">+ Tạo mã</button></div>
+  <div class="note">Dùng cho trường học, nhóm phụ huynh, chiến dịch. Người mua nhập mã trong hộp thanh toán; giảm 100% thì kích hoạt ngay không cần chuyển khoản. Lượt dùng chỉ tính khi đơn đã thanh toán.</div>
+  <div class="tbwrap" style="margin-top:8px"><table class="tb"><thead><tr><th>Mã</th><th>Giảm</th><th>Gói</th><th>Lượt</th><th>Hết hạn</th><th>Ghi chú</th><th></th></tr></thead><tbody>
+  ${list.map(c=>`<tr style="${c.active===false?"opacity:.55":""}"><td><b>${esc(c.code||c.id)}</b>${c.active===false?' <span class="badge">tắt</span>':""}</td><td>${c.type==="percent"?esc(c.value)+"%":fmtMoney(Number(c.value)||0)}${c.minAmount?`<br><span class="note">đơn từ ${fmtMoney(c.minAmount)}</span>`:""}</td><td>${(c.tiers&&c.tiers.length)?c.tiers.map(t=>esc(KKP.SHORT[t]||t)).join(", "):"Mọi gói"}</td><td>${Number(c.used)||0}${c.maxUses?"/"+c.maxUses:""}</td><td class="note">${c.expAt?esc(KKP.fmtDay(Date.parse(c.expAt))):"-"}</td><td class="note">${esc(c.note||"")}</td>
+    <td style="white-space:nowrap"><button class="btn sm ghost" data-cpedit="${esc(c.code||c.id)}">Sửa</button> <button class="btn sm ghost" data-cpdel="${esc(c.code||c.id)}">Xóa</button></td></tr>`).join("")||`<tr><td colspan="7" class="note">Chưa có mã nào.</td></tr>`}</tbody></table></div>`;
+  const form=(c)=>{ c=c||{type:"percent",value:10,tiers:[],maxUses:0,minAmount:0,expAt:"",note:"",active:true};
+    modal(`<div class="eyebrow">Người mua</div><h3>${c.code?"Sửa mã "+esc(c.code):"Tạo mã giảm giá"}</h3>
+    <div class="formgrid">
+      <div class="fld"><label for="cpCode">Mã (chữ, số, gạch nối; 3-24 ký tự)</label><input id="cpCode" maxlength="24" autocapitalize="characters" value="${esc(c.code||"")}" ${c.code?"readonly":""}></div>
+      <div class="fld"><label for="cpType">Kiểu giảm</label><select id="cpType"><option value="percent" ${c.type==="percent"?"selected":""}>Phần trăm (%)</option><option value="fixed" ${c.type==="fixed"?"selected":""}>Số tiền cố định (VND)</option></select></div>
+      <div class="fld"><label for="cpValue">Giá trị giảm</label><input id="cpValue" inputmode="numeric" value="${esc(c.value)}"></div>
+      <div class="fld"><label for="cpMax">Số lượt tối đa (0 = không giới hạn)</label><input id="cpMax" inputmode="numeric" value="${esc(c.maxUses||0)}"></div>
+      <div class="fld"><label for="cpMin">Áp dụng cho đơn từ (VND, 0 = mọi đơn)</label><input id="cpMin" data-money value="${esc(c.minAmount||0)}"></div>
+      <div class="fld"><label for="cpExp">Hết hạn (để trống = không hạn)</label><input id="cpExp" type="date" value="${c.expAt?esc(String(c.expAt).slice(0,10)):""}"></div>
+    </div>
+    <div class="fld"><label>Gói áp dụng (không chọn = mọi gói)</label><div class="rowline">${tierOpts.map(t=>`<label class="cbox" style="margin:0;padding:6px 10px"><input type="checkbox" name="cpT" value="${t}" ${(c.tiers||[]).includes(t)?"checked":""}><span>${esc(KKP.NAME[t])}</span></label>`).join("")}</div></div>
+    <div class="formgrid"><div class="fld"><label for="cpNote">Ghi chú (trường, chiến dịch)</label><input id="cpNote" maxlength="200" value="${esc(c.note||"")}"></div><div class="fld"><label for="cpAct">Trạng thái</label><select id="cpAct"><option value="1" ${c.active!==false?"selected":""}>Đang dùng</option><option value="0" ${c.active===false?"selected":""}>Tắt</option></select></div></div>
+    <div class="mrow"><button class="btn pri" id="cpOk">Lưu mã</button><button class="btn ghost" id="cpNo">Đóng</button></div><div id="cpFb"></div>`);
+    moneyInputs(); $("#cpNo").onclick=closeModal;
+    $("#cpOk").onclick=async()=>{ $("#cpOk").disabled=true;
+      try{ await KKP.api("/admin/pay/coupon",{code:$("#cpCode").value.trim(), type:$("#cpType").value, value:Number($("#cpValue").value)||0, maxUses:Number($("#cpMax").value)||0, minAmount:moneyVal("cpMin"), expAt:$("#cpExp").value?$("#cpExp").value+"T23:59:59+07:00":"", tiers:[...document.querySelectorAll('input[name="cpT"]:checked')].map(x=>x.value), note:$("#cpNote").value.trim(), active:$("#cpAct").value==="1"});
+        closeModal(); toast("Đã lưu mã giảm giá"); adminCoupons(box);
+      }catch(e){ $("#cpOk").disabled=false; $("#cpFb").innerHTML=`<div class="feedback bad">${esc(e.detail||"")||({"bad-coupon-code":"Mã không hợp lệ (3-24 ký tự chữ, số, gạch nối).","bad-coupon-value":"Giá trị giảm không hợp lệ."}[e.code]||KKP.err(e))}</div>`; } };
+  };
+  $("#cpNew").onclick=()=>form();
+  box.querySelectorAll("[data-cpedit]").forEach(b=>b.onclick=()=>form(list.find(c=>(c.code||c.id)===b.dataset.cpedit)));
+  box.querySelectorAll("[data-cpdel]").forEach(b=>b.onclick=async()=>{ if(!window.confirm("Xóa mã "+b.dataset.cpdel+"?")) return; try{ await KKP.api("/admin/pay/coupon",{op:"delete", code:b.dataset.cpdel}); adminCoupons(box); }catch(e){ toast(KKP.err(e)); } });
 }
 function openAdminNewCode(after){
   modal(`<div class="eyebrow">Người mua</div><h3>Tạo mã kích hoạt</h3><p class="note">Dùng khi thu tiền ngoài hệ thống (tiền mặt, chuyển khoản không có mã đơn) hoặc tặng gói. Có email: hệ thống <b>tự gửi</b>; không có: sao chép mã gửi qua Zalo/SĐT.</p>
