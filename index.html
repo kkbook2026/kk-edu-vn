@@ -5825,7 +5825,7 @@ const KKP = {
     Object.keys(S.goiCache).forEach(k=>{ if(S.goiCache[k]&&S.goiCache[k]._partial) delete S.goiCache[k]; });
     await KKP.load(true);
   },
-  err(e){ const m={auth:"Hãy đăng nhập trước.", profile:"Hãy khai hồ sơ (năm sinh) trước khi mua gói.", rate:"Thao tác quá nhanh, thử lại sau 1 phút.", "code-not-found":"Mã không đúng. Kiểm tra lại từng ký tự.", "code-used":"Mã này đã được tài khoản khác dùng.", "bad-code":"Mã không đúng định dạng KKGS-XXXX-XXXX-XXXX.", origin:"Trình duyệt chặn yêu cầu.", "not-configured":"Máy chủ chưa cấu hình thanh toán.", "order-not-found":"Không tìm thấy đơn."}; return m[e&&e.code]||("Lỗi: "+esc(e&&(e.code||e.message)||"mạng")); }
+  err(e){ const m={auth:"Hãy đăng nhập trước.", profile:"Hãy khai hồ sơ (năm sinh) trước khi mua gói.", rate:"Thao tác quá nhanh, thử lại sau 1 phút.", "code-not-found":"Mã không đúng. Kiểm tra lại từng ký tự.", "code-used":"Mã này đã được tài khoản khác dùng.", "code-cancelled":"Mã này đã bị hủy.", "order-paid":"Đơn đã kích hoạt - dùng Thu hồi nếu cần.", "bad-code":"Mã không đúng định dạng KKGS-XXXX-XXXX-XXXX.", origin:"Trình duyệt chặn yêu cầu.", "not-configured":"Máy chủ chưa cấu hình thanh toán.", "order-not-found":"Không tìm thấy đơn."}; return m[e&&e.code]||("Lỗi: "+esc(e&&(e.code||e.message)||"mạng")); }
 };
 function hedApproved(level){
   const g=S.uid&&S.grants[S.uid]; if(!g) return false;
