@@ -1059,6 +1059,7 @@ async function bvLoadPdf(b, driveId){
   if(!buf){
     if(S.isAdmin){ driveFallback(); return; }
     if(why==="age"){ closeModal(); openAgeGate(b); return; }
+    if(why==="plan"){ closeModal(); openBuyPlan(KKP.tierOf(b), b.code); return; }
     if(why==="profile"){ closeModal(); openProfileForm(()=>openBookViewer(b)); return; }
     say(`<div>Chưa tải được sách (mạng chập chờn).<br><br><button class="btn pri" id="bvRetry">Thử lại</button></div>`); const rb=$("#bvRetry"); if(rb) rb.onclick=()=>bvLoadPdf(b, driveId); return;
   }
@@ -1095,6 +1096,7 @@ function openBookViewer(b){
   if(!S.isAdmin){
     if(!S.profile||!myGrade()){ openProfileForm(()=>openBookViewer(b)); return; }
     if(!bookAllowed(b).ok){ openAgeGate(b); return; }
+    if(!isUnlocked(b.code)){ openBuyPlan(KKP.tierOf(b), b.code); return; }   // sách PDF thuộc gói (06/11/2026); Worker /api/book cũng kiểm tra
   }
   if(S.mode==="artifact"){ window.open("https://drive.google.com/file/d/"+id+"/preview","_blank","noopener"); return; }
   const host=$("#modalHost");
@@ -2133,10 +2135,10 @@ async function viewBook(v, code){
 
   // Liên kết tài liệu (Google Drive / OneDrive của tác giả)
   const links = [];
-  if(sachIdOf(code)) links.push(`<button class="btn pri" id="bkSach">📖 Đọc Sách PDF ngay (chỉ xem)${(!S.isAdmin&&myGrade()&&!bookAllowed(b).ok)?" 🔒":""}</button>`);
+  if(sachIdOf(code)) links.push(`<button class="btn pri" id="bkSach">📖 Đọc Sách PDF (chỉ xem)${(!S.isAdmin&&((myGrade()&&!bookAllowed(b).ok)||!unlocked))?" 🔒":""}</button>`);
   if(c.scriptUrl) links.push(`<a class="btn" target="_blank" rel="noopener" href="${esc(c.scriptUrl)}">🎬 Kịch bản video (Bộ B)</a>`);
   if(c.videoUrl) links.push(`<a class="btn" target="_blank" rel="noopener" href="${esc(c.videoUrl)}">▶ Video bài giảng (thư mục)</a>`);
-  $("#bkLinks").innerHTML = links.join("") + (sachIdOf(code)?`<span class="note">Sách mở trong trình đọc bảo vệ: chỉ xem, không tải - không sao chép.</span>`:(S.isAdmin?`<span class="note">Chưa gắn link tài liệu - vào Quản trị → Nội dung.</span>`:""));
+  $("#bkLinks").innerHTML = links.join("") + (sachIdOf(code)?`<span class="note">Sách mở trong trình đọc bảo vệ: chỉ xem, không tải - không sao chép${unlocked?"":" · thuộc gói "+esc(KKP.tierName(b))}.</span>`:(S.isAdmin?`<span class="note">Chưa gắn link tài liệu - vào Quản trị → Nội dung.</span>`:""));
   const bs=$("#bkSach"); if(bs) bs.onclick=()=>openBookViewer(b);
 
   const pack = await loadPack(code);
@@ -5813,7 +5815,7 @@ const KKP = {
   async load(force){
     if(!S.uid||S.mode!=="firebase") { KKP.me=null; return null; }
     if(KKP.me&&!force&&Date.now()-(KKP.me._at||0)<60000) return KKP.me;
-    try{ KKP.me=Object.assign(await KKP.api("/license/me"),{_at:Date.now()}); }catch(e){ if(!KKP.me) KKP.me=null; }
+    try{ KKP.me=Object.assign(await KKP.api("/license/me"),{_at:Date.now()}); }catch(e){ KKP.me=Object.assign(KKP.me||{tiers:{},orders:[]},{_err:String(e&&e.code||"net"), _at:Date.now()}); }   // lỗi cũng đệm 60 giây - không gọi lặp
     return KKP.me;
   },
   async reloadEnroll(){
@@ -5852,7 +5854,7 @@ function viewPlans(v){
   <div class="note" style="margin-top:8px">Gói gắn với tài khoản đăng nhập, dùng trên mọi thiết bị. Gia hạn nối tiếp ngày còn lại. Hóa đơn/biên nhận: email tự động. Hỗ trợ: ${esc(S.settings.contactZalo?"Zalo "+S.settings.contactZalo:"")} ${esc(S.settings.contactEmail||"")}</div></div>`;
   v.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>openBuyPlan(b.dataset.buy));
   $("#plCode").onclick=()=>openRedeem();
-  KKP.load().then(m=>{ if(m&&S.route.name==="goi") viewPlans(v); });
+  if(S.uid&&!KKP.me) KKP.load().then(()=>{ if(S.route.name==="goi") viewPlans(v); });   // chỉ vẽ lại một lần sau khi tải trạng thái gói
 }
 /* ---------- Thẻ "Gói học của tôi" trong Học tập ---------- */
 function planCardHTML(){
@@ -5867,7 +5869,7 @@ function planCardHTML(){
     :`<div class="note">Chưa có gói nào. Bạn vẫn học thử miễn phí ${trialN()} bài đầu mỗi sách và thi thử không giới hạn. Kích hoạt gói để học trọn bộ:</div><div class="rowline" style="margin-top:8px">${mine.map(t=>`<button class="btn sm pri" data-buy="${t}">${esc(KKP.NAME[t])} · ${fmtMoney(KKP.price(t))}/năm</button>`).join("")}</div>`}
   ${hedTxt?`<div class="note" style="margin-top:8px">Bậc cao: ${hedTxt} <button class="btn sm ghost" id="plHed">Khai báo / cập nhật</button></div>`:""}
   ${m&&m.orders&&m.orders.length?`<details style="margin-top:8px"><summary class="note" style="cursor:pointer">Lịch sử đơn (${m.orders.length})</summary><div class="tbwrap"><table class="tb"><thead><tr><th>Mã đơn</th><th>Gói</th><th>Số tiền</th><th>Trạng thái</th><th>Ngày</th></tr></thead><tbody>${m.orders.map(o=>`<tr><td><b>${esc(o.oc)}</b></td><td>${esc(KKP.NAME[o.tier]||o.tier)}</td><td>${fmtMoney(Number(o.amount)||0)}</td><td>${planStatusBadge(o.status)}</td><td class="note">${o.at?fmtDate(o.at):""}</td></tr>`).join("")}</tbody></table></div></details>`:""}
-  ${!m?`<div class="note" style="margin-top:6px">Đang tải trạng thái gói...</div>`:""}</div>`;
+  ${!m?`<div class="note" style="margin-top:6px">Đang tải trạng thái gói...</div>`:(m._err?`<div class="note" style="margin-top:6px">Chưa đọc được trạng thái gói (${esc(m._err)}) - thử tải lại trang.</div>`:"")}</div>`;
 }
 function planStatusBadge(st){ const M={paid:["ok","Đã kích hoạt"],pending:["","Chờ thanh toán"],reported:["","Đã báo chuyển khoản - chờ xác nhận"],underpaid:["lock","Thiếu tiền - liên hệ"],expired:["","Hết hạn đơn"],cancelled:["","Đã hủy"],revoked:["lock","Đã thu hồi"],manual:["","Mã do Admin cấp"]}; const x=M[st]||["",st]; return `<span class="badge ${x[0]}">${esc(x[1])}</span>`; }
 function planCardBind(v){
