@@ -5924,7 +5924,7 @@ function openBuyPlan(tier, fromCode){
   const hedLevel = tier==="pt" ? "" : KKP.NAME[tier];
   const act=KKP.active(tier), x=act&&KKP.me.tiers[tier];
   modal(`<div class="eyebrow">KK-EDU GIA SƯ SỐ · Thanh toán VietQR (Napas 247)</div><h3 style="margin:.2em 0" id="bpHead">Gói ${esc(KKP.NAME[tier])} · <span id="bpPrice">${fmtMoney(KKP.price(tier))}</span> / năm</h3>
-  <div class="note">${act?`Bạn đang có gói này đến ${esc(KKP.fmtDay(x.exp))} - thanh toán sẽ <b>gia hạn nối tiếp</b> thêm 1 năm.`:`Mở trọn bộ mọi sách bậc ${esc(KKP.NAME[tier])}${tier==="pt"?" đúng lớp <b>"+esc(g.label)+"</b>":""} trong 1 năm, trên mọi thiết bị.`}</div>
+  <div class="note">${act?`Bạn đang có gói này đến ${esc(KKP.fmtDay(x.exp))} - thanh toán sẽ <b>gia hạn nối tiếp</b> thêm 1 năm.`:(tier==="pt"&&adult?`Gói dành cho <b>học sinh</b>: mở trọn bộ sách đúng lớp của con trong 1 năm, trên mọi thiết bị.`:`Mở trọn bộ mọi sách bậc ${esc(KKP.NAME[tier])}${tier==="pt"?" đúng lớp <b>"+esc(g.label)+"</b>":""} trong 1 năm, trên mọi thiết bị.`)}</div>
   <div class="formgrid" style="margin-top:10px"><div class="fld"><label for="bpPhone">Số điện thoại / Zalo (tùy chọn - để nhận mã nếu email trục trặc)</label><input id="bpPhone" inputmode="tel" maxlength="20" value="${esc((KKP.me&&KKP.me.hed&&KKP.me.hed.phone)||"")}"></div>
     <div class="fld"><label for="bpCoupon">Mã giảm giá (nếu có)</label><div class="rowline" style="gap:6px"><input id="bpCoupon" maxlength="24" autocapitalize="characters" spellcheck="false" style="flex:1" placeholder="VD: TRUONG-A"><button class="btn sm ghost" id="bpApply">Áp dụng</button></div></div></div>
   <div id="bpFor"></div>
