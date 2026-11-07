@@ -1946,7 +1946,7 @@ function viewHome(v){
         <button class="btn pri" id="hExplore">Vào học Video Online</button>
         <button class="btn ghost" id="hDemo">Học thử bài demo có video thật</button>
         <a class="btn ghost" id="hApp" href="/tai-app/">Tải ứng dụng Android</a>
-        <a class="btn ghost" id="hPlans" href="#goi">Gói học từ 199.000 đ/năm</a>
+        <a class="btn ghost" id="hPlans" href="#goi">Gói học từ ${fmtVN(KKP.price("pt"))} đ/năm</a>
       </div>
       <div class="statrow">
         <div class="stat"><b>${nBooks}</b><span>đầu sách</span></div>
@@ -5828,7 +5828,7 @@ const KKP = {
     Object.keys(S.goiCache).forEach(k=>{ if(S.goiCache[k]&&S.goiCache[k]._partial) delete S.goiCache[k]; });
     await KKP.load(true);
   },
-  err(e){ const m={auth:"Hãy đăng nhập trước.", profile:"Hãy khai hồ sơ (năm sinh) trước khi mua gói.", rate:"Thao tác quá nhanh, thử lại sau 1 phút.", "code-not-found":"Mã không đúng. Kiểm tra lại từng ký tự.", "code-used":"Mã này đã được tài khoản khác dùng.", "code-cancelled":"Mã này đã bị hủy.", "order-paid":"Đơn đã kích hoạt - dùng Thu hồi nếu cần.", "bad-code":"Mã không đúng định dạng KKGS-XXXX-XXXX-XXXX.", origin:"Trình duyệt chặn yêu cầu.", "not-configured":"Máy chủ chưa cấu hình thanh toán.", "order-not-found":"Không tìm thấy đơn."}; return m[e&&e.code]||("Lỗi: "+esc(e&&(e.code||e.message)||"mạng")); }
+  err(e){ const m={auth:"Hãy đăng nhập trước.", profile:"Hãy khai hồ sơ (năm sinh) trước khi mua gói.", rate:"Thao tác quá nhanh, thử lại sau 1 phút.", "code-not-found":"Mã không đúng. Kiểm tra lại từng ký tự.", "code-used":"Mã này đã được tài khoản khác dùng.", "code-cancelled":"Mã này đã bị hủy.", "tier-age":"Gói này không đúng độ tuổi theo hồ sơ.", "hed-required":"Cần khai báo trình độ, chuyên môn trước (duyệt tự động).", "not-linked":"Người học này chưa liên kết với bạn.", "order-paid":"Đơn đã kích hoạt - dùng Thu hồi nếu cần.", "bad-code":"Mã không đúng định dạng KKGS-XXXX-XXXX-XXXX.", origin:"Trình duyệt chặn yêu cầu.", "not-configured":"Máy chủ chưa cấu hình thanh toán.", "order-not-found":"Không tìm thấy đơn."}; return m[e&&e.code]||("Lỗi: "+esc(e&&(e.code||e.message)||"mạng")); }
 };
 function hedApproved(level){
   const g=S.uid&&S.grants[S.uid]; if(!g) return false;
@@ -5838,12 +5838,19 @@ function hedApproved(level){
 /* ---------- Trang Gói học & bảng giá ---------- */
 function viewPlans(v){
   const n=t=>CATALOG.filter(b=>KKP.tierOf(b)===t).length;
+  const g=S.uid&&S.profile?myGrade():null; const adult=!!(g&&g.kind==="adult");
+  /** Nút của từng gói: đúng đối tượng -> Kích hoạt; người lớn ở gói Phổ thông -> Mua cho con; học sinh ở gói bậc cao -> không mua được (07/11/2026) */
+  const btn=t=>{ if(!g) return `<button class="btn pri" data-buy="${t}">Kích hoạt gói ${esc(KKP.SHORT[t])}</button>`;
+    if(t==="pt"&&adult) return `<button class="btn ghost" data-buy="pt">Mua cho con (học sinh)</button><div class="note">Tài khoản của bạn là người lớn - gói này mua cho con đã liên kết.</div>`;
+    if(t!=="pt"&&!adult) return `<button class="btn ghost" disabled>Dành cho người từ 18 tuổi</button>`;
+    if(t!=="pt"&&!hedApproved(KKP.NAME[t])) return `<button class="btn pri" data-buy="${t}">Khai báo và kích hoạt gói ${esc(KKP.SHORT[t])}</button>`;
+    return `<button class="btn pri" data-buy="${t}">Kích hoạt gói ${esc(KKP.SHORT[t])}</button>`; };
   const card=(t, desc, who)=>{ const act=KKP.active(t), x=act&&KKP.me.tiers[t];
     return `<div class="card plan${t==="pt"?" hot":""}"><div class="eyebrow">Gói 1 năm</div><h3 style="margin:.2em 0">${esc(KKP.NAME[t])}</h3>
     <div class="price"><b>${fmtMoney(KKP.price(t))}</b><span class="note"> / năm</span></div>
     <div class="note" style="min-height:3.2em">${desc}</div>
     <ul class="qtlist"><li>${n(t)} đầu sách${t==="pt"?" (mở đúng lớp theo năm sinh)":""}, học trọn bộ mọi bài</li><li>Video tương tác, kiểm tra thành thạo, Sổ ôn tập, Báo cáo tuần</li><li>Sách PDF kèm theo (chỉ xem)</li><li>${who}</li></ul>
-    ${act?`<div class="feedback good">Đang dùng - còn ${x.days} ngày (đến ${esc(KKP.fmtDay(x.exp))})</div><button class="btn ghost" data-buy="${t}">Gia hạn thêm 1 năm</button>`:`<button class="btn pri" data-buy="${t}">Kích hoạt gói ${esc(KKP.SHORT[t])}</button>`}</div>`; };
+    ${act?`<div class="feedback good">Đang dùng - còn ${x.days} ngày (đến ${esc(KKP.fmtDay(x.exp))})</div><button class="btn ghost" data-buy="${t}">Gia hạn thêm 1 năm</button>`:btn(t)}</div>`; };
   v.innerHTML=`<div class="sec" style="margin-top:26px"><div><div class="eyebrow">KK-EDU GIA SƯ SỐ</div><h2 style="margin:0">Gói học và bảng giá</h2></div><button class="more" id="plCode">Tôi có mã kích hoạt →</button></div>
   <p class="note" style="max-width:60em">Mọi người đều <b>học thử miễn phí ${trialN()} bài đầu</b> của từng sách đúng lớp và <b>Thi thử miễn phí</b> không giới hạn. Gói 1 năm mở trọn bộ mọi sách của bậc; thanh toán VietQR, kích hoạt tự động trong vài giây, mã kích hoạt gửi về email.</p>
   <div class="grid plans">
@@ -5911,30 +5918,60 @@ function openBuyPlan(tier, fromCode){
   if(!S.uid){ modal(`<div class="eyebrow">Gói ${esc(KKP.NAME[tier])}</div><h3>Đăng nhập để kích hoạt gói</h3><p class="note">Gói học gắn với tài khoản, dùng trên mọi thiết bị. Đăng ký miễn phí, chỉ cần email.</p><div class="mrow"><button class="btn pri" id="bpLogin">Đăng nhập</button><button class="btn ghost" id="bpReg">Đăng ký</button><button class="btn ghost" id="bpNo">Đóng</button></div>`);
     $("#bpNo").onclick=closeModal; $("#bpLogin").onclick=()=>openLogin(); $("#bpReg").onclick=()=>openRegister(); return; }
   if(!S.profile||!myGrade()){ openProfileForm(()=>openBuyPlan(tier, fromCode)); return; }
-  const g=myGrade();
-  if(tier==="pt"&&g.kind==="adult"){ toast("Tài khoản người lớn: chọn gói Đại học, Thạc sĩ hoặc Tiến sĩ."); tier="dh"; }
-  if(tier!=="pt"&&g.kind!=="adult"){ toast("Người học dưới 18 tuổi dùng gói Mầm non đến THPT."); tier="pt"; }
+  const g=myGrade(); const adult=g.kind==="adult";
+  // 07/11/2026: KHÔNG đổi gói ngầm (lỗi cũ: người lớn bấm gói 199.000 đ bị chuyển sang gói Đại học 299.000 đ). Gói nào hiện thì đơn đúng gói đó.
+  const selfOk = tier==="pt" ? !adult : adult;
+  const hedLevel = tier==="pt" ? "" : KKP.NAME[tier];
   const act=KKP.active(tier), x=act&&KKP.me.tiers[tier];
-  modal(`<div class="eyebrow">KK-EDU GIA SƯ SỐ · Thanh toán VietQR (Napas 247)</div><h3 style="margin:.2em 0">Gói ${esc(KKP.NAME[tier])} · ${fmtMoney(KKP.price(tier))} / năm</h3>
+  modal(`<div class="eyebrow">KK-EDU GIA SƯ SỐ · Thanh toán VietQR (Napas 247)</div><h3 style="margin:.2em 0" id="bpHead">Gói ${esc(KKP.NAME[tier])} · <span id="bpPrice">${fmtMoney(KKP.price(tier))}</span> / năm</h3>
   <div class="note">${act?`Bạn đang có gói này đến ${esc(KKP.fmtDay(x.exp))} - thanh toán sẽ <b>gia hạn nối tiếp</b> thêm 1 năm.`:`Mở trọn bộ mọi sách bậc ${esc(KKP.NAME[tier])}${tier==="pt"?" đúng lớp <b>"+esc(g.label)+"</b>":""} trong 1 năm, trên mọi thiết bị.`}</div>
   <div class="formgrid" style="margin-top:10px"><div class="fld"><label for="bpPhone">Số điện thoại / Zalo (tùy chọn - để nhận mã nếu email trục trặc)</label><input id="bpPhone" inputmode="tel" maxlength="20" value="${esc((KKP.me&&KKP.me.hed&&KKP.me.hed.phone)||"")}"></div>
     <div class="fld"><label for="bpCoupon">Mã giảm giá (nếu có)</label><div class="rowline" style="gap:6px"><input id="bpCoupon" maxlength="24" autocapitalize="characters" spellcheck="false" style="flex:1" placeholder="VD: TRUONG-A"><button class="btn sm ghost" id="bpApply">Áp dụng</button></div></div></div>
   <div id="bpFor"></div>
-  <div id="bpBody"><div class="note">Đang tạo mã QR...</div></div>
+  <div id="bpBody"><div class="note">Đang kiểm tra gói phù hợp...</div></div>
   <div class="mrow"><button class="btn ghost sm" id="bpNo">Đóng</button></div>`,{lock:true});
   $("#bpNo").onclick=()=>{ clearInterval(_payPoll); closeModal(); };
-  let forRef=""; const opts=()=>({tier, phone:$("#bpPhone").value.trim(), coupon:$("#bpCoupon").value.trim(), forRef});
-  // mua hộ người học đã liên kết (phụ huynh / giáo viên): hiện khi có liên kết
-  KKP.api("/pay/family").then(f=>{ const box=$("#bpFor"); if(!box||!f.learners||!f.learners.length) return;
-    box.innerHTML=`<div class="fld"><label for="bpWho">Mua cho</label><select id="bpWho"><option value="">Tôi (${esc((S.profile&&S.profile.name)||S.name)})</option>${f.learners.map(l=>`<option value="${esc(l.ref)}">${esc(l.name)}${l.grade?" - "+esc(l.grade):""}</option>`).join("")}</select></div>`;
-    $("#bpWho").onchange=e=>{ forRef=e.target.value; makeOrder(); }; }).catch(()=>{});
+  let forRef=null;   // null = chưa có người học hợp lệ (không tạo đơn); "" = bản thân; ref = người học liên kết
+  const opts=()=>({tier, phone:$("#bpPhone").value.trim(), coupon:$("#bpCoupon").value.trim(), forRef:forRef||""});
+  const learnerOk=l=> tier==="pt" ? l.kind!=="adult" : l.kind==="adult";
   $("#bpApply").onclick=()=>makeOrder();
   $("#bpCoupon").onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); makeOrder(); } };
+  /** Không có ai hợp lệ cho gói này: giải thích, đưa lựa chọn đúng, KHÔNG tạo đơn */
+  const mismatch=()=>{ const body=$("#bpBody"); if(!body) return; $("#bpCoupon").disabled=true; $("#bpApply").disabled=true;
+    body.innerHTML = adult
+      ? `<div class="alertbox">Gói <b>Mầm non đến THPT (${fmtMoney(KKP.price("pt"))})</b> dành cho <b>học sinh dưới 18 tuổi</b> theo năm sinh trong hồ sơ. Tài khoản của bạn là người lớn (sinh ${esc(S.profile.namSinh)}), nên hệ thống <b>không tạo đơn</b> để tránh thanh toán nhầm gói.</div>
+         <div class="note" style="margin:6px 0 2px"><b>Mua cho con:</b> con đăng nhập tài khoản của con, vào <b>IELTS &gt; Gia đình</b> tạo mã phụ huynh; bạn nhập mã đó để liên kết, rồi quay lại đây chọn con ở mục <b>Mua cho</b> - giá đúng ${fmtMoney(KKP.price("pt"))}/năm.</div>
+         <div class="mrow"><a class="btn pri" href="/ielts/#go=gia-dinh">Liên kết tài khoản của con</a><button class="btn ghost" id="bpSwitch">Xem gói Đại học cho tôi (${fmtMoney(KKP.price("dh"))})</button></div>`
+      : `<div class="alertbox">Gói <b>${esc(KKP.NAME[tier])} (${fmtMoney(KKP.price(tier))})</b> dành cho người học <b>từ 18 tuổi</b>. Theo năm sinh trong hồ sơ, bạn đang học <b>${esc(g.label)}</b> nên dùng gói <b>Mầm non đến THPT</b>. Hệ thống không tạo đơn để tránh thanh toán nhầm.</div>
+         <div class="mrow"><button class="btn pri" id="bpSwitch">Chọn gói Mầm non đến THPT (${fmtMoney(KKP.price("pt"))})</button></div>`;
+    const sw=$("#bpSwitch"); if(sw) sw.onclick=()=>{ closeModal(); openBuyPlan(adult?"dh":"pt", fromCode); };
+  };
+  /** Gói bậc cao cho bản thân nhưng chưa được duyệt trình độ: mời khai báo (duyệt tự động), KHÔNG tạo đơn */
+  const needHed=()=>{ const body=$("#bpBody"); if(!body) return;
+    body.innerHTML=`<div class="alertbox">Gói <b>${esc(KKP.NAME[tier])}</b> cần khai báo trình độ, chuyên môn trước. Công cụ tự động phê duyệt trong vài giây, sau đó mã QR hiện ngay để thanh toán.</div><div class="mrow"><button class="btn pri" id="bpHed">Khai báo bậc ${esc(hedLevel)}</button></div>`;
+    $("#bpHed").onclick=()=>{ closeModal(); openHedForm(hedLevel, ()=>openBuyPlan(tier, fromCode)); };
+  };
+  (async()=>{
+    let L=[]; try{ L=(await KKP.api("/pay/family")).learners||[]; }catch(e){}
+    const kids=L.filter(learnerOk); const box=$("#bpFor"); if(!box) return;
+    if(!selfOk && !kids.length) return mismatch();
+    const opt=[]; if(selfOk) opt.push(`<option value="">Tôi (${esc((S.profile&&S.profile.name)||S.name)})</option>`);
+    kids.forEach(l=>opt.push(`<option value="${esc(l.ref)}">${esc(l.name)}${l.grade?" - "+esc(l.grade):""}</option>`));
+    if(opt.length>1||!selfOk){ box.innerHTML=`<div class="fld"><label for="bpWho">Mua cho</label><select id="bpWho">${opt.join("")}</select></div>`; $("#bpWho").onchange=e=>{ forRef=e.target.value; makeOrder(); }; }
+    forRef = selfOk ? "" : kids[0].ref;
+    makeOrder();
+  })();
   async function makeOrder(){
+    if(forRef===null) return mismatch();
+    if(forRef==="" && hedLevel && !hedApproved(hedLevel)) return needHed();
     clearInterval(_payPoll); const body0=$("#bpBody"); if(!body0) return; body0.innerHTML=`<div class="note">Đang tạo mã QR...</div>`;
     let o; try{ o=await KKP.api("/pay/create",opts()); }
-    catch(e){ if(e.code==="profile"){ closeModal(); openProfileForm(()=>openBuyPlan(tier)); return; } if(e.code==="not-linked"){ body0.innerHTML=`<div class="feedback bad">Người học này chưa liên kết với bạn.</div>`; return; } body0.innerHTML=`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}</div>`; return; }
+    catch(e){ if(e.code==="profile"){ closeModal(); openProfileForm(()=>openBuyPlan(tier, fromCode)); return; } if(e.code==="hed-required"&&!forRef) return needHed(); if(e.code==="not-linked"){ body0.innerHTML=`<div class="feedback bad">Người học này chưa liên kết với bạn.</div>`; return; } body0.innerHTML=`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}</div>`; return; }
     const body=$("#bpBody"); if(!body) return;
+    // tiêu đề luôn theo đúng đơn máy chủ trả về (gói + số tiền) - không bao giờ lệch với mã QR
+    if(o.tier!==tier){ body.innerHTML=`<div class="feedback bad">Đơn trả về sai gói (${esc(o.tier)}). Hãy đóng và thử lại.</div>`; return; }
+    const hp=$("#bpPrice"); if(hp) hp.innerHTML = o.discount?`<s style="color:var(--fg2);font-weight:400">${fmtMoney(o.listPrice||0)}</s> ${fmtMoney(o.amount)}`:fmtMoney(o.amount);
+    const hh=$("#bpHead"); if(hh&&o.tierName) hh.firstChild.nodeValue="Gói "+o.tierName+" · ";
     if(o.free){ await KKP.reloadEnroll(); body.innerHTML=`<div class="feedback good" style="font-size:1rem">🎉 Mã giảm giá 100% - <b>đã kích hoạt gói ${esc(KKP.NAME[tier])}</b> đến ${esc(KKP.fmtDay(o.planExp))}. Mã kích hoạt: <b>${esc(o.license)}</b>.</div><div class="mrow"><button class="btn pri" id="bpGo">Vào học</button></div>`; $("#bpGo").onclick=()=>{ closeModal(); go(fromCode?{name:"book",code:fromCode}:{name:"video"}); }; return; }
     if(!o.bank){
       body.innerHTML=`<div class="alertbox">Kênh VietQR chưa được cấu hình. Để kích hoạt gói <b>${esc(KKP.NAME[tier])}</b> (${fmtMoney(o.amount)}), liên hệ ${esc(o.contactZalo?"Zalo "+o.contactZalo:"")} ${esc(o.contactEmail||"")} với <b>mã đơn ${esc(o.oc)}</b>; bạn sẽ nhận <b>mã kích hoạt</b> qua Zalo/email rồi nhập ở nút "Tôi có mã kích hoạt".</div><div class="mrow"><button class="btn pri" id="bpRedeem">Tôi có mã kích hoạt</button></div>`;
@@ -5986,14 +6023,15 @@ function openRedeem(fromCode){
     try{ const r=await KKP.api("/license/redeem",{code}); await KKP.reloadEnroll();
       $("#rdFb").innerHTML=`<div class="feedback good">🎉 ${r.already?"Mã này đã kích hoạt cho chính bạn trước đó.":`Đã kích hoạt gói <b>${esc(KKP.NAME[r.tier]||r.tier)}</b> đến ${esc(KKP.fmtDay(r.exp))}, mở ${r.n} sách.`}</div><div class="mrow"><button class="btn pri" id="rdGo">${fromCode?"Vào học ngay":"Xem Gói học của tôi"}</button></div>`;
       $("#rdGo").onclick=()=>{ closeModal(); if(fromCode) go({name:"book",code:fromCode}); else go({name:"dash"}); }; kkTrack("goi_nhap_ma",{goi:r.tier});
-    }catch(e){ $("#rdOk").disabled=false; if(e.code==="profile"){ closeModal(); openProfileForm(()=>openRedeem(fromCode)); return; } $("#rdFb").innerHTML=`<div class="feedback bad">${KKP.err(e)}</div>`; }
+    }catch(e){ $("#rdOk").disabled=false; if(e.code==="profile"){ closeModal(); openProfileForm(()=>openRedeem(fromCode)); return; }
+      $("#rdFb").innerHTML=`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}${e.code==="hed-required"?' <button class="btn sm pri" id="rdHed">Khai báo ngay</button>':""}</div>`; const rh=$("#rdHed"); if(rh) rh.onclick=()=>{ closeModal(); openHedForm("", ()=>openRedeem(fromCode)); }; }
   };
 }
 /* ---------- Khai báo bậc Đại học / Thạc sĩ / Tiến sĩ - phê duyệt tự động ---------- */
 const HED_EDU=[["thpt","Tốt nghiệp THPT (hoặc đang học lớp 12)"],["cd","Cao đẳng / Trung cấp"],["dh_hoc","Đang học Đại học"],["dh","Tốt nghiệp Đại học"],["ths_hoc","Đang học Thạc sĩ"],["ths","Tốt nghiệp Thạc sĩ"],["ts_hoc","Nghiên cứu sinh (đang học Tiến sĩ)"],["ts","Tiến sĩ"]];
-function openHedForm(level){
+function openHedForm(level, after){
   if(!S.uid){ toast("Hãy đăng nhập để khai báo."); openLogin(); return; }
-  if(!S.profile||!myGrade()){ openProfileForm(()=>openHedForm(level)); return; }
+  if(!S.profile||!myGrade()){ openProfileForm(()=>openHedForm(level, after)); return; }
   const g=myGrade(); if(g.kind!=="adult"){ toast("Bậc Đại học trở lên dành cho người từ 18 tuổi theo hồ sơ."); return; }
   const h=(S.grants[S.uid]&&S.grants[S.uid].hed)||{};
   const lv=h.levels||{};
@@ -6020,7 +6058,7 @@ function openHedForm(level){
       S.grants[S.uid]=Object.assign(S.grants[S.uid]||{}, {hed:r.hed});
       const rows=targets.map(L=>{ const x=r.hed.levels[L]||{}; const ok=x.status==="approved"; return `<div class="feedback ${ok?"good":x.status==="pending"?"hint":"bad"}"><b>${esc(L)}</b>: ${ok?"✓ ĐÃ DUYỆT - vào học ngay":x.status==="pending"?"chờ Quản trị viên xem xét":"chưa hợp lệ"}${x.reasons&&x.reasons.length?` <span class="note">(${esc(x.reasons.join("; "))})</span>`:""}</div>`; }).join("");
       $("#hdFb").innerHTML=rows+`<div class="mrow"><button class="btn pri" id="hdGo">Tiếp tục</button></div>`;
-      $("#hdGo").onclick=()=>{ closeModal(); render(); }; kkTrack("hed_khai_bao",{bac:targets.join(",")});
+      $("#hdGo").onclick=()=>{ closeModal(); render(); if(after&&level&&r.hed.levels[level]&&r.hed.levels[level].status==="approved") after(); }; kkTrack("hed_khai_bao",{bac:targets.join(",")});
     }catch(e){ $("#hdOk").disabled=false; $("#hdFb").innerHTML=`<div class="feedback bad">${KKP.err(e)}</div>`; }
   };
 }
