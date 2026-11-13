@@ -5480,7 +5480,7 @@ async function adminStudents(el, pre){
   { const g=$("#vcToGrant"); if(g) g.onclick=()=>openAdminGrant({}, ()=>adminStudents(el)); const c=$("#vcToCode"); if(c) c.onclick=()=>openAdminNewCode(); }
   KKP.api("/admin/pay/plans").then(r=>{ if(!el.isConnected) return; el.querySelectorAll("td[data-plan]").forEach(td=>{ const t=(r.plans||{})[td.dataset.plan], st=td.querySelector(".plst"); if(!st) return;
       const act=t?Object.keys(t).filter(k=>t[k].status==="active"):[];
-      st.innerHTML=act.length?act.map(k=>`<span class="badge ok">${esc(KKP.SHORT[k]||k)} đến ${esc(KKP.fmtDay(t[k].exp))}</span>`).join(" "):(t?'<span class="badge">gói đã hết hạn</span>':"chưa có gói"); }); })
+      st.innerHTML=act.length?act.map(k=>`<span class="badge ok">${esc(KKP.SHORT[k]||k)} đến ${esc(KKP.fmtDay(t[k].exp))}</span>`).join(" "):(t?`<span class="badge">${Object.values(t).some(x=>x.status==="revoked")?"gói đã thu hồi":"gói đã hết hạn"}</span>`:"chưa có gói"); }); })
     .catch(()=>{ el.querySelectorAll("td[data-plan] .plst").forEach(x=>x.textContent=""); });
   const mbApply=()=>{ const q=($("#mbQ").value||"").toLowerCase().trim(), f=$("#mbF").value; let n=0;
     el.querySelectorAll("#mbTb tbody tr[data-q]").forEach(tr=>{ const ok=(!q||tr.dataset.q.includes(q))&&(!f||tr.dataset.f.split(" ").includes(f)); tr.style.display=ok?"":"none"; if(ok) n++; }); };
@@ -6252,7 +6252,7 @@ function openCodeBox(opt){
   }
   /* ---- mã xác thực độ tuổi (KX-...) ---- */
   async function doVerify(k){
-    const head=`<div class="alertbox"><b>Đây là mã xác thực độ tuổi</b> (KX-..., cấp cho người sinh năm ${k.year}): dùng để xác nhận năm sinh, <b>không phải mã kích hoạt gói học</b>. Mã kích hoạt gói có dạng <b>KKGS-XXXX-XXXX-XXXX</b>.</div>`;
+    const head=`<div class="alertbox"><b>Đây là mã xác thực độ tuổi</b> (KX-..., cấp cho người sinh năm ${k.year}): dùng để xác nhận năm sinh, <b>không phải mã kích hoạt gói học</b>. Mã kích hoạt gói có dạng <b style="white-space:nowrap">KKGS-XXXX-XXXX-XXXX</b>.</div>`;
     const tail=()=>`<div class="note" style="margin-top:8px">Muốn học trọn bộ sách cần <b>gói học</b>: thanh toán VietQR ở trang Gói học, hoặc nhập mã <b>KKGS-...</b> do Quản trị viên gửi.</div><div class="mrow"><button class="btn pri" id="cdPlans">Xem gói học</button>${S.isAdmin?'<button class="btn" id="cdAdm">Quản trị: mở gói cho học viên</button>':""}</div>`;
     const bind=()=>{ const p=$("#cdPlans"); if(p) p.onclick=()=>{ KKC.setPending(""); closeModal(); go({name:"goi"}); }; const a=$("#cdAdm"); if(a) a.onclick=()=>{ KKC.setPending(""); closeModal(); adminTab="od"; if(S.route.name==="admin") render(); else go({name:"admin"}); }; };
     if(!S.profile||!myGrade()){
@@ -6458,6 +6458,16 @@ function openAdminGrant(pre, after){
   $("#agNo").onclick=()=>{ closeModal(); if(changed&&after) after(); };
   const fb=h=>{ const el=$("#agFb"); if(el) el.innerHTML=h||""; };
   const toCode=x=>{ closeModal(); openAdminNewCode(after, x); };
+  /** Kết quả sau khi mở gói (kích hoạt trực tiếp hoặc xác nhận đơn chờ): tóm tắt + tin nhắn soạn sẵn để báo khách */
+  function doneMsg(r, already){
+    const phone=r.phone||"";
+    const msg=`KK-EDU GIA SƯ SỐ: gói ${r.tierName} của ${r.name} đã được kích hoạt đến ${KKP.fmtDay(r.exp)} (${r.n} sách). Vào www.kk-edu.com, đăng nhập tài khoản ${r.email||"của người học"} là học được ngay, không cần nhập mã.`;
+    $("#agAcc").innerHTML="";
+    fb(`<div class="feedback good" style="font-size:1rem">✓ ${already?"Đơn này đã được kích hoạt từ trước.":`Đã kích hoạt gói <b>${esc(r.tierName)}</b> cho <b>${esc(r.name)}</b>${r.grade?" ("+esc(r.grade)+")":""} đến <b>${esc(KKP.fmtDay(r.exp))}</b>, mở ${r.n} sách.${r.approved?" Đã duyệt bậc "+esc(r.tierName)+" cho người học.":""}`}<br><span class="note">Mã đơn ${esc(r.oc)} · Mã bằng chứng ${esc(r.license||"")} · Email biên nhận: ${KKC.mailTxt(r.mail)}</span></div>
+      ${already?"":`<div class="fld"><label for="agMsg">Tin nhắn báo cho khách (dán vào Zalo / SMS)</label><textarea id="agMsg" class="msgbox" readonly>${esc(msg)}</textarea></div>`}
+      <div class="mrow" style="margin-top:0">${already?"":`<button class="btn pri" id="agCp">Sao chép tin nhắn</button>`}${phone?`<a class="btn" style="text-decoration:none" target="_blank" rel="noopener" href="https://zalo.me/${esc(phone.replace(/\D/g,""))}">Mở Zalo</a>`:""}<button class="btn ghost" id="agMore">Kích hoạt cho người khác</button></div>`);
+    const cp=$("#agCp"); if(cp) cp.onclick=()=>copyText(msg); $("#agMore").onclick=()=>{ closeModal(); openAdminGrant({}, after); };
+  }
   async function find(uid){
     const email=$("#agEmail").value.trim().toLowerCase();
     if(!uid && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ fb(`<div class="feedback bad">Nhập đúng email đăng nhập của người học (vd: ten@gmail.com).</div>`); return; }
@@ -6488,6 +6498,21 @@ function openAdminGrant(pre, after){
       <div class="fld"><label for="agNote">Ghi chú (vd: chuyển khoản MB ngày 13/11)</label><input id="agNote" maxlength="200" value="${esc(pre.note||"")}"></div>
       <div class="mrow"><button class="btn pri" id="agOk">Kích hoạt ngay</button></div>`}`;
     const tc=$("#agToCode"); if(tc) tc.onclick=()=>toCode({email:a.email, name:a.name});
+    // Tài khoản đang có đơn chờ (khách đã quét QR / báo chuyển khoản): xác nhận đúng đơn đó để sổ sách khớp, không tạo thêm đơn mới
+    if(a.open&&a.open.length){
+      const ST={pending:"chờ thanh toán", reported:"khách đã báo chuyển khoản", underpaid:"chuyển thiếu tiền"};
+      const box=document.createElement("div"); box.className="alertbox"; box.style.marginTop="0";
+      box.innerHTML=`<b>Tài khoản này đang có ${a.open.length} đơn chờ:</b>${a.open.map(o=>`<div style="margin-top:6px"><b>${esc(o.oc)}</b> · gói ${esc(KKP.NAME[o.tier]||o.tier)} · ${fmtMoney(o.amount)} · ${esc(ST[o.status]||o.status)}${o.paidAmount?" (đã nhận "+fmtMoney(o.paidAmount)+")":""} · tạo ${o.at?fmtDate(o.at):""} <button class="btn sm pri" data-cf="${esc(o.oc)}" style="margin-left:4px">Xác nhận đơn này đã nhận tiền</button></div>`).join("")}
+        <div class="note" style="margin-top:8px">Khách đã trả tiền theo đơn nào thì <b>xác nhận đúng đơn đó</b> (gói mở ngay, sổ sách khớp mã đơn). Chỉ dùng mẫu bên dưới khi khách trả tiền ngoài các đơn này hoặc được tặng.</div>`;
+      $("#agAcc").insertBefore(box, $("#agAcc").children[1]||null);
+      box.querySelectorAll("[data-cf]").forEach(b=>{ let armed=false, tm=null; const lbl=b.textContent;
+        b.onclick=async()=>{ const oc=b.dataset.cf, o=a.open.find(x=>x.oc===oc);
+          if(!armed){ armed=true; b.textContent=`Bấm lần nữa: xác nhận ${oc} (${fmtMoney(o.amount)})`; tm=setTimeout(()=>{ armed=false; b.textContent=lbl; },8000); return; }
+          clearTimeout(tm); b.disabled=true; fb(`<div class="feedback hint">Đang xác nhận đơn ${esc(oc)}...</div>`);
+          try{ const r=await KKP.api("/admin/pay/action",{op:"confirm", oc, note:"Xác nhận từ Trung tâm kích hoạt"}); const x=r.order||{}; changed=true;
+            doneMsg({tierName:KKP.NAME[x.tier||o.tier]||o.tier, name:x.name||a.name, grade:a.grade, exp:x.planExp, n:x.n, oc, license:x.license, mail:x.mail, email:x.email||a.email, phone:x.phone||""}, r.already);
+          }catch(e){ b.disabled=false; armed=false; b.textContent=lbl; fb(`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}</div>`); } }; });
+    }
     if(!usable.length) return;
     moneyInputs();
     let armed=false, armT=null;
@@ -6498,13 +6523,7 @@ function openAdminGrant(pre, after){
       const tier=$("#agTier").value, phone=$("#agPhone").value.trim(); const b=$("#agOk"); b.disabled=true; fb(`<div class="feedback hint">Đang kích hoạt...</div>`);
       try{
         const r=await KKP.api("/admin/pay/action",{op:"grant", uid:a.uid, tier, days:Number($("#agDays").value)||365, amount:moneyVal("agAmount"), phone, note:$("#agNote").value.trim(), force:!!force});
-        changed=true;
-        const msg=`KK-EDU GIA SƯ SỐ: gói ${r.tierName} của ${r.name} đã được kích hoạt đến ${KKP.fmtDay(r.exp)} (${r.n} sách). Vào www.kk-edu.com, đăng nhập tài khoản ${r.email||"của người học"} là học được ngay, không cần nhập mã.`;
-        $("#agAcc").innerHTML="";
-        fb(`<div class="feedback good" style="font-size:1rem">✓ Đã kích hoạt gói <b>${esc(r.tierName)}</b> cho <b>${esc(r.name)}</b>${r.grade?" ("+esc(r.grade)+")":""} đến <b>${esc(KKP.fmtDay(r.exp))}</b>, mở ${r.n} sách.${r.approved?" Đã duyệt bậc "+esc(r.tierName)+" cho người học.":""}<br><span class="note">Mã đơn ${esc(r.oc)} · Mã bằng chứng ${esc(r.license||"")} · Email biên nhận: ${KKC.mailTxt(r.mail)}</span></div>
-          <div class="fld"><label for="agMsg">Tin nhắn báo cho khách (dán vào Zalo / SMS)</label><textarea id="agMsg" class="msgbox" readonly>${esc(msg)}</textarea></div>
-          <div class="mrow" style="margin-top:0"><button class="btn pri" id="agCp">Sao chép tin nhắn</button>${phone?`<a class="btn" style="text-decoration:none" target="_blank" rel="noopener" href="https://zalo.me/${esc(phone.replace(/\D/g,""))}">Mở Zalo</a>`:""}<button class="btn ghost" id="agMore">Kích hoạt cho người khác</button></div>`);
-        $("#agCp").onclick=()=>copyText(msg); $("#agMore").onclick=()=>{ closeModal(); openAdminGrant({}, after); };
+        changed=true; doneMsg(Object.assign({phone}, r));
       }catch(e){ b.disabled=false; arm(false);
         if(e.code==="duplicate-grant"){ fb(`<div class="feedback hint">${esc(e.detail||"Vừa kích hoạt gói này cho tài khoản này.")}</div><div class="mrow"><button class="btn" id="agForce">Vẫn cộng thêm thời hạn</button></div>`); $("#agForce").onclick=()=>grant(true); return; }
         fb(`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}</div>`); }
