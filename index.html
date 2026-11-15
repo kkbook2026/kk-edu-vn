@@ -762,7 +762,41 @@ footer.ft a{color:var(--lapis);text-decoration-color:color-mix(in srgb,var(--lap
 @media (prefers-reduced-motion:reduce){.card.click:hover,.step:hover,.lessitem:hover{transform:none}}
 .wrk{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin:10px 0}.wrk div{background:var(--chip,#eef3f8);border:1px solid var(--line);border-radius:10px;padding:8px 10px}.wrk b{display:block;font-size:1.25rem;line-height:1.3}.wrk span{display:block;font-size:.78rem;opacity:.8;line-height:1.35}
 @media print{body.rcprint *{visibility:hidden!important}body.rcprint #rcDoc,body.rcprint #rcDoc *{visibility:visible!important}body.rcprint #rcDoc{position:absolute;left:0;top:0;width:100%;padding:0 6mm}body.rcprint .noprint{display:none!important}}
-@media print{body.wrprint *{visibility:hidden!important}body.wrprint #wrDoc,body.wrprint #wrDoc *{visibility:visible!important}body.wrprint #wrDoc{position:absolute;left:0;top:0;width:100%;padding:0 6mm}body.wrprint #wrDoc .noprint{display:none!important}}</style>
+@media print{body.wrprint *{visibility:hidden!important}body.wrprint #wrDoc,body.wrprint #wrDoc *{visibility:visible!important}body.wrprint #wrDoc{position:absolute;left:0;top:0;width:100%;padding:0 6mm}body.wrprint #wrDoc .noprint{display:none!important}}
+/* 15/11/2026: tự động hóa, mã theo lô, phiếu in có mã QR */
+.actgrid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.autogrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:10px}
+.auto{border:1px solid var(--line);border-radius:var(--r-m);padding:14px;background:var(--bg2);display:flex;flex-direction:column;gap:7px}
+.auto .st{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1rem}
+.auto .btn{align-self:flex-start;margin-top:auto}
+.dot{width:11px;height:11px;border-radius:50%;background:color-mix(in srgb,var(--fg2) 45%,transparent);flex:none;display:inline-block}
+.dot.on{background:var(--ok)}.dot.warn{background:var(--warn)}
+ol.wz{counter-reset:wz;display:grid;gap:10px;margin:10px 0;padding:0}
+ol.wz>li{list-style:none;border:1px solid var(--line);border-radius:var(--r-m);padding:12px 14px 12px 52px;position:relative;line-height:1.55}
+ol.wz>li::before{counter-increment:wz;content:counter(wz);position:absolute;left:14px;top:12px;width:26px;height:26px;border-radius:50%;background:var(--navy);color:var(--card);display:grid;place-items:center;font-weight:700;font-size:.85rem}
+ol.wz>li.done::before{background:var(--ok);color:#fff;content:"\2713"}
+.keyrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 8px}
+.keyrow code{flex:1;min-width:0;word-break:break-all;background:var(--chip);padding:8px 10px;border-radius:8px;font-size:.84rem;user-select:all}
+.navbadge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--bad);color:#fff;font-size:.68rem;font-weight:700;margin-left:6px;vertical-align:middle;line-height:1}
+.btcodes td,.btcodes th{white-space:nowrap;vertical-align:middle;padding:6px 10px}
+.prog{height:6px;border-radius:3px;background:var(--chip);overflow:hidden;min-width:70px;margin-top:4px}.prog i{display:block;height:100%;background:var(--ok)}
+#kkPrint{display:none;color:#000;background:#fff;font-family:Arial,"Helvetica Neue",Helvetica,sans-serif}
+.vsheet{display:grid;grid-template-columns:90mm 90mm;grid-auto-rows:63mm;gap:4mm;justify-content:center;break-after:page;page-break-after:always}
+.vsheet:last-child{break-after:auto;page-break-after:auto}
+.vch{box-sizing:border-box;width:90mm;height:63mm;border:.3mm dashed #444;border-radius:2mm;padding:2.6mm 3.4mm;display:flex;flex-direction:column;gap:.7mm;overflow:hidden;break-inside:avoid;page-break-inside:avoid;line-height:1.3}
+.vch .vh{display:flex;justify-content:space-between;align-items:baseline;gap:3mm;font-size:7.6pt}.vch .vh b{font-size:9.4pt;letter-spacing:.2pt;flex:none}.vch .vh span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
+.vch .vt{font-size:10.2pt;font-weight:800;letter-spacing:.3pt}
+.vch .vp{font-size:7.8pt}
+.vch .vb{display:flex;gap:3mm;align-items:center}
+.vch .vq{flex:none;width:25mm;height:25mm}.vch .vq svg{width:100%;height:100%;display:block}
+.vch ol{margin:0;padding-left:4.4mm;font-size:7.6pt;line-height:1.36}
+.vch .vc{font-family:"Courier New",Consolas,monospace;font-size:12.5pt;font-weight:700;letter-spacing:.6pt;text-align:center;border:.3mm solid #000;border-radius:1.2mm;padding:.5mm 0;line-height:1.25}
+.vch .vf{font-size:6.3pt;line-height:1.28}
+.vch .vn{font-size:6.4pt;color:#222;margin-top:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vch .vn b{color:#000}
+.vch>*{flex:none}
+@media print{body.kkprint>*:not(#kkPrint){display:none!important}body.kkprint #kkPrint{display:block!important}body.kkprint{background:#fff!important;margin:0!important;padding:0!important}}
+@page kkvoucher{size:A4 portrait;margin:8mm}
+#kkPrint{page:kkvoucher}</style>
 </head>
 <body>
 <header class="top"><div class="wrap topbar">
@@ -903,6 +937,7 @@ function applyFbUser(u){
 async function reloadUserData(){
   S.profile=null; S.myReq=null; S.grants={}; S.enroll={}; S.myRegs={}; S.progress={}; S.reviewCloud=null; if(typeof KR!=="undefined") KR.data=null;
   S.goiCache={}; S.packLoading={};   // quyền đọc gói phụ thuộc người dùng - tải lại sau khi đổi tài khoản
+  if(typeof KKP!=="undefined"){ KKP.me=null; clearTimeout(KKP._w); KKP._wn=0; } if(typeof KKA!=="undefined"){ KKA.todo=null; KKA._at=0; }   // trạng thái gói và việc cần xử lý là của từng tài khoản
   await loadShared(); loadLocal();
 }
 /* ---------- Bộ đếm lượt truy cập: mỗi phiên trình duyệt +1 (stats/visits tổng, stats/d-YYYY-MM-DD theo ngày giờ VN), hiện góc phải cuối trang ---------- */
@@ -940,6 +975,7 @@ async function initFirebase(){
       if((u&&u.uid)===lastUid) { applyFbUser(u); return; }
       lastUid = u&&u.uid; applyFbUser(u);
       await reloadUserData(); render();
+      if(u) setTimeout(()=>{ KKP.noticeNew().catch(()=>{}); }, 1200);   // gói vừa được mở khi vắng mặt: báo một lần
     });
     return true;
   }catch(e){ S.mode="guest"; return false; }
@@ -1783,9 +1819,10 @@ function parseHash(){
 function renderNav(){
   const nav = $("#mainNav");
   const items = NAV.concat(S.isAdmin?[{id:"admin",label:"Quản trị"}]:[]);
-  nav.innerHTML = items.map(n=>`<button data-r="${n.id}" class="${S.route.name===n.id||(n.id==="video"&&["book","hoc"].includes(S.route.name))?"on":""}${n.menu?" hasmenu":""}" ${n.menu?'aria-haspopup="true" aria-expanded="false"':''}>${n.label}${n.menu?'<svg class="car" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</button>`).join("");
+  nav.innerHTML = items.map(n=>`<button data-r="${n.id}" class="${S.route.name===n.id||(n.id==="video"&&["book","hoc"].includes(S.route.name))?"on":""}${n.menu?" hasmenu":""}" ${n.menu?'aria-haspopup="true" aria-expanded="false"':''}>${n.label}${n.id==="admin"&&typeof KKA!=="undefined"?KKA.badge():""}${n.menu?'<svg class="car" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</button>`).join("");
   nav.querySelectorAll("button").forEach(b=>{ const n=items.find(x=>x.id===b.dataset.r); b.onclick=(e)=>{ if(n&&n.menu){ e.stopPropagation(); kkMenuToggle(b, n); } else go({name:b.dataset.r}); }; });
   nav.setAttribute("aria-label","Điều hướng chính");
+  if(S.isAdmin&&typeof KKA!=="undefined") KKA.refresh();      // số việc cần xử lý (tối đa 2 phút hỏi máy chủ một lần)
   const on=nav.querySelector("button.on"); if(on){ on.setAttribute("aria-current","page"); if(nav.scrollWidth>nav.clientWidth){ const a=on.getBoundingClientRect(), b=nav.getBoundingClientRect(); nav.scrollLeft=Math.max(0, nav.scrollLeft + a.left - b.left - 16); } }
 }
 /* ---------- Menu sổ xuống (Ngoại ngữ): popover cố định, đóng khi bấm ngoài/Esc ---------- */
@@ -4700,6 +4737,9 @@ function cbKB(){
   {id:"goi_ma_loai", k:"ma kx ma xac thuc do tuoi khac ma kich hoat ma chua du 16 ky tu khong kich hoat duoc nhap ma bao loi phan biet cac loai ma ma don kkg ma da duoc dung",
    a:`<b>Nhập mã báo lỗi, hoặc mã KX-... có phải mã kích hoạt không?</b> KK-EDU có 4 loại mã: <b>KKGS-XXXX-XXXX-XXXX</b> là mã kích hoạt gói học; <b>KX-năm sinh-...</b> là mã xác thực độ tuổi, <b>không mở gói</b>; <b>KKG...</b> là mã đơn (nội dung chuyển khoản); và mã giảm giá dùng khi thanh toán. Hộp <b>Nhập mã</b> tự nhận ra loại mã và nói rõ việc cần làm. Báo "đã được dùng": mã đã gắn vào một tài khoản khác. Báo "không đúng độ tuổi": mã gói Mầm non đến THPT chỉ dùng cho tài khoản học sinh, mã bậc Đại học trở lên cho người từ 18 tuổi - mã chưa bị mất, hãy đăng nhập đúng tài khoản người học.`,
    acts:[{l:"Hướng dẫn kích hoạt", href:"/kich-hoat/"}]},
+  {id:"goi_phieu", k:"phieu kich hoat ma qr truong lop phat phieu quet ma tren phieu han kich hoat ma qua han lo ma nha truong mua",
+   a:`<b>Em nhận được phiếu kích hoạt có mã QR từ trường, lớp thì dùng thế nào?</b> Mở camera điện thoại <b>quét mã QR</b> trên phiếu, <b>đăng nhập</b> tài khoản của người học (chưa có thì đăng ký miễn phí), rồi bấm <b>Kích hoạt gói</b>. Không quét được: vào www.kk-edu.com, đăng nhập, bấm tên tài khoản, chọn <b>Nhập mã</b> và gõ mã KKGS-... in trên phiếu. Mỗi phiếu dùng 1 lần cho 1 tài khoản. Phiếu có ghi <b>hạn kích hoạt</b>: quá ngày đó mã không nhập được nữa, hãy liên hệ nơi đã phát phiếu.`,
+   acts:[{l:"Hướng dẫn kích hoạt", href:"/kich-hoat/"}]},
   {id:"goi_ma_con", k:"kich hoat cho con phu huynh nhap ma cho con mua cho con tai khoan cua con bo me kich hoat ho",
    a:`<b>Phụ huynh kích hoạt gói cho con thế nào?</b> Cách 1: đăng nhập <b>tài khoản của con</b> rồi bấm liên kết kích hoạt hoặc nhập mã. Cách 2: phụ huynh đã <b>liên kết tài khoản</b> với con (IELTS, mục Gia đình) nhập mã bằng tài khoản của mình rồi chọn <b>Kích hoạt cho con</b>, hoặc chọn <b>Mua cho</b> con khi thanh toán VietQR. Cách 3: gửi email đăng nhập của con cho Quản trị viên để được kích hoạt trực tiếp, không cần mã.`,
    acts:[{l:"Hướng dẫn kích hoạt", href:"/kich-hoat/"},{l:"Liên kết gia đình", href:"/ielts/#go=gia-dinh"}]},
@@ -5186,7 +5226,7 @@ function viewAdmin(v){
     <button data-t="ct" class="${adminTab==="ct"?"on":""}">Nội dung & Link tài liệu</button>
     <button data-t="lv" class="${adminTab==="lv"?"on":""}">Lớp Online</button>
     <button data-t="hv" class="${adminTab==="hv"?"on":""}">Học viên & Phê duyệt</button>
-    <button data-t="od" class="${adminTab==="od"?"on":""}">Người mua</button>
+    <button data-t="od" class="${adminTab==="od"?"on":""}">Người mua${KKA.badge()}</button>
     <button data-t="kq" class="${adminTab==="kq"?"on":""}">Thi & Khảo sát</button>
     <button data-t="cl" class="${adminTab==="cl"?"on":""}">Chất lượng dạy-học</button>
     <button data-t="tl" class="${adminTab==="tl"?"on":""}">Trợ lý</button>
@@ -5240,7 +5280,7 @@ function adminSettings(el){
   <div class="card" style="margin-top:14px"><h3 style="margin-top:0">Sao lưu &amp; dự phòng</h3>
   <div class="note">Dữ liệu lưu 2 nơi: Firestore (chính) và kho GitHub private <b>kk-edu-content</b> (dự phòng). Cloudflare Worker tự sao lưu Firestore → GitHub mỗi ngày; khi Firestore lỗi, bài học tự tải từ GitHub qua <code>/api/pack</code>.</div>
   <div class="mrow"><button class="btn ghost" id="aHealth">Kiểm tra hệ thống</button><button class="btn ghost" id="aBackup">Sao lưu ngay</button></div><div id="aBkOut" class="note"></div></div>
-  <div class="note" style="margin-top:8px">BIN + số tài khoản dùng để sinh mã VietQR động chuẩn EMVCo ngay trên trình duyệt người mua - không cần cổng trung gian. Kích hoạt <b>tự động</b> khi ngân hàng báo tiền về qua webhook (SePay / Casso, cài trên Cloudflare: PAY_WEBHOOK_SECRET); email mã kích hoạt tự gửi khi có BREVO_API_KEY (hoặc RESEND_API_KEY) + MAIL_FROM. Chưa cài webhook: xác nhận tay trong tab Người mua.</div></div>`;
+  <div class="note" style="margin-top:8px">BIN + số tài khoản dùng để sinh mã VietQR động chuẩn EMVCo ngay trên trình duyệt người mua - không cần cổng trung gian. Muốn <b>tiền về là gói tự mở</b> và <b>email tự gửi</b>: bật ngay trong thẻ <b>Người mua</b>, khung <b>Tự động hóa</b> (làm theo từng bước, không cần vào Cloudflare). Chưa bật: xác nhận tay trong thẻ Người mua.</div></div>`;
   moneyInputs(el);
   const bkOut=m=>{ const el=$("#aBkOut"); if(el) el.innerHTML=m; };
   $("#aHealth").onclick=async()=>{ bkOut("Đang kiểm tra...");
@@ -5810,19 +5850,22 @@ async function adminAssist(el, reload){
 }
 function adminHelp(el){
   el.innerHTML=`<div class="card" style="max-width:52em;margin-bottom:14px">
-  <div class="eyebrow">Quy trình chuẩn · cập nhật 13/11/2026</div><h3 style="margin-top:.1em">Kích hoạt gói học cho khách</h3>
+  <div class="eyebrow">Quy trình chuẩn · cập nhật 15/11/2026</div><h3 style="margin-top:.1em">Kích hoạt gói học cho khách</h3>
   <div class="note" style="margin-bottom:8px">Mọi thao tác nằm ở thẻ <b>Người mua</b>, khung <b>Trung tâm kích hoạt</b>. Chọn theo tình huống:</div>
   <div class="tbwrap"><table class="tb"><thead><tr><th>Tình huống</th><th>Cách làm</th><th>Khách cần làm gì</th></tr></thead><tbody>
-    <tr><td>Khách tự mua, quét VietQR đúng nội dung</td><td><b>Cách 1 - Tự động.</b> Đã nối ngân hàng (SePay/Casso): không cần làm gì. Chưa nối: thấy tiền về thì bấm <b>Xác nhận đã nhận tiền</b> ở dòng đơn.</td><td>Không cần nhập mã, gói tự mở.</td></tr>
+    <tr><td>Khách tự mua, quét VietQR đúng nội dung</td><td><b>Cách 1 - Tự động.</b> Đã bật <b>Ngân hàng báo tiền về</b> (thẻ Người mua, khung Tự động hóa): không cần làm gì. Chưa bật: thấy tiền về thì bấm <b>Xác nhận đã nhận tiền</b> ở dòng đơn.</td><td>Không cần nhập mã, gói tự mở.</td></tr>
     <tr><td>Khách <b>đã có tài khoản</b>, trả tiền mặt / chuyển khoản không mã đơn / được tặng</td><td><b>Cách 2 - Kích hoạt cho tài khoản.</b> Nhập email đăng nhập của khách, bấm Tìm tài khoản, kiểm tra tên, lớp, chọn gói, bấm Kích hoạt ngay 2 lần. Cũng có nút <b>Kích hoạt gói</b> ở từng dòng trong thẻ Học viên & Phê duyệt.</td><td>Chỉ cần đăng nhập lại là học.</td></tr>
     <tr><td>Khách <b>chưa có tài khoản</b>, hoặc muốn tự kích hoạt, hoặc bạn bán theo lô</td><td><b>Cách 3 - Tạo mã kích hoạt.</b> Chọn gói, bấm Tạo mã, rồi Sao chép tin nhắn dán vào Zalo/SMS (đã có sẵn mã, liên kết một chạm và hướng dẫn); hoặc cho khách quét mã QR.</td><td>Đăng ký tài khoản, bấm liên kết (hoặc tên tài khoản, Nhập mã), bấm Kích hoạt gói.</td></tr>
+    <tr><td>Bán cho <b>trường, lớp, trung tâm</b> (nhiều học sinh một lần)</td><td><b>Cách 4 - Mã theo lô.</b> Bấm Tạo lô mã, đặt tên lô, chọn gói và số lượng (1 đến 200), rồi <b>In phiếu</b>: mỗi trang A4 có 8 phiếu, mỗi phiếu một mã QR. Mở lô bất cứ lúc nào để xem mã nào đã dùng, của ai; hủy được các mã chưa dùng.</td><td>Quét mã QR trên phiếu, đăng nhập, bấm Kích hoạt gói.</td></tr>
   </tbody></table></div>
   <ul style="padding-left:20px;line-height:1.8;margin:10px 0 0">
     <li><b>4 loại mã, đừng nhầm:</b> <code>KKGS-XXXX-XXXX-XXXX</code> mã kích hoạt gói · <code>KX-năm sinh-XXXXXX</code> mã xác thực độ tuổi (thẻ Học viên & Phê duyệt), <b>không mở gói</b> · <code>KKG</code> + 7 ký tự là mã đơn, nội dung chuyển khoản · mã giảm giá do bạn đặt.</li>
     <li><b>Gói đúng đối tượng:</b> gói Mầm non đến THPT chỉ gắn được vào tài khoản học sinh (dưới 18 tuổi theo hồ sơ); gói Đại học, Thạc sĩ, Tiến sĩ cho người từ 18 tuổi. Mã nhập sai đối tượng <b>không bị mất</b>. Phụ huynh đã liên kết tài khoản có thể nhập mã và chọn Kích hoạt cho con.</li>
     <li><b>Bậc cao:</b> khi bạn kích hoạt trực tiếp gói Đại học trở lên cho người chưa khai báo trình độ, hệ thống coi như bạn duyệt bậc đó.</li>
-    <li><b>Sửa sai:</b> mã chưa dùng muốn bỏ: bấm <b>Hủy</b> ở dòng đơn. Gói đã mở nhầm: bấm <b>Thu hồi</b>. Tặng thêm thời gian: <b>+30 ngày</b> hoặc kích hoạt trực tiếp với số ngày tùy ý.</li>
-    <li><b>Mỗi lần kích hoạt</b> đều tạo một dòng trong bảng Người mua (mã đơn, số tiền, cách kích hoạt, mã bằng chứng) để đối chiếu doanh thu và xuất CSV.</li>
+    <li><b>Sửa sai:</b> lô tạo nhầm, chưa mã nào được dùng: mở lô, bấm <b>Xóa lô</b>. Mã chưa dùng muốn bỏ: bấm <b>Hủy</b> ở dòng đơn. Gói đã mở nhầm: bấm <b>Thu hồi</b>. Tặng thêm thời gian: <b>+30 ngày</b> hoặc kích hoạt trực tiếp với số ngày tùy ý.</li>
+    <li><b>Mỗi lần kích hoạt</b> đều tạo một dòng trong bảng Người mua (mã đơn, số tiền, cách kích hoạt, mã bằng chứng) để đối chiếu doanh thu và xuất CSV. Lô mã ghi tiền <b>một lần</b> ở dòng của lô; mỗi mã được dùng ghi thêm một dòng 0 đ nên doanh thu không bị tính trùng.</li>
+    <li><b>Tự động hóa (bật một lần):</b> thẻ Người mua, khung <b>Tự động hóa</b> có 3 mục. Mục 2 nối SePay để <b>tiền về là gói tự mở</b>; mục 3 nối Brevo để <b>email tự gửi</b>. Mỗi mục có hướng dẫn từng bước và nút kiểm tra. Khóa được mã hóa, không hiện lại.</li>
+    <li><b>Số đỏ cạnh chữ Quản trị và thẻ Người mua</b> là số việc cần bạn tự tay xử lý: đơn khách đã báo chuyển khoản, đơn chuyển thiếu, tiền về không rõ của ai. Hết việc thì số biến mất.</li>
     <li><b>Khách báo không kích hoạt được:</b> hỏi khách đang cầm mã dạng gì. Mã KX-... là mã xác thực độ tuổi, cần cấp mã KKGS-... hoặc kích hoạt trực tiếp. Trang hướng dẫn cho khách: <a href="/kich-hoat/" target="_blank" rel="noopener">www.kk-edu.com/kich-hoat/</a>.</li>
   </ul></div>
   <div class="card" style="max-width:52em">
@@ -5880,16 +5923,51 @@ const KKP = {
     if(!S.uid||S.mode!=="firebase") { KKP.me=null; return null; }
     if(KKP.me&&!force&&Date.now()-(KKP.me._at||0)<60000) return KKP.me;
     try{ KKP.me=Object.assign(await KKP.api("/license/me"),{_at:Date.now()}); }catch(e){ KKP.me=Object.assign(KKP.me||{tiers:{},orders:[]},{_err:String(e&&e.code||"net"), _at:Date.now()}); }   // lỗi cũng đệm 60 giây - không gọi lặp
+    KKP.watch();
     return KKP.me;
   },
-  async reloadEnroll(){
+  /* ---- 15/11/2026: gói được mở khi người học không ở trên trang (ngân hàng báo tiền về, Quản trị viên xác nhận / kích hoạt trực tiếp) ----
+     Ghi lại hạn gói đã biết trên máy này; lần vào sau thấy gói mới (hoặc hạn dài hơn) thì báo MỘT lần. */
+  seenKey(){ return "kk_plan_seen_"+S.uid; },
+  markSeen(){ try{ const m={}; for(const [t,x] of Object.entries((KKP.me&&KKP.me.tiers)||{})) if(x.status==="active") m[t]=x.exp; localStorage.setItem(KKP.seenKey(), JSON.stringify(m)); }catch(e){} },
+  async noticeNew(){
+    if(!S.uid||S.mode!=="firebase") return false;
+    const me=await KKP.load(); if(!me||me._err||!me.tiers) return false;
+    let seen=null; try{ seen=JSON.parse(localStorage.getItem(KKP.seenKey())||"null"); }catch(e){ seen=null; }
+    const fresh=Object.entries(me.tiers).filter(([t,x])=>{ if(x.status!=="active"||!(x.exp>Date.now())) return false; const prev=seen&&Number(seen[t]);
+      return prev ? x.exp>prev+3600e3 : !!(x.since&&Date.now()-Date.parse(x.since)<14*86400e3); });
+    if(!fresh.length){ KKP.markSeen(); return false; }
+    if(document.querySelector("#mw")) return false;                  // đang mở hộp thoại khác (vd: Nhập mã): để lần sau
+    KKP.markSeen();
+    modal(`<div class="eyebrow">Gói học của bạn</div><h3 style="margin-bottom:.3em">${fresh.length>1?"Các gói của bạn đã được kích hoạt":"Gói "+esc(KKP.NAME[fresh[0][0]]||fresh[0][0])+" đã được kích hoạt"}</h3>
+      <div class="feedback good">${fresh.map(([t,x])=>`Gói <b>${esc(KKP.NAME[t]||t)}</b>: hiệu lực đến <b>${esc(KKP.fmtDay(x.exp))}</b> (còn ${x.days} ngày).`).join("<br>")}</div>
+      <div class="note">Bạn học được trọn bộ mọi sách của bậc ngay bây giờ, trên mọi thiết bị, chỉ cần đăng nhập đúng tài khoản này. Biên nhận nằm ở trang Học tập, mục Gói học của tôi.</div>
+      <div class="mrow"><button class="btn pri" id="pnGo">Vào học</button><button class="btn ghost" id="pnNo">Đóng</button></div>`);
+    $("#pnNo").onclick=closeModal; $("#pnGo").onclick=()=>{ closeModal(); go({name:"dash"}); };
+    return true;
+  },
+  /** Có đơn đang chờ (đã quét mã / đã báo chuyển khoản): mỗi phút hỏi lại một lần, tối đa 30 lần mỗi lượt mở trang; gói mở là báo ngay. */
+  watch(){
+    clearTimeout(KKP._w);
+    const open=((KKP.me&&KKP.me.orders)||[]).some(o=>o.status==="reported"||o.status==="underpaid"||(o.status==="pending"&&Date.now()-Date.parse(o.at)<3600e3));   // đơn mới quét mã trong 1 giờ, hoặc đã báo chuyển khoản
+    if(!open||!S.uid||(KKP._wn||0)>=30) return;
+    KKP._w=setTimeout(async()=>{
+      if(document.hidden||!S.uid){ KKP.watch(); return; }
+      KKP._wn=(KKP._wn||0)+1;
+      const sig=()=>JSON.stringify(Object.entries((KKP.me&&KKP.me.tiers)||{}).map(([t,x])=>[t,x.exp,x.status]).sort());
+      const before=sig(); await KKP.load(true);                      // load() tự hẹn lượt kế tiếp
+      if(sig()!==before){ await KKP.reloadEnroll(true); KKP.noticeNew().catch(()=>{}); }
+    }, 60000);
+  },
+  async reloadEnroll(keepNotice){
     // sau khi kích hoạt: đọc lại quyền sách và gói, bỏ gói bài đã đệm bản học thử
     try{ const pg=await S.caps.db.collection("data/users/"+S.uid).limit(500).get();
       pg.docs.forEach(d=>{ if(d.exists&&d.id.startsWith("enroll-")){ const x=d.data()||{}; if(!x.exp||Number(x.exp)>Date.now()) S.enroll[S.uid+"-"+d.id.slice(7)]=true; } }); }catch(e){}
     Object.keys(S.goiCache).forEach(k=>{ if(S.goiCache[k]&&S.goiCache[k]._partial) delete S.goiCache[k]; });
     await KKP.load(true);
+    if(!keepNotice) KKP.markSeen();      // người học vừa tự kích hoạt (đã thấy màn hình thành công): không báo lại lần nữa
   },
-  err(e){ const m={auth:"Hãy đăng nhập trước.", profile:"Hãy khai hồ sơ (năm sinh) trước khi mua gói.", rate:"Thao tác quá nhanh, thử lại sau 1 phút.", "code-not-found":"Mã không đúng. Kiểm tra lại từng ký tự.", "code-used":"Mã này đã được tài khoản khác dùng.", "code-cancelled":"Mã này đã bị hủy.", "tier-age":"Gói này không đúng độ tuổi theo hồ sơ.", "hed-required":"Cần khai báo trình độ, chuyên môn trước (duyệt tự động).", "not-linked":"Người học này chưa liên kết với bạn.", "order-paid":"Đơn đã kích hoạt - dùng Thu hồi nếu cần.", "bad-code":"Mã không đúng định dạng KKGS-XXXX-XXXX-XXXX.", origin:"Trình duyệt chặn yêu cầu.", "not-configured":"Máy chủ chưa cấu hình thanh toán.", "order-not-found":"Không tìm thấy đơn.", "learner-profile":"Tài khoản của người học chưa khai hồ sơ (năm sinh).", "account-not-found":"Chưa có tài khoản nào đăng ký bằng email này.", "duplicate-grant":"Vừa kích hoạt gói này cho tài khoản này.", "admin-only":"Chỉ tài khoản Quản trị dùng được.", "bad-tier":"Gói không hợp lệ."}; return m[e&&e.code]||("Lỗi: "+esc(e&&(e.code||e.message)||"mạng")); }
+  err(e){ const m={auth:"Hãy đăng nhập trước.", profile:"Hãy khai hồ sơ (năm sinh) trước khi mua gói.", rate:"Thao tác quá nhanh, thử lại sau 1 phút.", "code-not-found":"Mã không đúng. Kiểm tra lại từng ký tự.", "code-used":"Mã này đã được tài khoản khác dùng.", "code-cancelled":"Mã này đã bị hủy.", "tier-age":"Gói này không đúng độ tuổi theo hồ sơ.", "hed-required":"Cần khai báo trình độ, chuyên môn trước (duyệt tự động).", "not-linked":"Người học này chưa liên kết với bạn.", "order-paid":"Đơn đã kích hoạt - dùng Thu hồi nếu cần.", "bad-code":"Mã không đúng định dạng KKGS-XXXX-XXXX-XXXX.", origin:"Trình duyệt chặn yêu cầu.", "not-configured":"Máy chủ chưa cấu hình thanh toán.", "order-not-found":"Không tìm thấy đơn.", "learner-profile":"Tài khoản của người học chưa khai hồ sơ (năm sinh).", "account-not-found":"Chưa có tài khoản nào đăng ký bằng email này.", "duplicate-grant":"Vừa kích hoạt gói này cho tài khoản này.", "admin-only":"Chỉ tài khoản Quản trị dùng được.", "bad-tier":"Gói không hợp lệ.", "code-expired":"Mã này đã quá hạn kích hoạt.", "order-is-batch":"Đây là dòng của một lô mã - hãy mở lô ở mục Mã theo lô.", "batch-not-found":"Không tìm thấy lô mã này.", "store-unavailable":"Máy chủ dữ liệu đang bận, thử lại sau ít phút.", "webhook-exists":"Đã có khóa kết nối."}; return m[e&&e.code]||("Lỗi: "+esc(e&&(e.code||e.message)||"mạng")); }
 };
 function hedApproved(level){
   const g=S.uid&&S.grants[S.uid]; if(!g) return false;
@@ -5946,7 +6024,7 @@ function planCardHTML(){
   ${m&&m.orders&&m.orders.length?`<details style="margin-top:8px"><summary class="note" style="cursor:pointer">Lịch sử đơn (${m.orders.length})</summary><div class="tbwrap"><table class="tb"><thead><tr><th>Mã đơn</th><th>Gói</th><th>Số tiền</th><th>Trạng thái</th><th>Ngày</th><th></th></tr></thead><tbody>${m.orders.map(o=>`<tr><td><b>${esc(o.oc)}</b>${o.byMe?`<br><span class="note">mua cho ${esc(o.forName)}</span>`:""}</td><td>${esc(KKP.NAME[o.tier]||o.tier)}</td><td>${fmtMoney(Number(o.amount)||0)}${o.discount?`<br><span class="note">giảm ${fmtMoney(o.discount)}</span>`:""}</td><td>${planStatusBadge(o.status)}</td><td class="note">${o.at?fmtDate(o.at):""}</td><td>${o.status==="paid"?`<button class="btn sm ghost" data-receipt="${esc(o.oc)}">Biên nhận</button>`:(["pending","reported"].includes(o.status)?`<button class="btn sm ghost" data-buy="${esc(o.tier)}">Thanh toán</button>`:"")}</td></tr>`).join("")}</tbody></table></div></details>`:""}
   ${!m?`<div class="note" style="margin-top:6px">Đang tải trạng thái gói...</div>`:(m._err?`<div class="note" style="margin-top:6px">Chưa đọc được trạng thái gói (${esc(m._err)}) - thử tải lại trang.</div>`:"")}</div>`;
 }
-function planStatusBadge(st){ const M={paid:["ok","Đã kích hoạt"],pending:["","Chờ thanh toán"],reported:["","Đã báo chuyển khoản - chờ xác nhận"],underpaid:["lock","Thiếu tiền - liên hệ"],expired:["","Hết hạn đơn"],cancelled:["","Đã hủy"],revoked:["lock","Đã thu hồi"],manual:["","Mã do Admin cấp"]}; const x=M[st]||["",st]; return `<span class="badge ${x[0]}">${esc(x[1])}</span>`; }
+function planStatusBadge(st){ const M={paid:["ok","Đã kích hoạt"],pending:["","Chờ thanh toán"],reported:["","Đã báo chuyển khoản - chờ xác nhận"],underpaid:["lock","Thiếu tiền - liên hệ"],expired:["","Hết hạn đơn"],cancelled:["","Đã hủy"],revoked:["lock","Đã thu hồi"],manual:["","Mã do Admin cấp"],batch:["ok","Lô mã"]}; const x=M[st]||["",st]; return `<span class="badge ${x[0]}">${esc(x[1])}</span>`; }
 function planCardBind(v){
   const c=v.querySelector("#planCard"); if(!c) return;
   c.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>openBuyPlan(b.dataset.buy));
@@ -5995,7 +6073,7 @@ function openBuyPlan(tier, fromCode, pre){
   <div id="bpFor"></div>
   <div id="bpBody"><div class="note">Đang kiểm tra gói phù hợp...</div></div>
   <div class="mrow"><button class="btn ghost sm" id="bpNo">Đóng</button></div>`,{lock:true});
-  $("#bpNo").onclick=()=>{ clearInterval(_payPoll); closeModal(); };
+  $("#bpNo").onclick=()=>{ clearInterval(_payPoll); closeModal(); KKP._wn=0; KKP.load(true).catch(()=>{}); };   // còn đơn đang chờ: trang tiếp tục tự hỏi máy chủ, gói mở là báo
   if(pre&&pre.coupon) $("#bpCoupon").value=String(pre.coupon).slice(0,24);   // mã giảm giá chuyển sang từ hộp Nhập mã
   let forRef=null;   // null = chưa có người học hợp lệ (không tạo đơn); "" = bản thân; ref = người học liên kết
   const opts=()=>({tier, phone:$("#bpPhone").value.trim(), coupon:$("#bpCoupon").value.trim(), forRef:forRef||""});
@@ -6069,7 +6147,7 @@ function openBuyPlan(tier, fromCode, pre){
         else if(st.status==="reported") el.innerHTML=`✓ Đã ghi nhận bạn chuyển khoản. Hệ thống vẫn đang khớp tự động; nếu quá 10 phút chưa mở, Quản trị viên sẽ xác nhận hoặc gửi mã qua Zalo/SĐT.`;
       }catch(e){} };
     clearInterval(_payPoll); _payPoll=setInterval(check, 4000); setTimeout(()=>clearInterval(_payPoll), 30*60e3);
-    $("#bpPaid").onclick=async()=>{ try{ const st=await KKP.api("/pay/reported",{oc:o.oc, phone:$("#bpPhone")?$("#bpPhone").value.trim():""}); if(st.status==="paid") return done(await KKP.api("/pay/status/"+o.oc)); $("#bpSt").innerHTML=`✓ Đã ghi nhận <b>mã đơn ${esc(o.oc)}</b>. Hệ thống đang khớp tự động; nếu chưa mở sau vài phút, Quản trị viên sẽ xác nhận hoặc gửi mã qua Zalo/SĐT. Bạn có thể đóng cửa sổ này, gói sẽ tự mở khi được ghi nhận.`; $("#bpPaid").disabled=true; }catch(e){ toast(KKP.err(e)); } };
+    $("#bpPaid").onclick=async()=>{ try{ const st=await KKP.api("/pay/reported",{oc:o.oc, phone:$("#bpPhone")?$("#bpPhone").value.trim():""}); if(st.status==="paid") return done(await KKP.api("/pay/status/"+o.oc)); $("#bpSt").innerHTML=`✓ Đã ghi nhận <b>mã đơn ${esc(o.oc)}</b>. Hệ thống đang khớp tự động; nếu chưa mở sau vài phút, Quản trị viên sẽ xác nhận hoặc gửi mã qua Zalo/SĐT. Bạn có thể đóng cửa sổ này và học tiếp: gói được mở là trang <b>tự báo ngay</b>, không cần tải lại.`; $("#bpPaid").disabled=true; }catch(e){ toast(KKP.err(e)); } };
     kkTrack("goi_tao_don",{goi:tier, giam:o.discount||0});
   }
   // 13/11/2026: KHÔNG gọi makeOrder() ở đây. Trước đây lời gọi thừa này chạy khi chưa biết người học (forRef=null) -> hiện nhầm khung "không đúng độ tuổi"
@@ -6229,7 +6307,7 @@ function openCodeBox(opt){
       "code-used":"Mã này <b>đã được dùng</b> cho một tài khoản khác (mỗi mã dùng 1 lần). Nếu chính bạn đã kích hoạt bằng tài khoản khác, hãy đăng nhập tài khoản đó để học.",
       "code-cancelled":"Mã này đã bị hủy nên không dùng được nữa.", rate:"Bạn thử quá nhiều lần. Đợi 1 phút rồi thử lại.", "bad-code":"Mã kích hoạt gói phải có dạng KKGS-XXXX-XXXX-XXXX.",
       "not-linked":"Người học này chưa liên kết với tài khoản của bạn.", "learner-profile":"Tài khoản của con chưa khai hồ sơ (năm sinh). Nhờ con đăng nhập và điền hồ sơ trước, rồi nhập lại mã - <b>mã chưa bị dùng mất</b>."};
-    fb(bad((M[c]||(e.detail?esc(e.detail):KKP.err(e)))+(sup&&["code-not-found","code-used","code-cancelled"].includes(c)?` Cần hỗ trợ: ${sup}.`:"")));
+    fb(bad((M[c]||(e.detail?esc(e.detail):KKP.err(e)))+(sup&&["code-not-found","code-used","code-cancelled","code-expired"].includes(c)?` Cần hỗ trợ: ${sup}.`:"")));
   }
   /* mã đúng nhưng gói không đúng đối tượng của tài khoản đang đăng nhập: giải thích, đưa đường đi đúng - mã KHÔNG bị dùng mất */
   async function tierAge(code, d){
@@ -6343,46 +6421,55 @@ let abDays=90, abFilter="";
 async function adminBuyers(el){
   el.innerHTML=`<div class="note">Đang tải danh sách người mua...</div>`;
   let d; try{ d=await KKP.api("/admin/pay/orders?days="+abDays); }catch(e){ el.innerHTML=`<div class="card"><b>Chưa đọc được đơn hàng.</b><div class="note">${KKP.err(e)} - Worker cần GCP_SA_KEY (tài khoản dịch vụ).</div></div>`; return; }
-  const rows=d.orders.filter(o=>!abFilter||o.status===abFilter||(abFilter==="open"&&["pending","reported","underpaid"].includes(o.status)));
+  const rows=d.orders.filter(o=>!abFilter||o.status===abFilter||(abFilter==="open"&&["pending","reported","underpaid"].includes(o.status)&&!o.expired));
+  const reload=()=>adminBuyers(el);
   const tot=Object.values(d.sum||{}).reduce((a,x)=>a+x.vnd,0), n=Object.values(d.sum||{}).reduce((a,x)=>a+x.n,0);
   const cfg=d.cfg||{};
   let fl={}; try{ fl=await KKP.api("/pay/plans"); }catch(e){}     // cờ tự động: webhook ngân hàng, email
   const openN=d.orders.filter(o=>["pending","reported","underpaid"].includes(o.status)&&!o.expired).length;
-  el.innerHTML=`<div class="card" style="margin-bottom:12px"><div class="eyebrow">Trung tâm kích hoạt</div><h3 style="margin:.1em 0">3 cách mở gói cho khách - chọn theo tình huống</h3>
+  el.innerHTML=`<div class="card" style="margin-bottom:12px"><div class="eyebrow">Trung tâm kích hoạt</div><h3 style="margin:.1em 0">4 cách mở gói cho khách - chọn theo tình huống</h3>
   <div class="actgrid">
-    <div class="act"><b>1. Tự động qua VietQR</b><span class="note">Khách tự bấm Kích hoạt gói, quét QR, chuyển đúng nội dung. ${fl.webhook?"Tiền về là gói tự mở trong vài giây.":"Hiện <b>chưa bật báo tiền tự động</b>: khi thấy tiền về, tìm đơn ở bảng dưới và bấm <b>Xác nhận đã nhận tiền</b>."}</span><button class="btn sm ${openN?"pri":"ghost"}" id="acOpen">Đơn cần xử lý (${openN})</button></div>
+    <div class="act"><b>1. Tự động qua VietQR</b><span class="note">Khách tự bấm Kích hoạt gói, quét QR, chuyển đúng nội dung. ${fl.webhook?"Đã bật báo tiền tự động: tiền về là gói tự mở trong vài giây.":"Hiện <b>chưa bật báo tiền tự động</b> (bật ở thẻ Tự động hóa bên dưới): khi thấy tiền về, tìm đơn và bấm <b>Xác nhận đã nhận tiền</b>."}</span><button class="btn sm ${openN?"pri":"ghost"}" id="acOpen">Đơn cần xử lý (${openN})</button></div>
     <div class="act"><b>2. Kích hoạt trực tiếp</b><span class="note">Khách <b>đã có tài khoản</b>, trả tiền ngoài hệ thống hoặc được tặng. Nhập email đăng nhập của khách rồi bấm kích hoạt - <b>khách không cần nhập mã</b>.</span><button class="btn sm pri" id="acGrant">Kích hoạt cho tài khoản</button></div>
     <div class="act"><b>3. Tạo mã kích hoạt</b><span class="note">Khách <b>chưa có tài khoản</b> hoặc muốn tự kích hoạt. Tạo mã <b>KKGS-...</b> kèm liên kết một chạm và mã QR, gửi qua Zalo, SMS, email.</span><button class="btn sm pri" id="acCode">Tạo mã kích hoạt</button></div>
+    <div class="act"><b>4. Mã theo lô (trường, lớp)</b><span class="note">Bán cho <b>trường, lớp, trung tâm</b>: tạo một lần 1 đến 200 mã, in <b>phiếu có mã QR</b> phát cho từng học sinh, theo dõi mã nào đã dùng.</span><button class="btn sm pri" id="acBatch">Tạo lô mã</button></div>
   </div>
   <div class="note" style="margin-top:10px"><b>Phân biệt mã:</b> <b>KKGS-XXXX-XXXX-XXXX</b> = mã kích hoạt gói (tạo ở đây) · <b>KX-năm sinh-...</b> = mã xác thực độ tuổi, <b>không mở gói</b> (thẻ Học viên & Phê duyệt) · <b>KKG...</b> = mã đơn, nội dung chuyển khoản · mã giảm giá ở bảng bên dưới. Gửi cho khách: <a href="/kich-hoat/" target="_blank" rel="noopener">trang hướng dẫn</a> · <a href="/kich-hoat/huong-dan-kich-hoat.pdf" target="_blank" rel="noopener">tờ hướng dẫn 1 trang (PDF)</a></div></div>
+  <div id="abAuto" class="card" style="margin-bottom:12px"><div class="eyebrow">Tự động hóa</div><div class="note">Đang tải trạng thái tự động hóa...</div></div>
   <div class="card"><div class="rowline" style="justify-content:space-between"><div><div class="eyebrow">Người mua · ${abDays} ngày gần nhất</div><h3 style="margin:.1em 0">${n} gói đã kích hoạt · ${fmtMoney(tot)}</h3>
     <div class="note">${Object.entries(d.sum||{}).map(([t,x])=>`${esc(KKP.NAME[t]||t)}: ${x.n} (${fmtMoney(x.vnd)})`).join(" · ")||"Chưa có gói nào được kích hoạt trong kì."}</div></div>
     <div class="rowline"><select id="abDays"><option value="30" ${abDays===30?"selected":""}>30 ngày</option><option value="90" ${abDays===90?"selected":""}>90 ngày</option><option value="365" ${abDays===365?"selected":""}>365 ngày</option></select>
-    <select id="abFilter"><option value="">Tất cả</option><option value="open" ${abFilter==="open"?"selected":""}>Cần xử lý</option><option value="paid" ${abFilter==="paid"?"selected":""}>Đã kích hoạt</option><option value="manual" ${abFilter==="manual"?"selected":""}>Mã Admin cấp</option></select>
+    <select id="abFilter"><option value="">Tất cả</option><option value="open" ${abFilter==="open"?"selected":""}>Cần xử lý</option><option value="paid" ${abFilter==="paid"?"selected":""}>Đã kích hoạt</option><option value="manual" ${abFilter==="manual"?"selected":""}>Mã Admin cấp</option><option value="batch" ${abFilter==="batch"?"selected":""}>Lô mã</option></select>
     <button class="btn sm ghost" id="abCsv">Xuất CSV</button><button class="btn sm ghost" id="abReload">Tải lại</button></div></div>
-  <div class="note" style="margin-top:8px">Tự động: ${cfg.bank?'<span class="badge ok">VietQR sẵn sàng</span>':'<span class="badge lock">Chưa có số tài khoản (Cài đặt)</span>'} ${fl.webhook?'<span class="badge ok">Ngân hàng báo tiền tự động</span>':'<span class="badge" title="Chưa nối SePay/Casso (PAY_WEBHOOK_SECRET): mỗi đơn cần bấm Xác nhận đã nhận tiền">Báo tiền tự động: chưa bật</span>'} ${fl.mail?'<span class="badge ok">Email tự gửi</span>':'<span class="badge" title="Chưa có khóa gửi email (BREVO_API_KEY + MAIL_FROM): gửi mã và thông báo qua Zalo/SMS">Email tự gửi: chưa bật</span>'}</div>
   ${revenueChartHTML(d.byDay||{}, abDays)}</div>
+  <div id="abBatches" class="card" style="margin-top:12px"><div class="eyebrow">Mã theo lô</div><div class="note">Đang tải các lô mã...</div></div>
   <div id="abCoupons" class="card" style="margin-top:12px"><div class="note">Đang tải mã giảm giá...</div></div>
   <div class="tbwrap" style="margin-top:12px"><table class="tb"><thead><tr><th>Thời gian</th><th>Người mua</th><th>Gói</th><th>Số tiền</th><th>Mã đơn / CK</th><th>Trạng thái</th><th>Mã kích hoạt</th><th>Email</th><th></th></tr></thead><tbody>
   ${rows.map(o=>`<tr>
     <td class="note">${o.at?fmtDate(o.at):""}${o.paidAt?`<br>✓ ${fmtDate(o.paidAt)}`:""}</td>
-    <td>${esc(o.name||"")}<br><span class="note">${esc(o.email||"")}${o.phone?" · "+esc(o.phone):""}</span><br><span class="note">${esc((o.uid||"").slice(0,10))}</span></td>
+    <td>${o.status==="batch"?`<b>Lô:</b> `:""}${esc(o.name||"")}<br><span class="note">${o.status==="batch"?`${Number(o.qty)||0} mã`:esc(o.email||"")}${o.phone?" · "+esc(o.phone):""}</span>${o.uid?`<br><span class="note">${esc((o.uid||"").slice(0,10))}</span>`:""}</td>
     <td><b>${esc(KKP.NAME[o.tier]||o.tier)}</b>${o.planExp?`<br><span class="note">đến ${esc(KKP.fmtDay(o.planExp))}</span>`:""}</td>
-    <td>${fmtMoney(Number(o.amount)||0)}${o.paidAmount&&Number(o.paidAmount)!==Number(o.amount)?`<br><span class="badge lock">nhận ${fmtMoney(Number(o.paidAmount))}</span>`:""}</td>
+    <td>${fmtMoney(Number(o.amount)||0)}${o.status==="batch"?(o.paidAmount?`<br><span class="note">chuyển khoản đã nhận ${fmtMoney(Number(o.paidAmount))}</span>`:""):(o.paidAmount&&Number(o.paidAmount)!==Number(o.amount)?`<br><span class="badge lock">nhận ${fmtMoney(Number(o.paidAmount))}</span>`:"")}</td>
     <td><b>${esc(o.oc||o.id)}</b>${o.txn?`<br><span class="note">${esc(o.txn)}</span>`:""}</td>
-    <td>${planStatusBadge(o.expired?"expired":o.status)}${o.how?`<br><span class="note">${esc({webhook:"tự động",admin:"Admin xác nhận",code:"nhập mã",grant:"Admin kích hoạt trực tiếp",coupon:"mã giảm 100%"}[o.how]||o.how)}</span>`:""}</td>
+    <td>${planStatusBadge(o.expired?"expired":o.status)}${o.how?`<br><span class="note">${esc(o.source==="batch"&&o.how==="code"?"mã lô: "+(o.batchName||o.batch||""):({webhook:"tự động (ngân hàng báo)",admin:"Admin xác nhận",code:"nhập mã",grant:"Admin kích hoạt trực tiếp",coupon:"mã giảm 100%"}[o.how]||o.how))}</span>`:""}</td>
     <td>${o.license?`<code style="font-size:.8rem">${esc(o.license)}</code> <button class="btn ghost sm" data-cp="${esc(o.license)}">copy</button>${o.status==="manual"?`<br><button class="btn ghost sm" data-cp="${esc(KKC.link(o.license))}" style="margin-top:4px">copy liên kết</button> <button class="btn ghost sm" data-cpmsg="${esc(o.oc||o.id)}" style="margin-top:4px">copy tin nhắn</button>`:""}`:""}</td>
     <td>${o.mail?(o.mail.ok?'<span class="badge ok">đã gửi</span>':`<span class="badge lock" title="${esc(o.mail.err||"")}">chưa gửi</span>`):""}</td>
-    <td style="white-space:nowrap">${["pending","reported","underpaid"].includes(o.status)&&o.uid?`<button class="btn sm pri" data-op="confirm" data-oc="${esc(o.oc||o.id)}">Xác nhận đã nhận tiền</button> `:""}
+    <td style="white-space:nowrap">${o.status==="batch"?`<button class="btn sm" data-bt="${esc(o.batch||"")}">Mở lô</button> `:""}${["pending","reported","underpaid"].includes(o.status)&&o.uid?`<button class="btn sm pri" data-op="confirm" data-oc="${esc(o.oc||o.id)}">Xác nhận đã nhận tiền</button> `:""}
       ${o.license&&o.email?`<button class="btn sm ghost" data-op="resend" data-oc="${esc(o.oc||o.id)}">Gửi lại email</button> `:""}
       ${o.phone?`<a class="btn sm ghost" target="_blank" rel="noopener" href="https://zalo.me/${esc(String(o.phone).replace(/\D/g,""))}">Zalo</a> `:""}
       ${o.status==="paid"&&o.uid?`<button class="btn sm ghost" data-op="extend" data-oc="${esc(o.oc||o.id)}">+30 ngày</button> <button class="btn sm ghost" data-op="revoke" data-oc="${esc(o.oc||o.id)}">Thu hồi</button>`:""}
-      ${["pending","reported"].includes(o.status)?`<button class="btn sm ghost" data-op="cancel" data-oc="${esc(o.oc||o.id)}">Hủy</button>`:""}</td>
+      ${["pending","reported","underpaid","manual"].includes(o.status)?`<button class="btn sm ghost" data-op="cancel" data-oc="${esc(o.oc||o.id)}">Hủy</button>`:""}</td>
   </tr>`).join("")||`<tr><td colspan="9" class="note">Chưa có đơn nào trong kì.</td></tr>`}</tbody></table></div>
-  ${d.unmatched&&d.unmatched.length?`<div class="card" style="margin-top:12px"><h3 style="margin-top:0">Giao dịch ngân hàng cần đối chiếu (${d.unmatched.length})</h3><div class="note"><b>Không có mã đơn</b>: tìm người mua rồi bấm Xác nhận ở đơn tương ứng, hoặc tạo mã gửi cho họ. <b>Trả trùng</b>: đơn đã kích hoạt nhưng khách chuyển thêm lần nữa - liên hệ hoàn tiền hoặc gia hạn. <b>Cần xem</b>: tiền về cho đơn đã thu hồi.</div>
-    <div class="tbwrap"><table class="tb"><thead><tr><th>Nhận lúc</th><th>Loại</th><th>Số tiền</th><th>Nội dung</th><th>Mã đơn</th><th>Mã giao dịch</th></tr></thead><tbody>${d.unmatched.map(t=>`<tr><td class="note">${esc(t.at||t.received||"")}</td><td><span class="badge lock">${esc({unmatched:"Không có mã đơn","duplicate-payment":"Trả trùng",review:"Cần xem"}[t.result]||t.result)}</span></td><td>${fmtMoney(Number(t.amount)||0)}</td><td>${esc(t.content||"")}</td><td><b>${esc(t.oc||"")}</b></td><td class="note">${esc(t.id)}</td></tr>`).join("")}</tbody></table></div></div>`:""}
-  <div class="note" style="margin-top:10px"><b>Quy trình tự động:</b> người mua quét VietQR (nội dung CK = mã đơn) → ngân hàng báo qua webhook → hệ thống khớp mã + số tiền → kích hoạt + email mã trong vài giây. <b>Dự phòng:</b> đơn "Đã báo chuyển khoản" → mở app ngân hàng đối chiếu → bấm <b>Xác nhận</b> (hệ thống tự ghi quyền, gửi email). Khách trả tiền ngoài hệ thống: <b>Kích hoạt cho tài khoản</b> (đã có tài khoản) hoặc <b>Tạo mã kích hoạt</b> gửi qua Zalo/SĐT (chưa có tài khoản).</div>`;
-  adminCoupons($("#abCoupons"));
+  ${d.unmatched&&d.unmatched.length?`<div class="card" style="margin-top:12px"><h3 style="margin-top:0">Giao dịch ngân hàng cần đối chiếu (${d.unmatched.length})</h3><div class="note"><b>Không có mã đơn</b>: tìm người mua rồi bấm Xác nhận ở đơn tương ứng, hoặc tạo mã gửi cho họ. <b>Trả trùng</b>: đơn đã kích hoạt nhưng khách chuyển thêm lần nữa - liên hệ hoàn tiền hoặc gia hạn. <b>Cần xem</b>: tiền về cho đơn đã thu hồi. Làm xong việc nào, bấm <b>Đã xử lý</b> để cất dòng đó đi.</div>
+    <div class="tbwrap"><table class="tb"><thead><tr><th>Nhận lúc</th><th>Loại</th><th>Số tiền</th><th>Nội dung</th><th>Mã đơn</th><th>Mã giao dịch</th><th></th></tr></thead><tbody>${d.unmatched.map(t=>`<tr><td class="note">${esc(t.at||t.received||"")}</td><td><span class="badge lock">${esc({unmatched:"Không có mã đơn","duplicate-payment":"Trả trùng",review:"Cần xem"}[t.result]||t.result)}</span></td><td>${fmtMoney(Number(t.amount)||0)}</td><td>${esc(t.content||"")}</td><td><b>${esc(t.oc||"")}</b></td><td class="note">${esc(t.id)}</td><td><button class="btn sm" data-txn="${esc(t.id)}">Đã xử lý</button></td></tr>`).join("")}</tbody></table></div></div>`:""}
+  <div class="note" style="margin-top:10px"><b>Quy trình tự động</b> (khi đã bật mục 2 và 3 ở thẻ Tự động hóa): người mua quét VietQR (nội dung chuyển khoản = mã đơn) → ngân hàng báo tiền về → hệ thống khớp mã đơn + số tiền → mở gói + gửi email trong vài giây; chuyển làm nhiều lần thì hệ thống tự cộng dồn. <b>Dự phòng:</b> đơn "Đã báo chuyển khoản" → mở app ngân hàng đối chiếu → bấm <b>Xác nhận</b> (hệ thống tự ghi quyền, gửi email). Khách trả tiền ngoài hệ thống: <b>Kích hoạt cho tài khoản</b> (đã có tài khoản) hoặc <b>Tạo mã kích hoạt</b> gửi qua Zalo/SĐT (chưa có tài khoản).</div>`;
+  adminCoupons($("#abCoupons")); adminAuto($("#abAuto"), reload); adminBatches($("#abBatches"), reload); KKA.refresh(true);
+  $("#acBatch").onclick=()=>openBatchNew(reload);
+  el.querySelectorAll("button[data-bt]").forEach(b=>b.onclick=()=>{ if(b.dataset.bt) openBatch(b.dataset.bt, reload); });
+  el.querySelectorAll("button[data-txn]").forEach(b=>b.onclick=async()=>{
+    if(!await kkConfirm(`Đánh dấu <b>đã xử lý</b> giao dịch <b>${esc(b.dataset.txn)}</b>? Dòng này sẽ được cất khỏi danh sách cần đối chiếu (dữ liệu vẫn lưu).`, "Đã xử lý")) return;
+    try{ await KKP.api("/admin/pay/action",{op:"txn-done", id:b.dataset.txn}); toast("Đã cất giao dịch"); reload(); }catch(e){ toast(e.detail||KKP.err(e)); }
+  });
   $("#abDays").onchange=e=>{ abDays=Number(e.target.value); adminBuyers(el); };
   $("#abFilter").onchange=e=>{ abFilter=e.target.value; adminBuyers(el); };
   $("#abReload").onclick=()=>adminBuyers(el);
@@ -6390,17 +6477,348 @@ async function adminBuyers(el){
   $("#acGrant").onclick=()=>openAdminGrant({}, ()=>adminBuyers(el));
   $("#acOpen").onclick=()=>{ abFilter="open"; adminBuyers(el); };
   el.querySelectorAll("button[data-cpmsg]").forEach(b=>b.onclick=()=>{ const o=d.orders.find(x=>(x.oc||x.id)===b.dataset.cpmsg); if(o) copyText(KKC.msg({code:o.license, tier:o.tier, days:o.days, name:o.name})); });
-  $("#abCsv").onclick=()=>{ const H=["thoi_gian","ten","email","sdt","goi","so_tien","ma_don","trang_thai","ma_kich_hoat","han_goi","uid"];
-    const L=[H.join(",")].concat(d.orders.map(o=>[o.at,o.name,o.email,o.phone,KKP.NAME[o.tier]||o.tier,o.amount,o.oc||o.id,o.status,o.license,o.planExp?KKP.fmtDay(o.planExp):"",o.uid].map(csvCell).join(",")));
+  $("#abCsv").onclick=()=>{ const H=["thoi_gian","ten","email","sdt","goi","so_tien","ma_don","trang_thai","ma_kich_hoat","han_goi","uid","nguon","lo_ma"];
+    const L=[H.join(",")].concat(d.orders.map(o=>[o.at,o.name,o.email,o.phone,KKP.NAME[o.tier]||o.tier,o.amount,o.oc||o.id,o.status,o.license,o.planExp?KKP.fmtDay(o.planExp):"",o.uid,o.source||"",o.batchName||(o.status==="batch"?o.name:"")||""].map(csvCell).join(",")));
     const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob(["\ufeff"+L.join("\n")],{type:"text/csv;charset=utf-8"})); a.download="kk-edu-nguoi-mua-"+new Date().toISOString().slice(0,10)+".csv"; a.click(); };
   el.querySelectorAll("button[data-cp]").forEach(b=>b.onclick=()=>copyText(b.dataset.cp));
   el.querySelectorAll("button[data-op]").forEach(b=>b.onclick=async()=>{
-    const {op,oc}=b.dataset; const ask={confirm:"Xác nhận ĐÃ NHẬN TIỀN cho đơn "+oc+"? Hệ thống sẽ kích hoạt gói và gửi email ngay.", revoke:"THU HỒI gói của đơn "+oc+"? Người mua mất quyền đọc trọn bộ.", cancel:"Hủy đơn "+oc+"?", extend:"Cộng thêm 30 ngày cho đơn "+oc+"?", resend:""}[op];
-    if(ask&&!window.confirm(ask)) return;
+    const {op,oc}=b.dataset; const o=d.orders.find(x=>(x.oc||x.id)===oc)||{}; const who=o.name?` của <b>${esc(o.name)}</b>`:"";
+    const ask={confirm:[`Xác nhận <b>đã nhận tiền</b> cho đơn <b>${esc(oc)}</b>${who} (${fmtMoney(Number(o.amount)||0)})? Hệ thống sẽ mở gói và gửi email ngay.`,"Đã nhận tiền - kích hoạt",false], revoke:[`<b>Thu hồi</b> gói của đơn <b>${esc(oc)}</b>${who}? Người học mất quyền đọc trọn bộ.`,"Thu hồi gói",true], cancel:[`Hủy đơn <b>${esc(oc)}</b>${who}?${o.status==="manual"?" Mã kích hoạt chưa dùng của đơn này cũng bị vô hiệu.":""}`,"Hủy đơn",true], extend:[`Cộng thêm <b>30 ngày</b> cho đơn <b>${esc(oc)}</b>${who}?`,"Cộng 30 ngày",false]}[op];
+    if(ask&&!await kkConfirm(ask[0], ask[1], ask[2])) return;
     b.disabled=true;
     try{ const r=await KKP.api("/admin/pay/action",{op, oc, days:30}); toast(op==="resend"?(r.ok?"Đã gửi lại email":"Chưa gửi được: "+(r.mail&&r.mail.err||"")):"Đã thực hiện"); adminBuyers(el); }
-    catch(e){ b.disabled=false; toast(KKP.err(e)); }
+    catch(e){ b.disabled=false; toast(e.detail||KKP.err(e)); }
   });
+}
+/* ====================== 15/11/2026: TỰ ĐỘNG HÓA, MÃ THEO LÔ, VIỆC CẦN XỬ LÝ (Quản trị) ======================
+   Mục tiêu: chủ trang bật tự động hóa NGAY TRONG Quản trị (không vào Cloudflare), bán theo lô có phiếu in mã QR,
+   và luôn thấy còn bao nhiêu việc cần tự tay xử lý. Máy chủ: /api/admin/pay/auto, /todo, /batches, action batch*. */
+/* Hỏi lại trước thao tác quan trọng bằng hộp thoại của trang (không dùng hộp thoại của trình duyệt). Trả Promise<boolean>. */
+function kkConfirm(html, okLabel, danger){
+  return new Promise(res=>{
+    modal(`<h3 style="margin-top:0">Xác nhận</h3><div style="line-height:1.6">${html}</div><div class="mrow"><button class="btn ${danger?"":"pri"}" id="kcOk"${danger?' style="background:var(--bad);color:#fff;border-color:var(--bad)"':""}>${esc(okLabel||"Đồng ý")}</button><button class="btn ghost" id="kcNo">Không</button></div>`,{lock:true});
+    $("#kcOk").onclick=()=>{ closeModal(); res(true); }; $("#kcNo").onclick=()=>{ closeModal(); res(false); };
+    try{ $(danger?"#kcNo":"#kcOk").focus(); }catch(e){}
+  });
+}
+/* Nút cần bấm 2 lần (thao tác khó hoàn lại, nằm trong hộp thoại đang mở): lần 1 đổi chữ, lần 2 mới chạy. */
+function twoStep(btn, fn, askLabel){
+  if(!btn) return; const label=btn.textContent; let armed=false, t=null;
+  btn.onclick=async()=>{
+    if(!armed){ armed=true; btn.textContent=askLabel||"Bấm lần nữa để xác nhận"; t=setTimeout(()=>{ armed=false; btn.textContent=label; },5000); return; }
+    clearTimeout(t); armed=false; btn.disabled=true; btn.textContent=label;
+    try{ await fn(); } finally { btn.disabled=false; }
+  };
+}
+const KKA = {
+  todo:null, _at:0,
+  n(){ return (KKA.todo&&KKA.todo.n)||0; },
+  badge(){ const n=KKA.n(); return n?`<span class="navbadge" title="${n} việc cần xử lý ở thẻ Người mua">${n>99?"99+":n}</span>`:""; },
+  /** Đếm việc cần xử lý (đơn khách đã báo chuyển khoản, đơn chuyển thiếu, tiền về cần đối chiếu). Tối đa 2 phút hỏi máy chủ một lần. */
+  async refresh(force){
+    if(!S.isAdmin||S.mode!=="firebase"||!S.uid) return;
+    if(!force&&Date.now()-KKA._at<120000) return;
+    KKA._at=Date.now(); const before=KKA.n();
+    try{ KKA.todo=await KKP.api("/admin/pay/todo"); }catch(e){ return; }
+    if(KKA.n()!==before){ renderNav(); const tb=document.querySelector('.tabbar button[data-t="od"]'); if(tb) tb.innerHTML="Người mua"+KKA.badge(); }
+  },
+  /** Lần ngân hàng gọi gần nhất, nói bằng lời. */
+  hookTxt(L){
+    const M={paid:"đơn "+L.oc+" đã tự kích hoạt", "paid-after-cancel":"đơn "+L.oc+" đã hủy nhưng khách vẫn chuyển tiền nên được kích hoạt", underpaid:"đơn "+L.oc+" chuyển thiếu tiền", unmatched:"tiền về không có mã đơn", "duplicate-payment":"trả trùng cho đơn "+L.oc, review:"tiền về cho một đơn không còn hiệu lực", "batch-payment":"tiền của một lô mã", test:"cuộc gọi thử từ SePay", dup:"giao dịch đã ghi nhận từ trước", "no-money-in":"thông báo không phải tiền vào"};
+    return (M[L.result]||L.result||"đã nhận")+(L.amount&&L.result!=="test"?" ("+fmtMoney(L.amount)+")":"");
+  },
+  authTxt(a){ return a==="hmac"?"chữ ký HMAC-SHA256":"API Key"; },
+  failTxt(c){ return ({ "webhook-auth":"sai khóa bí mật", "webhook-stale":"chữ ký quá cũ (lệch giờ hơn 5 phút)" })[c]||c; }
+};
+
+/* ---------- Thẻ Tự động hóa (trong Quản trị > Người mua) ---------- */
+async function adminAuto(box, reload){
+  if(!box) return;
+  let a; try{ a=await KKP.api("/admin/pay/auto"); }catch(e){ box.innerHTML=`<div class="eyebrow">Tự động hóa</div><div class="note">Chưa đọc được trạng thái tự động hóa: ${e.detail?esc(e.detail):KKP.err(e)}</div>`; return; }
+  const w=a.webhook, m=a.mail, L=w.last, all=a.bank.on&&w.on&&m.on;
+  const failNew=w.fail&&(!L||w.fail.at>L.at);
+  box.innerHTML=`<div class="rowline" style="justify-content:space-between"><div><div class="eyebrow">Tự động hóa</div><h3 style="margin:.1em 0">${all?"Đang chạy tự động hoàn toàn":"Bật đủ 3 mục này là không còn phải xác nhận tay"}</h3></div><button class="btn sm ghost" id="auReload">Tải lại</button></div>
+  <div class="autogrid">
+    <div class="auto"><div class="st"><i class="dot ${a.bank.on?"on":""}"></i>1. Mã VietQR</div>
+      <span class="note">${a.bank.on?`<b>Sẵn sàng.</b> Người mua quét mã, tiền về tài khoản đuôi <b>${esc(a.bank.tail)}</b>, nội dung chuyển khoản là mã đơn.`:"<b>Chưa có số tài khoản nhận tiền.</b> Người mua chưa quét mã để trả tiền được."}</span>
+      <button class="btn sm ${a.bank.on?"ghost":"pri"}" id="auBank">${a.bank.on?"Đổi tài khoản nhận tiền":"Nhập số tài khoản"}</button></div>
+    <div class="auto"><div class="st"><i class="dot ${w.on?(failNew||w.broken?"warn":"on"):""}"></i>2. Ngân hàng báo tiền về</div>
+      <span class="note">${w.broken?"<b>Khóa kết nối không còn đọc được</b> (khóa máy chủ đã đổi). Hãy tạo khóa mới và dán lại vào SePay."
+        :w.on?`<b>Đang bật.</b> Khách chuyển đúng nội dung, đủ tiền là gói tự mở trong vài giây. ${L?`Lần gần nhất ${esc(fmtDate(L.at))}: ${esc(KKA.hookTxt(L))}.`:"Chưa nhận cuộc gọi nào từ ngân hàng."}`
+        :"<b>Chưa bật.</b> Mỗi đơn bạn phải mở app ngân hàng xem tiền về rồi bấm Xác nhận đã nhận tiền."}</span>
+      ${w.on?`<span class="note">Tháng này ngân hàng đã báo <b>${Number(w.month.count)||0}</b> giao dịch (gói miễn phí của SePay gồm ${Number(w.month.free)||50} mỗi tháng).</span>`:""}
+      ${failNew?`<span class="note" style="color:var(--bad)">Lúc ${esc(fmtDate(w.fail.at))} có cuộc gọi bị từ chối: ${esc(KKA.failTxt(w.fail.code))}. Mở để kiểm tra khóa.</span>`:""}
+      <button class="btn sm ${w.on&&!w.broken?"ghost":"pri"}" id="auHook">${w.on&&!w.broken?"Xem, kiểm tra, đổi khóa":"Bật trong 3 bước"}</button></div>
+    <div class="auto"><div class="st"><i class="dot ${m.on?(m.last&&m.last.ok===false?"warn":"on"):""}"></i>3. Email tự gửi</div>
+      <span class="note">${m.broken?"<b>Khóa email không còn đọc được</b> (khóa máy chủ đã đổi). Hãy nhập lại khóa."
+        :m.on?`<b>Đang bật.</b> Gửi từ <b>${esc(m.from)}</b>: biên nhận, mã kích hoạt, nhắc gia hạn${m.notify?", và báo cho bạn khi có việc cần xử lý":""}.${m.last&&m.last.ok===false?` <span style="color:var(--bad)">Thư thử gần nhất chưa gửi được.</span>`:""}`
+        :"<b>Chưa bật.</b> Biên nhận, mã kích hoạt, nhắc gia hạn chưa tự gửi; bạn gửi tay qua Zalo, SMS."}</span>
+      <button class="btn sm ${m.on&&!m.broken?"ghost":"pri"}" id="auMail">${m.on&&!m.broken?"Xem, gửi thử, đổi khóa":"Bật trong 2 bước"}</button></div>
+  </div>
+  <div class="note" style="margin-top:8px">${all?"Việc của bạn chỉ còn: xem số đỏ <b>việc cần xử lý</b> (khách chuyển thiếu, chuyển sai nội dung) và trả lời khách.":"Chưa bật vẫn bán bình thường: khách quét mã, bạn bấm <b>Xác nhận đã nhận tiền</b>. Bật mục 2 và 3 thì tiền về là gói tự mở, khách tự nhận email, bạn chỉ còn xem thông báo."}</div>`;
+  $("#auReload").onclick=()=>adminAuto(box, reload);
+  $("#auBank").onclick=()=>{ adminTab="st"; render(); };
+  $("#auHook").onclick=()=>openAutoHook(a, reload);
+  $("#auMail").onclick=()=>openAutoMail(a, reload);
+}
+
+/* ---------- Trình hướng dẫn: ngân hàng báo tiền về (SePay) ---------- */
+function openAutoHook(a0, after){
+  let timer=null, changed=false, base={last:"",fail:""}, tries=0;
+  const stop=()=>{ if(timer){ clearInterval(timer); timer=null; } };
+  const done=()=>{ stop(); closeModal(); if(changed&&after) after(); };
+  const alt=(typeof KK_API_ALT==="string"&&KK_API_ALT?KK_API_ALT:"")+"/pay/webhook/sepay";
+  const cp=()=>document.querySelectorAll("#mw button[data-cp]").forEach(b=>b.onclick=()=>copyText(b.dataset.cp));
+  const live=(cls, html)=>{ const el=$("#ahLive"); if(el){ el.className="feedback "+cls; el.innerHTML=html; } };
+  /* Tự kiểm tra: 4 giây hỏi máy chủ một lần xem SePay đã gọi tới chưa (tối đa 6 phút) */
+  const watch=st=>{
+    stop(); tries=0; base={last:(st.webhook.last&&st.webhook.last.at)||"", fail:(st.webhook.fail&&st.webhook.fail.at)||""};
+    timer=setInterval(async()=>{
+      if(!$("#ahLive")){ stop(); return; }
+      if(++tries>90){ stop(); live("", `Đã ngừng tự kiểm tra sau 6 phút. <button class="btn sm" id="ahAgain">Kiểm tra lại</button>`); const b=$("#ahAgain"); if(b) b.onclick=()=>{ live("", "Đang chờ SePay gọi tới..."); watch(st); }; return; }
+      let s; try{ s=await KKP.api("/admin/pay/auto"); }catch(e){ return; }
+      const L=s.webhook.last, F=s.webhook.fail;
+      if(L&&L.at!==base.last){ base.last=L.at; changed=true;
+        live("good", `<b>Kết nối thành công.</b> Lúc ${esc(fmtDate(L.at))} SePay đã gọi tới (${esc(KKA.authTxt(L.auth))}): ${esc(KKA.hookTxt(L))}. Từ giờ đơn nào chuyển đúng nội dung và đủ tiền sẽ tự kích hoạt.`);
+        document.querySelectorAll("#mw ol.wz>li").forEach(li=>li.classList.add("done")); }
+      else if(F&&F.at!==base.fail){ base.fail=F.at;
+        live("bad", `Lúc ${esc(fmtDate(F.at))} SePay có gọi tới nhưng bị từ chối: <b>${esc(KKA.failTxt(F.code))}</b>. Mở webhook KK-EDU trong SePay, bước Bảo mật, dán lại đúng khóa bí mật${F.code==="webhook-stale"?" (hoặc đổi kiểu bảo mật sang API Key)":""} rồi bấm Gửi thử lần nữa.`); }
+    }, 4000);
+  };
+  const steps=(st, key)=>`<ol class="wz">
+    <li class="${st.webhook.on||key?"done":""}"><b>Tạo tài khoản SePay và nối ngân hàng</b> <span class="note">(bạn tự làm một lần, khoảng 10 phút)</span>
+      <div class="note">Đăng ký tại <a href="https://my.sepay.vn" target="_blank" rel="noopener">my.sepay.vn</a> rồi nối tài khoản ngân hàng theo hướng dẫn của SePay. ${st.bank.on?`Phải nối <b>đúng tài khoản đuôi ${esc(st.bank.tail)}</b>, vì mã VietQR của KK-EDU chuyển tiền vào tài khoản đó.`:`Trước hết hãy nhập số tài khoản nhận tiền ở thẻ <b>Cài đặt & Thanh toán</b>.`}</div></li>
+    <li class="${key?"done":""}"><b>Tạo khóa kết nối rồi dán vào SePay</b>
+      ${key?`<div class="note" style="margin-top:6px">Địa chỉ nhận (URL):</div><div class="keyrow"><code>${esc(st.webhook.url)}</code><button class="btn sm" data-cp="${esc(st.webhook.url)}">Sao chép</button></div>
+        <div class="note">Khóa bí mật - <b>chỉ hiện một lần này</b>, hãy dán vào SePay ngay:</div><div class="keyrow"><code id="ahKey">${esc(key)}</code><button class="btn sm pri" data-cp="${esc(key)}">Sao chép</button></div>
+        <div class="note" style="line-height:1.7">Trong SePay vào <b>Tích hợp (Integrations) &gt; Webhooks &gt; Thêm webhook (Add webhook)</b>, điền 4 bước:<br>
+          1. <b>Cơ bản (Basics):</b> Tên <code>KK-EDU</code>; URL: dán địa chỉ nhận; Loại sự kiện: <b>Tiền vào (Money in)</b>; Content-Type: <code>application/json</code>; bật <b>Tự gọi lại (Auto retry)</b>.<br>
+          2. <b>Tài khoản (Accounts):</b> chọn tài khoản nhận tiền của KK-EDU; <b>tắt</b> mục "Bỏ qua giao dịch không có mã" (Skip transactions without code).<br>
+          3. <b>Bảo mật (Security):</b> chọn <b>API Key</b> rồi dán khóa bí mật. Chọn HMAC-SHA256 cũng được, dùng cùng khóa này.<br>
+          4. <b>Cảnh báo (Alerts):</b> để mặc định rồi lưu.</div>
+        <details class="note" style="margin-top:4px"><summary style="cursor:pointer">SePay báo lỗi khi gọi tới (403, quá thời gian)?</summary>Sửa URL trong SePay thành địa chỉ dự phòng: <div class="keyrow"><code>${esc(alt)}</code><button class="btn sm" data-cp="${esc(alt)}">Sao chép</button></div></details>`
+      :`<div class="note">Bấm nút dưới đây, hệ thống tạo một <b>địa chỉ nhận</b> và một <b>khóa bí mật</b> để bạn dán vào SePay. Không cần vào Cloudflare.</div><div class="mrow" style="margin-top:6px"><button class="btn pri" id="ahMake">Tạo khóa kết nối</button></div>`}</li>
+    <li><b>Gửi thử để kiểm tra</b>
+      <div class="note">Trong danh sách webhook của SePay, bấm dấu ba chấm ở dòng KK-EDU, chọn <b>Gửi thử (Test send)</b>. Ô dưới đây tự cập nhật sau vài giây. Gửi thử không kích hoạt đơn nào.</div>
+      <div id="ahLive" class="feedback">${key?"Đang chờ SePay gọi tới...":"Tạo khóa ở bước 2 trước."}</div></li>
+  </ol>`;
+  const cost=`<div class="alertbox" style="margin:8px 0"><b>Chi phí phía SePay</b> (bảng giá xem ngày 15/11/2026): gói Free <b>0 đ mỗi tháng</b>, gồm <b>50 giao dịch tiền vào mỗi tháng</b>, có Webhook. Vượt 50 thì SePay vẫn chạy và lập hóa đơn phí vượt vào kì thanh toán. KK-EDU đếm giúp và báo cho bạn ở mốc 40 và 50. Nên nối một tài khoản ngân hàng <b>riêng chỉ để thu học phí</b>. <a href="https://sepay.vn/bang-gia.html" target="_blank" rel="noopener">Xem bảng giá hiện hành của SePay</a></div>`;
+  const paint=(st, key)=>{
+    const w=st.webhook, L=w.last, manage=w.on&&!key&&!w.broken;
+    modal(manage?`<div class="eyebrow">Tự động hóa · Mục 2</div><h3 style="margin-bottom:.3em">Ngân hàng báo tiền về: đang bật</h3>
+      <div class="kv" style="margin:8px 0">
+        <span>Trạng thái</span><b>Đang bật${w.source==="env"?" (khóa cài trên Cloudflare)":w.source==="both"?" (khóa tạo ở đây và khóa cũ trên Cloudflare)":""}</b>
+        <span>Địa chỉ nhận</span><b style="word-break:break-all">${esc(w.url)}</b>
+        ${w.hint?`<span>Khóa bí mật</span><b>kết thúc bằng ...${esc(w.hint)}${w.createdAt?` · tạo ${esc(fmtDate(w.createdAt))}`:""}</b>`:""}
+        <span>Lần gọi gần nhất</span><b>${L?`${esc(fmtDate(L.at))} · ${esc(KKA.hookTxt(L))} · ${esc(KKA.authTxt(L.auth))}`:"chưa có"}</b>
+        <span>Tháng này</span><b>${Number(w.month.count)||0} giao dịch (gói miễn phí của SePay gồm ${Number(w.month.free)||50})</b>
+      </div>${cost}
+      <div id="ahLive" class="feedback">Muốn kiểm tra: trong SePay, bấm dấu ba chấm ở dòng webhook KK-EDU, chọn <b>Gửi thử (Test send)</b>. Kết quả hiện tại đây sau vài giây.</div>
+      <div class="mrow"><button class="btn" id="ahNew">Tạo khóa mới</button>${w.source!=="env"?`<button class="btn ghost" id="ahOff">Tắt báo tiền tự động</button>`:""}<button class="btn ghost" id="ahNo">Đóng</button></div>
+      <div class="note"><b>Tạo khóa mới</b> khi nghi khóa bị lộ hoặc khi đổi tài khoản SePay: khóa cũ hết hiệu lực trong vòng 1 phút, bạn phải dán khóa mới vào SePay. ${w.source==="env"?"Khóa hiện tại cài trên Cloudflare (PAY_WEBHOOK_SECRET), muốn tắt thì gỡ ở đó.":"<b>Tắt</b>: trở về xác nhận tay; nhớ xóa webhook trong SePay."}</div><div id="ahFb"></div>`
+    :`<div class="eyebrow">Tự động hóa · Mục 2</div><h3 style="margin-bottom:.3em">Ngân hàng báo tiền về tự động</h3>
+      <p class="note" style="margin-top:0">KK-EDU nối với <b>SePay</b>, dịch vụ đọc biến động số dư và báo ngay khi tài khoản có tiền vào. Hệ thống khớp <b>mã đơn và số tiền</b> rồi tự mở gói, gửi biên nhận. Bạn không phải xác nhận tay nữa.</p>${cost}
+      ${steps(st, key)}
+      <div class="mrow"><button class="btn ${key?"pri":"ghost"}" id="ahNo">${key?"Xong":"Đóng"}</button></div><div id="ahFb"></div>`,{lock:true});
+    $("#ahNo").onclick=done; cp();
+    const fb=h=>{ const el=$("#ahFb"); if(el) el.innerHTML=h; };
+    const make=async confirm=>{
+      try{ const r=await KKP.api("/admin/pay/auto",{op:"webhook-new", confirm:!!confirm}); changed=true; paint(r, r.key); watch(r); }
+      catch(e){ fb(`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}</div>`); }
+    };
+    const mk=$("#ahMake"); if(mk) mk.onclick=async()=>{ mk.disabled=true; await make(w.broken); mk.disabled=false; };
+    twoStep($("#ahNew"), ()=>make(true), "Khóa cũ sẽ hết hiệu lực - bấm lần nữa");
+    twoStep($("#ahOff"), async()=>{ try{ const r=await KKP.api("/admin/pay/auto",{op:"webhook-off"}); changed=true; stop(); paint(r, ""); }catch(e){ fb(`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}</div>`); } }, "Bấm lần nữa để tắt");
+    if(manage) watch(st);
+  };
+  paint(a0, "");
+}
+
+/* ---------- Trình hướng dẫn: email tự gửi (Brevo) ---------- */
+function openAutoMail(a0, after){
+  let changed=false;
+  const done=()=>{ closeModal(); if(changed&&after) after(); };
+  const errTxt=t=>{ const e=String((t&&t.err)||""); return /sender|from/i.test(e)?"Brevo từ chối vì <b>địa chỉ gửi chưa được xác minh</b>. Mở Brevo, mục Senders, xác minh đúng địa chỉ này rồi bấm Gửi thư thử.":"Chưa gửi được: "+esc(e||"lỗi không rõ"); };
+  const paint=(st, edit, note)=>{
+    const m=st.mail, manage=m.on&&!edit&&!m.broken;
+    modal(manage?`<div class="eyebrow">Tự động hóa · Mục 3</div><h3 style="margin-bottom:.3em">Email tự gửi: đang bật</h3>
+      <div class="kv" style="margin:8px 0">
+        <span>Gửi từ</span><b>${esc(m.fromName||"")} &lt;${esc(m.from)}&gt;</b>
+        <span>Dịch vụ</span><b>${m.provider==="resend"?"Resend":"Brevo"}${m.source==="env"?" (khóa cài trên Cloudflare)":m.hint?` · khóa kết thúc bằng ...${esc(m.hint)}`:""}</b>
+        <span>Báo cho Quản trị viên</span><b>${m.notify?`Bật - gửi tới ${esc(m.to||"")}`:"Tắt"}</b>
+        <span>Thư thử gần nhất</span><b>${m.last?`${esc(fmtDate(m.last.at))} · ${m.last.ok?"đã gửi":"chưa gửi được"}`:"chưa thử"}</b>
+      </div>
+      <div class="note">Hệ thống tự gửi: <b>biên nhận kèm mã kích hoạt</b> khi gói được mở, <b>mã kích hoạt</b> khi bạn tạo mã có email, <b>nhắc gia hạn</b> trước 7 ngày${m.notify?", và <b>báo cho bạn</b> khi khách báo đã chuyển khoản, khi tiền về cần đối chiếu":""}.</div>
+      ${note||""}
+      <div class="mrow"><button class="btn pri" id="amTest">Gửi thư thử</button>${m.source!=="env"?`<button class="btn" id="amNotifyBtn">${m.notify?"Tắt báo cho tôi":"Bật báo cho tôi"}</button><button class="btn ghost" id="amEdit">Đổi khóa, địa chỉ gửi</button><button class="btn ghost" id="amOff">Tắt email tự gửi</button>`:""}<button class="btn ghost" id="amNo">Đóng</button></div><div id="amFb"></div>`
+    :`<div class="eyebrow">Tự động hóa · Mục 3</div><h3 style="margin-bottom:.3em">Email tự gửi</h3>
+      <p class="note" style="margin-top:0">Khi bật, hệ thống tự gửi <b>biên nhận và mã kích hoạt</b> cho người mua, <b>nhắc gia hạn</b> trước 7 ngày, và <b>báo cho bạn</b> khi có đơn cần xử lý. KK-EDU gửi qua <b>Brevo</b>: gói miễn phí 300 thư mỗi ngày, đăng ký không cần thẻ (xem ngày 15/11/2026).</p>
+      <ol class="wz">
+        <li class="${m.on?"done":""}"><b>Tạo tài khoản Brevo và xác minh địa chỉ gửi</b> <span class="note">(bạn tự làm một lần)</span>
+          <div class="note">Đăng ký tại <a href="https://www.brevo.com" target="_blank" rel="noopener">brevo.com</a>. Trong Brevo mở mục <b>Senders, Domains &amp; Dedicated IPs</b>, thêm địa chỉ bạn muốn dùng để gửi và xác minh theo thư Brevo gửi về. Để thư ít rơi vào Spam, nên dùng địa chỉ theo tên miền riêng (ví dụ lienhe@kk-edu.com) và làm thêm bước xác thực tên miền trong Brevo.</div></li>
+        <li><b>Dán khóa API của Brevo vào đây</b>
+          <div class="note">Trong Brevo: bấm tên tài khoản ở góc trên, chọn <b>SMTP &amp; API</b>, thẻ <b>API Keys</b>, bấm <b>Generate a new API key</b>, rồi sao chép khóa (bắt đầu bằng <code>xkeysib-</code>).</div>
+          <div class="fld" style="margin-top:8px"><label for="amKey">Khóa API của Brevo${m.on&&m.source==="app"?" (bỏ trống = giữ khóa đang dùng)":""}</label><input id="amKey" type="password" autocomplete="off" spellcheck="false" placeholder="xkeysib-..."></div>
+          <div class="formgrid"><div class="fld"><label for="amFrom">Địa chỉ gửi (đã xác minh trong Brevo)</label><input id="amFrom" type="email" maxlength="120" value="${esc(m.source==="app"?m.from:"")}" placeholder="lienhe@kk-edu.com"></div>
+          <div class="fld"><label for="amName">Tên người gửi</label><input id="amName" maxlength="60" value="${esc((m.source==="app"&&m.fromName)||"KK-EDU GIA SƯ SỐ")}"></div></div>
+          <label class="rowline" style="gap:8px;margin:4px 0 2px"><input type="checkbox" id="amNotify" ${m.notify!==false?"checked":""}> <span>Báo cho tôi qua email khi có đơn cần xử lý${m.to?` (gửi tới ${esc(m.to)})`:""}</span></label>
+          <div class="mrow" style="margin-top:6px"><button class="btn pri" id="amSave">Lưu và gửi thư thử</button></div></li>
+      </ol>
+      <div class="note">Khóa được <b>mã hóa trước khi lưu</b>, không hiện lại, và bản sao lưu dữ liệu cũng không đọc được khóa.</div>
+      <div class="mrow"><button class="btn ghost" id="amNo">Đóng</button></div><div id="amFb"></div>`,{lock:true});
+    $("#amNo").onclick=done;
+    const fb=h=>{ const el=$("#amFb"); if(el) el.innerHTML=h; };
+    const bad=e=>fb(`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}</div>`);
+    const sv=$("#amSave"); if(sv) sv.onclick=async()=>{
+      const key=$("#amKey").value.trim(), from=$("#amFrom").value.trim();
+      if(!from){ fb(`<div class="feedback bad">Hãy nhập địa chỉ gửi đã xác minh trong Brevo.</div>`); return; }
+      if(!key&&!(m.on&&m.source==="app")){ fb(`<div class="feedback bad">Hãy dán khóa API của Brevo (bắt đầu bằng xkeysib-).</div>`); return; }
+      sv.disabled=true; fb(`<div class="note">Đang thử khóa với Brevo và gửi thư thử...</div>`);
+      try{ const r=await KKP.api("/admin/pay/auto",{op:"mail-set", provider:"brevo", key, from, fromName:$("#amName").value.trim(), notify:$("#amNotify").checked});
+        changed=true; const c=r.check||{};
+        paint(r, false, `<div class="feedback ${r.test&&r.test.ok?"good":"bad"}"><b>Khóa hợp lệ</b>${c.company?` (tài khoản ${esc(c.company)}${c.plan?", gói "+esc(c.plan):""}${c.credits?", còn "+esc(c.credits)+" thư":""})`:""}. ${r.test&&r.test.ok?`Đã gửi một thư thử tới <b>${esc(r.mail.to||"")}</b>: hãy mở hộp thư, xem cả mục Spam. Không thấy sau vài phút thì kiểm tra địa chỉ gửi đã xác minh trong Brevo chưa.`:errTxt(r.test)}</div>`);
+      }catch(e){ sv.disabled=false; bad(e); }
+    };
+    const ts=$("#amTest"); if(ts) ts.onclick=async()=>{ ts.disabled=true;
+      try{ const r=await KKP.api("/admin/pay/auto",{op:"mail-test"}); changed=true; paint(r, false, `<div class="feedback ${r.test.ok?"good":"bad"}">${r.test.ok?`Đã gửi thư thử tới <b>${esc(r.mail.to||"")}</b>. Hãy mở hộp thư, xem cả mục Spam.`:errTxt(r.test)}</div>`); }
+      catch(e){ ts.disabled=false; bad(e); } };
+    const nb=$("#amNotifyBtn"); if(nb) nb.onclick=async()=>{ nb.disabled=true; try{ const r=await KKP.api("/admin/pay/auto",{op:"mail-notify", on:!m.notify}); changed=true; paint(r, false); }catch(e){ nb.disabled=false; bad(e); } };
+    const ed=$("#amEdit"); if(ed) ed.onclick=()=>paint(st, true);
+    twoStep($("#amOff"), async()=>{ try{ const r=await KKP.api("/admin/pay/auto",{op:"mail-off"}); changed=true; paint(r, false); }catch(e){ bad(e); } }, "Bấm lần nữa để tắt");
+  };
+  paint(a0, false);
+}
+
+/* ---------- Mã theo lô: danh sách, tạo lô, chi tiết lô, in phiếu có mã QR ---------- */
+const KKB = {
+  ST:{unused:["ok","Chưa dùng"], used:["","Đã dùng"], cancelled:["lock","Đã hủy"], expired:["lock","Quá hạn"]},
+  BST:{active:["ok","Đang dùng"], cancelled:["","Đã hủy mã chưa dùng"], expired:["lock","Quá hạn kích hoạt"]},
+  badge(M, st){ const x=M[st]||["",st||"?"]; return `<span class="badge ${x[0]}">${esc(x[1])}</span>`; },
+  qrSvg(text){ try{ if(typeof qrcode==="function"){ const q=qrcode(0,"M"); q.addData(text); q.make(); return q.createSvgTag({cellSize:4, margin:16, scalable:true}); } }catch(e){} return ""; },
+  /** Một phiếu 90 x 63 mm (8 phiếu một trang A4): mã QR mở thẳng hộp kích hoạt, kèm mã chữ để gõ tay khi không quét được. */
+  voucher(B, c){
+    const sup=[S.settings&&S.settings.contactZalo?"Zalo "+S.settings.contactZalo:"", (S.settings&&S.settings.contactEmail)||""].filter(Boolean).join(" · ");
+    return `<div class="vch"><div class="vh"><b>KK-EDU GIA SƯ SỐ</b><span>${esc(B.name||"")}</span></div>
+      <div class="vt">PHIẾU KÍCH HOẠT GÓI HỌC</div>
+      <div class="vp">Gói <b>${esc(B.tierName||KKP.NAME[B.tier]||B.tier)}</b> · ${Number(B.days)||365} ngày kể từ lúc kích hoạt</div>
+      <div class="vb"><div class="vq">${KKB.qrSvg(c.link)}</div><ol><li>Mở camera điện thoại, <b>quét mã QR</b>.</li><li><b>Đăng nhập</b> tài khoản của người học (chưa có thì đăng ký miễn phí).</li><li>Bấm <b>Kích hoạt gói</b> là học được ngay.</li></ol></div>
+      <div class="vc">${esc(c.code)}</div>
+      <div class="vf">Không quét được: vào <b>www.kk-edu.com</b>, đăng nhập, bấm tên tài khoản, chọn <b>Nhập mã</b> rồi gõ mã trên. Mỗi mã dùng 1 lần cho 1 tài khoản.</div>
+      <div class="vn">${[B.useBy?`<b>Hạn kích hoạt: ${esc(KKP.fmtDay(Date.parse(B.useBy)))}</b>`:"", `Phiếu ${c.i}/${B.qty}`, sup?"Hỗ trợ: "+esc(sup):""].filter(Boolean).join(" · ")}</div></div>`;
+  },
+  /** Dựng vùng in (ẩn trên màn hình): mỗi tờ 8 phiếu. Trả về số tờ. */
+  build(B, codes){
+    let host=$("#kkPrint"); if(!host){ host=document.createElement("div"); host.id="kkPrint"; document.body.appendChild(host); }
+    let html=""; for(let i=0;i<codes.length;i+=8) html+=`<div class="vsheet">${codes.slice(i,i+8).map(c=>KKB.voucher(B,c)).join("")}</div>`;
+    host.innerHTML=html; return Math.ceil(codes.length/8);
+  },
+  print(B, codes){
+    if(!codes.length){ toast("Không còn mã chưa dùng để in"); return; }
+    if(typeof qrcode!=="function"){ toast("Chưa tải được bộ vẽ mã QR - kiểm tra mạng rồi thử lại"); return; }
+    KKB.build(B, codes); document.body.classList.add("kkprint");
+    const done=()=>{ document.body.classList.remove("kkprint"); window.removeEventListener("afterprint",done); const h=$("#kkPrint"); if(h) h.innerHTML=""; };
+    window.addEventListener("afterprint",done); setTimeout(()=>window.print(),80);
+  },
+  csv(B, C){
+    const H=["stt","ma_kich_hoat","lien_ket_kich_hoat","trang_thai","nguoi_dung","ngay_dung"];
+    const L=[H.join(",")].concat(C.map(c=>[c.i,c.code,c.link,(KKB.ST[c.status]||["",c.status])[1],c.usedName||"",c.usedAt?fmtDate(c.usedAt):""].map(csvCell).join(",")));
+    const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob(["﻿"+L.join("\n")],{type:"text/csv;charset=utf-8"})); a.download="kk-edu-lo-ma-"+B.id+".csv"; a.click();
+  }
+};
+async function adminBatches(box, reload){
+  if(!box) return;
+  let d; try{ d=await KKP.api("/admin/pay/batches"); }catch(e){ box.innerHTML=`<div class="eyebrow">Mã theo lô</div><div class="note">Chưa đọc được danh sách lô: ${e.detail?esc(e.detail):KKP.err(e)}</div>`; return; }
+  const B=d.batches||[], qty=B.reduce((a,x)=>a+x.qty,0), used=B.reduce((a,x)=>a+x.used,0);
+  box.innerHTML=`<div class="rowline" style="justify-content:space-between"><div><div class="eyebrow">Mã theo lô · cho trường, lớp, trung tâm</div><h3 style="margin:.1em 0">${B.length?`${B.length} lô · đã dùng ${used}/${qty} mã`:"Chưa có lô nào"}</h3></div><button class="btn sm pri" id="btNew">Tạo lô mã</button></div>
+  ${B.length?`<div class="tbwrap" style="margin-top:8px"><table class="tb"><thead><tr><th>Ngày tạo</th><th>Tên lô</th><th>Gói</th><th>Đã dùng</th><th>Tiền ghi sổ</th><th>Hạn kích hoạt</th><th>Trạng thái</th><th></th></tr></thead><tbody>${B.map(b=>`<tr>
+    <td class="note">${b.at?esc(fmtDate(b.at)):""}</td><td><b>${esc(b.name)}</b>${b.note?`<br><span class="note">${esc(b.note)}</span>`:""}</td>
+    <td>${esc(KKP.NAME[b.tier]||b.tier)}<br><span class="note">${Number(b.days)||365} ngày</span></td>
+    <td><b>${b.used}/${b.qty}</b><div class="prog"><i style="width:${b.qty?Math.round(100*b.used/b.qty):0}%"></i></div></td>
+    <td>${fmtMoney(b.total)}${b.paid?`<br><span class="note">chuyển khoản đã nhận ${fmtMoney(b.paid)}</span>`:""}</td>
+    <td class="note">${b.useBy?esc(KKP.fmtDay(Date.parse(b.useBy))):"không giới hạn"}</td><td>${KKB.badge(KKB.BST, b.status)}</td>
+    <td><button class="btn sm" data-bt="${esc(b.id)}">Mở lô</button></td></tr>`).join("")}</tbody></table></div>`
+  :`<div class="note">Bán một lần nhiều gói cho trường, lớp hoặc trung tâm: tạo từ 1 đến 200 mã, in <b>phiếu có mã QR</b> (8 phiếu một trang A4) phát cho từng học sinh. Học sinh quét mã, đăng nhập là gói tự mở. Bạn theo dõi được mã nào đã dùng, của ai.</div>`}`;
+  $("#btNew").onclick=()=>openBatchNew(reload);
+  box.querySelectorAll("button[data-bt]").forEach(b=>b.onclick=()=>openBatch(b.dataset.bt, reload));
+}
+function openBatchNew(after){
+  let touched=false;
+  modal(`<div class="eyebrow">Trung tâm kích hoạt · Cách 4</div><h3 style="margin-bottom:.3em">Tạo lô mã kích hoạt</h3>
+  <p class="note" style="margin-top:0">Dùng khi bán cho <b>trường, lớp, trung tâm</b> hoặc tặng theo nhóm. Mỗi mã dùng 1 lần cho 1 tài khoản. Tạo xong bạn in được <b>phiếu có mã QR</b> để phát.</p>
+  <div class="fld"><label for="bnName">Tên lô (để bạn nhận ra, có in trên phiếu)</label><input id="bnName" maxlength="80" placeholder="Ví dụ: THCS Trường Yên - lớp 7A"></div>
+  <div class="formgrid">
+    <div class="fld"><label for="bnTier">Gói</label><select id="bnTier">${Object.keys(KKP.NAME).map(t=>`<option value="${t}">${esc(KKP.NAME[t])} - ${fmtMoney(KKP.price(t))}</option>`).join("")}</select></div>
+    <div class="fld"><label for="bnQty">Số lượng mã (1 đến 200)</label><input id="bnQty" inputmode="numeric" maxlength="3" value="30"></div>
+    <div class="fld"><label for="bnDays">Thời hạn gói (ngày, tính từ lúc kích hoạt)</label><input id="bnDays" inputmode="numeric" maxlength="4" value="365"></div>
+    <div class="fld"><label for="bnUseBy">Hạn kích hoạt (bỏ trống = không giới hạn)</label><input id="bnUseBy" type="date"></div>
+    <div class="fld"><label for="bnTotal">Tổng tiền đã thu của cả lô (VND, ghi sổ; chưa thu ghi 0, sửa sau)</label><input id="bnTotal" data-money value=""></div>
+    <div class="fld"><label for="bnPhone">SĐT / Zalo người nhận (không bắt buộc)</label><input id="bnPhone" inputmode="tel" maxlength="20"></div>
+  </div>
+  <div class="fld"><label for="bnNote">Ghi chú</label><input id="bnNote" maxlength="200"></div>
+  <div class="note" id="bnHint"></div>
+  <div class="mrow"><button class="btn pri" id="bnOk">Tạo lô mã</button><button class="btn ghost" id="bnNo">Đóng</button></div><div id="bnFb"></div>`,{lock:true});
+  const hint=()=>{ const q=Math.floor(Number($("#bnQty").value)||0), p=KKP.price($("#bnTier").value);
+    if(!touched) $("#bnTotal").value=q>0?fmtVN(q*p):"";
+    $("#bnHint").innerHTML=q>0&&q<=200?`Theo giá niêm yết: ${q} mã x ${fmtMoney(p)} = <b>${fmtMoney(q*p)}</b>. Ô "Tổng tiền đã thu" là số bạn thực thu (có thể thấp hơn nếu giảm giá cho trường).`:""; };
+  moneyInputs(); hint();
+  $("#bnQty").oninput=hint; $("#bnTier").onchange=hint; $("#bnTotal").addEventListener("input",()=>{ touched=true; });
+  $("#bnNo").onclick=closeModal;
+  $("#bnOk").onclick=async()=>{
+    const b=$("#bnOk"), name=$("#bnName").value.trim(), qty=Math.floor(Number($("#bnQty").value)||0);
+    const bad=t=>{ $("#bnFb").innerHTML=`<div class="feedback bad">${t}</div>`; };
+    if(name.length<2){ bad("Hãy đặt tên lô, ví dụ: THCS Trường Yên - lớp 7A."); return; }
+    if(!(qty>=1&&qty<=200)){ bad("Mỗi lô từ 1 đến 200 mã. Cần nhiều hơn thì tạo thêm lô."); return; }
+    b.disabled=true;
+    try{ const r=await KKP.api("/admin/pay/action",{op:"batch", name, tier:$("#bnTier").value, qty, days:Number($("#bnDays").value)||365, useBy:$("#bnUseBy").value||"", total:moneyVal("bnTotal"), phone:$("#bnPhone").value.trim(), note:$("#bnNote").value.trim()});
+      toast("Đã tạo "+r.codes.length+" mã"); openBatch(r.batch.id, after, r, true);
+    }catch(e){ b.disabled=false; bad(e.detail?esc(e.detail):KKP.err(e)); }
+  };
+}
+async function openBatch(id, after, pre, fresh){
+  let r=pre, changed=!!fresh;
+  if(!r){ modal(`<div class="note">Đang tải lô mã...</div>`);
+    try{ r=await KKP.api("/admin/pay/action",{op:"batch-get", id}); }
+    catch(e){ modal(`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}</div><div class="mrow"><button class="btn ghost" id="boNo">Đóng</button></div>`); $("#boNo").onclick=closeModal; return; } }
+  const paint=(r, msg)=>{
+    const B=r.batch, C=r.codes, unused=C.filter(c=>c.status==="unused");
+    modal(`<div class="eyebrow">Lô mã ${esc(B.id)} · tạo ${B.at?esc(fmtDate(B.at)):""}</div><h3 style="margin-bottom:.3em">${esc(B.name)} ${KKB.badge(KKB.BST, B.status)}</h3>
+    ${msg||(fresh?`<div class="feedback good"><b>Đã tạo ${C.length} mã.</b> Bấm <b>In phiếu</b> để in phiếu có mã QR (8 phiếu một trang A4), cắt theo nét đứt rồi phát cho từng học sinh.</div>`:"")}
+    <div class="kv" style="margin:8px 0">
+      <span>Gói</span><b>${esc(KKP.NAME[B.tier]||B.tier)} · ${Number(B.days)||365} ngày kể từ lúc kích hoạt</b>
+      <span>Đã dùng</span><b>${B.used}/${B.qty} mã${unused.length?` · còn ${unused.length} mã chưa dùng`:""}</b>
+      <span>Tiền ghi sổ</span><b>${fmtMoney(B.total)}${B.paid?` · chuyển khoản đã nhận ${fmtMoney(B.paid)}`:""}</b>
+      <span>Hạn kích hoạt</span><b>${B.useBy?esc(KKP.fmtDay(Date.parse(B.useBy))):"không giới hạn"}</b>
+      ${B.oc?`<span>Thu qua chuyển khoản</span><b>nhờ bên mua ghi nội dung <code>${esc(B.oc)}</code> <button class="btn ghost sm" data-cp="${esc(B.oc)}">copy</button><br><span class="note" style="font-weight:400">Khi đã bật Ngân hàng báo tiền về, hệ thống tự cộng vào "chuyển khoản đã nhận".</span></b>`:""}
+      ${B.note?`<span>Ghi chú</span><b>${esc(B.note)}</b>`:""}
+    </div>
+    <div class="mrow" style="margin-top:0"><button class="btn pri" id="boPrint" ${unused.length?"":"disabled"}>In phiếu (${unused.length} mã chưa dùng)</button><button class="btn" id="boCsv">Tải danh sách CSV</button><button class="btn ghost" id="boCopy" ${unused.length?"":"disabled"}>Sao chép mã chưa dùng</button><button class="btn ghost" id="boEdit">Sửa tên, tiền</button>${unused.length?`<button class="btn ghost" id="boCancel">Hủy mã chưa dùng</button>`:""}${B.used===0&&!B.paid?`<button class="btn ghost" id="boDel" title="Chỉ xóa được khi chưa mã nào được dùng">Xóa lô</button>`:""}</div>
+    <div id="boEditBox"></div><div id="boFb"></div>
+    <div class="tbwrap" style="max-height:300px;overflow:auto;margin-top:8px"><table class="tb btcodes"><thead><tr><th>#</th><th>Mã kích hoạt</th><th>Trạng thái</th><th>Người dùng</th><th></th></tr></thead><tbody>${C.map(c=>`<tr><td class="note">${c.i}</td><td><code style="font-size:.8rem">${esc(c.code)}</code></td><td>${KKB.badge(KKB.ST, c.status)}</td><td style="white-space:normal">${esc(c.usedName||"")}${c.usedAt?`<br><span class="note">${esc(fmtDate(c.usedAt))}</span>`:""}</td><td>${c.status==="unused"?`<button class="btn ghost sm" data-cp="${esc(c.link)}" title="Sao chép liên kết kích hoạt của mã này">Liên kết</button>`:""}</td></tr>`).join("")}</tbody></table></div>
+    <div class="mrow"><button class="btn ghost" id="boNo">Đóng</button></div>`,{lock:true});
+    const fb=h=>{ const el=$("#boFb"); if(el) el.innerHTML=h; };
+    try{ $("#mw .modal").style.maxWidth="720px"; }catch(e){}
+    $("#boNo").onclick=()=>{ closeModal(); if(changed&&after) after(); };
+    document.querySelectorAll("#mw button[data-cp]").forEach(b=>b.onclick=()=>copyText(b.dataset.cp));
+    $("#boPrint").onclick=()=>KKB.print(B, unused);
+    $("#boCsv").onclick=()=>KKB.csv(B, C);
+    $("#boCopy").onclick=()=>copyText(unused.map(c=>c.code).join("\n"));
+    $("#boEdit").onclick=()=>{
+      $("#boEditBox").innerHTML=`<div class="formgrid" style="margin-top:8px"><div class="fld"><label for="beName">Tên lô</label><input id="beName" maxlength="80" value="${esc(B.name)}"></div><div class="fld"><label for="beTotal">Tổng tiền đã thu (VND)</label><input id="beTotal" data-money value="${Number(B.total)||0}"></div></div><div class="fld"><label for="beNote">Ghi chú</label><input id="beNote" maxlength="200" value="${esc(B.note||"")}"></div><div class="mrow" style="margin-top:0"><button class="btn pri" id="beOk">Lưu</button></div>`;
+      moneyInputs($("#boEditBox")); const tot=$("#beTotal"); tot.value=fmtVN(Number(B.total)||0);
+      $("#beOk").onclick=async()=>{ const ok=$("#beOk"); ok.disabled=true;
+        try{ const x=await KKP.api("/admin/pay/action",{op:"batch-edit", id:B.id, name:$("#beName").value.trim(), total:moneyVal("beTotal"), note:$("#beNote").value.trim()}); changed=true; fresh=false; paint({batch:Object.assign({}, B, x.batch), codes:C}, `<div class="feedback good">Đã lưu.</div>`); }
+        catch(e){ ok.disabled=false; fb(`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}</div>`); } };
+    };
+    twoStep($("#boCancel"), async()=>{
+      try{ const x=await KKP.api("/admin/pay/action",{op:"batch-cancel", id:B.id}); changed=true; fresh=false; paint(x, `<div class="feedback good">Đã hủy ${x.cancelled} mã chưa dùng. Các gói đã kích hoạt bằng mã của lô này vẫn giữ nguyên.</div>`); }
+      catch(e){ fb(`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}</div>`); }
+    }, `Hủy ${unused.length} mã chưa dùng? Bấm lần nữa`);
+    twoStep($("#boDel"), async()=>{
+      try{ await KKP.api("/admin/pay/action",{op:"batch-delete", id:B.id}); closeModal(); toast("Đã xóa lô "+B.name); if(after) after(); }
+      catch(e){ fb(`<div class="feedback bad">${e.detail?esc(e.detail):KKP.err(e)}</div>`); }
+    }, "Xóa hẳn lô và mọi mã của lô? Bấm lần nữa");
+  };
+  paint(r);
 }
 /* Biểu đồ doanh thu theo ngày (SVG thuần, không thư viện) */
 function revenueChartHTML(byDay, days){
@@ -6443,7 +6861,7 @@ async function adminCoupons(box){
   };
   $("#cpNew").onclick=()=>form();
   box.querySelectorAll("[data-cpedit]").forEach(b=>b.onclick=()=>form(list.find(c=>(c.code||c.id)===b.dataset.cpedit)));
-  box.querySelectorAll("[data-cpdel]").forEach(b=>b.onclick=async()=>{ if(!window.confirm("Xóa mã "+b.dataset.cpdel+"?")) return; try{ await KKP.api("/admin/pay/coupon",{op:"delete", code:b.dataset.cpdel}); adminCoupons(box); }catch(e){ toast(KKP.err(e)); } });
+  box.querySelectorAll("[data-cpdel]").forEach(b=>b.onclick=async()=>{ if(!await kkConfirm(`Xóa mã giảm giá <b>${esc(b.dataset.cpdel)}</b>?`, "Xóa mã", true)) return; try{ await KKP.api("/admin/pay/coupon",{op:"delete", code:b.dataset.cpdel}); adminCoupons(box); }catch(e){ toast(KKP.err(e)); } });
 }
 /* ---------- Quản trị: Trung tâm kích hoạt (13/11/2026) ----------
    3 cách mở gói: (1) tự động qua VietQR; (2) kích hoạt trực tiếp cho tài khoản đã đăng ký - khách không cần nhập mã;
@@ -6603,6 +7021,7 @@ fitBrand(); window.addEventListener("resize",()=>{ clearTimeout(window._fbT); wi
   render();                 // vẽ lại với dữ liệu chia sẻ + vai trò
   maybeConsent();
   try{ if(KKC._open){ KKC._open=false; KKC.resume(); } }catch(e){}   // vào bằng liên kết kích hoạt #ma=<mã>
+  setTimeout(()=>{ KKP.noticeNew().catch(()=>{}); }, 1500);          // gói vừa được mở khi vắng mặt (tiền về, Quản trị viên xác nhận): báo một lần
   try{ if(sessionStorage.getItem("kk_open")==="profile"){ sessionStorage.removeItem("kk_open"); openProfileForm(); } }catch(e){}
   // ?login=1&next=/ielts/ : mở hộp đăng nhập ngay (tài khoản dùng chung cho mọi phân hệ)
   try{ const q=new URLSearchParams(location.search); if(q.get("login")==="1"){ S.loginNext=safeNext(q.get("next")||"/"); history.replaceState(null,"",location.pathname+location.hash); if(S.uid){ if(S.profile) location.href=S.loginNext; else openProfileForm(()=>{ location.href=S.loginNext; }); } else if(S.fb) openLogin(); } }catch(e){}
