@@ -5930,9 +5930,16 @@ const KKP = {
      Ghi lại hạn gói đã biết trên máy này; lần vào sau thấy gói mới (hoặc hạn dài hơn) thì báo MỘT lần. */
   seenKey(){ return "kk_plan_seen_"+S.uid; },
   markSeen(){ try{ const m={}; for(const [t,x] of Object.entries((KKP.me&&KKP.me.tiers)||{})) if(x.status==="active") m[t]=x.exp; localStorage.setItem(KKP.seenKey(), JSON.stringify(m)); }catch(e){} },
-  async noticeNew(){
+  async noticeNew(force){
     if(!S.uid||S.mode!=="firebase") return false;
+    // Tiết kiệm lượt gọi máy chủ: khi chưa có sẵn trạng thái gói, mỗi máy chỉ hỏi lại sau 6 giờ (tài khoản chưa từng có gói, có đơn: 24 giờ),
+    // trừ lúc đang chờ một đơn (vừa quét mã / đã báo chuyển khoản trong 72 giờ) thì hỏi ngay.
+    const ck="kk_plan_chk_"+S.uid;
+    if(!force&&!KKP.me){ let c=null; try{ c=JSON.parse(localStorage.getItem(ck)||"null"); }catch(e){ c=null; }
+      if(c&&!(c.wait&&Date.now()-c.wait<72*3600e3)&&Date.now()-c.t<(c.quiet?24:6)*3600e3) return false; }
     const me=await KKP.load(); if(!me||me._err||!me.tiers) return false;
+    try{ const open=(me.orders||[]).some(o=>["pending","reported","underpaid"].includes(o.status)); let old=null; try{ old=JSON.parse(localStorage.getItem(ck)||"null"); }catch(e){ old=null; }
+      localStorage.setItem(ck, JSON.stringify({t:Date.now(), quiet:!Object.keys(me.tiers).length&&!(me.orders||[]).length, wait:open?((old&&old.wait)||Date.now()):0})); }catch(e){}
     let seen=null; try{ seen=JSON.parse(localStorage.getItem(KKP.seenKey())||"null"); }catch(e){ seen=null; }
     const fresh=Object.entries(me.tiers).filter(([t,x])=>{ if(x.status!=="active"||!(x.exp>Date.now())) return false; const prev=seen&&Number(seen[t]);
       return prev ? x.exp>prev+3600e3 : !!(x.since&&Date.now()-Date.parse(x.since)<14*86400e3); });
@@ -6073,7 +6080,7 @@ function openBuyPlan(tier, fromCode, pre){
   <div id="bpFor"></div>
   <div id="bpBody"><div class="note">Đang kiểm tra gói phù hợp...</div></div>
   <div class="mrow"><button class="btn ghost sm" id="bpNo">Đóng</button></div>`,{lock:true});
-  $("#bpNo").onclick=()=>{ clearInterval(_payPoll); closeModal(); KKP._wn=0; KKP.load(true).catch(()=>{}); };   // còn đơn đang chờ: trang tiếp tục tự hỏi máy chủ, gói mở là báo
+  $("#bpNo").onclick=()=>{ clearInterval(_payPoll); closeModal(); KKP._wn=0; try{ if(S.uid) localStorage.setItem("kk_plan_chk_"+S.uid, JSON.stringify({t:0, quiet:false, wait:Date.now()})); }catch(e){} KKP.load(true).catch(()=>{}); };   // có thể vừa tạo đơn: lần mở trang sau hỏi máy chủ ngay   // còn đơn đang chờ: trang tiếp tục tự hỏi máy chủ, gói mở là báo
   if(pre&&pre.coupon) $("#bpCoupon").value=String(pre.coupon).slice(0,24);   // mã giảm giá chuyển sang từ hộp Nhập mã
   let forRef=null;   // null = chưa có người học hợp lệ (không tạo đơn); "" = bản thân; ref = người học liên kết
   const opts=()=>({tier, phone:$("#bpPhone").value.trim(), coupon:$("#bpCoupon").value.trim(), forRef:forRef||""});
