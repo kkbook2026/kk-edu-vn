@@ -95,6 +95,7 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;backgroun
 :root[data-theme="dark"] .brand .tagline{color:#0f2a4a}
 nav.main{display:flex;gap:2px;flex:1 1 auto;min-width:0;flex-wrap:nowrap;justify-content:flex-end;margin-left:auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
 header.top .wrap{max-width:1400px}
+@media(min-width:1401px){header.top .wrap{max-width:1520px}}   /* 17/11/2026: thêm mục Thư giãn - màn hình rộng có thêm chỗ cho menu */
 nav.main::-webkit-scrollbar{display:none}
 
 nav.main button.hasmenu{display:inline-flex;align-items:center;gap:3px;padding-right:9px}
@@ -118,7 +119,7 @@ nav.main button[aria-expanded="true"] .car{transform:rotate(180deg)}
 @media(max-width:1400px){nav.main button{padding:7px 9px;font-size:.87rem}}
 /* 1160-1340px: thu gọn để menu vẫn nằm cùng hàng với logo và hộp tài khoản */
 @media(min-width:1341px) and (max-width:1600px){.brand{gap:11px}.brand .logo{width:56px;height:56px}.brand b{font-size:1.95rem}.brand .tagline{font-size:.6rem}nav.main button{padding:7px 8px;font-size:.86rem}}
-@media(min-width:1160px) and (max-width:1340px){.topbar{gap:10px}.brand{gap:9px}.brand .logo{width:54px;height:54px}.brand b{font-size:1.75rem}nav.main button{padding:6px 7px;font-size:.82rem}.userbox{font-size:.8rem}.userbox .ava{width:30px;height:30px}}
+@media(min-width:1160px) and (max-width:1340px){.topbar{gap:10px}.brand{gap:9px}.brand .logo{width:54px;height:54px}.brand b{font-size:1.75rem}nav.main button{padding:6px 7px;font-size:.82rem}.userbox{font-size:.8rem}.userbox .ava{width:30px;height:30px}.avabtn .avatxt{display:none}.avabtn{padding:4px 9px 4px 4px}}
 /* Dưới 1160px: menu xuống hàng riêng, căn giữa - không bị hộp tài khoản che */
 @media(min-width:641px) and (max-width:1159px){.topbar{flex-wrap:wrap;row-gap:0;padding-block:8px 6px}.userbox{order:2;margin-left:auto}nav.main{order:3;flex:1 0 100%;margin-left:0;justify-content:center;overflow:visible;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:6px;padding-top:4px}}
 
@@ -657,7 +658,7 @@ header.top{background:color-mix(in srgb,var(--card) 90%,transparent);border-bott
 .topbar{padding-block:9px}
 /* Menu chính: thanh ray có khung */
 nav.main{gap:2px;padding:4px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--bg2) 70%,var(--card));box-shadow:inset 0 1px 2px rgba(13,47,42,.06);flex:0 1 auto}
-nav.main button{position:relative;border-radius:10px;padding:8px 14px;font-size:.93rem;font-weight:550;color:var(--fg2);letter-spacing:.005em;transition:background .15s,color .15s}
+nav.main button{position:relative;border-radius:10px;padding:8px 11px;font-size:.9rem;font-weight:550;color:var(--fg2);letter-spacing:.005em;transition:background .15s,color .15s}
 nav.main button:hover{background:var(--card);color:var(--navy);box-shadow:0 1px 2px rgba(13,47,42,.08)}
 nav.main button.on{background:linear-gradient(180deg,#145448,#0d2f2a);color:#fff;font-weight:650;box-shadow:0 4px 12px -6px rgba(13,47,42,.7)}
 nav.main button.on::after{content:"";position:absolute;left:28%;right:28%;bottom:3px;height:2px;border-radius:2px;background:var(--gold-hi)}
@@ -665,7 +666,7 @@ nav.main button.on::after{content:"";position:absolute;left:28%;right:28%;bottom
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.main button.on{background:linear-gradient(180deg,#ffc95e,#f2a42c);color:#06120f}}
 :root[data-theme="dark"] nav.main button.on::after{background:#06120f}
 @media(max-width:1400px){nav.main button{padding:7px 10px;font-size:.88rem}}
-@media(min-width:1160px) and (max-width:1340px){nav.main button{padding:6px 8px;font-size:.83rem}}
+@media(min-width:1160px) and (max-width:1340px){nav.main button{padding:6px 6px;font-size:.83rem}}   /* 17/11/2026: đủ chỗ cho mục Thư giãn */
 @media(min-width:641px) and (max-width:1159px){nav.main{border:1px solid var(--line)!important;margin-top:6px;justify-content:center}}
 @media(max-width:640px){nav.main{border-radius:12px;padding:3px;mask-image:none}nav.main button{padding:7px 11px;font-size:.86rem}}
 .avabtn{border-radius:12px;padding:4px 12px 4px 4px;box-shadow:0 1px 2px rgba(13,47,42,.06)}
@@ -797,6 +798,63 @@ ol.wz>li.done::before{background:var(--ok);color:#fff;content:"\2713"}
 @media print{body.kkprint>*:not(#kkPrint){display:none!important}body.kkprint #kkPrint{display:block!important}body.kkprint{background:#fff!important;margin:0!important;padding:0!important}}
 @page kkvoucher{size:A4 portrait;margin:8mm}
 #kkPrint{page:kkvoucher}</style>
+<style id="kkRelaxCss">
+/* ===== Góc thư giãn (17/11/2026): trang Thư giãn + lớp phủ chơi game có đồng hồ lượt ===== */
+.rx{margin:26px 0 44px}
+.rx-hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:30px;align-items:center}
+.rx-copy h1{font-size:clamp(2rem,3.2vw,2.6rem);margin:0 0 .28em}
+.rx-lead{font-size:1.04rem;color:var(--fg2);max-width:33em;margin:0 0 18px;line-height:1.65}
+.rx-art{margin:0;border-radius:var(--r-l);overflow:hidden;box-shadow:var(--shadow);aspect-ratio:16/10;background:#e9dfc9}
+.rx-art img{display:block;width:100%;height:100%;object-fit:cover}
+.rx-status{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);padding:15px 16px}
+.rx-status .mrow{margin-top:12px}
+.rx-st{margin:0;font-weight:600;color:var(--fg);line-height:1.55}
+.rx-st b{font-variant-numeric:tabular-nums;color:var(--navy)}
+.rx-meter{height:6px;border-radius:99px;background:var(--chip);overflow:hidden;margin:11px 0 0}
+.rx-meter i{display:block;height:100%;width:0;background:var(--navy2);border-radius:inherit;transition:width .9s linear}
+.rx-sub{margin:34px 0 12px;font-size:1.3rem}
+.rx-games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.rx-game{appearance:none;-webkit-appearance:none;font:inherit;color:inherit;text-align:left;padding:0;margin:0;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);overflow:hidden;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.rx-game:hover{border-color:var(--navy2);box-shadow:var(--shadow)}
+.rx-game img{display:block;width:100%;aspect-ratio:16/10;height:auto;object-fit:cover;background:var(--bg2)}
+.rx-gt{display:block;padding:12px 14px 15px}
+.rx-gt b{display:block;font-family:var(--font-d);font-weight:600;font-size:1.12rem;color:var(--navy)}
+.rx-gt small{display:block;color:var(--fg2);font-size:.88rem;margin-top:4px;line-height:1.5}
+.rx-game[aria-disabled="true"]{cursor:default}
+.rx-game[aria-disabled="true"]:hover{border-color:var(--line);box-shadow:none}
+.rx-game[aria-disabled="true"] img{filter:saturate(.55) brightness(.97)}
+.rx-rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 28px;margin-top:22px;padding:16px 18px;border:1px solid var(--line);border-radius:var(--r-m);background:var(--card)}
+.rx-rules div{font-size:.92rem;color:var(--fg2);line-height:1.55}
+.rx-rules b{display:block;color:var(--fg);font-weight:600}
+@media(max-width:900px){.rx-hero{grid-template-columns:1fr;gap:18px}.rx-art{order:-1}}
+@media(max-width:640px){.rx-games{grid-template-columns:1fr;gap:10px}.rx-game{flex-direction:row;align-items:stretch}.rx-game img{width:38%;flex:none;align-self:stretch;height:auto;aspect-ratio:auto}.rx-gt{padding:10px 12px}.rx-rules{grid-template-columns:1fr}}
+html.rx-lock,html.rx-lock body{overflow:hidden!important}
+html.rx-lock #cbFab,html.rx-lock #cbPanel,html.rx-lock .consent{display:none!important}
+.rx-ov{position:fixed;inset:0;z-index:85;display:flex;flex-direction:column;background:#0b1220;color:#f4f8f6;font-family:var(--font-b)}
+.rx-top{flex:none;display:flex;align-items:center;gap:10px;min-height:52px;padding:max(6px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 6px max(14px,env(safe-area-inset-left));background:#0d2f2a;border-bottom:1px solid rgba(255,255,255,.08)}
+.rx-name{font-family:var(--font-d);font-weight:600;font-size:1.02rem;white-space:nowrap}
+.rx-time{display:inline-flex;align-items:center;font-weight:700;font-variant-numeric:tabular-nums;background:rgba(255,255,255,.12);border-radius:999px;padding:5px 13px;font-size:.92rem;white-space:nowrap}
+.rx-time.warn{background:#f2a42c;color:#1d1405}
+.rx-time.crit{background:#d2452f;color:#fff}
+.rx-sp{flex:1}
+.rx-tb{display:inline-flex;align-items:center;gap:7px;background:transparent;color:#f4f8f6;border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:7px 12px;font:inherit;font-weight:600;font-size:.88rem;cursor:pointer;min-height:40px}
+.rx-tb:hover{background:rgba(255,255,255,.1)}
+.rx-tb svg{width:18px;height:18px;flex:none}
+.rx-stage{position:relative;flex:1;min-height:0}
+.rx-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#0b1220}
+.rx-warn{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#f2a42c;color:#1d1405;font-weight:700;border-radius:999px;padding:9px 18px;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:2;width:max-content;max-width:calc(100% - 24px);text-align:center;font-size:.92rem}
+.rx-end{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;background:#e9dfc9 url("/thu-gian/anh/vuot-vu-mon-lon.webp") center/cover no-repeat;overflow:auto}
+.rx-endcard{width:min(470px,100%);background:rgba(255,252,245,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#1d2a26;border-radius:20px;padding:22px 22px 18px;box-shadow:0 24px 60px rgba(0,0,0,.25)}
+.rx-endcard h2{margin:0 0 6px;color:#0d2f2a}
+.rx-endcard p{margin:0;line-height:1.6}
+.rx-endcard b{color:#0d2f2a}
+.rx-tips{list-style:none;padding:0;margin:12px 0 2px;display:grid;gap:7px}
+.rx-tips li{background:rgba(13,47,42,.07);border-radius:12px;padding:9px 12px;font-size:.93rem}
+.rx-endcard .btn.ghost{color:#0d2f2a;border-color:rgba(13,47,42,.3)}
+@media(max-width:560px){.rx-name{display:none}.rx-tb .lab{display:none}.rx-tb{padding:7px 10px}}
+@media(prefers-reduced-motion:no-preference){.rx-time.crit{animation:rxPulse 1.1s ease-in-out infinite}}
+@keyframes rxPulse{50%{opacity:.72}}
+</style>
 </head>
 <body>
 <header class="top"><div class="wrap topbar">
@@ -938,6 +996,7 @@ async function reloadUserData(){
   S.profile=null; S.myReq=null; S.grants={}; S.enroll={}; S.myRegs={}; S.progress={}; S.reviewCloud=null; if(typeof KR!=="undefined") KR.data=null;
   S.goiCache={}; S.packLoading={};   // quyền đọc gói phụ thuộc người dùng - tải lại sau khi đổi tài khoản
   if(typeof KKP!=="undefined"){ KKP.me=null; clearTimeout(KKP._w); KKP._wn=0; } if(typeof KKA!=="undefined"){ KKA.todo=null; KKA._at=0; }   // trạng thái gói và việc cần xử lý là của từng tài khoản
+  if(typeof KKR!=="undefined"){ KKR.st=null; KKR.at=0; if(KKR.ov) KKR.close(); }   // lượt Góc thư giãn cũng theo từng tài khoản
   await loadShared(); loadLocal();
 }
 /* ---------- Bộ đếm lượt truy cập: mỗi phiên trình duyệt +1 (stats/visits tổng, stats/d-YYYY-MM-DD theo ngày giờ VN), hiện góc phải cuối trang ---------- */
@@ -1680,6 +1739,7 @@ const NAV = [
     {label:"Tiếng Nhật", soon:true}
   ]},
   {id:"dash", label:"Học tập"},
+  {id:"thugian", label:"Thư giãn"},
   {id:"goi", label:"Gói học"},
   {id:"about", label:"Giới thiệu"},
 ];
@@ -1813,7 +1873,7 @@ function parseHash(){
   if(p[0]==="hoc" && p.length>=3){ const i=Number(p[p.length-1]); return {name:"hoc", code:p.slice(1,-1).join("_"), i:isNaN(i)?0:i}; }
   if(p[0]==="catalog") return {name:"video"};
   if(p[0]==="about" && p[1]) return {name:"about", code:p[1]};
-  if(["video","tailieu","live","dash","admin","about","thi","ngoaingu","goi"].includes(p[0])) return {name:p[0]};
+  if(["video","tailieu","live","dash","admin","about","thi","ngoaingu","goi","thugian"].includes(p[0])) return {name:p[0]};
   return {name:"home"};
 }
 function renderNav(){
@@ -1865,10 +1925,219 @@ function viewNgoaiNgu(v){
   kkLangBind(v);
   v.querySelectorAll(".zone[data-href]").forEach(z=>{ const open=()=>{ kkTrack("ngoaingu_chon",{muc:z.querySelector("h3").textContent.trim()}); location.href=z.dataset.href; }; z.onclick=e=>{ if(e.target.tagName!=="A") open(); }; z.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } }; });
 }
+/* ================= GÓC THƯ GIÃN (17/11/2026) =================
+   Ba trò chơi nhẹ (thu-gian/game.html) mở trong lớp phủ của trang, có đồng hồ lượt. Lượt do máy chủ cấp và tính giờ
+   (/api/relax/status|start|stop): mỗi tài khoản một lượt tối đa cfg.min phút (mặc định 15), hết lượt nghỉ cfg.rest phút (mặc định 120).
+   Trang chỉ hiển thị; đổi giờ máy, xóa dữ liệu trình duyệt hay đổi thiết bị đều không mở thêm lượt. */
+const KKR = {
+  st:null, off:0, at:0, busy:false, ov:null, loopT:0, pollT:0, viewT:0, warned:false, ended:false,
+  GAMES:[
+    {id:"leap", name:"Vượt Vũ Môn", img:"/thu-gian/anh/vuot-vu-mon.webp", alt:"Cá chép nhảy qua những bậc đá dưới trăng, hoa anh đào bay", txt:"Giữ để tụ lực, thả tay cho cá chép nhảy qua từng bậc đá về phía thác."},
+    {id:"blade", name:"Nhất Kiếm", img:"/thu-gian/anh/nhat-kiem.webp", alt:"Thanh kiếm quay quanh vòng bát quái và ấn thái cực, tranh thủy mặc", txt:"Chạm đúng lúc mũi kiếm lướt qua vùng sáng trên vòng bát quái."},
+    {id:"stack", name:"Thái Cực Tháp", img:"/thu-gian/anh/thai-cuc-thap.webp", alt:"Tháp đá vàng xếp chồng trước thác nước, đèn lồng và mặt trời", txt:"Đặt từng phiến đá thật thẳng để xây tháp cao nhất có thể."}
+  ],
+  IC:{
+    fs:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
+    out:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/></svg>'
+  },
+  now(){ return Date.now()+KKR.off; },
+  member(){ return !!(S.uid&&S.mode==="firebase"); },
+  cfg(){ const c=(KKR.st&&KKR.st.cfg)||(S.settings&&S.settings.relax)||{}; return {on:c.on!==false, min:Number(c.min)||15, rest:Number(c.rest)||120}; },
+  set(j){ if(!j) return; KKR.st=j; if(Number(j.now)>0) KKR.off=Number(j.now)-Date.now(); KKR.at=Date.now(); },
+  async load(force){
+    if(!KKR.member()){ KKR.st=null; return null; }
+    if(!force&&KKR.st&&!KKR.st.error&&Date.now()-KKR.at<30000) return KKR.st;
+    try{ KKR.set(await KKP.api("/relax/status")); }
+    catch(e){ KKR.st={error:String(e&&e.code||"net"), cfg:KKR.st&&KKR.st.cfg}; KKR.at=Date.now(); }
+    return KKR.st;
+  },
+  phase(){
+    if(!KKR.member()) return "guest";
+    const s=KKR.st; if(!s) return "loading"; if(s.error) return "error";
+    const n=KKR.now();
+    if(s.state==="playing"&&n<s.endsAt) return "playing";
+    if((s.state==="playing"||s.state==="rest")&&n<s.nextAt) return "rest";
+    return KKR.cfg().on?"ready":"off";
+  },
+  mmss(ms){ const t=Math.max(0,Math.ceil(ms/1000)); return String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0"); },
+  hhmm(ms){ const d=new Date(ms); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); },
+  when(ms){ const d=new Date(ms), t=new Date(KKR.now()), tm=new Date(t.getTime()+86400e3);
+    return KKR.hhmm(ms)+(d.toDateString()===t.toDateString()?"":d.toDateString()===tm.toDateString()?" ngày mai":" ngày "+d.getDate()+"/"+(d.getMonth()+1)); },
+  dur(ms){ const m=Math.max(1,Math.ceil(ms/60000)), h=Math.floor(m/60), r=m%60; return h?h+" giờ"+(r?" "+r+" phút":""):r+" phút"; },
+  restTxt(){ return KKR.dur(KKR.cfg().rest*60000); },
+  statusHTML(ph){
+    const c=KKR.cfg(), s=KKR.st||{}, n=KKR.now();
+    if(ph==="guest") return `<p class="rx-st">Đăng nhập để chơi. Lượt chơi tính theo tài khoản và dùng chung trên mọi thiết bị.</p><div class="mrow"><button class="btn pri" id="rxLogin" type="button">Đăng nhập</button></div>`;
+    if(ph==="loading") return `<p class="rx-st">Đang kiểm tra lượt chơi của bạn...</p>`;
+    if(ph==="error") return `<p class="rx-st">Chưa kiểm tra được lượt chơi. Kiểm tra kết nối mạng rồi thử lại.</p><div class="mrow"><button class="btn" id="rxRetry" type="button">Thử lại</button></div>`;
+    if(ph==="off") return `<p class="rx-st">Góc thư giãn đang tạm đóng. Hãy quay lại sau nhé.</p>`;
+    if(ph==="playing") return `<p class="rx-st">Bạn đang trong lượt, còn <b data-rx="left">${KKR.mmss(s.endsAt-n)}</b>.</p>
+      <div class="rx-meter" aria-hidden="true"><i data-rx="lbar" style="width:${Math.round(100*(s.endsAt-n)/Math.max(1,s.endsAt-s.startAt))}%"></i></div>
+      <div class="mrow"><button class="btn pri" id="rxResume" type="button">Vào chơi tiếp</button><button class="btn ghost" id="rxStopBtn" type="button">Kết thúc lượt</button></div>`;
+    if(ph==="rest"){ const from=s.endedAt||s.endsAt||n; return `<p class="rx-st">Đang nghỉ giữa hai lượt. Góc thư giãn mở lại lúc <b>${esc(KKR.when(s.nextAt))}</b>, còn <b data-rx="wait">${KKR.dur(s.nextAt-n)}</b>.</p>
+      <div class="rx-meter" aria-hidden="true"><i data-rx="wbar" style="width:${Math.round(100*(1-(s.nextAt-n)/Math.max(1,s.nextAt-from)))}%"></i></div>
+      <p class="note" style="margin:10px 0 0">Trong lúc chờ, học tiếp một bài ngắn hoặc ôn Sổ ôn tập nhé.</p>
+      <div class="mrow"><button class="btn pri" id="rxLearn" type="button">Quay lại học</button></div>`; }
+    return `<p class="rx-st">Sẵn sàng. Mỗi lượt tối đa ${c.min} phút, tính từ lúc bấm bắt đầu.</p><div class="mrow"><button class="btn pri" id="rxStart" type="button">Bắt đầu lượt ${c.min} phút</button></div>`;
+  },
+  bindView(v){
+    if(!v) return; const b=(id,fn)=>{ const e=v.querySelector("#"+id); if(e) e.onclick=fn; };
+    b("rxLogin", ()=>openLogin());
+    b("rxRetry", async()=>{ KKR.st=null; KKR.refreshStatus(); await KKR.load(true); KKR.refreshStatus(); });
+    b("rxStart", ()=>KKR.start());
+    b("rxResume", ()=>KKR.open());
+    b("rxStopBtn", ()=>KKR.askStop());
+    b("rxLearn", ()=>go({name:"dash"}));
+    const ph=KKR.phase(), can=ph==="ready"||ph==="playing"||ph==="guest";
+    v.querySelectorAll(".rx-game").forEach(el=>{ el.setAttribute("aria-disabled", String(!can)); el.onclick=()=>KKR.pick(el.dataset.g); });
+  },
+  rulesHTML(){ const c=KKR.cfg(), r=KKR.restTxt(); return `<div><b>${c.min} phút mỗi lượt</b>Tính từ lúc bấm bắt đầu, kể cả khi tạm rời trang.</div>
+    <div><b>Nghỉ ${r} giữa hai lượt</b>Hết giờ hoặc tự kết thúc sớm thì ${r} sau mở lại.</div>
+    <div><b>Một lượt cho mọi thiết bị</b>Lượt tính theo tài khoản; đổi máy hay đổi giờ máy cũng không mở thêm lượt.</div>
+    <div><b>Thành tích nằm trên máy của bạn</b>Điểm kỷ lục lưu trong trình duyệt, không gửi đi đâu.</div>`; },
+  refreshStatus(){ const box=$("#rxStatus"); if(!box) return; const ph=KKR.phase(); box.dataset.ph=ph; box.innerHTML=KKR.statusHTML(ph);
+    const ru=$("#rxRules"), h=KKR.rulesHTML(); if(ru&&ru._h!==h){ ru.innerHTML=h; ru._h=h; } KKR.bindView($("#view")); },
+  watchView(){
+    clearInterval(KKR.viewT);
+    KKR.viewT=setInterval(()=>{
+      const box=$("#rxStatus"); if(S.route.name!=="thugian"||!box){ clearInterval(KKR.viewT); return; }
+      const ph=KKR.phase(); if(box.dataset.ph!==ph) return KKR.refreshStatus();
+      const s=KKR.st||{}, n=KKR.now(), q=k=>box.querySelector('[data-rx="'+k+'"]'), bar=(k,p)=>{ const e=q(k); if(e) e.style.width=Math.max(0,Math.min(100,p))+"%"; };
+      if(ph==="playing"){ const e=q("left"); if(e) e.textContent=KKR.mmss(s.endsAt-n); bar("lbar",100*(s.endsAt-n)/Math.max(1,s.endsAt-s.startAt)); }
+      if(ph==="rest"){ const e=q("wait"); if(e) e.textContent=KKR.dur(s.nextAt-n); const from=s.endedAt||s.endsAt||n; bar("wbar",100*(1-(s.nextAt-n)/Math.max(1,s.nextAt-from))); }
+    }, 1000);
+  },
+  pick(g){
+    try{ localStorage.setItem("kkgtg_game", JSON.stringify(g)); }catch(e){}
+    const ph=KKR.phase();
+    if(ph==="guest") return openLogin();
+    if(ph==="playing") return KKR.open();
+    if(ph==="ready") return KKR.start(g);
+    if(ph==="rest") return toast("Góc thư giãn mở lại lúc "+KKR.when(KKR.st.nextAt));
+    if(ph==="off") return toast("Góc thư giãn đang tạm đóng");
+    toast("Đang kiểm tra lượt chơi, thử lại sau giây lát");
+  },
+  async start(g){
+    if(KKR.busy) return; if(!KKR.member()) return openLogin();
+    if(g){ try{ localStorage.setItem("kkgtg_game", JSON.stringify(g)); }catch(e){} }
+    KKR.busy=true; const btn=$("#rxStart"); if(btn){ btn.disabled=true; btn.textContent="Đang mở lượt..."; }
+    try{ const j=await KKP.api("/relax/start", {}); KKR.set(j); if(j.started) kkTrack("thu_gian_bat_dau", {tro:g||""}); KKR.open(); }
+    catch(e){
+      if(e.code==="relax-rest"&&e.data&&e.data.nextAt){ const {error, detail, ...st}=e.data; KKR.set(st); toast("Góc thư giãn mở lại lúc "+KKR.when(st.nextAt)); }
+      else if(e.code==="relax-off"){ KKR.st=Object.assign({}, KKR.st||{}, {cfg:Object.assign({}, KKR.cfg(), {on:false})}); toast("Góc thư giãn đang tạm đóng"); }
+      else if(e.code==="auth") openLogin();
+      else toast(e.code==="rate"?"Thao tác hơi nhanh, thử lại sau vài giây":"Chưa mở được lượt chơi, thử lại sau ít giây");
+    }
+    finally{ KKR.busy=false; KKR.refreshStatus(); }
+  },
+  open(){
+    if(KKR.ov) return; if(KKR.phase()!=="playing"){ KKR.refreshStatus(); return; }
+    const fsOk=!!(document.fullscreenEnabled||document.webkitFullscreenEnabled);
+    const ov=document.createElement("div"); ov.className="rx-ov"; ov.id="rxOv"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true"); ov.setAttribute("aria-label","Góc thư giãn");
+    ov.innerHTML=`<div class="rx-top"><span class="rx-name">Góc thư giãn</span><span class="rx-time" id="rxTime" role="timer" aria-label="Thời gian còn lại của lượt">--:--</span><span class="rx-sp"></span>
+      ${fsOk?`<button class="rx-tb" id="rxFs" type="button" aria-label="Toàn màn hình">${KKR.IC.fs}<span class="lab">Toàn màn hình</span></button>`:""}
+      <button class="rx-tb" id="rxExit" type="button" aria-label="Thoát">${KKR.IC.out}<span class="lab">Thoát</span></button></div>
+      <div class="rx-stage" id="rxStage"><iframe id="rxFrame" src="/thu-gian/game.html" title="Trò chơi Góc thư giãn" sandbox="allow-scripts allow-same-origin allow-top-navigation-by-user-activation" allow="autoplay; fullscreen"></iframe><div class="rx-warn" id="rxWarn" role="status" hidden></div></div>`;
+    document.body.appendChild(ov); KKR.ov=ov; KKR.warned=false; KKR.ended=false;
+    document.documentElement.classList.add("rx-lock");
+    window.addEventListener("message", KKR.onMsg); document.addEventListener("keydown", KKR.onKey);
+    const fsb=ov.querySelector("#rxFs"); if(fsb) fsb.onclick=()=>KKR.toggleFs();
+    ov.querySelector("#rxExit").onclick=()=>KKR.askExit();
+    KKR.tickOv(); clearInterval(KKR.loopT); KKR.loopT=setInterval(KKR.tickOv, 500);
+    clearInterval(KKR.pollT); KKR.pollT=setInterval(KKR.pollOv, 60000);
+    setTimeout(()=>{ try{ const f=$("#rxFrame"); if(f) f.focus(); }catch(e){} }, 250);
+  },
+  onMsg(e){
+    const f=$("#rxFrame"); if(!f||e.source!==f.contentWindow||e.origin!==location.origin) return;
+    const d=e.data||{}; if(d.type!=="kk-relax") return;
+    if(d.op==="ready"&&KKR.st&&!KKR.ended) KKR.post({op:"start", endsAt:KKR.st.endsAt, now:KKR.now(), name:String(S.name||"Bạn").slice(0,24)});
+  },
+  post(m){ const f=$("#rxFrame"); try{ if(f&&f.contentWindow) f.contentWindow.postMessage(Object.assign({type:"kk-relax"}, m), location.origin); }catch(e){} },
+  tickOv(){
+    if(!KKR.ov||KKR.ended) return;
+    if(!KKR.member()) return KKR.close();
+    const s=KKR.st||{}, left=(Number(s.endsAt)||0)-KKR.now(), t=$("#rxTime");
+    if(t){ t.textContent="Còn "+KKR.mmss(left); t.classList.toggle("warn", left<=120e3&&left>60e3); t.classList.toggle("crit", left<=60e3); }
+    if(left<=120e3&&left>0&&!KKR.warned){ KKR.warned=true; KKR.warn("Còn 2 phút. Chơi nốt ván này rồi nghỉ nhé."); }
+    if(left<=0) KKR.finish();
+  },
+  warn(txt){ const w=$("#rxWarn"); if(!w) return; w.textContent=txt; w.hidden=false; clearTimeout(w._t); w._t=setTimeout(()=>{ w.hidden=true; }, 7000); },
+  async pollOv(){ if(!KKR.ov||KKR.ended) return; await KKR.load(true); if(KKR.ov&&KKR.st&&!KKR.st.error&&KKR.phase()!=="playing") KKR.finish(); },
+  finish(){
+    if(!KKR.ov||KKR.ended) return; KKR.ended=true; clearInterval(KKR.loopT); clearInterval(KKR.pollT);
+    KKR.post({op:"end"}); KKR.exitFs(); kkTrack("thu_gian_het_luot", {});
+    const t=$("#rxTime"); if(t){ t.textContent="Hết giờ"; t.classList.remove("warn"); t.classList.add("crit"); }
+    const ex=$("#rxExit"); if(ex) ex.onclick=()=>KKR.close();
+    setTimeout(()=>{
+      const st=$("#rxStage"); if(!st||!KKR.ov) return; const s=KKR.st||{}, nx=Number(s.nextAt)||0;
+      st.innerHTML=`<div class="rx-end"><div class="rx-endcard" role="status">
+        <h2>Hết lượt thư giãn</h2>
+        <p>${nx>KKR.now()?`Góc thư giãn mở lại lúc <b>${esc(KKR.when(nx))}</b>.`:`Bạn có thể bắt đầu lượt mới khi cần.`} Trước khi học tiếp, dành một phút cho cơ thể:</p>
+        <ul class="rx-tips"><li><b>Đứng dậy vươn vai</b>, xoay nhẹ cổ và hai vai.</li><li><b>Uống vài ngụm nước.</b></li><li><b>Nhìn ra xa 20 giây</b> để mắt được nghỉ.</li></ul>
+        <div class="mrow"><button class="btn pri" id="rxBack" type="button">Quay lại học</button><button class="btn ghost" id="rxClose" type="button">Đóng</button></div>
+      </div></div>`;
+      $("#rxBack").onclick=()=>{ KKR.close(); go({name:"dash"}); };
+      $("#rxClose").onclick=()=>KKR.close();
+      try{ $("#rxBack").focus(); }catch(e){}
+    }, 1400);
+  },
+  askExit(){
+    if(KKR.ended) return KKR.close();
+    KKR.post({op:"pause"});
+    const s=KKR.st||{}, left=(Number(s.endsAt)||0)-KKR.now(), re=KKR.when(KKR.now()+KKR.cfg().rest*60e3);
+    modal(`<h3 style="margin-top:0">Rời Góc thư giãn?</h3>
+      <p style="margin:0">Lượt của bạn còn <b>${KKR.mmss(left)}</b>.</p>
+      <div class="mrow"><button class="btn pri" id="rxKeep" type="button">Chơi tiếp</button><button class="btn" id="rxLeave" type="button">Tạm rời, giữ lượt</button><button class="btn ghost" id="rxEndNow" type="button">Kết thúc lượt</button></div>
+      <p class="note" style="margin:12px 0 0"><b>Tạm rời:</b> đồng hồ vẫn chạy, quay lại trước ${esc(KKR.when(s.endsAt))} để chơi tiếp.<br><b>Kết thúc lượt:</b> Góc thư giãn mở lại lúc ${esc(re)}.</p>`, {lock:true});
+    $("#rxKeep").onclick=()=>{ closeModal(); KKR.post({op:"resume"}); try{ $("#rxFrame").focus(); }catch(e){} };
+    $("#rxLeave").onclick=()=>{ closeModal(); KKR.close(); };
+    $("#rxEndNow").onclick=()=>{ closeModal(); KKR.stop(); };
+    try{ $("#rxKeep").focus(); }catch(e){}
+  },
+  async askStop(){
+    if(!await kkConfirm(`Kết thúc lượt bây giờ? Góc thư giãn sẽ mở lại lúc <b>${esc(KKR.when(KKR.now()+KKR.cfg().rest*60e3))}</b>.`, "Kết thúc lượt")) return;
+    await KKR.stop();
+  },
+  async stop(){
+    try{ const j=await KKP.api("/relax/stop", {}); KKR.set(j); kkTrack("thu_gian_ket_thuc_som", {}); KKR.close(); toast(j.nextAt?"Đã kết thúc lượt. Mở lại lúc "+KKR.when(j.nextAt):"Đã kết thúc lượt"); }
+    catch(e){ toast(e.code==="rate"?"Thao tác hơi nhanh, thử lại sau vài giây":"Chưa kết thúc được lượt, thử lại sau ít giây"); if(KKR.ov) KKR.post({op:"resume"}); }
+    KKR.refreshStatus();
+  },
+  close(){
+    clearInterval(KKR.loopT); clearInterval(KKR.pollT);
+    window.removeEventListener("message", KKR.onMsg); document.removeEventListener("keydown", KKR.onKey);
+    KKR.exitFs(); if(KKR.ov){ KKR.ov.remove(); KKR.ov=null; } document.documentElement.classList.remove("rx-lock");
+    if(S.route.name==="thugian") KKR.refreshStatus();
+  },
+  toggleFs(){ const o=KKR.ov; if(!o) return; const fe=document.fullscreenElement||document.webkitFullscreenElement;
+    try{ if(fe) (document.exitFullscreen||document.webkitExitFullscreen).call(document); else (o.requestFullscreen||o.webkitRequestFullscreen).call(o); }catch(e){} },
+  exitFs(){ try{ if(document.fullscreenElement||document.webkitFullscreenElement) (document.exitFullscreen||document.webkitExitFullscreen).call(document); }catch(e){} },
+  onKey(e){ if(e.key==="Escape"&&KKR.ov&&!KKR.ended&&!$("#mw")){ e.preventDefault(); KKR.askExit(); } }
+};
+function viewRelax(v){
+  const ph=KKR.phase();
+  v.innerHTML=`<section class="rx" aria-labelledby="rxH">
+  <div class="rx-hero">
+    <div class="rx-copy">
+      <h1 id="rxH">Góc thư giãn</h1>
+      <p class="rx-lead">Nghỉ mắt, thả lỏng tay và đầu óc giữa hai buổi học với ba trò chơi nhẹ nhàng, tiếng đàn ngũ cung khe khẽ và bốn bức tranh để chọn: thủy mặc, anh đào trăng, ngọc bích, neon.</p>
+      <div class="rx-status" id="rxStatus" data-ph="${ph}" aria-live="polite">${KKR.statusHTML(ph)}</div>
+    </div>
+    <figure class="rx-art"><img src="/thu-gian/anh/vuot-vu-mon-lon.webp" width="1280" height="800" alt="Tranh thủy mặc: cá chép nhảy qua những bậc đá về phía thác Vũ Môn giữa hai vách núi" decoding="async"></figure>
+  </div>
+  <h2 class="rx-sub">Chọn trò chơi</h2>
+  <div class="rx-games">${KKR.GAMES.map(g=>`<button class="rx-game" type="button" data-g="${g.id}"><img src="${g.img}" width="800" height="500" alt="${esc(g.alt)}" loading="lazy" decoding="async"><span class="rx-gt"><b>${esc(g.name)}</b><small>${esc(g.txt)}</small></span></button>`).join("")}</div>
+  <div class="rx-rules" id="rxRules">${KKR.rulesHTML()}</div>
+  </section>`;
+  KKR.bindView(v); KKR.watchView();
+  if(!KKR.member()){ if(KKR.ov) KKR.close(); return; }
+  if(ph==="loading"||ph==="error"||Date.now()-KKR.at>30000) KKR.load(true).then(()=>{ if(S.route.name==="thugian") KKR.refreshStatus(); });
+}
 function render(){
   renderNav();
   const v=$("#view");
   const r=S.route;
+  if(r.name!=="thugian"&&typeof KKR!=="undefined"&&KKR.ov) KKR.close();   // rời trang Thư giãn: đóng lớp chơi (lượt vẫn tính giờ trên máy chủ)
   if(r.name==="home") return viewHome(v);
   if(r.name==="video") return viewCatalog(v);
   if(r.name==="tailieu") return viewTaiLieu(v);
@@ -1881,6 +2150,7 @@ function render(){
   if(r.name==="thi") return viewExams(v);
   if(r.name==="ngoaingu") return viewNgoaiNgu(v);
   if(r.name==="goi") return viewPlans(v);
+  if(r.name==="thugian") return viewRelax(v);
   viewHome(v);
 }
 
@@ -2491,6 +2761,7 @@ const KK_LANG={
     cta:[["Học Tiếng Trung","/tieng-trung/"],["Tài liệu xem / in","/tieng-trung/#tai-lieu"],["Chứng chỉ HSK 3","/tieng-trung/#chung-chi"]]}
 };
 const KK_NEWS=[
+  {d:"17/11/2026", t:"all", h:"Góc thư giãn: 3 trò chơi nhẹ giữa giờ học", p:"Mục Thư giãn trên menu: Vượt Vũ Môn, Nhất Kiếm, Thái Cực Tháp với 4 giao diện tranh vẽ và nhạc ngũ cung. Mỗi tài khoản một lượt tối đa 15 phút, hết lượt nghỉ 2 giờ mới mở lại; giờ tính trên máy chủ, dùng chung mọi thiết bị."},
   {d:"04/11/2026", t:"all", h:"Bộ Chuẩn quốc tế: 16 môn Đại học, Thạc sĩ, Tiến sĩ", p:"192 bài video tương tác soạn theo chương trình tổng hợp 20 hệ thống đại học dẫn đầu thế giới (U21 2020): Giải tích, Đại số tuyến tính, Xác suất - thống kê, Khoa học dữ liệu, AI, Viết học thuật, Kinh tế học, Khoa học bền vững; Học máy, Chính sách công, Quản trị chiến lược, Kĩ thuật hệ thống; Giảng dạy đại học, Thống kê Bayes, AI cho khoa học, Nghiên cứu liên ngành. Mỗi môn có giáo trình PDF và đề thi thử."},
   {d:"16/10/2026", t:"all", h:"Trang Hỏi đáp và Trợ lý trong lúc học", p:"Trang Hỏi đáp gom toàn bộ câu hỏi thường gặp, có tìm kiếm; Trợ lý có mặt trên trang IELTS và Tiếng Trung, chỉ bài tiếp theo, thành viên được AI trả lời thêm."},
   {d:"16/10/2026", t:"zh", h:"Chứng chỉ HSK 3 tự động, giọng đọc lưu sẵn", p:"Tiếng Trung: tự cấp Chứng chỉ KK-EDU Thử nghiệm HSK 3 khi đủ 120 bài và đạt thi thử; giọng đọc của 140 video được dựng sẵn nên phát mượt, không chờ."},
@@ -4931,6 +5202,9 @@ function cbKB(){
   {id:"baocaotuan", chip:"Báo cáo tuần", k:"bao cao tuan phu huynh gui bao cao cho bo me zalo messenger email tong ket tuan hoc cua con link bao cao in pdf",
    a:`Mục <b>Học tập → Báo cáo tuần cho phụ huynh</b> tổng hợp 7 ngày: số ngày học, bài đã học và hoàn thành, số câu trả lời, tỉ lệ đúng ngay lần đầu, điểm trung bình, Sổ ôn tập, bài kiểm tra, bài cần củng cố và lời khuyên. Gửi qua Zalo, Messenger (nút Chia sẻ), email, <b>link xem báo cáo</b> (dữ liệu nằm sau dấu # của link, không gửi lên máy chủ, KK-EDU không lưu) hoặc in, lưu PDF; chọn được khoảng ngày khác.`,
    acts:[{l:"Mở Báo cáo tuần", go:"dash"}]},
+  {id:"thugian", k:"goc thu gian tro choi game choi game giai tri xa stress nghi giai lao thu gian vuot vu mon nhat kiem thai cuc thap 15 phut 2 gio het luot luot choi",
+   a:`<b>Góc thư giãn</b> (mục <b>Thư giãn</b> trên menu) có 3 trò chơi nhẹ để nghỉ mắt giữa giờ học: <b>Vượt Vũ Môn</b>, <b>Nhất Kiếm</b>, <b>Thái Cực Tháp</b>, 4 giao diện tranh vẽ và nhạc ngũ cung. Cần đăng nhập. Mỗi tài khoản <b>một lượt tối đa 15 phút</b> tính từ lúc bấm Bắt đầu; hết lượt hoặc tự kết thúc sớm thì <b>2 giờ sau</b> mới mở lại. Giờ tính trên máy chủ nên đổi máy hay đổi giờ máy cũng không thêm lượt. Thành tích lưu trên máy của bạn, không gửi đi đâu.`,
+   acts:[{l:"Mở Góc thư giãn", go:"thugian"}]},
   {id:"ontap", chip:"Sổ ôn tập", k:"on tap so on tap cau sai on lai lap lai ngat quang nhac on quen bai nho lau hoc lai cau sai",
    a:`Câu em làm <b>sai</b>, hoặc phải làm <b>lần 2 mới đúng</b>, trong bài học tự vào <b>Sổ ôn tập</b> (mục Học tập). Hệ thống nhắc ôn đúng lúc sắp quên theo phương pháp <b>lặp lại ngắt quãng</b>: sau 1, 3, 7, 16, 35 ngày; trả lời đúng thì lịch ôn giãn ra, sai thì ôn lại sớm, đúng ở hộp cuối là đã thuộc. Mỗi lượt 5-10 phút, không tính vào điểm chính thức. Thứ tự phương án trắc nghiệm được xáo để em nhớ kiến thức, không nhớ vị trí đáp án.`,
    acts:[{l:"Mở Sổ ôn tập", go:"dash"}]},
@@ -5232,6 +5506,7 @@ function viewAdmin(v){
     <button data-t="tl" class="${adminTab==="tl"?"on":""}">Trợ lý</button>
     <button data-t="tt" class="${adminTab==="tt"?"on":""}">Thi thử 500</button>
     <button data-t="cc" class="${adminTab==="cc"?"on":""}">Chứng chỉ</button>
+    <button data-t="tg" class="${adminTab==="tg"?"on":""}">Góc thư giãn</button>
     <button data-t="bm" class="${adminTab==="bm"?"on":""}">Bảo mật</button>
     <button data-t="hd" class="${adminTab==="hd"?"on":""}">Hướng dẫn</button>
   </div>
@@ -5248,6 +5523,7 @@ function viewAdmin(v){
   else if(adminTab==="tl") adminAssist(body);
   else if(adminTab==="tt") adminExam(body);
   else if(adminTab==="cc") adminCerts(body);
+  else if(adminTab==="tg") adminRelax(body);
   else if(adminTab==="bm") adminSecurity(body);
   else adminHelp(body);
 }
@@ -5302,6 +5578,58 @@ function adminSettings(el){
       toast("Đã lưu lên hệ thống"); }catch(e){ toast("Lỗi lưu: "+(e&&e.code||"")); } }
     else toast("Không có kết nối dữ liệu - cài đặt chỉ áp dụng phiên này");
     renderFooterContact();
+  };
+}
+/* Quản trị Góc thư giãn (17/11/2026): bật/tắt, số phút mỗi lượt và phút nghỉ (settings/main.relax), số liệu 7 ngày, mở lại lượt theo email */
+function adminRelax(el){
+  const c=Object.assign({on:true,min:15,rest:120}, S.settings.relax||{});
+  el.innerHTML=`<div class="card" style="max-width:760px">
+    <h3 style="margin-top:0">Góc thư giãn</h3>
+    <p class="note" style="margin-top:0">Ba trò chơi nhẹ (Vượt Vũ Môn, Nhất Kiếm, Thái Cực Tháp) ở mục <b>Thư giãn</b> cho tài khoản đã đăng nhập. Mỗi tài khoản một lượt tối đa theo số phút dưới đây; hết lượt hoặc tự kết thúc sớm thì phải nghỉ đủ số phút nghỉ mới chơi tiếp. Giờ tính trên máy chủ: đổi giờ máy, xóa dữ liệu trình duyệt hay đổi thiết bị đều không mở thêm lượt.</p>
+    <div class="formgrid">
+      <div class="fld"><label for="rxOnA">Trạng thái</label><select id="rxOnA"><option value="1">Mở cho học sinh</option><option value="0" ${c.on===false?"selected":""}>Tạm đóng</option></select></div>
+      <div class="fld"><label for="rxMinA">Số phút mỗi lượt (5 đến 60)</label><input id="rxMinA" inputmode="numeric" value="${esc(c.min)}"></div>
+      <div class="fld"><label for="rxRestA">Số phút nghỉ trước lượt sau (30 đến 1440)</label><input id="rxRestA" inputmode="numeric" value="${esc(c.rest)}"></div>
+    </div>
+    <div class="mrow"><button class="btn pri" id="rxSaveA" type="button">Lưu cài đặt Góc thư giãn</button></div>
+    <div class="note" id="rxSaveMsg" style="margin-top:8px"></div>
+  </div>
+  <div class="card" style="max-width:760px;margin-top:14px">
+    <div class="mrow" style="margin:0;justify-content:space-between"><h3 style="margin:0">Số liệu 7 ngày</h3><button class="btn ghost" id="rxStatA" type="button">Tải lại</button></div>
+    <div id="rxStats" class="note" style="margin-top:10px">Đang tải...</div>
+  </div>
+  <div class="card" style="max-width:760px;margin-top:14px">
+    <h3 style="margin-top:0">Mở lại lượt cho một tài khoản</h3>
+    <p class="note" style="margin-top:0">Dùng khi cần cho một học sinh chơi lại ngay (ví dụ lượt bị gián đoạn vì mất mạng). Lịch sử lượt chơi vẫn được giữ.</p>
+    <div class="mrow" style="margin-top:6px"><input id="rxEmailA" type="email" placeholder="Email tài khoản của học sinh" autocomplete="off" style="flex:1;min-width:220px"><button class="btn" id="rxResetA" type="button">Mở lại lượt</button></div>
+    <div id="rxResetOut" class="note" style="margin-top:8px"></div>
+  </div>`;
+  const say=(id,h)=>{ const e=$("#"+id); if(e) e.innerHTML=h; };
+  const day=d=>{ const p=String(d||"").split("-"); return p.length===3?p[2]+"/"+p[1]:esc(d); };
+  const stats=async()=>{ say("rxStats","Đang tải...");
+    try{ const j=await KKP.api("/relax/admin"); const rows=j.days||[], tn=rows.reduce((a,r)=>a+(r.n||0),0);
+      say("rxStats",`<p style="margin:0 0 8px">Đang trong lượt: <b>${Number(j.playing)||0}</b> tài khoản. Trong 7 ngày: <b>${tn}</b> lượt chơi. Cấu hình máy chủ đang dùng: ${j.cfg&&j.cfg.on===false?"tạm đóng":"mở"}, ${esc(j.cfg&&j.cfg.min)} phút mỗi lượt, nghỉ ${esc(j.cfg&&j.cfg.rest)} phút.</p>
+        <div class="tbwrap"><table class="tb"><thead><tr><th>Ngày</th><th>Lượt chơi</th><th>Tài khoản chơi</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${day(r.day)}</td><td>${Number(r.n)||0}</td><td>${Number(r.u)||0}</td></tr>`).join("")}</tbody></table></div>`); }
+    catch(e){ say("rxStats", e.code==="not-configured"?"Máy chủ chưa cấu hình dữ liệu (GCP_SA_KEY).":"Chưa tải được số liệu: "+KKP.err(e)); } };
+  $("#rxStatA").onclick=stats; stats();
+  $("#rxSaveA").onclick=async()=>{
+    const on=$("#rxOnA").value==="1", min=Math.round(Number($("#rxMinA").value)), rest=Math.round(Number($("#rxRestA").value));
+    if(!(min>=5&&min<=60)) return say("rxSaveMsg","Số phút mỗi lượt cần từ 5 đến 60.");
+    if(!(rest>=30&&rest<=1440)) return say("rxSaveMsg","Số phút nghỉ cần từ 30 đến 1440 (24 giờ).");
+    S.settings.relax={on,min,rest};
+    if(!S.caps.db){ toast("Không có kết nối dữ liệu - cài đặt chỉ áp dụng phiên này"); return; }
+    try{ await S.caps.db.doc("settings/main").set({relax:S.settings.relax},{merge:true}); KKR.st=null; KKR.at=0;
+      toast("Đã lưu cài đặt Góc thư giãn"); say("rxSaveMsg",`Đã lưu: ${on?"mở cho học sinh":"tạm đóng"}, ${min} phút mỗi lượt, nghỉ ${rest} phút. Lượt đang chơi giữ nguyên giờ đã cấp; lượt mới áp dụng ngay.`); stats(); }
+    catch(e){ toast("Lỗi lưu: "+(e&&e.code||"")); }
+  };
+  $("#rxResetA").onclick=async()=>{
+    const email=$("#rxEmailA").value.trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return say("rxResetOut","Email chưa đúng dạng.");
+    const b=$("#rxResetA"); b.disabled=true;
+    try{ const j=await KKP.api("/relax/admin",{op:"reset", email}); const nm=esc(j.name||email);
+      say("rxResetOut", j.was==="ready"?`Tài khoản <b>${nm}</b> đang sẵn sàng chơi, không có lượt nào cần mở lại.`:`Đã mở lại lượt cho <b>${nm}</b>${j.was==="playing"?" (lượt đang chơi đã được kết thúc)":""}. Học sinh mở lại mục Thư giãn là bắt đầu được lượt mới.`); stats(); }
+    catch(e){ say("rxResetOut", e.detail?esc(e.detail):KKP.err(e)); }
+    finally{ b.disabled=false; }
   };
 }
 let ctQ="";
