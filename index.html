@@ -812,6 +812,14 @@ ol.wz>li.done::before{background:var(--ok);color:#fff;content:"\2713"}
 .rx-st b{font-variant-numeric:tabular-nums;color:var(--navy)}
 .rx-meter{height:6px;border-radius:99px;background:var(--chip);overflow:hidden;margin:11px 0 0}
 .rx-meter i{display:block;height:100%;width:0;background:var(--navy2);border-radius:inherit;transition:width .9s linear}
+.rx-earn{margin-top:13px;padding-top:12px;border-top:1px dashed var(--line)}
+.rx-qt td{vertical-align:middle}
+.rx-qt input[type=time],.rx-qt select{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:var(--r-s);padding:7px 9px;font-size:.9rem;font-family:var(--font-b)}
+.rx-qt input[type=checkbox]{width:18px;height:18px;accent-color:var(--navy);margin:0;vertical-align:middle}
+.rx-qt input:focus,.rx-qt select:focus{border-color:var(--navy);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 35%,transparent)}
+.rx-earn p{margin:0;color:var(--fg2);font-size:.93rem;line-height:1.6}
+.rx-earn p b{color:var(--fg)}
+.rx-status .rx-earn .mrow{margin-top:10px}
 .rx-sub{margin:34px 0 12px;font-size:1.3rem}
 .rx-games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .rx-game{appearance:none;-webkit-appearance:none;font:inherit;color:inherit;text-align:left;padding:0;margin:0;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);overflow:hidden;cursor:pointer;transition:border-color .15s,box-shadow .15s}
@@ -850,6 +858,7 @@ html.rx-lock #cbFab,html.rx-lock #cbPanel,html.rx-lock .consent{display:none!imp
 .rx-endcard b{color:#0d2f2a}
 .rx-tips{list-style:none;padding:0;margin:12px 0 2px;display:grid;gap:7px}
 .rx-tips li{background:rgba(13,47,42,.07);border-radius:12px;padding:9px 12px;font-size:.93rem}
+.rx-endcard .rx-earnline{margin:12px 0 0;padding:10px 12px;border-radius:12px;border:1px dashed rgba(13,47,42,.35);font-size:.93rem}
 .rx-endcard .btn.ghost{color:#0d2f2a;border-color:rgba(13,47,42,.3)}
 @media(max-width:560px){.rx-name{display:none}.rx-tb .lab{display:none}.rx-tb{padding:7px 10px}}
 @media(prefers-reduced-motion:no-preference){.rx-time.crit{animation:rxPulse 1.1s ease-in-out infinite}}
@@ -1141,6 +1150,11 @@ function saveProgress(code){
     saveTimers[code] = setTimeout(()=>{ S.caps.db.doc("data/users/"+S.uid+"/prog-"+code).set(JSON.parse(JSON.stringify(data))).catch(()=>{});
       try{ if(typeof P!=="undefined"&&P&&P.code===code&&P.L&&P.st&&typeof TG!=="undefined"&&!S.isAdmin){ const r=TG.record(P.L,P.st); S.caps.db.doc("qrec/"+P.L.ma+"__"+S.uid).set(JSON.parse(JSON.stringify(r))).catch(()=>{}); } }catch(e){} }, 900);
   }
+}
+function saveProgressNow(code){   // ghi ngay tiến độ một sách lên đám mây (không chờ 900 ms) - dùng trước khi xin thưởng lượt thư giãn
+  const data=S.progress[code]; if(!data||S.consent==="browse"||!(S.caps.db&&S.uid)) return Promise.resolve(false);
+  LS.set("progress", S.progress);
+  return S.caps.db.doc("data/users/"+S.uid+"/prog-"+code).set(JSON.parse(JSON.stringify(data))).then(()=>true).catch(()=>false);
 }
 /* ---------- Kho Sách PDF (Bộ A) - Google Drive, đã mã hóa + đóng dấu bản quyền ---------- */
 const SACH_IDS = {"CS-AN-6":"1eoHG5YJZYPryi0lQiBVAj75I5itQ4e48","CS-AN-7":"1CCwjSaOHtuRFE8Ti9Sf_Nwx3NuGDStZx","CS-AN-8":"1vfucObjqnZmf5AJftDWWmzsDO8hZ6M_L","CS-AN-9":"1BEjQcm3NuuS2qfV8i1QqoA469oZLAHeJ","CS-CN-6":"19_mBC554rDqhdvVyOe14548AxeF9svTz","CS-CN-7":"1NRD5R_b2l_lG1WOlZytw-jOaLw4LQbrY","CS-CN-8":"1TOB7ZWyBSlNZejqC012IxLJZ8f84YWYN","CS-CN-9":"12WNb23kScdSU27swQgGQy40kYc9l8OVy","CS-DL-6":"16Z9BjTre1JwGu2HFXVfxpuSnM89zZdjh","CS-DL-7":"14ChshVzuX5gI7wXfBGh_bqL8mEZcAPVc","CS-DL-8":"1CYqU87TSMTM83zhKKFcA_8nlXZrgg3gF","CS-DL-9":"1Y-k4KxDcrJlgYxg-NMXgPxMl9c3elA8V","CS-GDCD-6":"13G6WFzLKx0jw9L1XmDkrWzgm0QqfQ96j","CS-GDCD-7":"1QwWNwlFlVyb7rEc0FWyi7B5Uw3XDPQ9G","CS-GDCD-8":"19iT_XajH4k2qdm0SCk6F1JEVwINxftPD","CS-GDCD-9":"18VAgdj2DFC236fqKECtoIfI61aWvPeaV","CS-GDTC-6":"1TzRlsKeOlLxxqPnxhRivdXY1h1Oh3iSH","CS-GDTC-7":"1j9Dv37FXoB1rSuggIbbs9weWd0pzB_dq","CS-GDTC-8":"1nY6_tf-JZ31m1Uvxp5rS-4TeEWfvD_yR","CS-GDTC-9":"1ATGuGC7d7MaCWFScLUUkClp6SGiuDbw9","CS-HDTN-6":"11Ia3Abp0RfMhYtis7Ri4hXkEbj42CgIB","CS-HDTN-7":"10Nn2U2GgZ9BnHipWIhmdqhOKfzVQfj1d","CS-HDTN-8":"1RaD2WXZ-ufOSGwFJRSLW7xNTfoC5Tq1G","CS-HDTN-9":"1-1cnv54wfmWE28S1bG3GyMyP2Oy62FYX","CS-KHTN-6":"1Vo5e-vwjGsYjUcGztCHSOaOkr1t7j2uM","CS-KHTN-7":"1qJ1dNDWxDOkJiHzURkRtoAAm8JLI67-9","CS-KHTN-8":"1u3LUG4zq_y7OXozBAlO4y0yN0QRiFKKi","CS-KHTN-9":"1Fvq4wFNYO2JbjQNOtnpXlMd_-sejAcqX","CS-LS-6":"1DN-O7KAF1HNr3aZ_C5t7i3CPf6nu-r9Z","CS-LS-7":"1-QieeQJVPMELMgX_b_L4IfaG37zcTkyf","CS-LS-8":"1CXEdSAY6AaGR9mkF4TXJNFFhMYZHqycz","CS-LS-9":"1noRyAL-cWGFB6OajosA1B5jckU9cGjwR","CS-MT-6":"1ycWFuDHelZ3rdtjNDvhvhnlh3jXzmusj","CS-MT-7":"19fxos4VwvVwAjVcG9rBnoYVi5NEIhBXj","CS-MT-8":"17AksuEOe0HzuXp03MfcgcKm2N_VjWWnO","CS-MT-9":"1jbdTDk9uV2L6U9wUzDbyEELusYYk8sGZ","CS-NV-6":"16qovfYYLOfD2X0N7Y7pu5ao4pLLVLLdt","CS-NV-7":"1ZKKGcu5Wz1V7UfGPIL1mApeZs9oDv6_S","CS-NV-8":"1BjaVqbvxqGy6Jp1n-DDA4WNuyMLRZV7H","CS-NV-9":"13c-qXDFHiskqi5Osj3MZy9vaZO6G1dAu","CS-TA-6":"11R1qlnBQZgxrdUgAqL3lreEAHOlZO24P","CS-TA-7":"1IPXFCi8VOCk107OZOqLFmtynPm2Gdkm_","CS-TA-8":"1C-jD-5cMensfg9kjNeBW6p__XV2m8X60","CS-TA-9":"1rZdAiQPP-eYrnwhZ8fKKqCA5m048y7wE","CS-TIN-6":"1gRpfSBrq0OL_9U463XTqXcknU9hiwjA1","CS-TIN-7":"109grGHJj3ixWKuvlqORITMJlLJvoIt6T","CS-TIN-8":"1yTh-c9kwSI8WGKkb8qnw8uRIMYsdjo8f","CS-TIN-9":"1tJD86NrWf36YeOulj3JHhQ90PgggnZrY","CS-TOAN-6":"1T7mqe1j9buBHNpJKQ8sEW6oegljGt6M9","CS-TOAN-7":"1Y6QwS8iR4TGtj3tIiF92fX45tUUrNFDn","CS-TOAN-8":"1TV1aKUybMlS_rtpXmY2fVZx_3R9IT8PP","CS-TOAN-9":"1Cxb4w7hUpYk35IBVmvoEdwxoU8OSUsoq","DH-ANQP":"1SrngRqPSSPawc4qhQFB_2gdEjYER9Z1o","DH-BC":"1OtSjhFk5NNCgSaJYOykfuncpyPIZVxTA","DH-CNKT":"1BufCrboi7HFa3ZX4BgkDP7hg_OevrTe3","DH-DC":"1LVZtFmnXvMsVTPB1V_fUh_FmL_c1haqa","DH-DL":"1VmgO0qQ8y4CCP1urC1XCIw1ESES5ES1r","DH-DVXH":"1Y8IuGFSn6J3X7A5NOULudUqiAX21XN5Q","DH-GD":"13GRlgAEznaHuA2mO-VJuRoB-HWtY_axo","DH-IT":"1c5Ycq0z02K7KjZ-HAlW4qeUtCjMca2Dp","DH-KD":"12-Jin-f7Ucb_tMsGcM0bkVE8BXrzhiZk","DH-KT":"1fJjfL9SOIq3Pdc3PCSn0h4FUTG0QcV1m","DH-KTXD":"1jAK9xooKWCSRsKlCpFr81XrfMZrYpugH","DH-MT":"1V-k1hDEh7pjSBR4vRMQ9C3wABXo5WNPl","DH-NL":"1x2haIC0VSH8KQYZAJyJudkAx0p--Leam","DH-NT":"1X9WaiA87EbQPJkj_V8snlQbHD3IG8SN7","DH-NV":"1ZQfbvv3mn7QrhCOChwiRRU1hQxZ1BOEF","DH-PL":"1aZbQKh8mtCLitIFth3m96HzxOuZuH1lI","DH-SK":"1QysF12751ObN9VUQ4SbgjUUCDMGOHulx","DH-SS":"1j85RLdnYFRF5Elpk_qAkekwaKCbLsu8R","DH-SXCB":"1CFmYr6PwWIgFx-cEqJzHKEIdeZ3Akdu-","DH-TK":"1DwF03xJZ4EcLkJIL5mOWYAjGkzUV8lO0","DH-TN":"1w7g8JTnoHD5ow0ATn-7fS1JmlnAgzHVb","DH-TY":"1AG7R5JbizcxV5RSIZcTIP3LKf1xG1KrR","DH-VT":"1kTQp4d72ebNyAX5qOTAmpo7CGLdyNXYP","DH-XH":"1HBzJLzlhO4GzWA48xzgR_2TM0Oe3-xIH","MN-NN-34":"1bHlHIiJ0YtvzEbtZWa5K6-tpknh9e7l0","MN-NN-45":"1-BiePVJ3wNe-kfIVlmIN6jdSSE4rrhxn","MN-NN-56":"1EBTcqpHCBIPCpHx2Te6Pbh2OAGyAi-k1","MN-NN-NT":"1AsxQgLtHFu_YXKA_ya4FjfyOK4z7K5u0","MN-NT-34":"1yJDrF2W9UatCLcPcUslN7PgxVOlWkBS0","MN-NT-45":"1HwMdYDHLWCQ4SQ-Tf8beSqh27F-yp8D5","MN-NT-56":"1NNJg8hr_Zfx6eQTd20yNmFpL7sK8X34A","MN-NT-NT":"1oOhTHNgsnlKhcGC5CovvfNLBLXB08P3b","MN-TC-34":"1Q-cOiJBB1HgAf6T5dHDKYReAsVrPVJMp","MN-TC-45":"1jLR5_eVMkjzAN20k1ATfxx2iZ065Bqui","MN-TC-56":"1oHxc3iXBXHE5I3cpu2VqKD9WerKI29NC","MN-TC-NT":"1a6nDH52YS5HMf9FQQF1e0akUim_V6CT2","MN-TM-34":"1TpltS-g63Y_0v5Y6tJRMfw4ciyBiBfAu","MN-TM-45":"1aQ0WlvQeI43ewSkjpIyPbwqA4J4pXbX5","MN-TM-56":"1e2rMZ7JuHlcUJKQrokPM3GsceLK8UM9V","MN-TM-NT":"1fYMIoaakOZngImYVwXzmOMnQ7x_3zgmc","MN-TX-34":"1TVabcf9jorLs4y8SlvLayJMy5uXAadcG","MN-TX-45":"1ZJ6oMHC5XXDDUwxXZNWsyvv7g0UFgUYy","MN-TX-56":"1GoumnUvwL_Wkr9cbnrF47bD92sTQ2P9O","MN-TX-NT":"1-NZEyZOp5M5JDcE00oHPhvB5dJp5UZER","NC-CS-6":"1ZNCUCvDaROMfZhy_EGU92OByOBdZNhCl","NC-CS-7":"1NoeoFVuYDzy47aEIIseI-UQI6i01voAG","NC-CS-8":"1zIpnm1CYtiUzbky80nTuxmKsmja-0-zK","NC-CS-9":"1IczBZskGL959SalNpOhHMuS4aIrzlSSh","NC-DH-1":"18ryuduYX5W79NYbvTTG2u-yq2hycucmh","NC-DH-2":"1CUtdn9dIdBBUSmIC086d6IA4M0_yoCF7","NC-DH-3":"1tOJ7ATulGVCL-g_LpTBsGNnHg86OYvX1","NC-DH-4":"1SlOgbbkKRLzA90nC_rOyZ-BDxTQqGNdR","NC-MN":"1b0x7rT9elYa4j119Rmt4ymKdv_hCuA4G","NC-PT-10":"1faot3nC7zfHLu7wRF-aPATYa32wNF5Q8","NC-PT-11":"1RZ3voAT4DtiUnd7oJ_FCq91S4VqFa3T9","NC-PT-12":"1mvctZZbjfTt2sP2Zh4TweBYYJWkkaYzK","NC-TH-1":"1msAZsKXMCwhpkxSESxdIP0nUn_xC7XYs","NC-TH-2":"1f4OHhKgVj_26xoKSdDXQXjPsWURaDgh6","NC-TH-3":"1mDuj0XuNU7gjMT22kwSefrUMBRNhJn8e","NC-TH-4":"1VYTF7HcKpIoV5hn_418-QiEJQ17wXMOY","NC-TH-5":"1QX2mryRZVTm3_4WO2hQJe9cyNwkmMavJ","NC-THS":"1bdI21wFF1HL1PuVoCBlN7N53452UQJ6W","NC-TS":"1oqJ5_UZlaRCrvgn8ZVcbC-TsdaA6ePsI","PT-AN-10":"1rIMDFTyvzKBZmAjR8uHL0aWup9kMtHPJ","PT-AN-11":"18VJ94Kkx5m15-YW5x6WLWbGH-f9XwR6r","PT-AN-12":"1cNjtpcFnb4a6Pv_HVdHUDUL36EJGhIS0","PT-CN-10":"1LHN_ecCB-YG_rFNqDcs6-E4uzUP4Pivg","PT-CN-11":"1j_jbJyvnav73rK-qyGoetE0kleG6KkDK","PT-CN-12":"1Fezw9xakWS0kYFUyT335eAyviRdRHwS1","PT-DL-10":"1oVlBzq8eh9XS0wbYNmVZYIOltTjoLOWh","PT-DL-11":"12LiOUOpxDL3oU76H9Qf0BwJYxJmxlHhs","PT-DL-12":"1cf_hP1vkl-UqnnhjNtjL_rMPhs7-4bpC","PT-GDTC-10":"1XFoeHo7NBoOeje_hsjtZb0A_RKhgwdQF","PT-GDTC-11":"1yD5whzC6x6-cm9-GKMtt8bosDcDTAPr4","PT-GDTC-12":"1GG0YC0KedHRZuTVfkGecAeJEEic0n-lv","PT-HDTN-10":"1LvMxcp1NM-5b3S_9L5H-06UgMIeC5hd5","PT-HDTN-11":"1NpmowtXG5mgIvJH2JcExykPgU1NHR9zN","PT-HDTN-12":"1QfWRNthpZ8klVw9UVore6QYimT1_XD79","PT-HOA-10":"1jlHjhq5UHRXktFrUoIIn8f8dD4UvDtyK","PT-HOA-11":"1CIygeZiGYQ5CCblBeF-DE79vY9Gx7LTl","PT-HOA-12":"1lyQmbZxAAjrXzw4asuGDlPftLCbhWTX6","PT-KTPL-10":"1o8o65ThGRVpVkJlfiwbULTdZLL9dl4Ps","PT-KTPL-11":"1QwbFq0Jf_vZy0l1_EMULxYuC3SXjRRCW","PT-KTPL-12":"1uorhjsFU0GT0DphpI-D_tE72QjuTP6Jz","PT-LI-10":"1GIiNLQUNNqSr62kpQoUa_qRaUPLHPPqh","PT-LI-11":"16dSCjEmumRWTYDhYROs5-QkEfFlt2uIa","PT-LI-12":"10bGdObFGJk7utlzputtcPJMV3h3wDE0G","PT-LS-10":"1r5ZnazNi_VsKq8xLm3iWvKp_3dI9hHHX","PT-LS-11":"1Tz4_1ElUsRdWW0rI8eLuge-kR_25gI4B","PT-LS-12":"1f_xmaRANJ1yqGG24U1Xd0NjT1PMS6Z7w","PT-MT-10":"1C-LqvyjDVKopqpRmyVgB6Bv5P0WPRdyK","PT-MT-11":"1tG4tQbi6F_aMJO9KqZw8r7xn46JTd1Ef","PT-MT-12":"1MMcWO0kM1bX5JnjGR-Fg1VDdjIiufiCq","PT-NV-10":"1p0Uvg17EwD3ZTQuqO1BYu4Scph8JuQuJ","PT-NV-11":"1wu_-qKS6zmOVfkeo_PxPe2vZ5EOGKoHJ","PT-NV-12":"1JFJpHdRjT9sZV4o8RQ6FgnzLGONyC3zE","PT-QPAN-10":"1Vcenan3RrNc4u2QQNWBDyiugCnWTBMP3","PT-QPAN-11":"1YlWnFeHfbqGPFR4SpXI6slTbVoYF7gKB","PT-QPAN-12":"1HMVLVY0l0tI94xc-tLn6IH8qVmfoV4de","PT-SINH-10":"1kGGNQJQd_SKOWXWrYzs5D8BVo5aTv6iS","PT-SINH-11":"1tK4M7AZI23TWkFhmJ5A4Eel3Ct5clJeu","PT-SINH-12":"1KOgwCssGRkyKSN_ha-XDy8HPLMan8S-A","PT-TA-10":"1nTjso63YFQ6eDKcH5W4riljoFJyHzyDk","PT-TA-11":"1wWYxWlqV9IJeoVvcOsaa5AO3quIkVcf6","PT-TA-12":"1YyMehJNbzeG7qGFhOB4j5EkT-37BV7A1","PT-TIN-10":"1hx5fQqQP-pN-2d5O1RNv12V9eL--s_ez","PT-TIN-11":"1sVLy1Wl6Eu-LMBA4PKX7enG3rwZQ0JbQ","PT-TIN-12":"1iGnFVfTJNFP6lgPSAJWH3owtJxGwI1DP","PT-TOAN-10":"1TAiYFl6DvrJCRAkWHni69SPkwlfRN6lq","PT-TOAN-11":"1mZuIc_nPWwa2awE0YwExfZKuy9vFDWeD","PT-TOAN-12":"1tGhIdzYBgCryFDQttDAmP0Sh8RQNlTWg","TH-AN-1":"1sGprhTo-xbvPkC-kto4f8jintQl_e_cp","TH-AN-2":"1349lT0WXQU44JHb4KcgF_nH58t6QQArW","TH-AN-3":"1w7gpAcyB0Dfl9ny-1tlhJ1qlig8WJqcp","TH-AN-4":"1MDuCu7sFGskLQ3wvlR8AnDL3pvash1y2","TH-AN-5":"1GWdDYpsSqm90ZD-KQ67clOP7qnOPvxVM","TH-CN-3":"1YwzU7IMYCjIm229-N1RJfT33Bzs6rzf-","TH-CN-4":"1udOU32jIKopA1iYhJCdxXazk16MdKMds","TH-CN-5":"1DPMgSXPh6-enCH4yefMUdPOzrBL7kKv5","TH-DD-1":"1aDz0r5cOeBGQUDILPe-sUfxIqPFlLs0n","TH-DD-2":"1pzGxbHN4uRsynaTEDKG_ZG8jgKcN0K1G","TH-DD-3":"1p8cTDAIpGGZvNZ-xcVmmWsc6Um-ZKTQt","TH-DD-4":"14rHHr_M5avZcr-7FJVLwqUGUYvdizZ5T","TH-DD-5":"1eREJ9kfGYnmlDxVNGZQX-GMQpNH73n7l","TH-GDTC-1":"18JH3me7T4HY2N7FBalr2BHyUmQD8Ji09","TH-GDTC-2":"1pC2duYGfOQe0VGRWOGD38Tdu-WaFHhqA","TH-GDTC-3":"1yHJZPi7T510MpfrwfGWvWCQfRlGE3xwX","TH-GDTC-4":"1nKmM39ZtAkA6WbpJWMnDzsSWuTNYDkRO","TH-GDTC-5":"1ef2fIRn_5WYhEiapoPrc3yo4iTH5yVaM","TH-HDTN-1":"1xCdLIfObr3zyyY5Yt1Tvx2aTAcxKEk17","TH-HDTN-2":"1yrGZDkuPhaqMQWEMF8z7ToRLpaEHlq8v","TH-HDTN-3":"1e7Ka-eT2zznrcEd70YTdpCcOBHpBljw9","TH-HDTN-4":"1Iqs8fx1bGKDCTFG_S0hS8jRxZm_Lm4Vj","TH-HDTN-5":"1YWOpvS_q3OUHWYDsvB0nBre-IgavTyIS","TH-KH-4":"1SfueYVKEuE895AlaGrMWMsbyu3ZSBb2I","TH-KH-5":"1ph_-sT5X9qeRWks2K6R87rIBw-TKFb8M","TH-LSDL-4":"1fj9bx-lH_Yd-alAHv8hVR5fA9LaooRba","TH-LSDL-5":"12An7CEibMy1u7YNUMWyFiXQZkF0Ca3CS","TH-MT-1":"1M6sKVTalUBmKc90clIvnxzg4yfn8rEwF","TH-MT-2":"10vfiRTA2yDiGimdyqU3HC-gGC6roMrNv","TH-MT-3":"1H1Iz4nWzFRTz3osiGFEOnITOc1_fJ75A","TH-MT-4":"1GkedxFk_nE4OOSON8i0-aAtewMmXzk_W","TH-MT-5":"1UyD3IN52iqdRqBJgZUjWs32B2nPWvV-E","TH-TA-3":"1NXIOYNGc9W9NoA44oy8TvpI_k-XnPbWe","TH-TA-4":"1z97TGxeiQbczL6EOPpVHuBYjqBcPfkNZ","TH-TA-5":"1eVfPqKLMcHK4Jqflu_mXCZwzzNQhv45o","TH-TIN-3":"1oukOnoK985RTc7TqKRM1gEXtfkB4_nBh","TH-TIN-4":"1CxSI3rDwSK0kxrqh_eVIPuZbMp3b2iDS","TH-TIN-5":"1oiKO8jx-wClf0itutPmLNdFZWDSX1Ce5","TH-TNXH-1":"1Cx5Ui4aHQc_8luppKVrBKTNmPmLhu-BJ","TH-TNXH-2":"1VZl1XKKBTuQMJOR__CCrVIzVgBeEuRc6","TH-TNXH-3":"1Z_25OfwBPI-eRUCh9ew0U55EHxopvR9e","TH-TOAN-1":"1LJ7KHqZPwwdaaweX1ylImXOpG7XORnlB","TH-TOAN-2":"1ESdn4yV8gK7VQCjU5CKs_DIsV6hG_WN7","TH-TOAN-3":"1UZvABee9BgX4VulwZ4hiwK4_E83migW5","TH-TOAN-4":"1i2dmnsew3RC_tun5VuEryvnEPdLlVnjF","TH-TOAN-5":"1LMqMsYuo4CSCzyKervmeYa-2PWFlPX_h","TH-TV-1":"1g-VFaqBjcADyNIu9ivk4eqNueiRzsA8r","TH-TV-2":"1zrpG3XpIUrux8Gj4GGSZJA-sHdbPp55k","TH-TV-3":"1j9NExygAVGRt9Nrzf3Oo1HVZZ9-FIdkm","TH-TV-4":"1gCQ-jRUYhMlVpgwwzBNRiQ6kU3eTmLHc","TH-TV-5":"1P6gusJ15E1DLdGqCuiZ8_6eTfOFtQeiD","THS-NC":"1odNfMJUgWKdF5kQZmu_aJZTkKgNWoasU","THS-PP":"1bceph-DXeTNxIxMfMjDtU1z83Kq6Kg0t","THS-UD":"1HVoCsBaFNqbVDVOJ-H1IO7x7IjFiNBvX","TS-CB":"1pkmh78e9lElyOEOgMuvFHnwZdcu3BbIl","TS-CT":"1xKu0vwbm77UV3y3P6OIvGsOcTCZ0bkuY","TS-NL":"1Mx0WUlAB_6Z1TEQRAACg2K8LBZC-gP_M"}; // 220 mã sách → id tệp Drive (nhúng lúc build, admin ghi đè được qua content.sachUrl)
@@ -1942,7 +1956,33 @@ const KKR = {
   },
   now(){ return Date.now()+KKR.off; },
   member(){ return !!(S.uid&&S.mode==="firebase"); },
-  cfg(){ const c=(KKR.st&&KKR.st.cfg)||(S.settings&&S.settings.relax)||{}; return {on:c.on!==false, min:Number(c.min)||15, rest:Number(c.rest)||120}; },
+  DEFQ:[{name:"Giờ ngủ",on:true,from:"22:00",to:"06:00",days:"0123456"},{name:"Giờ học buổi sáng",on:true,from:"07:00",to:"11:30",days:"12345"},
+    {name:"Giờ học buổi chiều",on:true,from:"13:30",to:"17:00",days:"12345"},{name:"Giờ tự học buổi tối",on:false,from:"19:30",to:"21:00",days:"12345"}],
+  hm(x){ const m=/^([01]\d|2[0-3]):([0-5]\d)$/.exec(String(x||"")); return m?Number(m[1])*60+Number(m[2]):null; },
+  normQ(q){ if(!Array.isArray(q)) return null; const out=[];
+    q.slice(0,6).forEach(w=>{ if(!w||typeof w!=="object"||w.on===false) return; const f=KKR.hm(w.from), t=KKR.hm(w.to), days=[...new Set(String(w.days==null?"0123456":w.days).replace(/[^0-6]/g,""))].sort().join("");
+      if(f==null||t==null||f===t||!days) return; out.push({name:String(w.name||"Giờ đóng cửa").slice(0,30), from:w.from, to:w.to, days, f, t}); });
+    return out; },
+  cfg(){   // cấu hình máy chủ trả về (đã kiểm tra) ưu tiên; chưa có thì dùng settings/main.relax với cùng giới hạn như máy chủ
+    const sv=KKR.st&&KKR.st.cfg, c=(sv&&typeof sv==="object")?sv:((S.settings&&S.settings.relax)||{});
+    const pick=(v,lo,hi,d)=>{ const x=Math.round(Number(v)); return v!==""&&v!=null&&Number.isFinite(x)&&x>=lo&&x<=hi?x:d; };
+    return {on:c.on!==false, min:pick(c.min,5,60,15), rest:pick(c.rest,30,1440,120), daily:pick(c.daily,0,10,3), reward:c.reward!==false, quiet:KKR.normQ(c.quiet)||KKR.normQ(KKR.DEFQ)}; },
+  qAt(ms){   // khung giờ đóng đang bao thời điểm ms (giờ Việt Nam): {w, end} hoặc null - cùng cách tính với máy chủ
+    const q=KKR.cfg().quiet||[]; if(!q.length) return null; const V=7*3600e3, D=864e5, mid=Math.floor((ms+V)/D)*D-V, mins=(ms-mid)/60000, dow=String(new Date(ms+V).getUTCDay()), prev=String((Number(dow)+6)%7);
+    let best=null;
+    for(const w of q){ let end=null;
+      if(w.f<w.t){ if(w.days.includes(dow)&&mins>=w.f&&mins<w.t) end=mid+w.t*60000; }
+      else if(w.days.includes(dow)&&mins>=w.f) end=mid+D+w.t*60000;
+      else if(w.days.includes(prev)&&mins<w.t) end=mid+w.t*60000;
+      if(end!=null&&(!best||end>best.end)) best={w,end}; }
+    return best; },
+  openFrom(ms){ let t=ms; for(let i=0;i<12;i++){ const q=KKR.qAt(t); if(!q) return t; t=q.end; } return t; },
+  reopenAfter(t){   // lúc mở lại thật sự nếu lượt kết thúc ở thời điểm nghỉ xong t: tính cả giới hạn lượt trong ngày và giờ đóng cửa
+    const c=KKR.cfg(), s=KKR.st||{}, V=7*3600e3, D=864e5, capped=!!(s.capped||(c.daily>0&&Number(s.dayN)>=c.daily));
+    return KKR.openFrom(capped?Math.max(t, Math.floor((KKR.now()+V)/D)*D-V+D):t); },
+  daysTxt(d){ d=String(d||""); const M={"0123456":"hằng ngày","12345":"thứ Hai đến thứ Sáu","123456":"thứ Hai đến thứ Bảy","06":"thứ Bảy và Chủ nhật"}; if(M[d]) return M[d];
+    const N=["Chủ nhật","thứ Hai","thứ Ba","thứ Tư","thứ Năm","thứ Sáu","thứ Bảy"]; return [..."1234560"].filter(x=>d.includes(x)).map(x=>N[x]).join(", "); },
+  low(x, d){ return String(x||d||"").toLowerCase(); },
   set(j){ if(!j) return; KKR.st=j; if(Number(j.now)>0) KKR.off=Number(j.now)-Date.now(); KKR.at=Date.now(); },
   async load(force){
     if(!KKR.member()){ KKR.st=null; return null; }
@@ -1957,7 +1997,10 @@ const KKR = {
     const n=KKR.now();
     if(s.state==="playing"&&n<s.endsAt) return "playing";
     if((s.state==="playing"||s.state==="rest")&&n<s.nextAt) return "rest";
-    return KKR.cfg().on?"ready":"off";
+    if(!KKR.cfg().on) return "off";
+    if(s.state==="daily"||s.state==="quiet") return n<s.until?s.state:"stale";
+    if(s.state==="ready") return Number(s.cut)&&n>=Number(s.cut)-120e3?"stale":"ready";
+    return "stale";   // vừa hết lượt / hết nghỉ / hết giờ đóng: hỏi lại máy chủ
   },
   mmss(ms){ const t=Math.max(0,Math.ceil(ms/1000)); return String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0"); },
   hhmm(ms){ const d=new Date(ms); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); },
@@ -1966,19 +2009,33 @@ const KKR = {
   dur(ms){ const m=Math.max(1,Math.ceil(ms/60000)), h=Math.floor(m/60), r=m%60; return h?h+" giờ"+(r?" "+r+" phút":""):r+" phút"; },
   restTxt(){ return KKR.dur(KKR.cfg().rest*60000); },
   statusHTML(ph){
-    const c=KKR.cfg(), s=KKR.st||{}, n=KKR.now();
+    const c=KKR.cfg(), s=KKR.st||{}, n=KKR.now(), learnBtn=`<div class="mrow"><button class="btn pri" id="rxLearn" type="button">Quay lại học</button></div>`;
     if(ph==="guest") return `<p class="rx-st">Đăng nhập để chơi. Lượt chơi tính theo tài khoản và dùng chung trên mọi thiết bị.</p><div class="mrow"><button class="btn pri" id="rxLogin" type="button">Đăng nhập</button></div>`;
-    if(ph==="loading") return `<p class="rx-st">Đang kiểm tra lượt chơi của bạn...</p>`;
+    if(ph==="loading"||ph==="stale") return `<p class="rx-st">Đang kiểm tra lượt chơi của bạn...</p>`;
     if(ph==="error") return `<p class="rx-st">Chưa kiểm tra được lượt chơi. Kiểm tra kết nối mạng rồi thử lại.</p><div class="mrow"><button class="btn" id="rxRetry" type="button">Thử lại</button></div>`;
     if(ph==="off") return `<p class="rx-st">Góc thư giãn đang tạm đóng. Hãy quay lại sau nhé.</p>`;
     if(ph==="playing") return `<p class="rx-st">Bạn đang trong lượt, còn <b data-rx="left">${KKR.mmss(s.endsAt-n)}</b>.</p>
       <div class="rx-meter" aria-hidden="true"><i data-rx="lbar" style="width:${Math.round(100*(s.endsAt-n)/Math.max(1,s.endsAt-s.startAt))}%"></i></div>
       <div class="mrow"><button class="btn pri" id="rxResume" type="button">Vào chơi tiếp</button><button class="btn ghost" id="rxStopBtn" type="button">Kết thúc lượt</button></div>`;
-    if(ph==="rest"){ const from=s.endedAt||s.endsAt||n; return `<p class="rx-st">Đang nghỉ giữa hai lượt. Góc thư giãn mở lại lúc <b>${esc(KKR.when(s.nextAt))}</b>, còn <b data-rx="wait">${KKR.dur(s.nextAt-n)}</b>.</p>
-      <div class="rx-meter" aria-hidden="true"><i data-rx="wbar" style="width:${Math.round(100*(1-(s.nextAt-n)/Math.max(1,s.nextAt-from)))}%"></i></div>
-      <p class="note" style="margin:10px 0 0">Trong lúc chờ, học tiếp một bài ngắn hoặc ôn Sổ ôn tập nhé.</p>
-      <div class="mrow"><button class="btn pri" id="rxLearn" type="button">Quay lại học</button></div>`; }
-    return `<p class="rx-st">Sẵn sàng. Mỗi lượt tối đa ${c.min} phút, tính từ lúc bấm bắt đầu.</p><div class="mrow"><button class="btn pri" id="rxStart" type="button">Bắt đầu lượt ${c.min} phút</button></div>`;
+    if(ph==="quiet"){ const why=esc(KKR.low(s.why,"giờ đóng cửa"));
+      return `<p class="rx-st">${s.soon?`Sắp đến ${why} nên Góc thư giãn không mở lượt mới.`:`Góc thư giãn đóng trong ${why}.`} Mở lại lúc <b>${esc(KKR.when(s.until))}</b>.</p>
+      <p class="note" style="margin:8px 0 0">${/ngủ/.test(why)?"Ngủ đủ giấc giúp em nhớ bài lâu hơn. Hẹn em ngày mai nhé.":/học/.test(why)?"Giờ học dành cho học. Hẹn em sau giờ học nhé.":"Hẹn em lúc mở cửa nhé."}</p>${learnBtn}`; }
+    if(ph==="daily") return `<p class="rx-st">Hôm nay em đã chơi đủ <b>${c.daily} lượt</b>. Góc thư giãn mở lại lúc <b>${esc(KKR.when(s.until))}</b>.</p>
+      <p class="note" style="margin:8px 0 0">Số lượt tính lại mỗi ngày. Trong lúc chờ, học tiếp hoặc ôn Sổ ôn tập nhé.</p>${learnBtn}`;
+    if(ph==="rest"){
+      const op=Number(s.openAt)||s.nextAt, from=s.endedAt||s.endsAt||n, cap=!!s.capped&&c.daily>0;
+      const head=`<p class="rx-st">${cap?`Hôm nay em đã chơi đủ ${c.daily} lượt.`:"Đang nghỉ giữa hai lượt."} Góc thư giãn mở lại lúc <b>${esc(KKR.when(op))}</b>, còn <b data-rx="wait">${KKR.dur(op-n)}</b>.</p>
+      <div class="rx-meter" aria-hidden="true"><i data-rx="wbar" style="width:${Math.round(100*(1-(op-n)/Math.max(1,op-from)))}%"></i></div>`;
+      if(!s.rewardable) return head+`<p class="note" style="margin:10px 0 0">Trong lúc chờ, học tiếp một bài ngắn hoặc ôn Sổ ôn tập nhé.</p>${learnBtn}`;
+      const k=typeof krStats==="function"?krStats():{due:0,active:0}, early=Number(s.early)||n;
+      const rv=k.due>0?`<button class="btn" id="rxReview" data-early="0" type="button">Ôn ${Math.min(k.due,15)} câu đến hạn</button>`:(k.active>=5?`<button class="btn" id="rxReview" data-early="1" type="button">Ôn sớm 5 câu</button>`:"");
+      return head+`<div class="rx-earn"><p><b>Học xong là được chơi sớm.</b> Hoàn thành một bài học mới, hoặc ôn Sổ ôn tập (ít nhất 5 câu, hoặc hết các câu đến hạn), Góc thư giãn mở lại ${early<=n+60e3?"ngay":`lúc ${esc(KKR.when(early))}, khi hết ${esc(KKR.low(s.quietNow,"giờ đóng cửa"))}`}.</p>
+      <div class="mrow"><button class="btn pri" id="rxLearn" type="button">Học một bài</button>${rv}</div></div>`;
+    }
+    const left=c.daily>0?Math.max(0,c.daily-(Number(s.dayN)||0)):null, cut=Number(s.cut)||0;
+    return `<p class="rx-st">Sẵn sàng. Mỗi lượt tối đa ${c.min} phút, tính từ lúc bấm bắt đầu.${left!=null?` Hôm nay em còn <b>${left}/${c.daily}</b> lượt.`:""}</p>
+      ${cut?`<p class="note" style="margin:8px 0 0">Lượt này kết thúc lúc <b>${esc(KKR.hhmm(cut))}</b> vì đến ${esc(KKR.low(s.cutWhy,"giờ đóng cửa"))}.</p>`:""}
+      <div class="mrow"><button class="btn pri" id="rxStart" type="button">${cut?`Bắt đầu lượt (đến ${esc(KKR.hhmm(cut))})`:`Bắt đầu lượt ${c.min} phút`}</button></div>`;
   },
   bindView(v){
     if(!v) return; const b=(id,fn)=>{ const e=v.querySelector("#"+id); if(e) e.onclick=fn; };
@@ -1988,11 +2045,15 @@ const KKR = {
     b("rxResume", ()=>KKR.open());
     b("rxStopBtn", ()=>KKR.askStop());
     b("rxLearn", ()=>go({name:"dash"}));
+    const rv=v.querySelector("#rxReview"); if(rv) rv.onclick=()=>krStart(rv.dataset.early==="1");
     const ph=KKR.phase(), can=ph==="ready"||ph==="playing"||ph==="guest";
     v.querySelectorAll(".rx-game").forEach(el=>{ el.setAttribute("aria-disabled", String(!can)); el.onclick=()=>KKR.pick(el.dataset.g); });
   },
-  rulesHTML(){ const c=KKR.cfg(), r=KKR.restTxt(); return `<div><b>${c.min} phút mỗi lượt</b>Tính từ lúc bấm bắt đầu, kể cả khi tạm rời trang.</div>
-    <div><b>Nghỉ ${r} giữa hai lượt</b>Hết giờ hoặc tự kết thúc sớm thì ${r} sau mở lại.</div>
+  rulesHTML(){ const c=KKR.cfg(), r=KKR.restTxt(), q=(c.quiet||[]).slice().sort((x,y)=>x.f-y.f);
+    return `<div><b>${c.min} phút mỗi lượt</b>Tính từ lúc bấm bắt đầu, kể cả khi tạm rời trang.</div>
+    <div><b>${c.daily>0?`Tối đa ${c.daily} lượt mỗi ngày, nghỉ ${r} giữa hai lượt`:`Nghỉ ${r} giữa hai lượt`}</b>Hết giờ hoặc tự kết thúc sớm thì ${r} sau mở lại${c.daily>0?"; số lượt tính lại mỗi ngày":""}.</div>
+    ${c.reward?`<div><b>Học xong là được chơi sớm</b>Đang nghỉ mà hoàn thành một bài học mới, hoặc ôn Sổ ôn tập (ít nhất 5 câu, hoặc hết các câu đến hạn), thì mở lại ngay; không vượt số lượt mỗi ngày và giờ đóng cửa.</div>`:""}
+    ${q.length?`<div><b>Giờ đóng cửa${new Date().getTimezoneOffset()!==-420?" (giờ Việt Nam)":""}</b>${q.map(w=>`${esc(w.name)}: ${esc(w.from)}-${esc(w.to)}, ${esc(KKR.daysTxt(w.days))}`).join("<br>")}</div>`:""}
     <div><b>Một lượt cho mọi thiết bị</b>Lượt tính theo tài khoản; đổi máy hay đổi giờ máy cũng không mở thêm lượt.</div>
     <div><b>Thành tích nằm trên máy của bạn</b>Điểm kỷ lục lưu trong trình duyệt, không gửi đi đâu.</div>`; },
   refreshStatus(){ const box=$("#rxStatus"); if(!box) return; const ph=KKR.phase(); box.dataset.ph=ph; box.innerHTML=KKR.statusHTML(ph);
@@ -2001,10 +2062,13 @@ const KKR = {
     clearInterval(KKR.viewT);
     KKR.viewT=setInterval(()=>{
       const box=$("#rxStatus"); if(S.route.name!=="thugian"||!box){ clearInterval(KKR.viewT); return; }
-      const ph=KKR.phase(); if(box.dataset.ph!==ph) return KKR.refreshStatus();
+      const ph=KKR.phase(), age=Date.now()-KKR.at;
+      if(!KKR.busy&&!KKR.ld&&KKR.member()&&((ph==="stale"&&age>4000)||(!document.hidden&&age>300000&&ph!=="loading"))){   // hết mốc thời gian, hoặc 5 phút: hỏi lại máy chủ
+        KKR.ld=true; KKR.load(true).finally(()=>{ KKR.ld=false; if(S.route.name==="thugian") KKR.refreshStatus(); }); }
+      if(box.dataset.ph!==ph) return KKR.refreshStatus();
       const s=KKR.st||{}, n=KKR.now(), q=k=>box.querySelector('[data-rx="'+k+'"]'), bar=(k,p)=>{ const e=q(k); if(e) e.style.width=Math.max(0,Math.min(100,p))+"%"; };
       if(ph==="playing"){ const e=q("left"); if(e) e.textContent=KKR.mmss(s.endsAt-n); bar("lbar",100*(s.endsAt-n)/Math.max(1,s.endsAt-s.startAt)); }
-      if(ph==="rest"){ const e=q("wait"); if(e) e.textContent=KKR.dur(s.nextAt-n); const from=s.endedAt||s.endsAt||n; bar("wbar",100*(1-(s.nextAt-n)/Math.max(1,s.nextAt-from))); }
+      if(ph==="rest"){ const op=Number(s.openAt)||s.nextAt, e=q("wait"); if(e) e.textContent=KKR.dur(op-n); const from=s.endedAt||s.endsAt||n; bar("wbar",100*(1-(op-n)/Math.max(1,op-from))); }
     }, 1000);
   },
   pick(g){
@@ -2013,7 +2077,10 @@ const KKR = {
     if(ph==="guest") return openLogin();
     if(ph==="playing") return KKR.open();
     if(ph==="ready") return KKR.start(g);
-    if(ph==="rest") return toast("Góc thư giãn mở lại lúc "+KKR.when(KKR.st.nextAt));
+    const s=KKR.st||{};
+    if(ph==="rest") return toast("Góc thư giãn mở lại lúc "+KKR.when(Number(s.openAt)||s.nextAt));
+    if(ph==="daily") return toast("Hôm nay em đã chơi đủ "+KKR.cfg().daily+" lượt. Mở lại lúc "+KKR.when(s.until));
+    if(ph==="quiet") return toast("Góc thư giãn đang đóng ("+KKR.low(s.why,"giờ đóng cửa")+"), mở lại lúc "+KKR.when(s.until));
     if(ph==="off") return toast("Góc thư giãn đang tạm đóng");
     toast("Đang kiểm tra lượt chơi, thử lại sau giây lát");
   },
@@ -2023,7 +2090,7 @@ const KKR = {
     KKR.busy=true; const btn=$("#rxStart"); if(btn){ btn.disabled=true; btn.textContent="Đang mở lượt..."; }
     try{ const j=await KKP.api("/relax/start", {}); KKR.set(j); if(j.started) kkTrack("thu_gian_bat_dau", {tro:g||""}); KKR.open(); }
     catch(e){
-      if(e.code==="relax-rest"&&e.data&&e.data.nextAt){ const {error, detail, ...st}=e.data; KKR.set(st); toast("Góc thư giãn mở lại lúc "+KKR.when(st.nextAt)); }
+      if(/^relax-(rest|daily|quiet)$/.test(e.code||"")&&e.data&&e.data.state){ const {error, detail, ...st}=e.data; KKR.set(st); toast(detail||"Góc thư giãn chưa mở lượt mới"); }
       else if(e.code==="relax-off"){ KKR.st=Object.assign({}, KKR.st||{}, {cfg:Object.assign({}, KKR.cfg(), {on:false})}); toast("Góc thư giãn đang tạm đóng"); }
       else if(e.code==="auth") openLogin();
       else toast(e.code==="rate"?"Thao tác hơi nhanh, thử lại sau vài giây":"Chưa mở được lượt chơi, thử lại sau ít giây");
@@ -2068,12 +2135,16 @@ const KKR = {
     KKR.post({op:"end"}); KKR.exitFs(); kkTrack("thu_gian_het_luot", {});
     const t=$("#rxTime"); if(t){ t.textContent="Hết giờ"; t.classList.remove("warn"); t.classList.add("crit"); }
     const ex=$("#rxExit"); if(ex) ex.onclick=()=>KKR.close();
-    setTimeout(()=>{
-      const st=$("#rxStage"); if(!st||!KKR.ov) return; const s=KKR.st||{}, nx=Number(s.nextAt)||0;
+    const prev=KKR.st, ld=KKR.load(true).catch(()=>null);   // trạng thái sau lượt: giờ mở lại thật sự, có được thưởng hay không
+    setTimeout(async()=>{
+      await ld;
+      const st=$("#rxStage"); if(!st||!KKR.ov) return; const s=(KKR.st&&!KKR.st.error)?KKR.st:(prev||{}), c=KKR.cfg(), n=KKR.now();
+      const op=Number(s.openAt)||Number(s.nextAt)||Number(s.until)||0, cap=s.state==="daily"||(!!s.capped&&c.daily>0), early=Number(s.early)||n;
       st.innerHTML=`<div class="rx-end"><div class="rx-endcard" role="status">
         <h2>Hết lượt thư giãn</h2>
-        <p>${nx>KKR.now()?`Góc thư giãn mở lại lúc <b>${esc(KKR.when(nx))}</b>.`:`Bạn có thể bắt đầu lượt mới khi cần.`} Trước khi học tiếp, dành một phút cho cơ thể:</p>
+        <p>${op>n?`${cap?`Hôm nay em đã chơi đủ ${c.daily} lượt. `:""}Góc thư giãn mở lại lúc <b>${esc(KKR.when(op))}</b>.`:`Bạn có thể bắt đầu lượt mới khi cần.`} Trước khi học tiếp, dành một phút cho cơ thể:</p>
         <ul class="rx-tips"><li><b>Đứng dậy vươn vai</b>, xoay nhẹ cổ và hai vai.</li><li><b>Uống vài ngụm nước.</b></li><li><b>Nhìn ra xa 20 giây</b> để mắt được nghỉ.</li></ul>
+        ${s.rewardable&&op>n?`<p class="rx-earnline"><b>Muốn chơi sớm hơn?</b> Học xong một bài mới hoặc ôn Sổ ôn tập là Góc thư giãn mở lại ${early<=n+60e3?"ngay":"lúc "+esc(KKR.when(early))}.</p>`:""}
         <div class="mrow"><button class="btn pri" id="rxBack" type="button">Quay lại học</button><button class="btn ghost" id="rxClose" type="button">Đóng</button></div>
       </div></div>`;
       $("#rxBack").onclick=()=>{ KKR.close(); go({name:"dash"}); };
@@ -2084,7 +2155,7 @@ const KKR = {
   askExit(){
     if(KKR.ended) return KKR.close();
     KKR.post({op:"pause"});
-    const s=KKR.st||{}, left=(Number(s.endsAt)||0)-KKR.now(), re=KKR.when(KKR.now()+KKR.cfg().rest*60e3);
+    const s=KKR.st||{}, left=(Number(s.endsAt)||0)-KKR.now(), re=KKR.when(KKR.reopenAfter(KKR.now()+KKR.cfg().rest*60e3));
     modal(`<h3 style="margin-top:0">Rời Góc thư giãn?</h3>
       <p style="margin:0">Lượt của bạn còn <b>${KKR.mmss(left)}</b>.</p>
       <div class="mrow"><button class="btn pri" id="rxKeep" type="button">Chơi tiếp</button><button class="btn" id="rxLeave" type="button">Tạm rời, giữ lượt</button><button class="btn ghost" id="rxEndNow" type="button">Kết thúc lượt</button></div>
@@ -2095,11 +2166,11 @@ const KKR = {
     try{ $("#rxKeep").focus(); }catch(e){}
   },
   async askStop(){
-    if(!await kkConfirm(`Kết thúc lượt bây giờ? Góc thư giãn sẽ mở lại lúc <b>${esc(KKR.when(KKR.now()+KKR.cfg().rest*60e3))}</b>.`, "Kết thúc lượt")) return;
+    if(!await kkConfirm(`Kết thúc lượt bây giờ? Góc thư giãn sẽ mở lại lúc <b>${esc(KKR.when(KKR.reopenAfter(KKR.now()+KKR.cfg().rest*60e3)))}</b>.`, "Kết thúc lượt")) return;
     await KKR.stop();
   },
   async stop(){
-    try{ const j=await KKP.api("/relax/stop", {}); KKR.set(j); kkTrack("thu_gian_ket_thuc_som", {}); KKR.close(); toast(j.nextAt?"Đã kết thúc lượt. Mở lại lúc "+KKR.when(j.nextAt):"Đã kết thúc lượt"); }
+    try{ const j=await KKP.api("/relax/stop", {}); KKR.set(j); kkTrack("thu_gian_ket_thuc_som", {}); KKR.close(); toast(j.nextAt?"Đã kết thúc lượt. Mở lại lúc "+KKR.when(Number(j.openAt)||j.nextAt):"Đã kết thúc lượt"); }
     catch(e){ toast(e.code==="rate"?"Thao tác hơi nhanh, thử lại sau vài giây":"Chưa kết thúc được lượt, thử lại sau ít giây"); if(KKR.ov) KKR.post({op:"resume"}); }
     KKR.refreshStatus();
   },
@@ -2108,6 +2179,20 @@ const KKR = {
     window.removeEventListener("message", KKR.onMsg); document.removeEventListener("keydown", KKR.onKey);
     KKR.exitFs(); if(KKR.ov){ KKR.ov.remove(); KKR.ov=null; } document.documentElement.classList.remove("rx-lock");
     if(S.route.name==="thugian") KKR.refreshStatus();
+  },
+  async learned(kind, info){   // học xong 1 bài mới / ôn Sổ ôn tập trong lúc nghỉ: lưu ngay dữ liệu học rồi nhờ máy chủ kiểm tra để mở lượt sớm
+    if(KKR.rw||!KKR.member()||S.consent==="browse") return; const c=KKR.cfg(); if(!c.on||!c.reward) return;
+    KKR.rw=true;
+    try{
+      if(!KKR.st||KKR.st.error||Date.now()-KKR.at>60000) await KKR.load(true);
+      if(KKR.phase()!=="rest"||!(KKR.st&&KKR.st.rewardable)) return;
+      const saved=kind==="bai"?await saveProgressNow(info&&info.code):await krFlush(); if(!saved) return;
+      const j=await KKP.api("/relax/reward", Object.assign({kind, cnow:Date.now()}, kind==="bai"?{code:info.code, ma:info.ma}:{}));
+      KKR.set(j);
+      if(j.rewarded){ kkTrack("thu_gian_thuong", {loai:kind}); const ph=KKR.phase();
+        toast(ph==="ready"?"Giỏi lắm! Góc thư giãn đã mở lại cho em.":"Giỏi lắm! Góc thư giãn mở lại lúc "+KKR.when(Number(j.until)||Number(j.openAt)||KKR.now()));
+        if(S.route.name==="thugian") KKR.refreshStatus(); }
+    }catch(e){} finally{ KKR.rw=false; }
   },
   toggleFs(){ const o=KKR.ov; if(!o) return; const fe=document.fullscreenElement||document.webkitFullscreenElement;
     try{ if(fe) (document.exitFullscreen||document.webkitExitFullscreen).call(document); else (o.requestFullscreen||o.webkitRequestFullscreen).call(o); }catch(e){} },
@@ -2761,6 +2846,7 @@ const KK_LANG={
     cta:[["Học Tiếng Trung","/tieng-trung/"],["Tài liệu xem / in","/tieng-trung/#tai-lieu"],["Chứng chỉ HSK 3","/tieng-trung/#chung-chi"]]}
 };
 const KK_NEWS=[
+  {d:"17/11/2026", t:"all", h:"Góc thư giãn: học xong được chơi sớm, có giờ đóng cửa", p:"Đang nghỉ giữa hai lượt mà học xong một bài mới, hoặc ôn Sổ ôn tập (ít nhất 5 câu, hoặc hết câu đến hạn), thì Góc thư giãn mở lại ngay. Tối đa 3 lượt mỗi ngày; đóng trong giờ học (07:00-11:30, 13:30-17:00 thứ Hai đến thứ Sáu) và giờ ngủ (22:00-06:00). Quản trị chỉnh được các mức này."},
   {d:"17/11/2026", t:"all", h:"Góc thư giãn: 3 trò chơi nhẹ giữa giờ học", p:"Mục Thư giãn trên menu: Vượt Vũ Môn, Nhất Kiếm, Thái Cực Tháp với 4 giao diện tranh vẽ và nhạc ngũ cung. Mỗi tài khoản một lượt tối đa 15 phút, hết lượt nghỉ 2 giờ mới mở lại; giờ tính trên máy chủ, dùng chung mọi thiết bị."},
   {d:"04/11/2026", t:"all", h:"Bộ Chuẩn quốc tế: 16 môn Đại học, Thạc sĩ, Tiến sĩ", p:"192 bài video tương tác soạn theo chương trình tổng hợp 20 hệ thống đại học dẫn đầu thế giới (U21 2020): Giải tích, Đại số tuyến tính, Xác suất - thống kê, Khoa học dữ liệu, AI, Viết học thuật, Kinh tế học, Khoa học bền vững; Học máy, Chính sách công, Quản trị chiến lược, Kĩ thuật hệ thống; Giảng dạy đại học, Thống kê Bayes, AI cho khoa học, Nghiên cứu liên ngành. Mỗi môn có giáo trình PDF và đề thi thử."},
   {d:"16/10/2026", t:"all", h:"Trang Hỏi đáp và Trợ lý trong lúc học", p:"Trang Hỏi đáp gom toàn bộ câu hỏi thường gặp, có tìm kiếm; Trợ lý có mặt trên trang IELTS và Tiếng Trung, chỉ bài tiếp theo, thành viên được AI trả lời thêm."},
@@ -3661,6 +3747,11 @@ function krSave(){
   LS.set("review",d);
   if(S.caps&&S.caps.db&&S.uid){ clearTimeout(KR.t); KR.t=setTimeout(()=>{ S.caps.db.doc("data/users/"+S.uid+"/review").set(JSON.parse(JSON.stringify(d))).catch(()=>{}); },1200); }
 }
+function krFlush(){   // ghi ngay Sổ ôn tập lên đám mây (không chờ 1,2 giây)
+  const d=krLoad(); if(S.consent==="browse"||!(S.caps&&S.caps.db&&S.uid)) return Promise.resolve(false);
+  clearTimeout(KR.t); LS.set("review",d);
+  return S.caps.db.doc("data/users/"+S.uid+"/review").set(JSON.parse(JSON.stringify(d))).then(()=>true).catch(()=>false);
+}
 function krAdd(code,li,q){
   if(!q||!q.id||!["mcq","tf","num"].includes(q.loai)) return false;
   const d=krLoad(), k=code+"|"+li+"|"+q.id, now=Date.now();
@@ -3697,17 +3788,19 @@ function krShow(){
   const S2=KR.s; if(!S2) return;
   if(S2.i>=S2.qs.length){ const n=S2.qs.length-S2.again.length;
     modal(`<div class="eyebrow">Sổ ôn tập · hoàn thành lượt ôn</div><h3>Em đã ôn ${S2.qs.length} câu</h3><div class="feedback good">Nhớ đúng ngay: <b>${S2.ok}</b> câu. ${S2.ok<S2.qs.length?"Những câu chưa nhớ sẽ được nhắc lại sớm.":"Tuyệt vời!"}</div><div class="mrow"><button class="btn pri" id="krDone">Xong</button></div>`,{lock:true});
-    $("#krDone").onclick=()=>{ closeModal(); KR.s=null; if(S.route&&S.route.name==="dash") render(); }; return; }
+    $("#krDone").onclick=()=>{ closeModal(); KR.s=null; if(S.route&&S.route.name==="dash") render(); };
+    if(typeof KKR!=="undefined") KKR.learned("on"); return; }
   const {q,L,it}=S2.qs[S2.i];
   let body="";
   if(q.loai==="mcq") body=`<div class="opts" role="group" aria-label="Các lựa chọn">${kkOptOrder(q).map(ix=>`<button class="opt" data-ix="${ix}">${esc(q.lua_chon[ix])}</button>`).join("")}</div>`;
   else if(q.loai==="tf") body=`<div class="opts"><button class="opt" data-tf="1">✔ Đúng</button><button class="opt" data-tf="0">✘ Sai</button></div>`;
   else body=`<div class="fld" style="margin-top:12px"><label for="krNum">Đáp số của em</label><input id="krNum" inputmode="decimal" placeholder="Ví dụ: 1,25"></div><div class="mrow"><button class="btn pri" id="krNumOk">Trả lời</button></div>`;
   modal(`<div class="eyebrow">Sổ ôn tập · câu ${S2.i+1}/${S2.qs.length} · hộp ${Number(it.box)||1}/5</div><div class="note">${esc(L.bai||L.ten||"")}</div><h3>${esc(q.hoi)}</h3>${body}<div id="krFb"></div><div class="mrow" id="krAct"><button class="btn ghost sm" id="krStop">Dừng ôn</button></div>`,{lock:true});
-  $("#krStop").onclick=()=>{ closeModal(); KR.s=null; krSave(); if(S.route&&S.route.name==="dash") render(); };
+  $("#krStop").onclick=()=>{ const any=S2.i>0; closeModal(); KR.s=null; krSave(); if(S.route&&S.route.name==="dash") render(); if(any&&typeof KKR!=="undefined") KKR.learned("on"); };
   const answer=val=>{
     if(S2.answered) return; S2.answered=true;
     const right=checkAnswer(q,val), d=krLoad(), now=Date.now(), x=d.items[S2.qs[S2.i].k]||it;
+    x.rvd=Number(x.due||0)<=now||(x.rvd===true&&now-Number(x.rv||0)<12*3600e3); x.rv=now;   // rv: lúc ôn; rvd: ôn đúng lúc đến hạn (cho thưởng Góc thư giãn)
     x.n=(x.n||0)+1; x.last=now;
     if(right){ if(!S2.again.includes(S2.i)) S2.ok++; if((x.box||1)>=5) x.done=true; else { x.box=(x.box||1)+1; x.due=now+KR_DAYS[x.box]*864e5; } }
     else { x.lapses=(x.lapses||0)+1; x.box=1; x.due=now+Math.round(864e5*0.8); if(!S2.again.includes(S2.i)){ S2.again.push(S2.i); S2.qs.push(S2.qs[S2.i]); } }
@@ -3717,7 +3810,7 @@ function krShow(){
     $("#krFb").innerHTML=`<div class="feedback ${right?"good":"bad"}"><b>${right?(x.done?"Chính xác! Câu này em đã thuộc - rời khỏi sổ.":"Chính xác! Lần ôn sau: "+KR_DAYS[x.box]+" ngày nữa."):"Chưa đúng - câu này sẽ được hỏi lại cuối lượt và ôn lại vào ngày mai."}</b><br>Đáp án: <b>${esc(ansText)}</b><br>${esc(q.giai_thich||"")}</div>`;
     $("#krAct").innerHTML=`<button class="btn pri" id="krNext">${S2.i+1<S2.qs.length?"Câu tiếp":"Xem kết quả"}</button><button class="btn ghost sm" id="krLesson">Xem lại bài này</button>`;
     $("#krNext").onclick=()=>{ S2.i++; S2.answered=false; krShow(); };
-    $("#krLesson").onclick=()=>{ closeModal(); KR.s=null; go({name:"hoc",code:it.code,i:it.li}); };
+    $("#krLesson").onclick=()=>{ closeModal(); KR.s=null; go({name:"hoc",code:it.code,i:it.li}); if(typeof KKR!=="undefined") KKR.learned("on"); };
   };
   document.querySelectorAll("#modalHost .opt").forEach(o=>o.onclick=()=>answer(o.dataset.ix!=null?Number(o.dataset.ix):(o.dataset.tf==="1")));
   const nb=$("#krNumOk"); if(nb) nb.onclick=()=>{ const v=$("#krNum").value; if(!String(v).trim()){ toast("Hãy nhập đáp số"); return; } answer(v); };
@@ -3936,12 +4029,12 @@ function openObserve(){
     <div class="rowline">${MUC.map((m,mi)=>`<button class="btn sm obsBtn ${st.obs[ri]===mi?(mi===0?"pri":"gold"):"ghost"}" data-ri="${ri}" data-mi="${mi}">${m}</button>`).join("")}</div></div>`).join("")}
   <div class="mrow"><button class="btn pri" id="obsOk">Lưu quan sát</button></div>`,{lock:true});
   document.querySelectorAll(".obsBtn").forEach(b=>b.onclick=()=>{ st.obs[Number(b.dataset.ri)]=Number(b.dataset.mi); openObserve(); });
-  $("#obsOk").onclick=()=>{ st.done=true; recomputeBook(P.code); saveProgress(P.code); closeModal(); renderScore(); toast("Đã lưu quan sát của bé"); };
+  $("#obsOk").onclick=()=>{ const was=!!st.done; st.done=true; if(!was) lessonJustDone(st); recomputeBook(P.code); saveProgress(P.code); closeModal(); renderScore(); toast("Đã lưu quan sát của bé"); };
 }
 
 /* ----- Tổng hợp điểm ----- */
 function computeTotals(){
-  const st=P.st, ct=P.L.tuong_tac.cong_thuc||{ty_le:{trong_video:.4,thanh_thao:.4,tu_luan:.2},nguong_dat:.7,nguong_nang_cao:.9};
+  const st=P.st, was=!!st.done, ct=P.L.tuong_tac.cong_thuc||{ty_le:{trong_video:.4,thanh_thao:.4,tu_luan:.2},nguong_dat:.7,nguong_nang_cao:.9};
   const gv=P.points.filter(q=>["mcq","tf","num","order"].includes(q.loai));
   const gm=(P.L.tuong_tac.ngan_hang||[]).filter(q=>["mcq","tf","num","order"].includes(q.loai));
   const sum=(qs)=>{ let w=0,e=0,n=0; qs.forEach(q=>{ const wq=q.diem!=null?q.diem:1; const a=st.answers[q.id]; w+=wq; if(a&&a.done){e+=(a.earned||0)*wq; n++;} }); return {w,e,n,score:w?e/w:null,answered:n,total:qs.length}; };
@@ -3961,7 +4054,12 @@ function computeTotals(){
   const allSeen=P.points.every(q=>st.answers[q.id]&&st.answers[q.id].seen);
   if(!P.mn) st.done = !!(st.masteryDone && (st.videoEnded||allSeen));
   st.ts=Date.now();
+  if(st.done&&!was) lessonJustDone(st);
   recomputeBook(P.code);
+}
+function lessonJustDone(st){   // bài vừa hoàn thành lần đầu: ghi thời điểm (máy chủ dùng để thưởng lượt Góc thư giãn)
+  st.doneAt=Date.now(); const code=P.code, ma=P.L&&P.L.ma;
+  if(ma&&typeof KKR!=="undefined") setTimeout(()=>KKR.learned("bai",{code,ma}), 0);
 }
 function finishLesson(){ closeModal(); computeTotals(); renderScore(); renderQList(); saveProgress(P.code);
   if(P.st.done) toast("Hoàn thành bài học! 🎉"); }
@@ -5202,8 +5300,8 @@ function cbKB(){
   {id:"baocaotuan", chip:"Báo cáo tuần", k:"bao cao tuan phu huynh gui bao cao cho bo me zalo messenger email tong ket tuan hoc cua con link bao cao in pdf",
    a:`Mục <b>Học tập → Báo cáo tuần cho phụ huynh</b> tổng hợp 7 ngày: số ngày học, bài đã học và hoàn thành, số câu trả lời, tỉ lệ đúng ngay lần đầu, điểm trung bình, Sổ ôn tập, bài kiểm tra, bài cần củng cố và lời khuyên. Gửi qua Zalo, Messenger (nút Chia sẻ), email, <b>link xem báo cáo</b> (dữ liệu nằm sau dấu # của link, không gửi lên máy chủ, KK-EDU không lưu) hoặc in, lưu PDF; chọn được khoảng ngày khác.`,
    acts:[{l:"Mở Báo cáo tuần", go:"dash"}]},
-  {id:"thugian", k:"goc thu gian tro choi game choi game giai tri xa stress nghi giai lao thu gian vuot vu mon nhat kiem thai cuc thap 15 phut 2 gio het luot luot choi",
-   a:`<b>Góc thư giãn</b> (mục <b>Thư giãn</b> trên menu) có 3 trò chơi nhẹ để nghỉ mắt giữa giờ học: <b>Vượt Vũ Môn</b>, <b>Nhất Kiếm</b>, <b>Thái Cực Tháp</b>, 4 giao diện tranh vẽ và nhạc ngũ cung. Cần đăng nhập. Mỗi tài khoản <b>một lượt tối đa 15 phút</b> tính từ lúc bấm Bắt đầu; hết lượt hoặc tự kết thúc sớm thì <b>2 giờ sau</b> mới mở lại. Giờ tính trên máy chủ nên đổi máy hay đổi giờ máy cũng không thêm lượt. Thành tích lưu trên máy của bạn, không gửi đi đâu.`,
+  {id:"thugian", k:"goc thu gian tro choi game choi game giai tri xa stress nghi giai lao thu gian vuot vu mon nhat kiem thai cuc thap 15 phut 2 gio het luot luot choi gio dong cua gio ngu gio hoc 3 luot moi ngay thuong luot hoc xong choi som mo som",
+   a:`<b>Góc thư giãn</b> (mục <b>Thư giãn</b> trên menu) có 3 trò chơi nhẹ để nghỉ mắt giữa giờ học: <b>Vượt Vũ Môn</b>, <b>Nhất Kiếm</b>, <b>Thái Cực Tháp</b>, 4 giao diện tranh vẽ và nhạc ngũ cung. Cần đăng nhập. Mỗi lượt <b>tối đa 15 phút</b> tính từ lúc bấm Bắt đầu; hết lượt hoặc tự kết thúc sớm thì <b>2 giờ sau</b> mới mở lại; tối đa <b>3 lượt mỗi ngày</b>. <b>Giờ đóng cửa</b>: giờ học 07:00-11:30 và 13:30-17:00 thứ Hai đến thứ Sáu, giờ ngủ 22:00-06:00. Đang nghỉ mà <b>học xong một bài mới</b> hoặc <b>ôn Sổ ôn tập</b> (ít nhất 5 câu, hoặc hết câu đến hạn) thì được mở lượt ngay. Quản trị có thể chỉnh các mức này. Giờ tính trên máy chủ nên đổi máy hay đổi giờ máy cũng không thêm lượt. Thành tích lưu trên máy của bạn, không gửi đi đâu.`,
    acts:[{l:"Mở Góc thư giãn", go:"thugian"}]},
   {id:"ontap", chip:"Sổ ôn tập", k:"on tap so on tap cau sai on lai lap lai ngat quang nhac on quen bai nho lau hoc lai cau sai",
    a:`Câu em làm <b>sai</b>, hoặc phải làm <b>lần 2 mới đúng</b>, trong bài học tự vào <b>Sổ ôn tập</b> (mục Học tập). Hệ thống nhắc ôn đúng lúc sắp quên theo phương pháp <b>lặp lại ngắt quãng</b>: sau 1, 3, 7, 16, 35 ngày; trả lời đúng thì lịch ôn giãn ra, sai thì ôn lại sớm, đúng ở hộp cuối là đã thuộc. Mỗi lượt 5-10 phút, không tính vào điểm chính thức. Thứ tự phương án trắc nghiệm được xáo để em nhớ kiến thức, không nhớ vị trí đáp án.`,
@@ -5580,46 +5678,72 @@ function adminSettings(el){
     renderFooterContact();
   };
 }
-/* Quản trị Góc thư giãn (17/11/2026): bật/tắt, số phút mỗi lượt và phút nghỉ (settings/main.relax), số liệu 7 ngày, mở lại lượt theo email */
+/* Quản trị Góc thư giãn (17/11/2026, bản 2): bật/tắt, phút mỗi lượt, phút nghỉ, số lượt mỗi ngày, thưởng khi học, giờ đóng cửa
+   (settings/main.relax); số liệu 7 ngày; mở lại lượt theo email. Máy chủ kiểm tra lại mọi giới hạn (worker/src/relax.js). */
 function adminRelax(el){
-  const c=Object.assign({on:true,min:15,rest:120}, S.settings.relax||{});
-  el.innerHTML=`<div class="card" style="max-width:760px">
+  const r=S.settings.relax||{}, pick=(v,lo,hi,d)=>{ const x=Math.round(Number(v)); return v!==""&&v!=null&&Number.isFinite(x)&&x>=lo&&x<=hi?x:d; };
+  const c={on:r.on!==false, min:pick(r.min,5,60,15), rest:pick(r.rest,30,1440,120), daily:pick(r.daily,0,10,3), reward:r.reward!==false};
+  const qs=KKR.DEFQ.map((d,i)=>{ if(!Array.isArray(r.quiet)) return Object.assign({},d); const w=r.quiet[i]; if(!w||typeof w!=="object") return Object.assign({},d,{on:false});
+    return {name:d.name, on:w.on!==false, from:KKR.hm(w.from)!=null?w.from:d.from, to:KKR.hm(w.to)!=null?w.to:d.to, days:String(w.days==null?d.days:w.days).replace(/[^0-6]/g,"")||d.days}; });
+  const DOPT=[["0123456","Hằng ngày"],["12345","Thứ Hai đến thứ Sáu"],["123456","Thứ Hai đến thứ Bảy"],["06","Thứ Bảy và Chủ nhật"]];
+  const dsel=(i,v)=>`<select id="rxQd${i}" aria-label="Ngày áp dụng: ${esc(qs[i].name)}">${DOPT.map(o=>`<option value="${o[0]}" ${o[0]===v?"selected":""}>${o[1]}</option>`).join("")}${DOPT.some(o=>o[0]===v)?"":`<option value="${esc(v)}" selected>${esc(KKR.daysTxt(v))}</option>`}</select>`;
+  el.innerHTML=`<div class="card" style="max-width:820px">
     <h3 style="margin-top:0">Góc thư giãn</h3>
-    <p class="note" style="margin-top:0">Ba trò chơi nhẹ (Vượt Vũ Môn, Nhất Kiếm, Thái Cực Tháp) ở mục <b>Thư giãn</b> cho tài khoản đã đăng nhập. Mỗi tài khoản một lượt tối đa theo số phút dưới đây; hết lượt hoặc tự kết thúc sớm thì phải nghỉ đủ số phút nghỉ mới chơi tiếp. Giờ tính trên máy chủ: đổi giờ máy, xóa dữ liệu trình duyệt hay đổi thiết bị đều không mở thêm lượt.</p>
+    <p class="note" style="margin-top:0">Ba trò chơi nhẹ (Vượt Vũ Môn, Nhất Kiếm, Thái Cực Tháp) ở mục <b>Thư giãn</b> cho tài khoản đã đăng nhập. Mỗi lượt tối đa theo số phút dưới đây; hết lượt hoặc tự kết thúc sớm thì nghỉ đủ số phút nghỉ mới chơi tiếp. Giờ tính trên máy chủ: đổi giờ máy, xóa dữ liệu trình duyệt hay đổi thiết bị đều không mở thêm lượt.</p>
     <div class="formgrid">
-      <div class="fld"><label for="rxOnA">Trạng thái</label><select id="rxOnA"><option value="1">Mở cho học sinh</option><option value="0" ${c.on===false?"selected":""}>Tạm đóng</option></select></div>
+      <div class="fld"><label for="rxOnA">Trạng thái</label><select id="rxOnA"><option value="1">Mở cho học sinh</option><option value="0" ${c.on?"":"selected"}>Tạm đóng</option></select></div>
       <div class="fld"><label for="rxMinA">Số phút mỗi lượt (5 đến 60)</label><input id="rxMinA" inputmode="numeric" value="${esc(c.min)}"></div>
       <div class="fld"><label for="rxRestA">Số phút nghỉ trước lượt sau (30 đến 1440)</label><input id="rxRestA" inputmode="numeric" value="${esc(c.rest)}"></div>
+      <div class="fld"><label for="rxDayA">Số lượt tối đa mỗi ngày (0 = không giới hạn, tối đa 10)</label><input id="rxDayA" inputmode="numeric" value="${esc(c.daily)}"></div>
+      <div class="fld" style="grid-column:1/-1"><label for="rxRwA">Thưởng lượt khi học</label><select id="rxRwA"><option value="1">Bật: đang nghỉ mà học xong một bài mới, hoặc ôn Sổ ôn tập (ít nhất 5 câu, hoặc hết câu đến hạn), thì mở lượt ngay</option><option value="0" ${c.reward?"":"selected"}>Tắt</option></select></div>
     </div>
+    <h4 style="margin:14px 0 6px">Giờ đóng cửa (giờ Việt Nam)</h4>
+    <div class="tbwrap"><table class="tb rx-qt"><thead><tr><th>Bật</th><th>Khung giờ</th><th>Từ</th><th>Đến</th><th>Ngày áp dụng</th></tr></thead><tbody>
+      ${qs.map((w,i)=>`<tr><td><input type="checkbox" id="rxQo${i}" ${w.on?"checked":""}></td><td><label for="rxQo${i}">${esc(w.name)}</label></td>
+        <td><input type="time" id="rxQf${i}" value="${esc(w.from)}" aria-label="${esc(w.name)}: từ"></td><td><input type="time" id="rxQt${i}" value="${esc(w.to)}" aria-label="${esc(w.name)}: đến"></td><td>${dsel(i,w.days)}</td></tr>`).join("")}
+    </tbody></table></div>
+    <p class="note" style="margin:8px 0 0">Trong giờ đóng không bắt đầu được lượt mới; lượt bắt đầu sát giờ đóng sẽ kết thúc đúng giờ đóng. Khung qua nửa đêm (ví dụ 22:00 đến 06:00) kéo sang sáng hôm sau. Thưởng lượt không vượt số lượt mỗi ngày và giờ đóng cửa.</p>
     <div class="mrow"><button class="btn pri" id="rxSaveA" type="button">Lưu cài đặt Góc thư giãn</button></div>
     <div class="note" id="rxSaveMsg" style="margin-top:8px"></div>
   </div>
-  <div class="card" style="max-width:760px;margin-top:14px">
+  <div class="card" style="max-width:820px;margin-top:14px">
     <div class="mrow" style="margin:0;justify-content:space-between"><h3 style="margin:0">Số liệu 7 ngày</h3><button class="btn ghost" id="rxStatA" type="button">Tải lại</button></div>
     <div id="rxStats" class="note" style="margin-top:10px">Đang tải...</div>
   </div>
-  <div class="card" style="max-width:760px;margin-top:14px">
+  <div class="card" style="max-width:820px;margin-top:14px">
     <h3 style="margin-top:0">Mở lại lượt cho một tài khoản</h3>
-    <p class="note" style="margin-top:0">Dùng khi cần cho một học sinh chơi lại ngay (ví dụ lượt bị gián đoạn vì mất mạng). Lịch sử lượt chơi vẫn được giữ.</p>
+    <p class="note" style="margin-top:0">Dùng khi cần cho một học sinh chơi lại ngay (ví dụ lượt bị gián đoạn vì mất mạng): kết thúc lượt đang chơi hoặc bỏ giờ nghỉ, trả lại 1 lượt trong ngày. Không mở được trong giờ đóng cửa. Lịch sử lượt chơi vẫn được giữ.</p>
     <div class="mrow" style="margin-top:6px"><input id="rxEmailA" type="email" placeholder="Email tài khoản của học sinh" autocomplete="off" style="flex:1;min-width:220px"><button class="btn" id="rxResetA" type="button">Mở lại lượt</button></div>
     <div id="rxResetOut" class="note" style="margin-top:8px"></div>
   </div>`;
   const say=(id,h)=>{ const e=$("#"+id); if(e) e.innerHTML=h; };
   const day=d=>{ const p=String(d||"").split("-"); return p.length===3?p[2]+"/"+p[1]:esc(d); };
   const stats=async()=>{ say("rxStats","Đang tải...");
-    try{ const j=await KKP.api("/relax/admin"); const rows=j.days||[], tn=rows.reduce((a,r)=>a+(r.n||0),0);
-      say("rxStats",`<p style="margin:0 0 8px">Đang trong lượt: <b>${Number(j.playing)||0}</b> tài khoản. Trong 7 ngày: <b>${tn}</b> lượt chơi. Cấu hình máy chủ đang dùng: ${j.cfg&&j.cfg.on===false?"tạm đóng":"mở"}, ${esc(j.cfg&&j.cfg.min)} phút mỗi lượt, nghỉ ${esc(j.cfg&&j.cfg.rest)} phút.</p>
-        <div class="tbwrap"><table class="tb"><thead><tr><th>Ngày</th><th>Lượt chơi</th><th>Tài khoản chơi</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${day(r.day)}</td><td>${Number(r.n)||0}</td><td>${Number(r.u)||0}</td></tr>`).join("")}</tbody></table></div>`); }
+    try{ const j=await KKP.api("/relax/admin"), k=j.cfg||{}, rows=j.days||[], tn=rows.reduce((a,x)=>a+(Number(x.n)||0),0), tr=rows.reduce((a,x)=>a+(Number(x.r)||0),0);
+      const nq=Array.isArray(k.quiet)?k.quiet.length:0;
+      say("rxStats",`<p style="margin:0 0 8px">Đang trong lượt: <b>${Number(j.playing)||0}</b> tài khoản. Trong 7 ngày: <b>${tn}</b> lượt chơi, <b>${tr}</b> lượt thưởng nhờ học. Cấu hình máy chủ đang dùng: ${k.on===false?"tạm đóng":"mở"}, ${esc(k.min)} phút mỗi lượt, nghỉ ${esc(k.rest)} phút, ${Number(k.daily)>0?`tối đa ${esc(k.daily)} lượt mỗi ngày`:"không giới hạn lượt mỗi ngày"}, thưởng khi học ${k.reward===false?"tắt":"bật"}, ${nq} khung giờ đóng cửa.</p>
+        <div class="tbwrap"><table class="tb"><thead><tr><th>Ngày</th><th>Lượt chơi</th><th>Tài khoản chơi</th><th>Lượt thưởng nhờ học</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${day(x.day)}</td><td>${Number(x.n)||0}</td><td>${Number(x.u)||0}</td><td>${Number(x.r)||0}</td></tr>`).join("")}</tbody></table></div>
+        <p style="margin:8px 0 0">Lượt thử của tài khoản Quản trị không tính vào số liệu.</p>`); }
     catch(e){ say("rxStats", e.code==="not-configured"?"Máy chủ chưa cấu hình dữ liệu (GCP_SA_KEY).":"Chưa tải được số liệu: "+KKP.err(e)); } };
   $("#rxStatA").onclick=stats; stats();
   $("#rxSaveA").onclick=async()=>{
-    const on=$("#rxOnA").value==="1", min=Math.round(Number($("#rxMinA").value)), rest=Math.round(Number($("#rxRestA").value));
+    const on=$("#rxOnA").value==="1", min=Math.round(Number($("#rxMinA").value)), rest=Math.round(Number($("#rxRestA").value)), dv=$("#rxDayA").value, daily=Math.round(Number(dv)), reward=$("#rxRwA").value==="1";
     if(!(min>=5&&min<=60)) return say("rxSaveMsg","Số phút mỗi lượt cần từ 5 đến 60.");
     if(!(rest>=30&&rest<=1440)) return say("rxSaveMsg","Số phút nghỉ cần từ 30 đến 1440 (24 giờ).");
-    S.settings.relax={on,min,rest};
+    if(String(dv).trim()===""||!(daily>=0&&daily<=10)) return say("rxSaveMsg","Số lượt mỗi ngày cần từ 0 đến 10 (0 = không giới hạn).");
+    const quiet=[];
+    for(let i=0;i<KKR.DEFQ.length;i++){
+      const d=KKR.DEFQ[i], o=$("#rxQo"+i).checked, f=String($("#rxQf"+i).value||"").slice(0,5), t=String($("#rxQt"+i).value||"").slice(0,5), ds=$("#rxQd"+i).value;
+      if(o&&(KKR.hm(f)==null||KKR.hm(t)==null)) return say("rxSaveMsg",`${esc(d.name)}: nhập đủ giờ bắt đầu và giờ kết thúc.`);
+      if(o&&f===t) return say("rxSaveMsg",`${esc(d.name)}: giờ bắt đầu và giờ kết thúc phải khác nhau.`);
+      quiet.push({name:d.name, on:o, from:KKR.hm(f)!=null?f:d.from, to:KKR.hm(t)!=null?t:d.to, days:ds||d.days});
+    }
+    S.settings.relax={on,min,rest,daily,reward,quiet};
     if(!S.caps.db){ toast("Không có kết nối dữ liệu - cài đặt chỉ áp dụng phiên này"); return; }
     try{ await S.caps.db.doc("settings/main").set({relax:S.settings.relax},{merge:true}); KKR.st=null; KKR.at=0;
-      toast("Đã lưu cài đặt Góc thư giãn"); say("rxSaveMsg",`Đã lưu: ${on?"mở cho học sinh":"tạm đóng"}, ${min} phút mỗi lượt, nghỉ ${rest} phút. Lượt đang chơi giữ nguyên giờ đã cấp; lượt mới áp dụng ngay.`); stats(); }
+      const nq=quiet.filter(x=>x.on).length;
+      toast("Đã lưu cài đặt Góc thư giãn");
+      say("rxSaveMsg",`Đã lưu: ${on?"mở cho học sinh":"tạm đóng"}, ${min} phút mỗi lượt, nghỉ ${rest} phút, ${daily?`tối đa ${daily} lượt mỗi ngày`:"không giới hạn lượt mỗi ngày"}, thưởng khi học ${reward?"bật":"tắt"}, ${nq} khung giờ đóng cửa. Lượt đang chơi giữ nguyên giờ đã cấp; lượt mới áp dụng ngay.`); stats(); }
     catch(e){ toast("Lỗi lưu: "+(e&&e.code||"")); }
   };
   $("#rxResetA").onclick=async()=>{
@@ -5627,7 +5751,11 @@ function adminRelax(el){
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return say("rxResetOut","Email chưa đúng dạng.");
     const b=$("#rxResetA"); b.disabled=true;
     try{ const j=await KKP.api("/relax/admin",{op:"reset", email}); const nm=esc(j.name||email);
-      say("rxResetOut", j.was==="ready"?`Tài khoản <b>${nm}</b> đang sẵn sàng chơi, không có lượt nào cần mở lại.`:`Đã mở lại lượt cho <b>${nm}</b>${j.was==="playing"?" (lượt đang chơi đã được kết thúc)":""}. Học sinh mở lại mục Thư giãn là bắt đầu được lượt mới.`); stats(); }
+      const after=j.state==="quiet"?` Hiện đang ${esc(KKR.low(j.why,"giờ đóng cửa"))}, học sinh chơi được từ ${esc(KKR.when(j.until))}.`
+        :j.state==="daily"?` Theo cấu hình hiện tại tài khoản vẫn đã đủ lượt hôm nay, mở lại lúc ${esc(KKR.when(j.until))}.`:" Học sinh mở lại mục Thư giãn là bắt đầu được lượt mới.";
+      say("rxResetOut", j.was==="ready"?`Tài khoản <b>${nm}</b> đang sẵn sàng chơi, không có lượt nào cần mở lại.`
+        :j.was==="quiet"?`Tài khoản <b>${nm}</b> không có lượt nào cần mở lại.${after}`
+        :`Đã mở lại lượt cho <b>${nm}</b>${j.was==="playing"?" (lượt đang chơi đã được kết thúc)":""}${j.was==="daily"?" (trả lại 1 lượt trong ngày)":""}.${after}`); stats(); }
     catch(e){ say("rxResetOut", e.detail?esc(e.detail):KKP.err(e)); }
     finally{ b.disabled=false; }
   };
