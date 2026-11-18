@@ -1907,7 +1907,8 @@ function famCardHTML(l){
   return `<div class="card doc"><h2>${esc(l.name)} <span class="pill">${l.role==="parent"?"Phụ huynh":"Giáo viên"}</span></h2>
     <div class="bands">${["lisBand","rdBand","wrBand","spBand"].map(item).join("")}</div>
     <div class="bands">${["days","streak","examRuns","weekNo","phase"].map(item).join("")}</div>
-    <p class="mute">Hoạt động gần nhất: ${esc(o.lastActive||"-")} · Cập nhật: ${esc((l.updated||"").slice(0,16).replace("T"," "))}</p></div>`;
+    <p class="mute">Hoạt động gần nhất: ${esc(o.lastActive||"-")} · Cập nhật: ${esc((l.updated||"").slice(0,16).replace("T"," "))}</p>
+    ${l.role==="parent"?`<p class="mute">Góc thư giãn trên KK-EDU: <a href="/#thugian">đặt giờ ngủ, số lượt chơi riêng cho con</a></p>`:""}</div>`;
 }
 function labFamilyHTML(){
   const msg=FM.msg?`<p class="chot">${esc(FM.msg)}</p>`:"", err=FM.err?`<p class="warnbox">${esc(FM.err)}</p>`:"";

@@ -817,6 +817,27 @@ ol.wz>li.done::before{background:var(--ok);color:#fff;content:"\2713"}
 .rx-qt input[type=time],.rx-qt select{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:var(--r-s);padding:7px 9px;font-size:.9rem;font-family:var(--font-b)}
 .rx-qt input[type=checkbox]{width:18px;height:18px;accent-color:var(--navy);margin:0;vertical-align:middle}
 .rx-qt input:focus,.rx-qt select:focus{border-color:var(--navy);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 35%,transparent)}
+.rx-par{margin-top:30px}
+.rx-par-lead{max-width:72ch;color:var(--fg2);margin:0 0 10px;line-height:1.6}
+.rx-steps{margin:0 0 12px;padding-left:22px;color:var(--fg2);font-size:.95rem;line-height:1.65;max-width:72ch}
+.rx-kids{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.rx-kid{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px 12px;background:var(--card)}
+.rx-kid-h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 12px}
+.rx-kid-h b{font-size:1.05rem}
+.rx-kid-h span{color:var(--fg2);font-size:.9rem}
+.rx-kid-r{margin:6px 0 4px;font-size:.92rem;color:var(--fg2);line-height:1.55}
+.rx-kid .mrow{margin-top:10px}
+.rx-week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:10px 0 4px;padding:0;list-style:none}
+.rx-week li{display:flex;flex-direction:column;align-items:center;padding:5px 0 4px;border-radius:8px;background:color-mix(in srgb,var(--line) 45%,transparent);font-size:.74rem;color:var(--fg2);line-height:1.3}
+.rx-week li.on{background:color-mix(in srgb,var(--navy2) 15%,transparent);color:var(--fg)}
+.rx-week li b{font-size:.98rem;color:var(--fg)}
+.rx-famnote{margin:10px 0 0}
+.rx-fw{border:1px solid var(--line);border-radius:var(--r-s);padding:8px 12px 10px;margin:12px 0 0;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.rx-fw legend{padding:0 4px;font-weight:600;font-size:.93rem}
+.rx-fw label{display:inline-flex;align-items:center;gap:6px;font-size:.92rem}
+.rx-fw input[type=time],.rx-fw select{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:var(--r-s);padding:6px 8px;font-size:.9rem;font-family:var(--font-b)}
+.rx-fw input[type=checkbox]{width:18px;height:18px;accent-color:var(--navy);margin:0}
+.rx-fw input:focus,.rx-fw select:focus{border-color:var(--navy);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 35%,transparent)}
 .rx-earn p{margin:0;color:var(--fg2);font-size:.93rem;line-height:1.6}
 .rx-earn p b{color:var(--fg)}
 .rx-status .rx-earn .mrow{margin-top:10px}
@@ -1005,7 +1026,7 @@ async function reloadUserData(){
   S.profile=null; S.myReq=null; S.grants={}; S.enroll={}; S.myRegs={}; S.progress={}; S.reviewCloud=null; if(typeof KR!=="undefined") KR.data=null;
   S.goiCache={}; S.packLoading={};   // quyền đọc gói phụ thuộc người dùng - tải lại sau khi đổi tài khoản
   if(typeof KKP!=="undefined"){ KKP.me=null; clearTimeout(KKP._w); KKP._wn=0; } if(typeof KKA!=="undefined"){ KKA.todo=null; KKA._at=0; }   // trạng thái gói và việc cần xử lý là của từng tài khoản
-  if(typeof KKR!=="undefined"){ KKR.st=null; KKR.at=0; if(KKR.ov) KKR.close(); }   // lượt Góc thư giãn cũng theo từng tài khoản
+  if(typeof KKR!=="undefined"){ KKR.st=null; KKR.at=0; KKR.kids=null; KKR.kidsAt=0; if(KKR.ov) KKR.close(); }   // lượt Góc thư giãn cũng theo từng tài khoản
   await loadShared(); loadLocal();
 }
 /* ---------- Bộ đếm lượt truy cập: mỗi phiên trình duyệt +1 (stats/visits tổng, stats/d-YYYY-MM-DD theo ngày giờ VN), hiện góc phải cuối trang ---------- */
@@ -1983,6 +2004,77 @@ const KKR = {
   daysTxt(d){ d=String(d||""); const M={"0123456":"hằng ngày","12345":"thứ Hai đến thứ Sáu","123456":"thứ Hai đến thứ Bảy","06":"thứ Bảy và Chủ nhật"}; if(M[d]) return M[d];
     const N=["Chủ nhật","thứ Hai","thứ Ba","thứ Tư","thứ Năm","thứ Sáu","thứ Bảy"]; return [..."1234560"].filter(x=>d.includes(x)).map(x=>N[x]).join(", "); },
   low(x, d){ return String(x||d||"").toLowerCase(); },
+  famTxt(f, c){   // giới hạn bố mẹ đặt, ghi theo mức đang thật sự áp dụng (c = cấu hình của tài khoản con)
+    if(!f) return ""; if(f.on===false) return "tạm khóa Góc thư giãn";
+    c=c||KKR.cfg(); const P=[];
+    if(Number(f.daily)>0) P.push(`tối đa ${Number(c.daily)>0?c.daily:f.daily} lượt mỗi ngày`);
+    if(Number(f.min)>0) P.push(`mỗi lượt ${c.min||f.min} phút`);
+    if(f.sleep&&f.sleep.on) P.push(`giờ ngủ ${f.sleep.from}-${f.sleep.to}`);
+    if(f.study&&f.study.on) P.push(`giờ tự học ${f.study.from}-${f.study.to}, ${KKR.daysTxt(f.study.days)}`);
+    if(f.reward===false) P.push("không thưởng lượt khi học");
+    return P.join("; ")||"theo quy định chung"; },
+  famNote(ph){ const f=KKR.st&&KKR.st.fam; if(!f||f.on===false||!["ready","rest","quiet","daily"].includes(ph)) return "";
+    return `<p class="note rx-famnote">Phụ huynh <b>${esc(f.byName||"")}</b> đã đặt giới hạn riêng cho em: ${esc(KKR.famTxt(f))}.</p>`; },
+  isMinor(){ const y=Number(S.profile&&S.profile.namSinh); return Number.isInteger(y)&&y>1900&&new Date().getFullYear()-y<18; },
+  dow(day){ const d=new Date(String(day)+"T12:00:00Z"); return ["CN","T2","T3","T4","T5","T6","T7"][d.getUTCDay()]+" "+String(d.getUTCDate()); },
+  famIntro(){ return `<section class="rx-par" aria-labelledby="rxParH"><h2 class="rx-sub" id="rxParH">Dành cho phụ huynh</h2>
+    <p class="rx-par-lead">Bố mẹ có thể đặt riêng cho con giờ đi ngủ, giờ tự học ở nhà, số lượt mỗi ngày, số phút mỗi lượt, có thưởng lượt khi học hay không, hoặc tạm khóa. Luật của bố mẹ chỉ chặt hơn quy định chung, không mở thêm giờ chơi.</p>
+    <ol class="rx-steps"><li>Con đăng nhập tài khoản của con, vào <b>IELTS &gt; Gia đình</b>, bấm <b>Tạo mã cho phụ huynh</b>.</li><li>Bố mẹ đăng nhập tài khoản của bố mẹ, nhập mã ở cùng trang để liên kết.</li><li>Bố mẹ mở lại mục <b>Thư giãn</b>: tên con hiện ở đây, bấm <b>Đặt giới hạn cho con</b>.</li></ol>
+    <a class="btn ghost sm" href="/ielts/#go=gia-dinh">Mở trang Gia đình</a></section>`; },
+  kidHTML(k){
+    const ST={ready:"Đang được chơi", playing:"Đang chơi", rest:"Đang nghỉ giữa hai lượt", quiet:"Đang giờ đóng cửa", daily:"Đã chơi đủ lượt hôm nay", off:"Đang tạm khóa"};
+    const c=k.cfg||{}, w=Array.isArray(k.week)?k.week:null, t=w?w.reduce((a,x)=>({n:a.n+(Number(x.n)||0), r:a.r+(Number(x.r)||0), s:a.s+(Number(x.s)||0)}),{n:0,r:0,s:0}):null;
+    const head=k.shared?(ST[k.state]||"")+(Number(c.daily)>0&&k.state!=="off"?`, hôm nay ${Number(k.dayN)||0}/${c.daily} lượt`:""):"Con đã tắt chia sẻ tổng quan nên không hiện số liệu";
+    const rules=k.fam?`<b>Bố mẹ đã đặt:</b> ${esc(KKR.famTxt(k.fam, c))}${k.byMe?"":` (${esc(k.fam.byName||"phụ huynh khác")})`}.`:"Đang theo quy định chung của KK-EDU.";
+    const strip=w?`<ul class="rx-week" aria-label="Số lượt chơi 7 ngày gần nhất">${w.map(x=>`<li class="${Number(x.n)?"on":""}" aria-label="${esc(KKR.dow(x.day))}: ${Number(x.n)||0} lượt"><span aria-hidden="true">${esc(KKR.dow(x.day))}</span><b aria-hidden="true">${Number(x.n)||0}</b></li>`).join("")}</ul>
+      <p class="note" style="margin:4px 0 0">7 ngày: ${t.n} lượt${t.s?`, khoảng ${KKR.dur(t.s*1000)}`:""}${t.r?`, ${t.r} lượt được mở sớm nhờ học`:""}.</p>`:"";
+    return `<article class="rx-kid"><div class="rx-kid-h"><b>${esc(k.name)}</b><span>${esc(head)}</span></div><p class="rx-kid-r">${rules}</p>${strip}
+      <div class="mrow"><button class="btn sm" type="button" data-kid="${esc(k.ref)}">Đặt giới hạn cho con</button></div></article>`; },
+  famHTML(kids){ return `<section class="rx-par" aria-labelledby="rxParH"><h2 class="rx-sub" id="rxParH">Góc thư giãn của con</h2>
+    <div class="rx-kids">${kids.map(k=>KKR.kidHTML(k)).join("")}</div>
+    <p class="note">Luật của bố mẹ chỉ chặt hơn quy định chung của KK-EDU, có hiệu lực ngay trên mọi thiết bị của con; con thấy giới hạn này trong mục Thư giãn. Hủy liên kết Gia đình thì luật riêng hết tác dụng.</p></section>`; },
+  async famLoad(force){   // khung phụ huynh: con đã liên kết (vai trò phụ huynh) hoặc hướng dẫn liên kết
+    const box=$("#rxFam"); if(!box) return;
+    if(!KKR.member()){ box.innerHTML=KKR.famIntro(); return; }
+    if(force||!KKR.kids||Date.now()-(KKR.kidsAt||0)>60000){ try{ KKR.kids=(await KKP.api("/relax/family")).kids||[]; KKR.kidsAt=Date.now(); }catch(e){ if(!KKR.kids) KKR.kids=[]; } }
+    const b2=$("#rxFam"); if(!b2) return;
+    b2.innerHTML=KKR.kids.length?KKR.famHTML(KKR.kids):(KKR.isMinor()?"":KKR.famIntro());
+    b2.querySelectorAll("[data-kid]").forEach(b=>b.onclick=()=>KKR.famEdit(b.dataset.kid)); },
+  kidPut(kid){ if(!kid||!KKR.kids) return; const i=KKR.kids.findIndex(x=>x.ref===kid.ref); if(i>=0) KKR.kids[i]=kid; KKR.kidsAt=Date.now(); KKR.famLoad(false); },
+  famEdit(ref){
+    const k=(KKR.kids||[]).find(x=>x.ref===ref); if(!k) return;
+    const b=k.base||{min:15, rest:120, daily:3, reward:true}, f=k.fam||{}, sl=f.sleep||{on:false,from:"21:00",to:"06:30"}, sd=f.study||{on:false,from:"19:30",to:"21:00",days:"12345"};
+    const dMax=Number(b.daily)>0?Number(b.daily)-1:5, dOpts=[], mOpts=[]; for(let i=1;i<=dMax;i++) dOpts.push(i); for(let m=5;m<Number(b.min||15);m+=5) mOpts.push(m);
+    const DO=[["0123456","Hằng ngày"],["12345","Thứ Hai đến thứ Sáu"],["123456","Thứ Hai đến thứ Bảy"],["06","Thứ Bảy và Chủ nhật"]];
+    modal(`<div class="eyebrow">Góc thư giãn · luật riêng của bố mẹ</div><h3 style="margin:4px 0">${esc(k.name)}</h3>
+      <p class="note" style="margin-top:0">Quy định chung của KK-EDU: mỗi lượt ${Number(b.min)||15} phút, nghỉ ${KKR.dur((Number(b.rest)||120)*60000)} giữa hai lượt, ${Number(b.daily)>0?`tối đa ${b.daily} lượt mỗi ngày`:"không giới hạn lượt mỗi ngày"}, đóng trong giờ học ở trường và giờ ngủ. Bố mẹ chỉ đặt chặt hơn, không mở thêm giờ chơi.</p>
+      <div class="formgrid">
+        <div class="fld"><label for="rfOn">Cho con dùng Góc thư giãn</label><select id="rfOn"><option value="1">Có</option><option value="0" ${f.on===false?"selected":""}>Tạm khóa</option></select></div>
+        <div class="fld"><label for="rfDaily">Số lượt tối đa mỗi ngày</label><select id="rfDaily"><option value="0">Theo quy định chung${Number(b.daily)>0?` (${b.daily} lượt)`:""}</option>${dOpts.map(i=>`<option value="${i}" ${i===Number(f.daily)?"selected":""}>${i} lượt</option>`).join("")}</select></div>
+        <div class="fld"><label for="rfMin">Số phút mỗi lượt</label><select id="rfMin"><option value="0">Theo quy định chung (${Number(b.min)||15} phút)</option>${mOpts.map(m=>`<option value="${m}" ${m===Number(f.min)?"selected":""}>${m} phút</option>`).join("")}</select></div>
+        ${b.reward?`<div class="fld"><label for="rfRw">Học xong được chơi sớm</label><select id="rfRw"><option value="1">Có</option><option value="0" ${f.reward===false?"selected":""}>Không</option></select></div>`:""}
+      </div>
+      <fieldset class="rx-fw"><legend><label><input type="checkbox" id="rfSlOn" ${sl.on?"checked":""}> Giờ đi ngủ của con, hằng ngày</label></legend>
+        <label>Từ <input type="time" id="rfSlF" value="${esc(sl.from)}"></label><label>đến <input type="time" id="rfSlT" value="${esc(sl.to)}"></label></fieldset>
+      <fieldset class="rx-fw"><legend><label><input type="checkbox" id="rfStOn" ${sd.on?"checked":""}> Giờ tự học ở nhà</label></legend>
+        <label>Từ <input type="time" id="rfStF" value="${esc(sd.from)}"></label><label>đến <input type="time" id="rfStT" value="${esc(sd.to)}"></label>
+        <label>Ngày <select id="rfStD">${DO.map(o=>`<option value="${o[0]}" ${o[0]===sd.days?"selected":""}>${o[1]}</option>`).join("")}</select></label></fieldset>
+      <p class="note">Giờ đi ngủ qua nửa đêm (ví dụ 21:00 đến 06:30) kéo sang sáng hôm sau. Lượt con đang chơi không bị cắt ngang; luật mới áp dụng từ lượt sau.</p>
+      <div id="rfMsg" class="note" role="status"></div>
+      <div class="mrow"><button class="btn pri" id="rfSave" type="button">Lưu cho con</button>${k.fam?`<button class="btn ghost" id="rfClear" type="button">Bỏ luật riêng</button>`:""}<button class="btn ghost" id="rfClose" type="button">Đóng</button></div>`);
+    const say=h=>{ const e=$("#rfMsg"); if(e) e.innerHTML=h; }, tm=id=>String(($("#"+id)||{}).value||"").slice(0,5);
+    $("#rfClose").onclick=closeModal;
+    $("#rfSave").onclick=async()=>{
+      const rules={on:$("#rfOn").value==="1", daily:Number($("#rfDaily").value)||0, min:Number($("#rfMin").value)||0, reward:$("#rfRw")?$("#rfRw").value==="1":true,
+        sleep:{on:$("#rfSlOn").checked, from:tm("rfSlF"), to:tm("rfSlT")}, study:{on:$("#rfStOn").checked, from:tm("rfStF"), to:tm("rfStT"), days:$("#rfStD").value}};
+      for(const [w,l] of [[rules.sleep,"Giờ đi ngủ"],[rules.study,"Giờ tự học ở nhà"]]) if(w.on&&(KKR.hm(w.from)==null||KKR.hm(w.to)==null||w.from===w.to)) return say(`${l}: nhập giờ bắt đầu và giờ kết thúc khác nhau.`);
+      const bt=$("#rfSave"); bt.disabled=true; say("Đang lưu...");
+      try{ const j=await KKP.api("/relax/family",{ref, rules}); closeModal(); KKR.kidPut(j.kid); toast("Đã lưu giới hạn cho "+k.name); }
+      catch(e){ say(e.detail?esc(e.detail):KKP.err(e)); bt.disabled=false; } };
+    const cl=$("#rfClear"); if(cl) cl.onclick=async()=>{
+      closeModal(); if(!await kkConfirm(`Bỏ luật riêng của bố mẹ cho <b>${esc(k.name)}</b>? Con sẽ theo quy định chung của KK-EDU.`, "Bỏ luật riêng")) return;
+      try{ const j=await KKP.api("/relax/family",{ref, rules:null}); KKR.kidPut(j.kid); toast("Đã bỏ luật riêng cho "+k.name); }catch(e){ toast(e.detail||KKP.err(e)); } };
+  },
   set(j){ if(!j) return; KKR.st=j; if(Number(j.now)>0) KKR.off=Number(j.now)-Date.now(); KKR.at=Date.now(); },
   async load(force){
     if(!KKR.member()){ KKR.st=null; return null; }
@@ -2013,7 +2105,8 @@ const KKR = {
     if(ph==="guest") return `<p class="rx-st">Đăng nhập để chơi. Lượt chơi tính theo tài khoản và dùng chung trên mọi thiết bị.</p><div class="mrow"><button class="btn pri" id="rxLogin" type="button">Đăng nhập</button></div>`;
     if(ph==="loading"||ph==="stale") return `<p class="rx-st">Đang kiểm tra lượt chơi của bạn...</p>`;
     if(ph==="error") return `<p class="rx-st">Chưa kiểm tra được lượt chơi. Kiểm tra kết nối mạng rồi thử lại.</p><div class="mrow"><button class="btn" id="rxRetry" type="button">Thử lại</button></div>`;
-    if(ph==="off") return `<p class="rx-st">Góc thư giãn đang tạm đóng. Hãy quay lại sau nhé.</p>`;
+    if(ph==="off") return s.fam&&s.fam.on===false?`<p class="rx-st">Phụ huynh <b>${esc(s.fam.byName||"")}</b> đã tạm khóa Góc thư giãn cho tài khoản này.</p><p class="note" style="margin:8px 0 0">Muốn chơi thì em hỏi bố mẹ nhé. Trong lúc chờ, học tiếp một bài ngắn.</p>${learnBtn}`
+      :`<p class="rx-st">Góc thư giãn đang tạm đóng. Hãy quay lại sau nhé.</p>`;
     if(ph==="playing") return `<p class="rx-st">Bạn đang trong lượt, còn <b data-rx="left">${KKR.mmss(s.endsAt-n)}</b>.</p>
       <div class="rx-meter" aria-hidden="true"><i data-rx="lbar" style="width:${Math.round(100*(s.endsAt-n)/Math.max(1,s.endsAt-s.startAt))}%"></i></div>
       <div class="mrow"><button class="btn pri" id="rxResume" type="button">Vào chơi tiếp</button><button class="btn ghost" id="rxStopBtn" type="button">Kết thúc lượt</button></div>`;
@@ -2054,9 +2147,10 @@ const KKR = {
     <div><b>${c.daily>0?`Tối đa ${c.daily} lượt mỗi ngày, nghỉ ${r} giữa hai lượt`:`Nghỉ ${r} giữa hai lượt`}</b>Hết giờ hoặc tự kết thúc sớm thì ${r} sau mở lại${c.daily>0?"; số lượt tính lại mỗi ngày":""}.</div>
     ${c.reward?`<div><b>Học xong là được chơi sớm</b>Đang nghỉ mà hoàn thành một bài học mới, hoặc ôn Sổ ôn tập (ít nhất 5 câu, hoặc hết các câu đến hạn), thì mở lại ngay; không vượt số lượt mỗi ngày và giờ đóng cửa.</div>`:""}
     ${q.length?`<div><b>Giờ đóng cửa${new Date().getTimezoneOffset()!==-420?" (giờ Việt Nam)":""}</b>${q.map(w=>`${esc(w.name)}: ${esc(w.from)}-${esc(w.to)}, ${esc(KKR.daysTxt(w.days))}`).join("<br>")}</div>`:""}
+    ${KKR.st&&KKR.st.fam?`<div><b>Bố mẹ đặt giới hạn riêng</b>${esc(KKR.famTxt(KKR.st.fam))} (phụ huynh ${esc(KKR.st.fam.byName||"")}).</div>`:""}
     <div><b>Một lượt cho mọi thiết bị</b>Lượt tính theo tài khoản; đổi máy hay đổi giờ máy cũng không mở thêm lượt.</div>
     <div><b>Thành tích nằm trên máy của bạn</b>Điểm kỷ lục lưu trong trình duyệt, không gửi đi đâu.</div>`; },
-  refreshStatus(){ const box=$("#rxStatus"); if(!box) return; const ph=KKR.phase(); box.dataset.ph=ph; box.innerHTML=KKR.statusHTML(ph);
+  refreshStatus(){ const box=$("#rxStatus"); if(!box) return; const ph=KKR.phase(); box.dataset.ph=ph; box.innerHTML=KKR.statusHTML(ph)+KKR.famNote(ph);
     const ru=$("#rxRules"), h=KKR.rulesHTML(); if(ru&&ru._h!==h){ ru.innerHTML=h; ru._h=h; } KKR.bindView($("#view")); },
   watchView(){
     clearInterval(KKR.viewT);
@@ -2081,7 +2175,7 @@ const KKR = {
     if(ph==="rest") return toast("Góc thư giãn mở lại lúc "+KKR.when(Number(s.openAt)||s.nextAt));
     if(ph==="daily") return toast("Hôm nay em đã chơi đủ "+KKR.cfg().daily+" lượt. Mở lại lúc "+KKR.when(s.until));
     if(ph==="quiet") return toast("Góc thư giãn đang đóng ("+KKR.low(s.why,"giờ đóng cửa")+"), mở lại lúc "+KKR.when(s.until));
-    if(ph==="off") return toast("Góc thư giãn đang tạm đóng");
+    if(ph==="off") return toast(s.fam&&s.fam.on===false?"Phụ huynh đã tạm khóa Góc thư giãn cho tài khoản này":"Góc thư giãn đang tạm đóng");
     toast("Đang kiểm tra lượt chơi, thử lại sau giây lát");
   },
   async start(g){
@@ -2091,7 +2185,7 @@ const KKR = {
     try{ const j=await KKP.api("/relax/start", {}); KKR.set(j); if(j.started) kkTrack("thu_gian_bat_dau", {tro:g||""}); KKR.open(); }
     catch(e){
       if(/^relax-(rest|daily|quiet)$/.test(e.code||"")&&e.data&&e.data.state){ const {error, detail, ...st}=e.data; KKR.set(st); toast(detail||"Góc thư giãn chưa mở lượt mới"); }
-      else if(e.code==="relax-off"){ KKR.st=Object.assign({}, KKR.st||{}, {cfg:Object.assign({}, KKR.cfg(), {on:false})}); toast("Góc thư giãn đang tạm đóng"); }
+      else if(e.code==="relax-off"){ const d=e.data||{}; KKR.st=Object.assign({}, KKR.st||{}, {cfg:Object.assign({}, d.cfg||KKR.cfg(), {on:false}), fam:d.fam||null}); toast(d.detail||"Góc thư giãn đang tạm đóng"); }
       else if(e.code==="auth") openLogin();
       else toast(e.code==="rate"?"Thao tác hơi nhanh, thử lại sau vài giây":"Chưa mở được lượt chơi, thử lại sau ít giây");
     }
@@ -2206,15 +2300,16 @@ function viewRelax(v){
     <div class="rx-copy">
       <h1 id="rxH">Góc thư giãn</h1>
       <p class="rx-lead">Nghỉ mắt, thả lỏng tay và đầu óc giữa hai buổi học với ba trò chơi nhẹ nhàng, tiếng đàn ngũ cung khe khẽ và bốn bức tranh để chọn: thủy mặc, anh đào trăng, ngọc bích, neon.</p>
-      <div class="rx-status" id="rxStatus" data-ph="${ph}" aria-live="polite">${KKR.statusHTML(ph)}</div>
+      <div class="rx-status" id="rxStatus" data-ph="${ph}" aria-live="polite">${KKR.statusHTML(ph)+KKR.famNote(ph)}</div>
     </div>
     <figure class="rx-art"><img src="/thu-gian/anh/vuot-vu-mon-lon.webp" width="1280" height="800" alt="Tranh thủy mặc: cá chép nhảy qua những bậc đá về phía thác Vũ Môn giữa hai vách núi" decoding="async"></figure>
   </div>
   <h2 class="rx-sub">Chọn trò chơi</h2>
   <div class="rx-games">${KKR.GAMES.map(g=>`<button class="rx-game" type="button" data-g="${g.id}"><img src="${g.img}" width="800" height="500" alt="${esc(g.alt)}" loading="lazy" decoding="async"><span class="rx-gt"><b>${esc(g.name)}</b><small>${esc(g.txt)}</small></span></button>`).join("")}</div>
   <div class="rx-rules" id="rxRules">${KKR.rulesHTML()}</div>
+  <div id="rxFam"></div>
   </section>`;
-  KKR.bindView(v); KKR.watchView();
+  KKR.bindView(v); KKR.watchView(); KKR.famLoad(false);
   if(!KKR.member()){ if(KKR.ov) KKR.close(); return; }
   if(ph==="loading"||ph==="error"||Date.now()-KKR.at>30000) KKR.load(true).then(()=>{ if(S.route.name==="thugian") KKR.refreshStatus(); });
 }
@@ -2846,6 +2941,7 @@ const KK_LANG={
     cta:[["Học Tiếng Trung","/tieng-trung/"],["Tài liệu xem / in","/tieng-trung/#tai-lieu"],["Chứng chỉ HSK 3","/tieng-trung/#chung-chi"]]}
 };
 const KK_NEWS=[
+  {d:"18/11/2026", t:"all", h:"Phụ huynh đặt giờ chơi Góc thư giãn cho con", p:"Phụ huynh đã liên kết Gia đình đặt riêng cho con giờ đi ngủ, giờ tự học ở nhà, số lượt, số phút mỗi lượt, có thưởng khi học hay không, hoặc tạm khóa (chỉ chặt hơn quy định chung). Báo cáo tuần có thêm dòng Góc thư giãn: số lượt, thời gian chơi, lượt được mở sớm nhờ học."},
   {d:"17/11/2026", t:"all", h:"Góc thư giãn: học xong được chơi sớm, có giờ đóng cửa", p:"Đang nghỉ giữa hai lượt mà học xong một bài mới, hoặc ôn Sổ ôn tập (ít nhất 5 câu, hoặc hết câu đến hạn), thì Góc thư giãn mở lại ngay. Tối đa 3 lượt mỗi ngày; đóng trong giờ học (07:00-11:30, 13:30-17:00 thứ Hai đến thứ Sáu) và giờ ngủ (22:00-06:00). Quản trị chỉnh được các mức này."},
   {d:"17/11/2026", t:"all", h:"Góc thư giãn: 3 trò chơi nhẹ giữa giờ học", p:"Mục Thư giãn trên menu: Vượt Vũ Môn, Nhất Kiếm, Thái Cực Tháp với 4 giao diện tranh vẽ và nhạc ngũ cung. Mỗi tài khoản một lượt tối đa 15 phút, hết lượt nghỉ 2 giờ mới mở lại; giờ tính trên máy chủ, dùng chung mọi thiết bị."},
   {d:"04/11/2026", t:"all", h:"Bộ Chuẩn quốc tế: 16 môn Đại học, Thạc sĩ, Tiến sĩ", p:"192 bài video tương tác soạn theo chương trình tổng hợp 20 hệ thống đại học dẫn đầu thế giới (U21 2020): Giải tích, Đại số tuyến tính, Xác suất - thống kê, Khoa học dữ liệu, AI, Viết học thuật, Kinh tế học, Khoa học bền vững; Học máy, Chính sách công, Quản trị chiến lược, Kĩ thuật hệ thống; Giảng dạy đại học, Thống kê Bayes, AI cho khoa học, Nghiên cứu liên ngành. Mỗi môn có giáo trình PDF và đề thi thử."},
@@ -3859,6 +3955,14 @@ function wrData(now){
   A.push(D.mn?"Phụ huynh: cùng bé kể lại điều bé thích trong bài, khen sự cố gắng của bé.":"Phụ huynh: hỏi con một điều con học được trong tuần, khen sự cố gắng thay vì chỉ nhìn điểm số.");
   D.advice=A; return D;
 }
+/** Góc thư giãn 7 ngày (từ máy chủ, nhật ký theo tài khoản): {n lượt, r lượt mở sớm nhờ học, s giây}; không có thì null. */
+async function wrRelax(){
+  if(typeof KKR==="undefined"||!KKR.member()) return null;
+  try{ if(!KKR.st||!Array.isArray(KKR.st.week)||Date.now()-KKR.at>60000) await Promise.race([KKR.load(true), new Promise(r=>setTimeout(r,2500))]); }catch(e){}
+  const w=KKR.st&&KKR.st.week; if(!Array.isArray(w)) return null;
+  return w.reduce((a,x)=>({n:a.n+(Number(x.n)||0), r:a.r+(Number(x.r)||0), s:a.s+(Number(x.s)||0)}),{n:0,r:0,s:0});
+}
+function wrRelaxTxt(t){ return t&&(t.n||t.r)?`${t.n} lượt${t.s?" (khoảng "+KKR.dur(t.s*1000)+")":""}${t.r?", "+t.r+" lượt được mở sớm nhờ học xong bài hoặc ôn tập":""}`:""; }
 function wrRange(D){ const f=t=>{ const d=new Date(t+7*3600e3); return String(d.getUTCDate()).padStart(2,"0")+"/"+String(d.getUTCMonth()+1).padStart(2,"0")+"/"+d.getUTCFullYear(); }; return f(D.start+864e5)+" - "+f(D.end); }
 function wrCardHTML(){
   const D=wrData(); const seen=LS.get("wrSeen",0), fresh=Date.now()-Number(seen||0)>6*864e5;
@@ -3874,6 +3978,7 @@ function wrText(D){
   if(D.rev||D.due) L.push(`- Sổ ôn tập: đã ôn ${D.rev} câu, còn ${D.due} câu đến hạn, đã thuộc ${D.mas} câu`);
   D.exams.forEach(e=>L.push(`- Kiểm tra: ${e.t}${e.p!=null?" - "+e.p+"%":""}`));
   if(D.thi) L.push(`- Thi thử gần nhất (${D.thi.mode}): ${D.thi.s} ${D.thi.g} - ${String(D.thi.sc).replace(".",",")}/10`);
+  if(wrRelaxTxt(D.tg)) L.push(`- Góc thư giãn: ${wrRelaxTxt(D.tg)}`);
   if(D.weak.length) L.push(`- Cần củng cố: ${D.weak.slice(0,3).map(w=>w.t+" ("+w.p+"%)").join("; ")}`);
   L.push("Lời khuyên:"); D.advice.forEach(a=>L.push("  + "+a));
   return L.join("\n");
@@ -3882,18 +3987,25 @@ function wrLink(D){
   const who=(S.profile&&S.profile.name)||S.name||""; const g=myGrade();
   const o={v:1,n:String(who).slice(0,60),g:g?String(g.label).slice(0,40):"",r:wrRange(D),k:[D.nDays,D.les,D.done,D.q,D.firstPct,D.avg,D.rev,D.due,D.mas],
     b:D.books.slice(0,8).map(x=>[String(x.n).slice(0,70),x.t,x.d]),w:D.weak.slice(0,5).map(x=>[String(x.t).slice(0,90),x.p]),e:D.exams.slice(0,5).map(x=>[String(x.t).slice(0,80),x.p]),
-    x:D.thi?[D.thi.s.slice(0,50),D.thi.g.slice(0,30),D.thi.sc,D.thi.mode]:null,a:D.advice.slice(0,6).map(x=>String(x).slice(0,220)),m:D.mn?1:0};
+    x:D.thi?[D.thi.s.slice(0,50),D.thi.g.slice(0,30),D.thi.sc,D.thi.mode]:null,a:D.advice.slice(0,6).map(x=>String(x).slice(0,220)),m:D.mn?1:0,
+    t:D.tg&&(D.tg.n||D.tg.r)?[D.tg.n,D.tg.r,Math.round(D.tg.s)]:undefined};
   const b64=btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
   return location.origin+"/bao-cao/#d="+b64;
 }
-function wrOpen(){
-  const D=wrData(); LS.set("wrSeen",Date.now()); const who=(S.profile&&S.profile.name)||S.name||"Học viên"; const g=myGrade();
+async function wrOpen(){
+  const tg=await wrRelax();
+  const D=wrData(); D.tg=tg; LS.set("wrSeen",Date.now()); const who=(S.profile&&S.profile.name)||S.name||"Học viên"; const g=myGrade();
+  if(tg){ const ad=[];   // lời khuyên về Góc thư giãn, đặt trước lời khuyên chung cho phụ huynh
+    if(tg.r) ad.push(`Con đã học xong bài hoặc ôn tập để được chơi sớm ${tg.r} lần: Góc thư giãn đang là động lực học, bố mẹ hãy khen con.`);
+    if(tg.n>=10) ad.push(`Tuần này con chơi ${tg.n} lượt Góc thư giãn${tg.s?" (khoảng "+KKR.dur(tg.s*1000)+")":""}. Bố mẹ có thể đặt giờ ngủ, số lượt riêng cho con trong mục Thư giãn (cần liên kết Gia đình).`);
+    if(ad.length) D.advice.splice(Math.max(0,D.advice.length-1),0,...ad); }
   const tile=(v,l)=>`<div><b>${v==null?"-":esc(String(v))}</b><span>${esc(l)}</span></div>`;
   modal(`<div id="wrDoc"><div class="eyebrow">KK-EDU · Báo cáo học tập tuần</div><h3 style="margin:4px 0">${esc(who)}${g?" · "+esc(g.label):""}</h3><div class="note">7 ngày gần nhất: ${esc(wrRange(D))}</div>
     <div class="wrk">${tile(D.nDays+"/7","ngày có học")}${tile(D.les,"bài đã học")}${tile(D.done,"bài hoàn thành")}${D.mn?"":tile(D.q,"câu đã trả lời")}${D.mn?"":tile(D.firstPct!=null?D.firstPct+"%":null,"đúng ngay lần đầu")}${D.mn?"":tile(D.avg!=null?D.avg+"%":null,"điểm trung bình")}${tile(D.rev,"câu đã ôn")}${tile(D.due,"câu đến hạn ôn")}</div>
     ${D.books.length?`<b>Môn đã học</b><ul style="margin:4px 0 10px">${D.books.map(x=>`<li>${esc(x.n)}: ${x.t} bài${x.d?", hoàn thành "+x.d:""}</li>`).join("")}</ul>`:""}
     ${D.exams.length?`<b>Bài kiểm tra trong tuần</b><ul style="margin:4px 0 10px">${D.exams.map(e=>`<li>${esc(e.t)}${e.p!=null?": <b>"+e.p+"%</b>":""}</li>`).join("")}</ul>`:""}
     ${D.thi?`<p style="margin:4px 0 10px"><b>Thi thử gần nhất</b> (${esc(D.thi.mode)}): ${esc(D.thi.s)} ${esc(D.thi.g)} - <b>${esc(String(D.thi.sc).replace(".",","))}/10</b></p>`:""}
+    ${wrRelaxTxt(D.tg)?`<p style="margin:4px 0 10px"><b>Góc thư giãn</b>: ${esc(wrRelaxTxt(D.tg))}.</p>`:""}
     ${D.weak.length?`<b>Cần củng cố</b><ul style="margin:4px 0 10px">${D.weak.slice(0,5).map(w=>`<li><a href="${esc(w.href)}">${esc(w.t)}</a> - ${w.p}%</li>`).join("")}</ul>`:""}
     <b>Lời khuyên</b><ul style="margin:4px 0 10px">${D.advice.map(a=>`<li>${esc(a)}</li>`).join("")}</ul>
     <div class="note">Số liệu tính từ hoạt động học trên KK-EDU của tài khoản này${S.uid?"":" (chế độ Khách: chỉ dữ liệu trên máy này)"}. Bản quyền nội dung: Nguyễn Duy Điển.</div>
@@ -5297,11 +5409,14 @@ function cbKB(){
   {id:"thichung", k:"thi thich ung cat adaptive de thich ung cau kho dan theo nang luc khoang tin cay ngan hon de co dinh",
    a:`<b>Thi thích ứng</b> (thử nghiệm, trong Phòng thi thử): máy chọn câu tiếp theo theo câu trả lời của em: đúng thì câu khó hơn, sai thì câu vừa sức hơn, và dừng khi đã đo đủ chính xác (tối thiểu 10 câu). Với THCS, THPT, Đại học, bài thường ngắn hơn đề cố định khoảng 10-30%; Tiểu học lớp 3-5 làm đủ 15 câu nhưng câu được chọn vừa sức. Kết quả là điểm quy đổi thang 10 kèm <b>khoảng tin cậy</b>. Không quay lại câu trước; xem lại lời giải từng câu sau khi thi. Không áp dụng cho Mầm non và lớp 1-2.`,
    acts:[{l:"Thử thi thích ứng", href:"/thi-thu/"}]},
-  {id:"baocaotuan", chip:"Báo cáo tuần", k:"bao cao tuan phu huynh gui bao cao cho bo me zalo messenger email tong ket tuan hoc cua con link bao cao in pdf",
-   a:`Mục <b>Học tập → Báo cáo tuần cho phụ huynh</b> tổng hợp 7 ngày: số ngày học, bài đã học và hoàn thành, số câu trả lời, tỉ lệ đúng ngay lần đầu, điểm trung bình, Sổ ôn tập, bài kiểm tra, bài cần củng cố và lời khuyên. Gửi qua Zalo, Messenger (nút Chia sẻ), email, <b>link xem báo cáo</b> (dữ liệu nằm sau dấu # của link, không gửi lên máy chủ, KK-EDU không lưu) hoặc in, lưu PDF; chọn được khoảng ngày khác.`,
+  {id:"baocaotuan", chip:"Báo cáo tuần", k:"bao cao tuan phu huynh gui bao cao cho bo me zalo messenger email tong ket tuan hoc cua con link bao cao in pdf thoi gian choi game cua con",
+   a:`Mục <b>Học tập → Báo cáo tuần cho phụ huynh</b> tổng hợp 7 ngày: số ngày học, bài đã học và hoàn thành, số câu trả lời, tỉ lệ đúng ngay lần đầu, điểm trung bình, Sổ ôn tập, bài kiểm tra, <b>Góc thư giãn</b> (số lượt chơi, thời gian, lượt được mở sớm nhờ học), bài cần củng cố và lời khuyên. Gửi qua Zalo, Messenger (nút Chia sẻ), email, <b>link xem báo cáo</b> (dữ liệu nằm sau dấu # của link, không gửi lên máy chủ, KK-EDU không lưu) hoặc in, lưu PDF; chọn được khoảng ngày khác.`,
    acts:[{l:"Mở Báo cáo tuần", go:"dash"}]},
+  {id:"thugianphuhuynh", chip:"Giờ chơi cho con", k:"phu huynh dat gio choi cho con gioi han game cua con goc thu gian gio ngu cua con gio tu hoc khoa tro choi so luot choi cua con bo me kiem soat tro choi",
+   a:`<b>Phụ huynh đặt giờ chơi Góc thư giãn cho con</b>: (1) con đăng nhập, vào <b>IELTS &gt; Gia đình</b> bấm <b>Tạo mã cho phụ huynh</b>; (2) bố mẹ đăng nhập tài khoản của bố mẹ, nhập mã ở cùng trang; (3) bố mẹ mở mục <b>Thư giãn</b>, bấm <b>Đặt giới hạn cho con</b>. Đặt được: <b>tạm khóa</b>, <b>số lượt mỗi ngày</b>, <b>số phút mỗi lượt</b>, <b>giờ đi ngủ</b>, <b>giờ tự học ở nhà</b>, có <b>thưởng lượt khi học</b> hay không. Luật của bố mẹ chỉ chặt hơn quy định chung, có hiệu lực ngay trên mọi thiết bị của con; con thấy giới hạn trong mục Thư giãn. Bố mẹ cũng xem được số lượt chơi 7 ngày của con (nếu con bật chia sẻ tổng quan).`,
+   acts:[{l:"Mở Góc thư giãn", go:"thugian"},{l:"Mở trang Gia đình", href:"/ielts/#go=gia-dinh"}]},
   {id:"thugian", k:"goc thu gian tro choi game choi game giai tri xa stress nghi giai lao thu gian vuot vu mon nhat kiem thai cuc thap 15 phut 2 gio het luot luot choi gio dong cua gio ngu gio hoc 3 luot moi ngay thuong luot hoc xong choi som mo som",
-   a:`<b>Góc thư giãn</b> (mục <b>Thư giãn</b> trên menu) có 3 trò chơi nhẹ để nghỉ mắt giữa giờ học: <b>Vượt Vũ Môn</b>, <b>Nhất Kiếm</b>, <b>Thái Cực Tháp</b>, 4 giao diện tranh vẽ và nhạc ngũ cung. Cần đăng nhập. Mỗi lượt <b>tối đa 15 phút</b> tính từ lúc bấm Bắt đầu; hết lượt hoặc tự kết thúc sớm thì <b>2 giờ sau</b> mới mở lại; tối đa <b>3 lượt mỗi ngày</b>. <b>Giờ đóng cửa</b>: giờ học 07:00-11:30 và 13:30-17:00 thứ Hai đến thứ Sáu, giờ ngủ 22:00-06:00. Đang nghỉ mà <b>học xong một bài mới</b> hoặc <b>ôn Sổ ôn tập</b> (ít nhất 5 câu, hoặc hết câu đến hạn) thì được mở lượt ngay. Quản trị có thể chỉnh các mức này. Giờ tính trên máy chủ nên đổi máy hay đổi giờ máy cũng không thêm lượt. Thành tích lưu trên máy của bạn, không gửi đi đâu.`,
+   a:`<b>Góc thư giãn</b> (mục <b>Thư giãn</b> trên menu) có 3 trò chơi nhẹ để nghỉ mắt giữa giờ học: <b>Vượt Vũ Môn</b>, <b>Nhất Kiếm</b>, <b>Thái Cực Tháp</b>, 4 giao diện tranh vẽ và nhạc ngũ cung. Cần đăng nhập. Mỗi lượt <b>tối đa 15 phút</b> tính từ lúc bấm Bắt đầu; hết lượt hoặc tự kết thúc sớm thì <b>2 giờ sau</b> mới mở lại; tối đa <b>3 lượt mỗi ngày</b>. <b>Giờ đóng cửa</b>: giờ học 07:00-11:30 và 13:30-17:00 thứ Hai đến thứ Sáu, giờ ngủ 22:00-06:00. Đang nghỉ mà <b>học xong một bài mới</b> hoặc <b>ôn Sổ ôn tập</b> (ít nhất 5 câu, hoặc hết câu đến hạn) thì được mở lượt ngay. Quản trị có thể chỉnh các mức này; phụ huynh đã liên kết Gia đình đặt được giới hạn riêng chặt hơn cho con. Giờ tính trên máy chủ nên đổi máy hay đổi giờ máy cũng không thêm lượt. Thành tích lưu trên máy của bạn, không gửi đi đâu.`,
    acts:[{l:"Mở Góc thư giãn", go:"thugian"}]},
   {id:"ontap", chip:"Sổ ôn tập", k:"on tap so on tap cau sai on lai lap lai ngat quang nhac on quen bai nho lau hoc lai cau sai",
    a:`Câu em làm <b>sai</b>, hoặc phải làm <b>lần 2 mới đúng</b>, trong bài học tự vào <b>Sổ ôn tập</b> (mục Học tập). Hệ thống nhắc ôn đúng lúc sắp quên theo phương pháp <b>lặp lại ngắt quãng</b>: sau 1, 3, 7, 16, 35 ngày; trả lời đúng thì lịch ôn giãn ra, sai thì ôn lại sớm, đúng ở hộp cuối là đã thuộc. Mỗi lượt 5-10 phút, không tính vào điểm chính thức. Thứ tự phương án trắc nghiệm được xáo để em nhớ kiến thức, không nhớ vị trí đáp án.`,
@@ -5721,7 +5836,7 @@ function adminRelax(el){
   const stats=async()=>{ say("rxStats","Đang tải...");
     try{ const j=await KKP.api("/relax/admin"), k=j.cfg||{}, rows=j.days||[], tn=rows.reduce((a,x)=>a+(Number(x.n)||0),0), tr=rows.reduce((a,x)=>a+(Number(x.r)||0),0);
       const nq=Array.isArray(k.quiet)?k.quiet.length:0;
-      say("rxStats",`<p style="margin:0 0 8px">Đang trong lượt: <b>${Number(j.playing)||0}</b> tài khoản. Trong 7 ngày: <b>${tn}</b> lượt chơi, <b>${tr}</b> lượt thưởng nhờ học. Cấu hình máy chủ đang dùng: ${k.on===false?"tạm đóng":"mở"}, ${esc(k.min)} phút mỗi lượt, nghỉ ${esc(k.rest)} phút, ${Number(k.daily)>0?`tối đa ${esc(k.daily)} lượt mỗi ngày`:"không giới hạn lượt mỗi ngày"}, thưởng khi học ${k.reward===false?"tắt":"bật"}, ${nq} khung giờ đóng cửa.</p>
+      say("rxStats",`<p style="margin:0 0 8px">Đang trong lượt: <b>${Number(j.playing)||0}</b> tài khoản. Trong 7 ngày: <b>${tn}</b> lượt chơi, <b>${tr}</b> lượt thưởng nhờ học. Phụ huynh đặt luật riêng cho <b>${Number(j.famN)||0}</b> tài khoản. Cấu hình máy chủ đang dùng: ${k.on===false?"tạm đóng":"mở"}, ${esc(k.min)} phút mỗi lượt, nghỉ ${esc(k.rest)} phút, ${Number(k.daily)>0?`tối đa ${esc(k.daily)} lượt mỗi ngày`:"không giới hạn lượt mỗi ngày"}, thưởng khi học ${k.reward===false?"tắt":"bật"}, ${nq} khung giờ đóng cửa.</p>
         <div class="tbwrap"><table class="tb"><thead><tr><th>Ngày</th><th>Lượt chơi</th><th>Tài khoản chơi</th><th>Lượt thưởng nhờ học</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${day(x.day)}</td><td>${Number(x.n)||0}</td><td>${Number(x.u)||0}</td><td>${Number(x.r)||0}</td></tr>`).join("")}</tbody></table></div>
         <p style="margin:8px 0 0">Lượt thử của tài khoản Quản trị không tính vào số liệu.</p>`); }
     catch(e){ say("rxStats", e.code==="not-configured"?"Máy chủ chưa cấu hình dữ liệu (GCP_SA_KEY).":"Chưa tải được số liệu: "+KKP.err(e)); } };
