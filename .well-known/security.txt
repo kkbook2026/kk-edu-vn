@@ -1,4 +1,4 @@
-Contact: mailto:nguyenduydien75@gmail.com
+Contact: mailto:info@kk-edu.vn
 Expires: 2027-10-24T00:00:00.000Z
 Preferred-Languages: vi, en
 Canonical: https://www.kk-edu.com/.well-known/security.txt
