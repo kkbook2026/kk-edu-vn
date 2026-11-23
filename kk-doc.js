@@ -251,7 +251,7 @@ function viFgnCls(w,sci){
   const lw=w.toLowerCase().replace(/’/g,"'"), base=lw.replace(/'.*$/,"");
   if(/[A-Za-z]['’][A-Za-z]|s['’]$/.test(w)&&base.length>=2) return "F";   /* Let's, students', don't: dấu tiếng Anh */
   if(VI_CODEKW.has(base)) return "F";   /* từ khóa lập trình: for, while, if, else, range, True... đọc giọng Anh (từ điển phiên âm chỉ là dự phòng) */
-  if(base.length<=2) return (base.length===2&&(VI_ENSTOP.has(base)||/^(go|up|us|am|no|so|oh|hi)$/.test(base)))?"S":"X";
+  if(base.length<=2) return (base.length===2&&!/^[A-Z]{2}$/.test(w.replace(/['’].*$/,""))&&(VI_ENSTOP.has(base)||/^(go|up|us|am|no|so|oh|hi)$/.test(base)))?"S":"X";   /* OH, IT, US, NO viết hoa: kí hiệu/viết tắt */
   if(viGeno(w)) return "X";
   if(VI_FIX[w]&&VI_FIX[w][0]!==VI_FIX[w][0].toLowerCase()) return "R";   /* WHO → Tổ chức Y tế Thế giới, Hanoi → Hà Nội */
   if(base.length>=3&&(VI_ENSTOP.has(base)||base==="where")&&/^[A-Za-z][a-z]+$/.test(w.replace(/['’].*$/,""))) return "S";   /* for, and, this, should, Why, Where: hư từ tiếng Anh (không tính WHO, DiD) */
@@ -283,6 +283,7 @@ function viEnWord(w){
   if(VI_FIX[w]) return VI_FIX[w];
   const lw=w.toLowerCase(); if(VI_DICT[lw]) return VI_DICT[lw];
   const t=VI_TERMS.find(x=>x[0]===w); if(t) return t[1];
+  if(/^[A-Z][a-z]$/.test(w)&&viIsSyl(lw)) return w;   /* tên riêng 2 chữ cái giữa câu tiếng Anh: my name is An → An */
   if(VI_EN2[lw]) return VI_EN2[lw];
   if(/^[A-Z]{2,6}$/.test(w)||w.length<=2||!/[aeiouy]/i.test(w)) return viSpell(w);
   return viTranslit(w);
@@ -379,15 +380,27 @@ function viEnMark(s,isTA,store,sci){
       subs.forEach(run=>{
       const cl=run.map(x=>/^(?:AND|NOT|XOR|NAND|NOR)$/.test(x.t)||(x.t==="OR"&&boolCtx)?"F":s[x.a-1]==="."&&/^[a-z]{2,5}$/.test(x.t)?"X":viFgnCls(x.t,sci)), nF=cl.filter(c=>c==="F").length;   /* toán tử Boole AND, OR, NOT: giọng Anh (OR một mình = tỉ số chênh: đánh vần) */
       if(!nF){   /* chỉ gồm hư từ tiếng Anh không trùng chữ Việt: Chữ 'Who', What, When → giọng tiếng Anh */
-        if(cl.every(c=>c==="S")&&run.some(x=>{ const w=x.t.replace(/['’]/g,"").toLowerCase(); return w.length>=3&&!viIsSyl(w)&&!VI_STRIM.has(w); })) spans.push([run[0].a,run[run.length-1].b]);
+        const enS=(x,min)=>{ const t=x.t.replace(/['’]/g,""), w=t.toLowerCase(); return w.length>=min&&/^[A-Za-z][a-z]+$/.test(t)&&!viIsSyl(w)&&!VI_STRIM.has(w)&&(w.length>2||run.length>1||t===w); };   /* As, Is đứng một mình viết hoa: kí hiệu (diện tích thép As), không phải từ tiếng Anh */
+        if(cl.every(c=>c==="S")&&run.some(x=>enS(x,2))) spans.push([run[0].a,run[run.length-1].b]);
+        /* cụm chỉ gồm từ có phiên âm + hư từ tiếng Anh không trùng chữ Việt: Thank you → giọng Anh */
+        else if(run.length>=2&&cl.every(c=>c==="D"||c==="S")&&run.some((x,i)=>cl[i]==="S"&&enS(x,2))) spans.push([run[0].a,run[run.length-1].b]);
         return; }
-      /* "I think...": đại từ I đứng đầu, ngay trước động từ tiếng Anh viết thường (không phải số La Mã: phần I, bài I) */
-      if(run[0].t==="I"&&run.length>1&&/[FDS]/.test(cl[1])&&/^[a-z]/.test(run[1].t)&&!/(phần|bài|chương|mục|loại|nhóm|cấp|kì|kỳ|tập|khóa|khoá|số|hình|bảng)\s*$/i.test(s.slice(Math.max(0,run[0].a-12),run[0].a))) cl[0]="F";
+      /* đại từ I giữa cụm tiếng Anh (May I come in, Can I help you): cả cụm là câu tiếng Anh */
+      let sentI=false;
+      run.forEach((x,i)=>{ if(x.t==="I"&&run.length>1&&((i>0&&/[FDS]/.test(cl[i-1]))||(i+1<run.length&&/[FDS]/.test(cl[i+1])))&&!/(phần|bài|chương|mục|loại|nhóm|cấp|kì|kỳ|tập|khóa|khoá|số|hình|bảng|bậc)\s*$/i.test(s.slice(Math.max(0,x.a-12),x.a))){ cl[i]="F"; sentI=true; } });
       const nS=cl.filter(c=>c==="S").length, nR=cl.filter(c=>c==="R"||c==="X").length;
-      if(nF+nS>=nR){
-        /* cả cụm là tiếng nước ngoài: bỏ số, chữ Việt không dấu, kí hiệu ở hai đầu */
-        const cut=i=>/[NRX]/.test(cl[i])||(cl[i]==="S"&&VI_STRIM.has(run[i].t.toLowerCase()));
-        let a=0,b=run.length-1; while(a<=b&&cut(a)) a++; while(b>=a&&cut(b)) b--;
+      if(nF+nS>=nR||sentI){
+        /* cả cụm là tiếng nước ngoài: bỏ số, chữ Việt không dấu, kí hiệu ở hai đầu; hư từ trùng chữ Việt (in, an, to, me)
+           chỉ bỏ khi giáp chữ Việt (Mở in File Explorer, an toàn) - đứng ở đầu/cuối câu thì giữ (Excuse me, May I come in) */
+        const isViW=w=>!!w&&(/[À-ỹĐđ]/.test(w)||VI_VNNOD.has(w.toLowerCase()));
+        const viL=isViW((s.slice(0,run[0].a).match(/([A-Za-zÀ-ỹĐđ]+)[\s,;:()"'“”‘’]*$/)||[])[1]), viR=isViW((s.slice(run[run.length-1].b).match(/^[\s,;:()"'“”‘’]*([A-Za-zÀ-ỹĐđ]+)/)||[])[1]);
+        /* chữ Việt thật (tên riêng, tên biến, từ không dấu quen dùng) luôn bỏ ở mép; chữ chỉ "trông như" âm tiết Việt
+           (much, May, let) chỉ bỏ khi giáp chữ Việt; từ đứng sát đại từ I (May I, Can I) luôn giữ */
+        const realVi=w=>{ const l=w.toLowerCase(); return !!((VI_FIX[w]&&VI_FIX[w][0]!==VI_FIX[w][0].toLowerCase())||VI_IDV[l]||VI_VNNOD.has(l)||VI_LOANVN.has(l)||VI_VNAMB.has(l)); };
+        const nearI=i=>(i>0&&run[i-1].t==="I")||(i+1<run.length&&run[i+1].t==="I");
+        const cut=(i,vi)=>{ const c=cl[i], w=run[i].t.replace(/['’].*$/,""); if(/[NX]/.test(c)) return true; if(sentI&&nearI(i)) return false;
+          if(c==="R") return realVi(w)||(vi&&w===w.toLowerCase()); return !sentI&&vi&&c==="S"&&VI_STRIM.has(w.toLowerCase()); };
+        let a=0,b=run.length-1; while(a<=b&&cut(a,viL)) a++; while(b>=a&&cut(b,viR)) b--;
         if(a<=b) spans.push([run[a].a,run[b].b]);
       } else {
         /* chỉ nhóm từ nước ngoài liền nhau (kèm từ có cách đọc Việt hóa, hư từ đứng sát): Nguyen Du School → School */
@@ -454,6 +467,7 @@ function viUnitWords(u){
 function viLetName(c){ const set={N:"en",Z:"dét",Q:"quy",R:"e rờ",I:"i",C:"xê","ℕ":"en","ℤ":"dét","ℚ":"quy","ℝ":"e rờ","ℂ":"xê"}; return set[c]||VI_LET[String(c).toLowerCase()]||c; }
 function viPre(s,isTA){
   if(!s) return s;
+  s=s.replace(/\s{2,}/g,m=>/\n/.test(m)?"\n":" ");   /* gộp chuỗi khoảng trắng dài trước mọi quy tắc (tránh chạy rất lâu với hàng nghìn dấu cách) */
   s=s.replace(/µ/g,"μ").replace(/\u2212/g,"-").replace(/\u2009|\u202f/g," ");
   s=s.replace(/&lt;/g,"<").replace(/&gt;/g,">");
   s=s.replace(/<(\/?)([a-zA-Z][a-zA-Z0-9]*)((?:\s+[^<>]*?)?)\s*\/?>/g,(m,c,t,at,off,str)=>(/thẻ\s*$/i.test(str.slice(Math.max(0,off-6),off))?" ":" thẻ ")+(c?"đóng ":"")+t+(at?" "+at.replace(/=/g," bằng ").replace(/["']/g,""):"")+", ");
@@ -638,6 +652,7 @@ function viNorm(raw,opt){
   s=s.replace(/&nbsp;/g," ").replace(/&amp;/g," và ").replace(/ /g," ").normalize("NFC");
   s=viPre(s,isTA);
   s=s.replace(/[*_`#~]+/g," ");
+  s=s.replace(/\s{2,}/g,m=>/\n/.test(m)?"\n":" ");   /* gộp chuỗi khoảng trắng dài: tránh biểu thức chính quy chạy rất lâu (400 dấu cách từng mất ~4 giây), lời đọc không đổi */
   s=s.replace(/[₀₁₂₃₄₅₆₇₈₉]/g,c=>String("₀₁₂₃₄₅₆₇₈₉".indexOf(c))).replace(/[⁰¹⁴⁵⁶⁷⁸⁹]/g,c=>"^"+"⁰¹  ⁴⁵⁶⁷⁸⁹".indexOf(c));
   /* 0. bài tiếng Anh: kí hiệu ngữ pháp và hậu tố */
   if(isTA){
@@ -708,6 +723,8 @@ function viNorm(raw,opt){
     }
     return pre+" "+t.v+" "; }); });
   /* 3. số La Mã: sau từ khóa, hoặc kiểu copper(II) / dạng nhiều kí tự */
+  /* bậc trong âm nhạc: bậc I, bậc V, bậc I - IV - V (chỉ I V X, tránh nhầm chữ C, L) */
+  s=s.replace(/(bậc)\s+([IVX]{1,4}(?:\s*(?:-|–|,|và|hoặc|đến|lên)\s*[IVX]{1,4})*)(?![A-Za-zÀ-ỹ\u0300-\u036f])/gi,(m,k,ch)=>{ const toks=ch.match(/[IVX]{1,4}/g)||[]; if(!toks.length||toks.some(r=>!viRoman(r))) return m; return k+" "+ch.replace(/[IVX]{1,4}/g,r=>viNum(String(viRoman(r)))); });
   s=s.replace(/(thế kỉ|thế kỷ|chương|phần|tập|khóa|khoá|bài|mục|học kì|học kỳ|kì|kỳ|quyển|đại hội|loại|nhóm|cấp|vua|giai đoạn|phiên bản)\s+([IVXLC]{1,6})(?![A-Za-zÀ-ỹ\u0300-\u036f])/gi,(m,k,r)=>{ if(r!==r.toUpperCase()) return m; const n=viRoman(r); return n?k+" "+viNum(String(n)):m; });
   s=s.replace(/\(\s*([IVX]{1,4})\s*\)/g,(m,r)=>{ const n=viRoman(r); return n?" "+viNum(String(n))+" ":m; });
   s=s.replace(/(^|[^A-Za-zÀ-ỹ])([IVXLC]{2,6})(?![A-Za-zÀ-ỹ])/g,(m,pre,r)=>{ const n=viRoman(r); return n?pre+viNum(String(n)):m; });
@@ -728,7 +745,7 @@ function viNorm(raw,opt){
     return pre+" "+units.map(u=>{ const sy=u.replace(/\d+/,""), n=u.replace(/^\D+/,""); return viSpell(sy)+(n?" "+viNum(n):""); }).join(" ")+" ";
   });
   /* 6. biểu thức toán: f(x) trước, rồi các đoạn có phép toán */
-  s=s.replace(/(^|[^A-Za-zÀ-ỹ])([a-zA-Z])(['’]?)\s*\(\s*([a-zA-Z0-9]{1,3})\s*\)/g,(m,pre,f,pr,x)=>pre+" "+VI_LET[f.toLowerCase()]+(pr?" phẩy":"")+" của "+(/^\d+$/.test(x)?x:viSpell(x))+" ");
+  s=s.replace(/(^|[^A-Za-zÀ-ỹ])([a-zA-Z])(['’]?)\s*\(\s*([a-zA-Z0-9]{1,3})\s*\)/g,(m,pre,f,pr,x)=>/^[A-Z][a-z]{2,}$/.test(x)?m:pre+" "+VI_LET[f.toLowerCase()]+(pr?" phẩy":"")+" của "+(/^\d+$/.test(x)?x:viSpell(x))+" ");   /* V (Son): chú thích tên riêng, không phải hàm số */
   const ATOM="(?:\\d+(?:[.,]\\d+)?)?(?:(?:sin|cos|tan|cotg|cot|tg|log|ln|lg|lim|max|min)?[A-Za-z]{0,3}[α-ωΔΣΩΦ]?)?(?:\\d+)?(?:['’]|²|³)*";
   const MRE=new RegExp("(^|[^A-Za-zÀ-ỹ0-9])((?:√|\\|)?\\(?\\s*"+ATOM+"\\s*\\)?(?:\\s*(?:[=+\\-−<>≤≥≠×·*/^]|²|³)\\s*(?:√|\\|)?\\(?\\s*"+ATOM+"\\s*\\)?(?:\\|)?)+)(?![A-Za-zÀ-ỹ])","g");
   s=s.replace(MRE,(m,pre,seg)=>{
@@ -805,13 +822,25 @@ function viEnPlain(t){
   }).filter(x=>x&&!/^[.,;:!?]$/.test(x)).join(" ");
 }
 
+/* Vế câu dài hơn 130 ký tự mà không có dấu phẩy: ngắt ở ranh giới từ, ưu tiên trước liên từ/giới từ (và, nhưng, để, của, trong...)
+   để giọng thiết bị (Chrome Android, iOS) không tự cắt câu dài */
+function viCut(se){
+  const r=[]; se=String(se).trim();
+  while(se.length>130){
+    const win=se.slice(0,131), re=/\s(?=(?:và|nhưng|hoặc|để|khi|thì|mà|nên|vì|của|với|trong|theo|từ|đến|là|cho|tại|do|bởi|nhằm|gồm|như|so với|nếu)\s)/g; let k=-1, m;
+    while((m=re.exec(win))) if(m.index>=50) k=m.index;
+    if(k<0) k=win.lastIndexOf(" "); if(k<40) k=se.indexOf(" ",130); if(k<0) break;
+    r.push(se.slice(0,k).trim()); se=se.slice(k).trim();
+  }
+  if(se) r.push(se); return r;
+}
 /* Tách thành đoạn ngắn (<=130 ký tự) tại dấu câu để giọng AI ngắt nghỉ tự nhiên */
 function viChunks(spoken){
   const sents=String(spoken).match(/[^.!?;]+[.!?;]*/g)||[]; const out=[];
   sents.forEach(se=>{
     se=se.trim(); if(!se) return;
     if(se.length<=130){ out.push(se); return; }
-    const parts=se.match(/[^,:]+[,:]*/g)||[se]; let cur="";
+    const parts=[].concat(...(se.match(/[^,:]+[,:]*/g)||[se]).map(p=>p.trim().length>130?viCut(p.trim()):[p])); let cur="";
     parts.forEach(p=>{ p=p.trim(); if((cur+" "+p).trim().length>130 && cur){ out.push(cur.trim()); cur=p; } else cur=(cur+" "+p).trim(); });
     if(cur) out.push(cur.trim());
   });
