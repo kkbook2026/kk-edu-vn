@@ -6,7 +6,11 @@
    chia hết, lũy thừa, căn, logic, xác suất); đơn vị đo; công thức và ion hóa học;
    mũi tên; toán tử lập trình, bảng tính; chỗ trống; chữ Hán (âm Hán Việt);
    câu tiếng Anh trong bài Tiếng Anh đọc bằng giọng tiếng Anh.
-   Dùng: viNorm(văn bản, {digits, en, ta}) · kkSay([câu...], {ta, rate, onend}) · kkSayStop()
+   KK-VOICE v6 (23/11/2026): từ/cụm tiếng nước ngoài lẫn trong bài môn khác (thuật ngữ, tên riêng, từ khóa lập trình)
+   cũng đọc giọng Anh; tên biến/tên tệp/tên miền tiếng Việt không dấu đọc thành chữ có dấu; Tiếng Việt lớp 1 đọc chữ
+   theo âm (tờ, gờ kép); không đánh vần chữ Việt trong biểu thức (Mg2+ → em giê hai cộng).
+   Dùng: viNorm(văn bản, {digits, en, ta, book}) · kkSay([câu...], {ta, book, rate, onend}) · kkSayStop()
+   (book: mã sách/bài, ví dụ PT-HOA-11 - môn khoa học thì thuật ngữ khoa học đọc kiểu Việt; trang bài học tự lấy từ bài đang mở)
    ===================================================================== */
 /* Thay cho lookbehind (?<![...]): Safari iOS < 16.4 không hiểu cú pháp này, cả tệp sẽ lỗi.
    kkNB(/mẫu/g, /kí tự đứng trước bị cấm/) dùng trong .replace(), cùng ngữ nghĩa với /(?<![...])mẫu/g */
@@ -76,10 +80,11 @@ const VI_TERMS=[
  ["TCP/IP","tê xê pê i pi"],["Cat6A","cát sáu ây"],["Cat6","cát sáu"],["Cat5e","cát năm i"],["Cat5","cát năm"],["Cat7","cát bảy"],["Ox","ô ích"],["Oy","ô i"],["Oz","ô dét"],["Oxy","ô ích i"],["Oxyz","ô ích i dét"]
 ];
 /* Sửa cách đọc theo ngữ cảnh lớp học (soát bằng Claude API 10/2026, khớp đúng chữ hoa thường) */
-const VI_FIX={"hydrogen":"hi đờ rô gen","oxy":"ô xi","UNCLOS":"công ước Liên hợp quốc về Luật Biển","WHERE":"quơ","AVERAGE":"ê vơ rịch","README":"ri đờ mi","GPS":"gi pi ét","range":"rên giơ","NaCl":"na xê e lờ","for":"pho","New":"niu","Campuchia":"cam pu chia","token":"tô ken","descent":"đi xen","VTPT":"véc tơ pháp tuyến","and":"en","pandas":"pan đa","JOIN":"gioin","Alkane":"an kan","lab":"láp","xti":"xờ ti","Nernst":"néc xơ","else":"eo","HAVING":"hép vinh","SELECT":"xi lếch","der":"đơ","bar":"ba","VTCP":"véc tơ chỉ phương","name":"nêm","Rogers":"rô giơ","First":"phớt","UPDATE":"ắp đết","request":"ri quét","GROUP":"gờ rúp","concerto":"con chéc tô","taa":"ta a","site":"xai","like":"lai","This":"đít","this":"đít","should":"sút","For":"pho","Newcastle":"niu cát xồ","Hall":"hôn","Bru":"bờ ru","wellness":"oen nét","conic":"cô níc","ORDER":"oóc đơ","MUON":"mượn","Charles":"sác lơ","OCOP":"ô cóp","xpia":"xờ pia","GRADE":"gờ rây","gigabyte":"gi ga bai","emic":"ê mích","etic":"ê tích","Haydn":"hai đơn","Michael":"mai cồ","Heal":"hiu","World":"uơn","Science":"sai ần","study":"xờ ta đi","Creative":"cờ ri ây tịp","Why":"oai","Wright":"rai","moodboard":"mút boóc","Paris":"pa ri","Braque":"bơ rắc","Kraljic":"cờ ra lích","rad":"ra đi an","CRISPR":"cơ rít pơ","LEFT":"lép","STRIDE":"xờ trai","pound":"pao","NamXB":"năm ích bê","Young":"i âng","Coulomb":"cu lông","were":"uơ","Oxy":"ô xi","GTLN":"giá trị lớn nhất","GTNN":"giá trị nhỏ nhất","Leibniz":"lai bơ nít","FAST":"phát","ukulele":"u cu lê lê","canvas":"ken vơ","churn":"chơn","associated":"ơ sâu xi ây tịt","joulemeter":"giun mi tơ","Achilles":"a ki lơ","Descartes":"đề các","Sartre":"xác tơ","Jar":"gia","Phelps":"phen pơ","Vienna":"vi en na","Cmaj":"xi mây giơ","Finally":"phai nơ li","learning":"lơn ninh","Journal":"giơ nồ","megabyte":"mê ga bai","All":"ô","stress":"xờ trét","lacI":"lác i","Dolly":"đô li","Pictures":"pích chờ","Square":"xờ que","kNm":"ki lô niu tơn mét","QCVN":"quy chuẩn Việt Nam","pallet":"pa lét","Fade":"phây","are":"a","have":"hép","box":"bóc","Carnot":"các nô","qubit":"kiu bít","Red":"rét","phage":"phây giơ","TTCB":"tư thế chuẩn bị","seq":"xíc","title":"tai tơ","Butler":"bắt lơ","SOLID":"sô lít","Ramayana":"ra ma gia na","cue":"kiu","Cauchy":"cô si","FROM":"phờ rôm","ene":"en","nslookup":"en ét lúc úp","strong":"xờ trong","Durkheim":"đuốc khem","Firefox":"phai a phốc","SQLite":"ét kiu eo lai","CREATE":"cờ ri ết","SoLuong":"số lượng","Rutherford":"rơ dơ phót","xenon":"xê nôn","Rhizobium":"ri dô bi um","Down":"đao","sinx":"sin ích","percussion":"pơ cắt sần","Yaly":"i a li","suggest":"sơ giét","higher":"hai ơ","dog":"đóc","Hello":"hê lô","Thank":"thanh","Saussure":"xô xuya","Grice":"gờ rai","Hegel":"hê ghen","Stokes":"xờ tốc","MWh":"mê ga oát giờ","rho":"rô","tex":"tếch","xcan":"xờ can","big":"bích","IELTS":"ai eo","Add":"át","Changes":"chen giơ","Think":"thinh","all":"ôn","Results":"ri dơn","Discussion":"đít cát sần","about":"ơ bao","sample":"xam pồ","axetic":"a xê tích","xeton":"xê tôn","therefore":"đe phô","wrap":"rap","wrong":"rông","view":"viu","end":"en","allolactose":"a lô lắc tô dơ","Syne":"xai","Seurat":"xơ ra","lux":"lúc","LOTUS":"lô tút","EDGE":"ét","laytime":"lây taim","cash":"két","Save":"xây","raxemic":"ra xê mic","Vis":"vít","fit":"phít","ALARA":"a la ra","down":"đao","Khufu":"khu phu","found":"phao","Dweck":"đu ếch","she":"xi","out":"ao","sky":"xờ cai","think":"thing","new":"niu","ribose":"ri bô dơ","deadline":"đét lai","ROBINS":"rô bin","Kirchhoff":"kiếc khốp","contactor":"công tắc tơ","MOSFET":"mốt phét","Caesar":"xê da","Abbe":"áp bê","triester":"tri ét te","nitrous":"ni trớt","SEV":"Hội đồng Tương trợ Kinh tế","break":"bờ rếch","Lewin":"lê vin","would":"út","arrange":"ờ rên","Deff":"đê ép ép","assert":"ờ xớt","IndexError":"in đếch e rờ","GitHub":"git hấp","Wireshark":"oai a sác","UNIQUE":"diu ních","review":"ri viu","Could":"cút","Colosseum":"cô lô xê um","Copernicus":"cô péc ních","one":"oăn","night":"nai","xten":"xơ ten","Everyone":"ép ri oăn","head":"hét","Mills":"mi lơ","filetype":"phai tai","MaSach":"mã sách","TenSach":"tên sách","BANDOC":"bạn đọc","Lenz":"len xơ","deuterium":"đơ te ri","tritium":"tri ti","beryllium":"be ri li","help":"hép","TNHH":"trách nhiệm hữu hạn","kiloohm":"ki lô ôm","FIBA":"phi ba","His":"hít","lal":"ha lan","abxixic":"ap xi xic","AaBbDd":"a a bê bê đê đê","Gibberellin":"gi be rê lin","Abscisic":"ap xi xic","Vietsovpetro":"việt xô pết rô","cesium":"xê si","germanium":"giéc ma ni","titanium":"ti tan","sunphuric":"xun phu rích","Oyz":"ô i dét","nkck":"en ca xê ca","nici":"en i xê i","Mayer":"mây ơ","fuchsin":"phúc xin","lactamase":"lac ta mây","Creatinin":"cờ rê a ti nin","WHO":"Tổ chức Y tế Thế giới","folic":"phô lích","low":"lâu","birth":"bớt","weight":"u ây","mortality":"moóc ta li ti","Meadows":"me đô","money":"ma ni","Ukulele":"u cu lê lê","off":"óp","Ksa":"cờ xa","Sri":"xờ ri","use":"diu","six":"xíc","Chauvet":"sô vê","wow":"oa","acquy":"ắc quy","xavan":"xa van","Ortho":"ọt thô","MIRROR":"mi rơ","Searle":"xơn","Jauss":"giao xơ","Tylor":"tai lơ","Geertz":"ghít xờ","Pike":"pai","Rhodes":"rốt","caffein":"ca phê in","blouse":"bờ lu","kWp":"ki lô oát đỉnh","Maillard":"mai a","Weisbach":"vai xơ bác","Tex":"téc","denier":"đơ ni ê","monome":"mô nô me","lime":"lai","Rockwell":"rốc oen","Charpy":"sác pi","Polyme":"pô li me","Six":"xích","Power":"pao ơ","Ada":"ây đa","ENIAC":"ê ni ác","Page":"pây","Number":"nam bơ","Theme":"thim","View":"viu","Major":"mây giơ","Citation":"xai tây sần","Dangerous":"đên giơ rợt","known":"nôn","our":"ao ơ","analysed":"a nơ lai dơ","Little":"lít tồ","hypothesis":"hai pó thi sít","outcome":"aut cam","raw":"rô","research":"ri xớt","teachers":"ti chơ","Hanoi":"Hà Nội","language":"lang gờ uây","finding":"phai đinh","Ure":"u rê","ure":"u rê","Xylazine":"xi la din","xylazine":"xi la din","xylitol":"xi li tôn","cyanide":"xi a nua","kilobyte":"ki lô bai","terabyte":"te ra bai","Https":"hát tê tê pê ét","Fansipan":"phan xi păng","Fan":"phan","xtrim":"xờ trim","House":"hao","Schools":"xờ cu lơ","wellbeing":"oen bi inh","shows":"xâu","shade":"xây","Archaeopteryx":"ác ki óp tê rích","Beagle":"bi gồ","Miller":"mi lơ","Xti":"xờ ti","Burns":"bơn","Moodboard":"mu bo","Recycle":"ri xai cồ","Device":"đi vai","Behind":"bi hai","Right":"rai","Merge":"mơ giơ","viet":"viết","Corbusier":"cọt bu di ê","abcabc":"a bê xê a bê xê","Once":"oăn","upon":"ơ pon","heard":"hớt","sound":"xao","well":"oen","Clarke":"cờ lác","drive":"đờ rai","TimHieu":"tìm hiểu","ChuaMotCot":"chùa một cột","QueHuong":"quê hương","MuaHe":"mùa hè","Unikey":"u ni ki","talk":"tóc","move":"mu vơ","Deforestation":"đi phô rét xờ tây sần","through":"thơ ru","Many":"me ni","Pane":"pên","Rows":"rô","Values":"va liu","Nguyen":"Nguyễn","Muon":"mi ôn","bauxit":"bô xít","xianua":"xi a nua","Xianua":"xi a nua","cacbocation":"cac bô ca ti ôn","salixylic":"xa li xi lic","Beer":"bia","Himalaya":"hi ma lay a","SciPy":"xai pai","curve":"cơ vờ","webcam":"oép cam","docx":"đốc ích","Two":"tu","walked":"uốc","went":"oen","saw":"xô","Now":"nao","English":"ing lít","girl":"gơ","tiny":"tai ni","bird":"bơ","flew":"phờ lu","fly":"phờ lai","learned":"lơn","sucrose":"xac ca rô dơ","Leeuwenhoek":"lê vơn húc","Schwann":"xơ van","Ernest":"éc nét","Wow":"oa","taaaa":"ta a a a","March":"mác","Strauss":"xờ trao","cor":"co","Pierre":"pi e","Sound":"xao","Music":"miu dích","Mmm":"ưm","loudness":"lao nớt","xpi":"xờ pi","xtin":"xờ tin","xtan":"xờ tan","xpu":"xờ pu","Barrier":"ba ri ơ","carton":"các tông","Lab":"láp","SPIDER":"xờ pai đơ","mactenxit":"mác ten xít","panme":"pan me","Panme":"pan me","kvar":"ki lô va","Val":"va lin","Chargaff":"sác gáp","coenzyme":"cô en dim","Lineweaver":"lai nuy vơ","thalassemia":"tha la xê mi a","Phage":"phây dơ","aminoglycoside":"a mi nô gơ li cô xit","gyrase":"gai rây dơ","Pichia":"pi ki a","blastn":"bơ lat en","blastp":"bơ lat pê","blastx":"bơ lat ích","Neighbor":"nây bơ","Sanger":"xan gơ","ate":"ết","Gly":"gơ li xin","Ala":"a la nin","baking":"bây king","Baking":"bây king","ASCII":"át ki","nguyenvanan":"nguyễn văn an","Align":"ơ lai","lower":"lâu ơ","VIETNAM":"việt nam","append":"ơ pen","remove":"ri mu","Teachable":"tít chờ bồ","Machine":"mơ sin","Image":"i mịt","TARE":"te","Peirce":"pơ xờ","provided":"pơ rô vai đít","findings":"phai đinh","case":"cây xờ","why":"oai","could":"cút","late":"lết","right":"rai","karst":"cát xờ","Housekeeping":"hao xờ ki pinh","build":"biu","stir":"xờ tơ","Wellness":"oen nịt","LEARN":"lơn","homestay":"hôm xờ tây","Hausman":"hao man","SRQR":"ét a kiu a","suk":"xúc","Findable":"phai đơ bồ","Reusable":"ri diu xơ bồ","Backspace":"bách xờ pây","Size":"xai","TypeError":"tai pơ e rơ","hello":"hê lô","traceroute":"trây xơ rút","Dockerfile":"đóc cơ phai","Tracer":"trây xơ","EXISTS":"ec xít","FOR":"pho","psql":"pi ét quy eo","ANALYZE":"a na lai","Done":"đăn","POST":"pốt","PATCH":"pát","pipeline":"pai lai","DevOps":"đép ốp","BERT":"bơt","bug":"bấc","Pharaoh":"pha ra ông","Kheops":"kê ốp","Mahabharata":"ma ha ba ra ta","Taj":"tát","Dante":"đan tê","James":"giêm","Reamker":"ria mơ ke","Ramakien":"ra ma kiên","Lak":"lắc","Shwedagon":"suê đa gôn","Myanmar":"mi an ma","Sus":"xớt","maj":"mây giơ","take":"tếch","fade":"phây","headroom":"hét rum","single":"xin gồ","soundcheck":"xaun chéc","Soundcheck":"xaun chéc","bus":"bớt","Sidechain":"xai chên","BVMT":"bảo vệ môi trường","Bauhaus":"bao hau xơ","Art":"át","iii":"ba","Crazy":"cơ rây di","MEDIAN":"mi đi an","ASEM":"a xem","jus":"giút","Doyle":"đoi lơ","Ludwig":"lút vích","arctan":"ác tan","Fermat":"phéc ma","Markov":"mác cốp","scipy":"xai pai","Chebyshev":"trê bư sép","opt":"ốp","silhouette":"xi lu ét","ReLU":"rê lu","tidyverse":"tai đi vớt","INNER":"in nơ","merge":"mơ giơ","ARIMA":"a ri ma","makes":"mếch","its":"ít","delight":"đi lai","however":"hau e vơ","games":"ghêm","bad":"bét","Castries":"cát tơ ri","mail":"mêu","HSD":"hạn sử dụng","caffeine":"ca phê in","reforming":"ri phoóc minh","cis":"xít","ortho":"oóc tô","Montreal":"mông rê an","https":"hát tê tê pê ét","hex":"hếch","align":"ơ lai","items":"ai tợm","lienhe":"liên he","LienHe":"liên he","Asch":"át sơ","Eli":"i li","Wendt":"ven","UNIX":"diu ních","driver":"đờ rai vơ","xlsx":"ích e lờ ét ích","MySQL":"mai ét kiu eo","HQTCSDL":"hệ quản trị cơ sở dữ liệu","DIEM":"điểm","REVOKE":"ri vốc","HOADON":"hóa đơn","CTHOADON":"chi tiết hóa đơn","ThuVien":"thư viện","TacGia":"tác giả","Write":"rai","foreign":"pho rin","keys":"ki","FOREIGN":"pho rin","NgayTra":"ngày trả","MaMuon":"mã mượn","LIMIT":"li mít","Curves":"cơ vơ","pharaoh":"pha ra ôn","Doric":"đô rích","Ionic":"i ô níc","Bok":"bóc","Chernobyl":"trec nô bưn","Polonium":"pô lô ni","technetium":"tếch nê xi","thorium":"tô ri","boron":"bo","aluminium":"nhôm","silicon":"xi lic","phosphorus":"phốt pho","Geneva":"giơ ne vơ","Where":"oe","when":"oen","pate":"pa tê","InGaAs":"i en giê a a ét","miliampe":"mi li am pe","Timer":"tai mơ","timing":"tai minh","Fresnel":"phơ re nen","slicing":"xơ lai xing","xementit":"xê men tit","gigapascal":"gi ga pát can","GaAs":"ga li a xen ua","LoRa":"lo ra","busy":"bi di","finally":"phai nơ li","IA":"một a","IB":"một bê","IIA":"hai a","IIB":"hai bê","IIIA":"ba a","IIIB":"ba bê","IVA":"bốn a","IVB":"bốn bê","VA":"năm a","VB":"năm bê","VIA":"sáu a","VIB":"sáu bê","VIIA":"bảy a","VIIB":"bảy bê","VIIIA":"tám a","VIIIB":"tám bê"};
+const VI_FIX={"Fa":"pha","When":"oen","Who":"hu","who":"hu","VietGAP":"việt gáp","GlobalGAP":"gơ lô bồ gáp","Cov":"cô va","Var":"va","mod":"mót","Sol":"son","Re":"rê","hydrogen":"hi đờ rô gen","oxy":"ô xi","UNCLOS":"công ước Liên hợp quốc về Luật Biển","WHERE":"quơ","AVERAGE":"ê vơ rịch","README":"ri đờ mi","GPS":"gi pi ét","range":"rên giơ","NaCl":"na xê e lờ","for":"pho","New":"niu","Campuchia":"cam pu chia","token":"tô ken","descent":"đi xen","VTPT":"véc tơ pháp tuyến","and":"en","pandas":"pan đa","JOIN":"gioin","Alkane":"an kan","lab":"láp","xti":"xờ ti","Nernst":"néc xơ","else":"eo","HAVING":"hép vinh","SELECT":"xi lếch","der":"đơ","bar":"ba","VTCP":"véc tơ chỉ phương","name":"nêm","Rogers":"rô giơ","First":"phớt","UPDATE":"ắp đết","request":"ri quét","GROUP":"gờ rúp","concerto":"con chéc tô","taa":"ta a","site":"xai","like":"lai","This":"đít","this":"đít","should":"sút","For":"pho","Newcastle":"niu cát xồ","Hall":"hôn","Bru":"bờ ru","wellness":"oen nét","conic":"cô níc","ORDER":"oóc đơ","MUON":"mượn","Charles":"sác lơ","OCOP":"ô cóp","xpia":"xờ pia","GRADE":"gờ rây","gigabyte":"gi ga bai","emic":"ê mích","etic":"ê tích","Haydn":"hai đơn","Michael":"mai cồ","Heal":"hiu","World":"uơn","Science":"sai ần","study":"xờ ta đi","Creative":"cờ ri ây tịp","Why":"oai","Wright":"rai","moodboard":"mút boóc","Paris":"pa ri","Braque":"bơ rắc","Kraljic":"cờ ra lích","rad":"ra đi an","CRISPR":"cơ rít pơ","LEFT":"lép","STRIDE":"xờ trai","pound":"pao","NamXB":"năm ích bê","Young":"i âng","Coulomb":"cu lông","were":"uơ","Oxy":"ô xi","GTLN":"giá trị lớn nhất","GTNN":"giá trị nhỏ nhất","Leibniz":"lai bơ nít","FAST":"phát","ukulele":"u cu lê lê","canvas":"ken vơ","churn":"chơn","associated":"ơ sâu xi ây tịt","joulemeter":"giun mi tơ","Achilles":"a ki lơ","Descartes":"đề các","Sartre":"xác tơ","Jar":"gia","Phelps":"phen pơ","Vienna":"vi en na","Cmaj":"xi mây giơ","Finally":"phai nơ li","learning":"lơn ninh","Journal":"giơ nồ","megabyte":"mê ga bai","All":"ô","stress":"xờ trét","lacI":"lác i","Dolly":"đô li","Pictures":"pích chờ","Square":"xờ que","kNm":"ki lô niu tơn mét","QCVN":"quy chuẩn Việt Nam","pallet":"pa lét","Fade":"phây","are":"a","have":"hép","box":"bóc","Carnot":"các nô","qubit":"kiu bít","Red":"rét","phage":"phây giơ","TTCB":"tư thế chuẩn bị","seq":"xíc","title":"tai tơ","Butler":"bắt lơ","SOLID":"sô lít","Ramayana":"ra ma gia na","cue":"kiu","Cauchy":"cô si","FROM":"phờ rôm","ene":"en","nslookup":"en ét lúc úp","strong":"xờ trong","Durkheim":"đuốc khem","Firefox":"phai a phốc","SQLite":"ét kiu eo lai","CREATE":"cờ ri ết","SoLuong":"số lượng","Rutherford":"rơ dơ phót","xenon":"xê nôn","Rhizobium":"ri dô bi um","Down":"đao","sinx":"sin ích","percussion":"pơ cắt sần","Yaly":"i a li","suggest":"sơ giét","higher":"hai ơ","dog":"đóc","Hello":"hê lô","Thank":"thanh","Saussure":"xô xuya","Grice":"gờ rai","Hegel":"hê ghen","Stokes":"xờ tốc","MWh":"mê ga oát giờ","rho":"rô","tex":"tếch","xcan":"xờ can","big":"bích","IELTS":"ai eo","Add":"át","Changes":"chen giơ","Think":"thinh","all":"ôn","Results":"ri dơn","Discussion":"đít cát sần","about":"ơ bao","sample":"xam pồ","axetic":"a xê tích","xeton":"xê tôn","therefore":"đe phô","wrap":"rap","wrong":"rông","view":"viu","end":"en","allolactose":"a lô lắc tô dơ","Syne":"xai","Seurat":"xơ ra","lux":"lúc","LOTUS":"lô tút","EDGE":"ét","laytime":"lây taim","cash":"két","Save":"xây","raxemic":"ra xê mic","Vis":"vít","fit":"phít","ALARA":"a la ra","down":"đao","Khufu":"khu phu","found":"phao","Dweck":"đu ếch","she":"xi","out":"ao","sky":"xờ cai","think":"thinh","new":"niu","ribose":"ri bô dơ","deadline":"đét lai","ROBINS":"rô bin","Kirchhoff":"kiếc khốp","contactor":"công tắc tơ","MOSFET":"mốt phét","Caesar":"xê da","Abbe":"áp bê","triester":"tri ét te","nitrous":"ni trớt","SEV":"Hội đồng Tương trợ Kinh tế","break":"bờ rếch","Lewin":"lê vin","would":"út","arrange":"ờ rên","Deff":"đê ép ép","assert":"ờ xớt","IndexError":"in đếch e rờ","GitHub":"git hấp","Wireshark":"oai a sác","UNIQUE":"diu ních","review":"ri viu","Could":"cút","Colosseum":"cô lô xê um","Copernicus":"cô péc ních","one":"oăn","night":"nai","xten":"xơ ten","Everyone":"ép ri oăn","head":"hét","Mills":"mi lơ","filetype":"phai tai","MaSach":"mã sách","TenSach":"tên sách","BANDOC":"bạn đọc","Lenz":"len xơ","deuterium":"đơ te ri","tritium":"tri ti","beryllium":"be ri li","help":"hép","TNHH":"trách nhiệm hữu hạn","kiloohm":"ki lô ôm","FIBA":"phi ba","His":"hít","lal":"ha lan","abxixic":"ap xi xic","AaBbDd":"a a bê bê đê đê","Gibberellin":"gi be rê lin","Abscisic":"ap xi xic","Vietsovpetro":"việt xô pết rô","cesium":"xê si","germanium":"giéc ma ni","titanium":"ti tan","sunphuric":"xun phu rích","Oyz":"ô i dét","nkck":"en ca xê ca","nici":"en i xê i","Mayer":"mây ơ","fuchsin":"phúc xin","lactamase":"lac ta mây","Creatinin":"cờ rê a ti nin","WHO":"Tổ chức Y tế Thế giới","folic":"phô lích","low":"lâu","birth":"bớt","weight":"u ây","mortality":"moóc ta li ti","Meadows":"me đô","money":"ma ni","Ukulele":"u cu lê lê","off":"óp","Ksa":"cờ xa","Sri":"xờ ri","use":"diu","six":"xíc","Chauvet":"sô vê","wow":"oa","acquy":"ắc quy","xavan":"xa van","Ortho":"ọt thô","MIRROR":"mi rơ","Searle":"xơn","Jauss":"giao xơ","Tylor":"tai lơ","Geertz":"ghít xờ","Pike":"pai","Rhodes":"rốt","caffein":"ca phê in","blouse":"bờ lu","kWp":"ki lô oát đỉnh","Maillard":"mai a","Weisbach":"vai xơ bác","Tex":"téc","denier":"đơ ni ê","monome":"mô nô me","lime":"lai","Rockwell":"rốc oen","Charpy":"sác pi","Polyme":"pô li me","Six":"xích","Power":"pao ơ","Ada":"ây đa","ENIAC":"ê ni ác","Page":"pây","Number":"nam bơ","Theme":"thim","View":"viu","Major":"mây giơ","Citation":"xai tây sần","Dangerous":"đên giơ rợt","known":"nôn","our":"ao ơ","analysed":"a nơ lai dơ","Little":"lít tồ","hypothesis":"hai pó thi sít","outcome":"aut cam","raw":"rô","research":"ri xớt","teachers":"ti chơ","Hanoi":"Hà Nội","language":"lang gờ uây","finding":"phai đinh","Ure":"u rê","ure":"u rê","Xylazine":"xi la din","xylazine":"xi la din","xylitol":"xi li tôn","cyanide":"xi a nua","kilobyte":"ki lô bai","terabyte":"te ra bai","Https":"hát tê tê pê ét","Fansipan":"phan xi păng","Fan":"phan","xtrim":"xờ trim","House":"hao","Schools":"xờ cu lơ","wellbeing":"oen bi inh","shows":"xâu","shade":"xây","Archaeopteryx":"ác ki óp tê rích","Beagle":"bi gồ","Miller":"mi lơ","Xti":"xờ ti","Burns":"bơn","Moodboard":"mu bo","Recycle":"ri xai cồ","Device":"đi vai","Behind":"bi hai","Right":"rai","Merge":"mơ giơ","viet":"viết","Corbusier":"cọt bu di ê","abcabc":"a bê xê a bê xê","Once":"oăn","upon":"ơ pon","heard":"hớt","sound":"xao","well":"oen","Clarke":"cờ lác","drive":"đờ rai","TimHieu":"tìm hiểu","ChuaMotCot":"chùa một cột","QueHuong":"quê hương","MuaHe":"mùa hè","Unikey":"u ni ki","talk":"tóc","move":"mu vơ","Deforestation":"đi phô rét xờ tây sần","through":"thơ ru","Many":"me ni","Pane":"pên","Rows":"rô","Values":"va liu","Nguyen":"Nguyễn","Muon":"mi ôn","bauxit":"bô xít","xianua":"xi a nua","Xianua":"xi a nua","cacbocation":"cac bô ca ti ôn","salixylic":"xa li xi lic","Beer":"bia","Himalaya":"hi ma lay a","SciPy":"xai pai","curve":"cơ vờ","webcam":"oép cam","docx":"đốc ích","Two":"tu","walked":"uốc","went":"oen","saw":"xô","Now":"nao","English":"ing lít","girl":"gơ","tiny":"tai ni","bird":"bơ","flew":"phờ lu","fly":"phờ lai","learned":"lơn","sucrose":"xac ca rô dơ","Leeuwenhoek":"lê vơn húc","Schwann":"xơ van","Ernest":"éc nét","Wow":"oa","taaaa":"ta a a a","March":"mác","Strauss":"xờ trao","cor":"co","Pierre":"pi e","Sound":"xao","Music":"miu dích","Mmm":"ưm","loudness":"lao nớt","xpi":"xờ pi","xtin":"xờ tin","xtan":"xờ tan","xpu":"xờ pu","Barrier":"ba ri ơ","carton":"các tông","Lab":"láp","SPIDER":"xờ pai đơ","mactenxit":"mác ten xít","panme":"pan me","Panme":"pan me","kvar":"ki lô va","Val":"va lin","Chargaff":"sác gáp","coenzyme":"cô en dim","Lineweaver":"lai nuy vơ","thalassemia":"tha la xê mi a","Phage":"phây dơ","aminoglycoside":"a mi nô gơ li cô xit","gyrase":"gai rây dơ","Pichia":"pi ki a","blastn":"bơ lat en","blastp":"bơ lat pê","blastx":"bơ lat ích","Neighbor":"nây bơ","Sanger":"xan gơ","ate":"ết","Gly":"gơ li xin","Ala":"a la nin","baking":"bây king","Baking":"bây king","ASCII":"át ki","nguyenvanan":"nguyễn văn an","Align":"ơ lai","lower":"lâu ơ","VIETNAM":"việt nam","append":"ơ pen","remove":"ri mu","Teachable":"tít chờ bồ","Machine":"mơ sin","Image":"i mịt","TARE":"te","Peirce":"pơ xờ","provided":"pơ rô vai đít","findings":"phai đinh","case":"cây xờ","why":"oai","could":"cút","late":"lết","right":"rai","karst":"cát xờ","Housekeeping":"hao xờ ki pinh","build":"biu","stir":"xờ tơ","Wellness":"oen nịt","LEARN":"lơn","homestay":"hôm xờ tây","Hausman":"hao man","SRQR":"ét a kiu a","suk":"xúc","Findable":"phai đơ bồ","Reusable":"ri diu xơ bồ","Backspace":"bách xờ pây","Size":"xai","TypeError":"tai pơ e rơ","hello":"hê lô","traceroute":"trây xơ rút","Dockerfile":"đóc cơ phai","Tracer":"trây xơ","EXISTS":"ec xít","FOR":"pho","psql":"pi ét quy eo","ANALYZE":"a na lai","Done":"đăn","POST":"pốt","PATCH":"pát","pipeline":"pai lai","DevOps":"đép ốp","BERT":"bơt","bug":"bấc","Pharaoh":"pha ra ông","Kheops":"kê ốp","Mahabharata":"ma ha ba ra ta","Taj":"tát","Dante":"đan tê","James":"giêm","Reamker":"ria mơ ke","Ramakien":"ra ma kiên","Lak":"lắc","Shwedagon":"suê đa gôn","Myanmar":"mi an ma","Sus":"xớt","maj":"mây giơ","take":"tếch","fade":"phây","headroom":"hét rum","single":"xin gồ","soundcheck":"xaun chéc","Soundcheck":"xaun chéc","bus":"bớt","Sidechain":"xai chên","BVMT":"bảo vệ môi trường","Bauhaus":"bao hau xơ","Art":"át","iii":"ba","Crazy":"cơ rây di","MEDIAN":"mi đi an","ASEM":"a xem","jus":"giút","Doyle":"đoi lơ","Ludwig":"lút vích","arctan":"ác tan","Fermat":"phéc ma","Markov":"mác cốp","scipy":"xai pai","Chebyshev":"trê bư sép","opt":"ốp","silhouette":"xi lu ét","ReLU":"rê lu","tidyverse":"tai đi vớt","INNER":"in nơ","merge":"mơ giơ","ARIMA":"a ri ma","makes":"mếch","its":"ít","delight":"đi lai","however":"hau e vơ","games":"ghêm","bad":"bét","Castries":"cát tơ ri","mail":"mêu","HSD":"hạn sử dụng","caffeine":"ca phê in","reforming":"ri phoóc minh","cis":"xít","ortho":"oóc tô","Montreal":"mông rê an","https":"hát tê tê pê ét","hex":"hếch","align":"ơ lai","items":"ai tợm","lienhe":"liên he","LienHe":"liên he","Asch":"át sơ","Eli":"i li","Wendt":"ven","UNIX":"diu ních","driver":"đờ rai vơ","xlsx":"ích e lờ ét ích","MySQL":"mai ét kiu eo","HQTCSDL":"hệ quản trị cơ sở dữ liệu","DIEM":"điểm","REVOKE":"ri vốc","HOADON":"hóa đơn","CTHOADON":"chi tiết hóa đơn","ThuVien":"thư viện","TacGia":"tác giả","Write":"rai","foreign":"pho rin","keys":"ki","FOREIGN":"pho rin","NgayTra":"ngày trả","MaMuon":"mã mượn","LIMIT":"li mít","Curves":"cơ vơ","pharaoh":"pha ra ôn","Doric":"đô rích","Ionic":"i ô níc","Bok":"bóc","Chernobyl":"trec nô bưn","Polonium":"pô lô ni","technetium":"tếch nê xi","thorium":"tô ri","boron":"bo","aluminium":"nhôm","silicon":"xi lic","phosphorus":"phốt pho","Geneva":"giơ ne vơ","Where":"oe","when":"oen","pate":"pa tê","InGaAs":"i en giê a a ét","miliampe":"mi li am pe","Timer":"tai mơ","timing":"tai minh","Fresnel":"phơ re nen","slicing":"xơ lai xing","xementit":"xê men tit","gigapascal":"gi ga pát can","GaAs":"ga li a xen ua","LoRa":"lo ra","busy":"bi di","finally":"phai nơ li","IA":"một a","IB":"một bê","IIA":"hai a","IIB":"hai bê","IIIA":"ba a","IIIB":"ba bê","IVA":"bốn a","IVB":"bốn bê","VA":"năm a","VB":"năm bê","VIA":"sáu a","VIB":"sáu bê","VIIA":"bảy a","VIIB":"bảy bê","VIIIA":"tám a","VIIIB":"tám bê"};
 const VI_DICT={"acid":"a xít","acids":"a xít","electron":"e lếch tơ rôn","electrons":"e lếch tơ rôn","mol":"mon","protein":"pơ rô tê in","proteins":"pơ rô tê in","logic":"lô gích","gene":"gien","genes":"gien","poster":"pốt tơ","oxygen":"ô xi","ion":"i on","ions":"i on","rubric":"ru bơ rích","oxi":"ô xi","oxy":"ô ích i","logo":"lô gô","carbon":"các bon","hydrogen":"hi đờ rô","base":"ba dơ","glucose":"gơ lu cô dơ","web":"quép","alpha":"an pha","anpha":"an pha","ampe":"am pe","enzyme":"en dim","enzym":"en dim","mini":"mi ni","virus":"vi rút","slide":"xờ lai","robot":"rô bốt","ctrl":"con trôn","micro":"mi cờ rô","hormone":"hoóc môn","oxide":"ô xít","oxit":"ô xít","gradient":"gờ ra đi en","imrad":"im rát","proton":"pơ rô tôn","tour":"tua","beta":"bê ta","gas":"ga","parabol":"pa ra bôn","alcohol":"an cô hôn","jun":"giun","mililit":"mi li lít","bayes":"bay ét","amino":"a mi nô","portfolio":"pót phô li ô","allele":"a len","alen":"a len","vector":"véc tơ","logistics":"lô gi xờ tích","logistic":"lô gi xờ tích","kelvin":"ken vin","bromine":"bờ rôm","axit":"a xít","gamma":"gam ma","ester":"ét te","newton":"niu tơn","aptomat":"áp tô mát","nitrogen":"ni tơ","cacbon":"các bon","insulin":"in su lin","scratch":"xờ cờ rát","omega":"ô mê ga","halogen":"ha lô gien","chlorine":"cờ lo","gantt":"gan","gram":"gam","vitamin":"vi ta min","link":"linh","polymer":"pô li me","sodium":"na tri","delta":"đen ta","kappa":"cáp pa","nilon":"ni lông","nylon":"ni lông","kali":"ca li","lambda":"lam đa","neutron":"nơ tơ rôn","byte":"bai","recall":"ri côn","euler":"ơ le","logarit":"lô ga rít","iodine":"i ốt","iod":"i ốt","moment":"mô men","ribosome":"ri bô xôm","marketing":"ma két tinh","badan":"ba dan","bazan":"ba dan","milimet":"mi li mét","swing":"xuynh","iot":"ai ô ti","camera":"ca mê ra","lipid":"li pít","ethylene":"ê ti len","precision":"pơ ri xi giân","toulmin":"tun min","lactic":"lắc tích","infographic":"in phô gờ ráp phích","elip":"e líp","file":"phai","master":"mát tơ","beethoven":"bét thô ven","nucleotide":"nu cờ lê ô tít","gibbs":"gíp","game":"gêm","vaccine":"vắc xin","phenol":"phê nôn","mrna":"em a rờ en a","trna":"tê a rờ en a","cdna":"xê đê en a","domino":"đô mi nô","renzulli":"ren du li","ethanol":"ê ta nôn","hydrocarbon":"hi đờ rô các bon","cellulose":"xen lu lô dơ","archimedes":"ác si mét","geogebra":"giê ô giê bờ ra","gauss":"gau xơ","radian":"ra đi an","insert":"in xớt","container":"công ten nơ","mix":"mích","aldehyde":"an đê hít","sulfur":"sun phua","dashboard":"đát bọt","dioxide":"đi ô xít","sheet":"sít","laser":"la de","mendel":"men đen","peptide":"pép tít","tivi":"ti vi","biogas":"bi ô ga","auxin":"ô xin","benzene":"ben den","alkane":"an can","mozart":"mô da","copper":"cóp pơ","enter":"en tơ","dirichlet":"đi ri xờ lê","demo":"đê mô","methane":"mê tan","metan":"mê tan","acetic":"a xê tích","anode":"a nốt","anot":"a nốt","tab":"táp","transistor":"tơ ran di xờ to","alkene":"an ken","jazz":"giắc","diode":"đi ốt","elise":"ê li dơ","album":"an bum","vietgap":"việt gáp","vietgahp":"việt gáp","nanomet":"na nô mét","gogh":"gốc","range":"ren","style":"xờ tai","cohen":"cô hen","dijkstra":"đai cơ xờ tơ ra","test":"tét","bass":"bét","zotero":"dô tê rô","incoterms":"in cô tơm","vmax":"vê mắc","notebook":"nốt búc","calcium":"can xi","canxi":"can xi","sulfate":"sun phát","diesel":"đi ê den","eta":"ê ta","drone":"đờ rôn","capstone":"cáp xờ tôn","hertz":"héc","ohm":"ôm","compa":"com pa","pareto":"pa rê tô","seminar":"xê mi na","gardner":"gát nơ","chatbot":"chát bót","nitrat":"ni tơ rát","nitrate":"ni tơ rát","ammonia":"a mô ni ắc","amoniac":"a mô ni ắc","ketone":"xê tôn","carbohydrate":"các bô hi đờ rát","composite":"com pô dít","nano":"na nô","operon":"ô pê rôn","enthalpy":"en tan pi","accuracy":"ác kiu ra xi","pandas":"pen đát","clip":"cờ líp","gothic":"gô tích","pythagore":"pi ta go","pythagoras":"pi ta go","faraday":"pha ra đây","lactose":"lắc tô dơ","poisson":"poa xông","simpson":"xim xơn","bonferroni":"bon phe rô ni","nucleon":"nu cờ lê ôn","credit":"cơ re đít","hydroxide":"hi đờ rô xít","magnesium":"ma giê","magie":"ma giê","helium":"hê li","lithium":"li ti","piston":"pít tông","radar":"ra đa","guitar":"ghi ta","nitric":"ni tơ rích","pascal":"pát can","centimet":"xen ti mét","inox":"i nốc","euclid":"ơ cờ lít","token":"tô cần","maxwell":"mắc xoen","miligam":"mi li gam","epsilon":"ép xi lon","orbital":"o bi tan","xupap":"xu páp","halide":"ha lít","amine":"a min","amin":"a min","piano":"pi a nô","numpy":"nam pai","sigma":"xích ma","saccharose":"xác ca rô dơ","canvas":"ca vát","radio":"ra đi ô","pomodoro":"pô mô đô rô","micromet":"mi cờ rô mét","mili":"mi li","erikson":"ê rích xơn","codon":"cô đon","glycerol":"gơ li xê rôn","steroid":"xờ tê rô ít","plasmid":"pờ lát mít","cathode":"ca tốt","catot":"ca tốt","soda":"xô đa","ethos":"ê tốt","logos":"lô gốt","pathos":"pa tốt","hooke":"húc","darwin":"đác uyn","champa":"chăm pa","monet":"mô nê","pivottable":"pi vớt tây bồ","fibonacci":"phi bô na xi","megapascal":"mê ga pát can","golgi":"gôn gi","glycogen":"gơ li cô gien","fara":"pha ra","deepfake":"đíp phếch","polymerase":"pô li mê ra dơ","alkyne":"an kin","chromium":"cờ rôm","ethylic":"ê ti líc","ethyl":"ê tin","entropy":"en tơ rô pi","lysosome":"li xô xôm","catalase":"ca ta la dơ","takt":"tắc","hypebol":"hi pe bôn","uranium":"u ra ni","polyester":"pô li ét te","holland":"hô lan","francisco":"phơ ran xít cô","khmer":"khơ me","picasso":"pi cát xô","bugi":"bu gi","commit":"cơ mít","nernst":"néc","clo":"cờ lo","natri":"na tri","milimol":"mi li mon","gel":"gen","phosphate":"phốt phát","phosphat":"phốt phát","zeno":"dê nông","gini":"gi ni","weber":"vê be","angkor":"ăng co","abstract":"áp xờ trác","scopus":"xờ cô pớt","feralit":"phe ra lít","pizza":"pi da","photon":"phô tôn","flycam":"phờ lai cam","cytokinin":"xi tô ki nin","monomer":"mô nô me","mentor":"men to","manti":"man ti","motif":"mô típ","ballad":"ba lát","edelweiss":"ê đen vai","lamen":"la men","kcal":"ki lô ca lo","taxi":"tắc xi","likert":"li cớt","london":"luân đôn","maslow":"mát xờ lâu","silic":"si lích","waals":"van","kilojun":"ki lô giun","kilojoule":"ki lô giun","microgam":"mi cờ rô gam","clorua":"cờ lo rua","latinh":"la tinh","methyl":"mê tin","synapse":"xi náp","weinberg":"vanh béc","amylase":"a mi la dơ","lagrange":"la gờ răng","monte":"mông tê","carlo":"các lô","chatelier":"sa tơ li ê","tollens":"tô len","biuret":"bi u rê","stencil":"xờ ten xin","inkscape":"inh xờ kếp","valse":"van xơ","data":"đa ta","studio":"xờ tu đi ô","histogram":"hít tô gam","aspirin":"át pi rin","perceptron":"pơ xép tơ rôn","concerto":"công xéc tô","fructose":"phờ rúc tô dơ","maltose":"man tô dơ","pixel":"pích xeo","violin":"vi ô lông","raster":"rát tơ","tempo":"tem pô","carboxylic":"các bô xi lích","carboxyl":"các bô xin","acrylic":"a cờ ri lích","baroque":"ba rốc","potassium":"ca li","phenolphthalein":"phê nôn phờ ta lê in","carbonate":"các bô nát","aten":"a ten","podcast":"pót cát","kaizen":"cai den","socrates":"xô cờ rát","piaget":"pi a giê","vygotsky":"vư gốt xờ ki","laplace":"la pờ lát","fisher":"phi sơ","aristotle":"a ri xờ tốt","krebs":"cờ rép","paracetamol":"pa ra xê ta mon","nucleic":"nu cờ lê ích","calvin":"can vin","theta":"tê ta","zaitsev":"dai xép","marx":"mác","tokyo":"tô ki ô","berlin":"béc lin","media":"mê đi a","meta":"mê ta","boyle":"boi lơ","myelin":"mi ê lin","decibel":"đề xi ben","anten":"ăng ten","laptop":"láp tóp","formaldehyde":"phoóc man đê hít","aniline":"a ni lin","gibberellin":"gip bê re lin","cabin":"ca bin","chloride":"cờ lo rua","fluorine":"phờ lo","urea":"u rê","mendeleev":"men đê lê ép","celsius":"xen xi út","nickel":"ni ken","niken":"ni ken","cobalt":"cô ban","nicotine":"ni cô tin","acetate":"a xê tát","proline":"pơ rô lin","methionine":"mê ti ô nin","chromatid":"cờ rô ma tít","carbonyl":"các bô nin","apatit":"a pa tít","pipet":"pi pét","lympho":"lim phô","polyethylene":"pô li ê ti len","xenlulozo":"xen lu lô","sulfuric":"sun phu rích","ammonium":"a mô ni","formaldehit":"phoóc man đê hít","phospholipid":"phốt phô li pít","pyruvate":"pi ru vát","glucagon":"gơ lu ca gôn","phytase":"phi ta dơ","ligase":"li ga dơ","intron":"in tơ rôn","exon":"ê xôn","aflatoxin":"a phờ la tốc xin","thylakoid":"ti la cô ít","chitin":"ki tin","titan":"ti tan","karaoke":"ca ra ô kê","shipper":"síp pơ","email":"i meo","ebook":"i búc","livestream":"lai xờ trim","smartphone":"xờ mát phôn","facebook":"phây búc","excel":"éc xeo","word":"guốt","python":"pai thơn","canva":"can va","html":"hát tê em e lờ","youtube":"du túp","google":"gu gồ","zalo":"da lô","tiktok":"tích tóc","chrome":"cờ rôm","windows":"uyn đâu","android":"an đờ roi","ios":"ai ô ét","macos":"mác ô ét","office":"óp phít","teams":"tim","zoom":"dum","wifi":"quai phai","bluetooth":"bờ lu túc","online":"on lai","offline":"óp lai","website":"quép xai","internet":"in tơ nét","backlog":"béc lóc","scrum":"xờ cờ ram","agile":"a giai","kanban":"can ban","sprint":"xờ pờ rin","lean":"lin","kpi":"ca pê i","swot":"xoát","startup":"xờ tát áp","fintech":"phin téc","blockchain":"bờ lốc chen","hacking":"hách kinh","malware":"man oe","phishing":"phít sinh","password":"pát guốt","server":"xơ vơ","router":"ru tơ","switch":"xờ uých","firewall":"phai oan","cloud":"cờ lao","font":"phông","layout":"lay ao","template":"tem pờ lết","storyboard":"xờ to ri bọt","moodboard":"mút bọt","banner":"ban nơ","slogan":"xờ lô gan","workshop":"guốc sóp","quiz":"quýt","video":"vi đê ô","rock":"rốc","pop":"póp","rap":"ráp","organ":"óc gan","tango":"tan gô","football":"phút bon","tennis":"ten nít","golf":"gôn","yoga":"dô ga","aerobic":"ê rô bích","gym":"gim","cardio":"cạc đi ô","plank":"pờ lanh","squat":"xờ quát","marathon":"ma ra tông","fair":"phe","mode":"mốt","pitch":"pích","check":"chéc","click":"cờ lích","input":"in pút","output":"ao pút","code":"cốt","coding":"cốt đinh","debug":"đi bắc","loop":"lúp","print":"pờ rin","return":"ri tơn","else":"en xơ","elif":"e líp","while":"oai","list":"lít","array":"a rây","string":"xờ tring","boolean":"bu li an","int":"in","float":"phờ lốt","true":"tru","false":"phon","null":"nun","api":"ây pi ai","sql":"ét kiu eo","json":"giây xơn","countif":"cao ít","sumif":"xam ít","vlookup":"vê lúc ắp","pivot":"pi vớt","cell":"xeo","filter":"phin tơ","sort":"xoóc","chart":"chát","table":"tây bồ","shift":"xíp","delete":"đi lít","backspace":"béc xờ pây","alt":"an","esc":"ét","ok":"ô kê","pq":"pê quy","ax":"a ích","ab":"a bê","bc":"bê xê","bx":"bê ích","dx":"đê ích","dt":"đê tê","dy":"đê i","pv":"pê vê","aa":"a a","ox":"ô ích","oy":"ô i","oz":"ô dét","oxyz":"ô ích i dét","abc":"a bê xê","abcd":"a bê xê đê","lg":"lốc","ln":"lốc nê pe","log":"lốc","cos":"cốt","sin":"sin","tan":"tang","cot":"cô tang","lim":"giới hạn","ch":"chờ","tr":"trờ","ng":"ngờ","ngh":"ngờ kép","gh":"gờ kép","th":"thờ","kh":"khờ","nh":"nhờ","gi":"di","qu":"quờ","ph":"phờ","vn":"vê en","id":"ai đi","db":"đề xi ben","kwh":"ki lô oát giờ","kw":"ki lô oát","kj":"ki lô giun","kn":"ki lô niu tơn","mpa":"mê ga pát can","ev":"ê lếch tơ rôn vôn","mev":"mê ga ê lếch tơ rôn vôn","wat":"oát","amp":"am pe","amu":"a em u","ppi":"pê pê i","dpi":"đê pê i","knn":"ca en en","mitochondria":"mi tô con đơ ri a","chloroplast":"cờ lo rô pờ lát","glycolysis":"gơ li cô li xít","photosynthesis":"phô tô xin thê xít","mitosis":"mi tô xít","meiosis":"mai ô xít","cytoplasm":"xi tô pờ lát","nucleus":"nu cờ li út","chromosome":"nhiễm sắc thể","bacteria":"vi khuẩn"};
 const VI_UNITS={km:"ki lô mét",m:"mét",dm:"đề xi mét",cm:"xăng ti mét",mm:"mi li mét",nm:"na nô mét","μm":"mi cờ rô mét",kg:"ki lô gam",g:"gam",mg:"mi li gam",l:"lít",ml:"mi li lít",s:"giây",h:"giờ",ha:"héc ta",W:"oát",V:"vôn",A:"am pe",J:"giun",N:"niu tơn",Pa:"pát can",K:"ken vin",mol:"mon",Hz:"héc",Ω:"ôm"};
 const VI_EL=new Set("H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Ag Cd Sn Sb I Xe Cs Ba Pt Au Hg Pb Bi U Ra Rn".split(" "));
+const VI_FNW={len:"len",sum:"xăm",abs:"áp",int:"in",avg:"ê vơ rịch",mod:"mót",pow:"pao",cov:"cô va",var:"va",and:"en",not:"nót",xor:"xo"};   /* tên hàm/phép toán trong biểu thức: đọc như từ, không đánh vần */
 const VI_ENSTOP=new Set("the of and to is are was were be been in on at for with from by as that this these those it its you your we our they their he she his her i me my not or but if then when what which who how why do does did have has had will would can could should a an".split(" "));
 const VI_VNSPLIT=new Set("em anh chi con cho sau nay hai mai nam xin nhung cac mot voi roi thi".split(" "));
 const VI_VNASCII=new Set("em anh chi con cho ba ban an hai mai nam xin tim nay kia sau tay to ta la va voi mot cac nhung".split(" "));
@@ -87,7 +92,12 @@ const VI_DICTV={"vectơ":"véc tơ","côsin":"cô sin","côtang":"cô tang","kil
 const VI_IPA={"ɪ":"i","i":"i","iː":"i dài","e":"e","æ":"e bẹt","ə":"ơ","ɜː":"ơ dài","ɜ":"ơ","ʌ":"ă","ɑː":"a dài","ɑ":"a","ɒ":"o","ɔː":"o dài","ɔ":"o","ʊ":"u","uː":"u dài","u":"u","eɪ":"ây","aɪ":"ai","ɔɪ":"oi","aʊ":"ao","əʊ":"âu","oʊ":"âu","ɪə":"ia","eə":"e ơ","ʊə":"u ơ","p":"pờ","b":"bờ","t":"tờ","d":"đờ","k":"cờ","g":"gờ","f":"phờ","v":"vờ","θ":"thờ","ð":"đờ","s":"xờ","z":"dờ","ʃ":"sờ","ʒ":"giờ","tʃ":"chờ","dʒ":"giờ","h":"hờ","m":"mờ","n":"nờ","ŋ":"ngờ","l":"lờ","r":"rờ","j":"giờ","w":"guờ"};
 function viIPA(ip){ const s=ip.replace(/[ˈˌ.]/g,""); const out=[]; let i=0; while(i<s.length){ const two=s.slice(i,i+2); if(VI_IPA[two]){ out.push(VI_IPA[two]); i+=2; continue; } out.push(VI_IPA[s[i]]||""); i++; } return "âm "+out.filter(Boolean).join(" "); }
 function viEsc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); }
-const VI_TERM_RES=VI_TERMS.slice().sort((a,b)=>b[0].length-a[0].length).map(([k,v])=>({re:new RegExp("(^|[^A-Za-zÀ-ỹ0-9])"+viEsc(k)+"(?![A-Za-zÀ-ỹ0-9])","g"),v}));
+const VI_TERM_RES=VI_TERMS.slice().sort((a,b)=>b[0].length-a[0].length).map(([k,v])=>({re:new RegExp("(^|[^A-Za-zÀ-ỹ0-9])"+viEsc(k)+"(?![A-Za-zÀ-ỹ0-9])","g"),v,k,geo:/^(?:MB|KB|GB|TB|CN|PC|HS|GV|TV|OS|ID|QR|EU|UN|AI|IP|MW)$/.test(k)}));
+const VI_GEOOP=/^(?:MB|KB|GB|CN|PC|QR|MW)$/;   /* đứng sát phép toán thì là tên đoạn thẳng/ma trận (A = QR, MB + MC) */
+/* ngữ cảnh hình học: hai chữ in hoa là tên đoạn thẳng/điểm, không phải viết tắt */
+const VI_GEOW=/tam giác|tứ giác|trung điểm|đường tròn|tiếp tuyến|tiếp điểm|nằm giữa|vuông góc|song song|phân giác|trung trực|trung tuyến|đường cao|hình bình hành|hình thang|hình chữ nhật|hình vuông|đoạn thẳng|nội tiếp|ngoại tiếp/i;
+const VI_DOM={vn:"vê en",com:"com",net:"nét",org:"o rờ gờ",edu:"ê đu",gov:"gờ o vê",info:"in phô",io:"i o",www:"vê kép vê kép vê kép"};
+const VI_PHON={ngh:"ngờ kép",gh:"gờ kép",ng:"ngờ",nh:"nhờ",ch:"chờ",th:"thờ",tr:"trờ",kh:"khờ",ph:"phờ",gi:"di",qu:"quờ",b:"bờ",c:"cờ",d:"dờ","đ":"đờ",g:"gờ",h:"hờ",k:"ca",l:"lờ",m:"mờ",n:"nờ",p:"pờ",q:"cu",r:"rờ",s:"sờ",t:"tờ",v:"vờ",x:"xờ"};
 /* Âm tiết tiếng Việt hợp lệ? (bỏ dấu thanh) - dùng để nhận ra từ nước ngoài */
 const VI_SYL=/^(ngh|ng|nh|ch|gh|gi|kh|ph|th|tr|qu|b|c|d|đ|g|h|k|l|m|n|p|r|s|t|v|x)?(a|ă|â|e|ê|i|o|ô|ơ|u|ư|y|ai|ao|au|ay|âu|ây|eo|êu|ia|iê|iu|oa|oă|oe|oi|ôi|ơi|oo|ua|uâ|uê|ui|uô|uơ|uy|ưa|ưi|ưu|ươ|ươi|ươu|iêu|uôi|oai|oay|uây|uya|uyê|yê|yêu|oao|oeo)(c|ch|m|n|ng|nh|p|t|i|o|u|y)?$/;
 function viBase(w){ return String(w).toLowerCase().normalize("NFD").replace(/[̣̀́̃̉]/g,"").normalize("NFC"); }
@@ -158,6 +168,11 @@ function viMathSeg(seg){
       if(VI_FN[lw]){ out.push(VI_FN[lw]); continue; }
       const fn=Object.keys(VI_FN).sort((a,b)=>b.length-a.length).find(f=>lw.startsWith(f)&&lw.length>f.length&&lw.length<=f.length+2);
       if(fn){ out.push(VI_FN[fn]+" "+viSpell(t.slice(fn.length))); continue; }
+      if(t.length>=3){   /* v6: không đánh vần từ tiếng Việt và tên hàm trong biểu thức (Thu = Chi + Nợ, Mg2+, dem = dem + 1, len(mau)) */
+        if(VI_FNW[lw]){ out.push(VI_FNW[lw]); continue; }
+        if(t===lw&&VI_IDV[lw]){ out.push(VI_IDV[lw]); continue; }
+        if((t===lw||/^[A-Z][a-z]+$/.test(t))&&viSylS(lw)){ out.push(t); continue; }
+      }
       out.push(viSpell(t)); continue;
     }
     if(VI_GREEK[t]){ out.push(VI_GREEK[t]); continue; }
@@ -175,10 +190,105 @@ const VI_ENVOC=new Set("a ability about abroad absent access accident according 
 const VI_VNNOD=new Set("ac ach ai ang anh ao ap au ay ba bai ban bang bao bat bay bi bia bim binh bo bom bon bong bu bung ca cac cai cam canh cao cau cay cha chai chan chang chanh chao chay che chen chi chia chim chinh chip cho chong chu chua chui chum chun chung ci cia cip co coi com con cong cop cot cu cua cung cuo da dai dang danh dao de di dinh doanh doi don dong du dung duy ec em en eo et eu ga gai gam gan gang gay gen ghe ghen ghi ghim gi gia giai giam gian giang gianh giao gien gieo git giu giun gom ha hai ham han hang hanh hao hay hec hen heo hin ho hoa hoai hoan hoang hom hon hu hung huy huynh hy ia ic ich ii im inh ip ka ke kem ken keng keo khai khan khang khao khay khe khen khi kho khoa khoai khoan khoang khoanh khoe khom khu khum khung khuya khuynh ki kia kim kin kinh ku la lac lai lam lan lang lanh lao lau le len leng leo li lim lin linh liu lo loa loan loang lom lon lop lu lui lung luy ly ma mac mai mang manh mao mau men meo mi mia min minh mo mong mu mua mun muy na nai nam nan nang nanh nao nay ne neo neon nga ngai ngang ngay nghe nghi ngo ngoan ngoi ngon ngu nguy nha nhai nham nhan nhanh nhau nheo nhi nho nhu nhung ni nin ninh niu non nung oa oai oan oc oi om ong op oy pa pe pha phai phan phanh phao phay phe phi phim pho phoi phom phong phu phun pi pic ping po pu qua quai quan quang quanh quay que quen quy ra rai ram ranh rao rap rau ray ren reng reo ri ria rin ro roe roi ron rong ru rung ruy sa sach sai sam san sang sanh sao sau se sem sen si sin sinh soap soi song sop su sum sung suy ta tai tam tan tang tanh tao tau tay te tem teo tha thai tham thang thanh thao thau thay theo thi thiu tho thoa thoi thon thong thu thua thun thung ti tia tim ting tinh toa ton tra trai trang tranh trao tre treo tri trinh tro trong tru trung truy tu tua tum tung tuy ty uc ui um un ung ut uy uyn va vai vang vay ve ven veo vi vii vinh vo voan voi von vong vu vua vui vun vung vy xa xai xan xanh xao xay xe xem xen xi xii xin xinh xo xoa xoan xoang xoay xoe xong xu xua xui xung xy".split(" "));
 const VI_ENAMB=new Set("to the a an in on at it is am be by me he we so no go do my up us oh ok i can cat chat day hat him hit hot let man may not pay pet pop run say son ten than that then top try van via bin lay long ran sun song bay but bit pin tin".split(" "));
 const VI_VNAMB=new Set("to so do an tin pin bay may than ban me".split(" "));
+const VI_CODEKW=new Set("if for while else elif def return import print input range true false none break continue pass append int float list dict tuple sorted".split(" "));   /* không gồm lambda: thường là chữ λ (lam đa) */
+const VI_STRIM=new Set("to so do an tin pin bay may than ban me in no he".split(" "));   /* hư từ Anh trùng chữ Việt: ở mép cụm thì đọc tiếng Việt (an toàn, in File Explorer) */
 const VI_VNFUNC=new Set("sau trong cho khi con hay nhung cac mot voi nay roi thi va ta em anh ban xin neu nen vi".split(" "));
 const VI_CUE=/(?:^|\s)(chữ|từ|nói|dùng|thêm|bỏ|thiếu|thừa|lặp|sau|trước|với|bằng|viết|cụm|giữa|như|hoặc|chọn|điền|cột)\s*$/i;
 const VI_LOAN=new Set("video mini tour email online offline internet web website logo poster game robot camera tivi ok slide file laptop clip album radio taxi pizza karaoke".split(" "));
-function viEnMark(s,isTA,store){
+/* ---------------- KK-VOICE v6 (23/11/2026): TIẾNG ANH LẪN TIẾNG VIỆT ----------------
+   - Từ mượn đã Việt hóa cách viết (compa, nilon, axit...) luôn đọc giọng Việt, kể cả trong bài Tiếng Anh
+   - Bài môn khác: từ/cụm tiếng nước ngoài chưa có cách đọc Việt hóa trong từ điển (odds, split, File Explorer,
+     Deforestation causes soil erosion...) đọc bằng GIỌNG TIẾNG ANH thay vì phiên âm tự động;
+     từ đã có cách đọc trong nhà trường (axit, protein, video, Niu-tơn...) giữ giọng Việt */
+const VI_LOANVN=new Set("oxi anpha enzym oxit parabol mililit alen axit aptomat cacbon nilon logarit badan bazan milimet elip tivi metan anot nanomet canxi compa nitrat amoniac centimet inox miligam xupap micromet mili catot fara hypebol bugi clo natri milimol phosphat feralit flycam manti lamen silic kilojun microgam clorua latinh aten anten niken apatit pipet xenlulozo formaldehit ianta blu javel granit xyclon peclit ferit martensit austenit vonfram sunfat sunfuric crom enzim mazut hormon graphit calcit criolit fenspat stearat thiosulfat bromua brompropan brombutan propan etanol axetyl benzen ancol glucid cytokin cytochrom amoxicilin cefixim omeprazol histamin hydroxyapatit dicromat megajun bicarbonat metyl ceton kilomol micromol micropipet spironolacton cromatid pleiku".split(" "));
+/* âm tiết tiếng Việt đã bỏ hết dấu (tuoi, diem, luong, Tranh ve): nhận ra chữ Việt viết không dấu trong mã lệnh, tên tệp */
+const VI_SYLA=new RegExp(VI_SYL.source.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d"));
+function viIsSylA(w){ return VI_SYLA.test(String(w).toLowerCase()); }
+/* từ viết theo lối Việt không dấu, ghép nhiều âm tiết (kilomet, cacbonat, hoten, soluong): tách được hết thành âm tiết Việt
+   ĐÚNG CHÍNH TẢ (c/k, g/gh, ng/ngh, -ch/-nh, không có -ic, -ing...) - nhờ vậy loại được phần lớn từ tiếng Anh (taking, Dice, epoch) */
+function viSylS(x){ return !/io$/.test(x)&&VI_SYLA.test(x)&&!/^(c[eiy]|k[aou]|ge|ng[ei]|gh[aouy]|ngh[aouy])/.test(x)&&!/(ic|ec|ing|[ou]nh|[ou]ch|yc)$/.test(x)&&!/^[aeiouy]{3}/.test(x); }
+function viIsVnWord(w){
+  w=String(w).toLowerCase(); if(!/^[a-z]{2,24}$/.test(w)) return false; if(viIsSylA(w)) return true;
+  /* dấu hiệu tiếng Anh: e câm cuối từ (time, note, Europe), -ry/-py/-dy (very, happy, body), ll/ss/ee/ou/ea/ei... */
+  if(/[aeiouy][bcdfgklmnprstvz]e$|[bcdfgkpstz]le$|[rdpnbgfwc]y$|ll|ss|rr|ee|aa|ii|yy|ou|ea|ei|ey|oy|ae|ph$|th$|gh$/.test(w)) return false;
+  if(/(tion|sion|ity|ment|ness|ism|ist|ize|ise|able|ible|ful|less|ous|ive|ical|ance|ence|ship|hood|ward|ery|ing|ed)$/.test(w)) return false;
+  /* âm tiết bắt đầu bằng nguyên âm chỉ được đứng đầu từ hoặc sau âm tiết tận cùng bằng nguyên âm (giao|an được, rep|lac|e không) */
+  const ok=[true]; for(let i=1;i<=w.length;i++){ ok[i]=false; for(let j=Math.max(0,i-7);j<i;j++){ if(!ok[j]) continue; const sy=w.slice(j,i); if(j>0&&/^[aeiouy]/.test(sy)&&!/[aeiouy]$/.test(w.slice(0,j))) continue; if(viSylS(sy)){ ok[i]=true; break; } } }
+  return ok[w.length];
+}
+/* tách chữ Việt ghép không dấu thành âm tiết để giọng Việt đọc: soluong → so luong, CanThiep → can thiep (ít âm tiết nhất) */
+function viVnSplit(w){
+  w=String(w).toLowerCase(); if(!viIsVnWord(w)) return null;
+  const best=[[]]; for(let i=1;i<=w.length;i++){ best[i]=null; for(let j=Math.max(0,i-7);j<i;j++){ if(!best[j]) continue; const sy=w.slice(j,i); if(j>0&&/^[aeiouy]/.test(sy)&&!/[aeiouy]$/.test(w.slice(0,j))) continue; if((viSylS(sy)||(j===0&&i===w.length&&viIsSylA(sy)))&&(!best[i]||best[j].length+1<best[i].length)) best[i]=best[j].concat(sy); } }
+  return best[w.length]?best[w.length].join(" "):null;
+}
+/* tên biến tiếng Việt không dấu hay gặp trong bài Tin học */
+const VI_IDV={diem:"điểm",tuoi:"tuổi",luong:"lượng",thieu:"thiệu",ten:"tên",lop:"lớp",tong:"tổng",dem:"đếm",chuvi:"chu vi",dientich:"diện tích",chieudai:"chiều dài",chieurong:"chiều rộng",hoten:"họ tên",soluong:"số lượng",dongia:"đơn giá",thanhtien:"thành tiền",trungbinh:"trung bình",diemtb:"điểm trung bình",namsinh:"năm sinh",gioitinh:"giới tính",masach:"mã sách",tensach:"tên sách",mahs:"mã học sinh",hocsinh:"học sinh",sinhvien:"sinh viên",khachhang:"khách hàng",donhang:"đơn hàng",sanpham:"sản phẩm",ketqua:"kết quả",tacgia:"tác giả",dulieu:"dữ liệu",baitap:"bài tập",hoctap:"học tập",tinhoc:"tin học",thuvien:"thư viện",tailieu:"tài liệu",doanhthu:"doanh thu",diemtin:"điểm tin",canthiep:"can thiệp",ngaytra:"ngày trả",ngaymuon:"ngày mượn",mamuon:"mã mượn",bandoc:"bạn đọc",baocao:"báo cáo",canhbao:"cảnh báo",thongtin:"thông tin",lienhe:"liên hệ",chinhphu:"chính phủ",nonla:"nón lá",lanamnhuan:"là năm nhuận",matinh:"mã tỉnh",sobimat:"số bí mật",solan:"số lần",giasaugiam:"giá sau giảm",tongchuso:"tổng chữ số",vedagiac:"vẽ đa giác",malop:"mã lớp",xeploai:"xếp loại",tyle:"tỷ lệ",binhphuong:"bình phương",somang:"số mạng",tentruong:"tên trường",maunen:"màu nền",masv:"mã sinh viên",nhapdiem:"nhập điểm",tenem:"tên em",mamon:"mã môn",thamquan:"tham quan",vanban:"văn bản",thunghiem:"thử nghiệm",tongdiem:"tổng điểm",khongkhi:"không khí",lamsach:"làm sạch",loi:"lỗi",tintuc:"tin tức",mienphi:"miễn phí",matkhau:"mật khẩu",dangky:"đăng ký",tenlop:"tên lớp",gioi:"giới",trinh:"trình",chieu:"chiếu",tranh:"tranh",ve:"vẽ"};
+/* Môn khoa học (Toán, Lí, Hóa, Sinh, KHTN, Công nghệ, Y - Dược, Nông nghiệp, Kĩ thuật...): danh pháp, thuật ngữ khoa học
+   đọc kiểu Việt như giáo viên đọc trên lớp; tên người, cụm tiếng Anh vẫn đọc giọng Anh */
+function viSciBook(code){ return /^(?:TH|CS|PT|NC)-(?:TOAN|LI|HOA|SINH|KHTN|KH|TNXH|CN)(?:-|$)|^DH-(?:SS|SK|TY|NL|TN|SXCB|MT|KT|KTXD|CNKT)(?:\.|-|$)|^QT-DH-(?:GT|DS|BV)(?:\.|-|$)/.test(String(code||"")); }
+function viCurBook(){ try{ return (typeof P!=="undefined"&&P&&P.L&&String(P.L.ma||""))||""; }catch(e){ return ""; } }
+/* danh pháp hóa - sinh - dược (viết thường trong bài khoa học, kể cả lối viết Việt hóa: metyl, sunfat, ferit, propan) */
+const VI_NOMEN=/(al|ase|ose|ide|ine|ane|ene|yne|yl|ol|ate|ite|ium|oid|some|cyte|phyll|tide|mer|gen|one|ole|ella|coccus|bacter|bacillus|virus|osis|itis|emia|globin|cillin|mycin|statin|toxin|platin|tropin|ulin|umin|ycin|ein|ic|at|it|an|en|in|on|id|im|om|ua|ut)$/;
+/* danh pháp viết hoa đầu câu (Methanol, Penicillin, Salmonella) - không gồm đuôi ngắn để khỏi nhầm tên người (Morgan, Einstein) */
+const VI_NOMENU=/(ase|ose|ide|ine|ane|ene|yne|yl|ol|ate|ite|ium|oid|some|cyte|phyll|tide|ole|ella|coccus|bacter|bacillus|virus|osis|itis|emia|globin|cillin|mycin|statin|toxin|platin|tropin|ulin|umin|ycin|oic)$/;
+/* kiểu gen AaBbDd, AABb, aabb: đọc từng chữ */
+function viGeno(w){ w=String(w); if(w.length<2||w.length%2||!/^[A-Za-z]+$/.test(w)) return false; for(let i=0;i<w.length;i+=2) if(w[i].toLowerCase()!==w[i+1].toLowerCase()) return false; return /[A-Z]/.test(w)||w.length<=6; }
+function viChemTok(w){ const u=String(w).match(/[A-Z][a-z]?/g)||[]; return u.length>=2&&u.join("")===w&&u.every(x=>VI_EL.has(x)); }
+const VI_TERMK=new Set(VI_TERMS.map(t=>t[0]));
+const VI_SUFV=new Set("inh li phun ia".split(" "));
+/* Phân loại một từ Latin trong bài môn khác: F nước ngoài · D có cách đọc Việt hóa · S hư từ tiếng Anh · R chữ Việt không dấu · X kí hiệu/viết tắt · N số */
+function viFgnCls(w,sci){
+  w=String(w);
+  if(/^\d+$/.test(w)) return "N";
+  if(!/^[A-Za-z][A-Za-z'’-]*$/.test(w)) return "V";
+  if(/^[A-Z]{1,4}['’]/.test(w)&&/^[A-Z'’]+$/.test(w)) return "X";   /* AA', OO', BDD'B': kí hiệu phẩy trong hình học */
+  if(/['’]$/.test(w)&&!/s['’]$/i.test(w)) w=w.replace(/['’]+$/,"");   /* 'đừng kể với ai': dấu nháy đóng, không phải tiếng Anh */
+  if(/-/.test(w)){ if(viIsVnHyph(w)) return "R"; const ps=w.split("-").filter(Boolean).map(x=>viFgnCls(x,sci)); return ps.includes("F")?"F":(ps.length&&ps.every(p=>p==="D"))?"D":"X"; }
+  /* viết tắt, biến, đuôi tệp không đọc thành từ được (rng, elpd, Sxy, jpg, csv): đánh vần như viết tắt */
+  if(/^[xyzt]{2,4}$/i.test(w)) return "X";   /* xy, xyz, Oxyz: biến toán học */
+  if(w.length<=4&&(!/[aeiouy]/i.test(w)||(/^[^aeiouy]{2}/i.test(w)&&!/^(bl|br|ch|cl|cr|dr|fl|fr|gl|gr|kn|ph|pl|pr|sc|sh|sk|sl|sm|sn|sp|st|sw|th|tr|tw|wh|wr)/i.test(w)))) return "X";
+  const lw=w.toLowerCase().replace(/’/g,"'"), base=lw.replace(/'.*$/,"");
+  if(/[A-Za-z]['’][A-Za-z]|s['’]$/.test(w)&&base.length>=2) return "F";   /* Let's, students', don't: dấu tiếng Anh */
+  if(VI_CODEKW.has(base)) return "F";   /* từ khóa lập trình: for, while, if, else, range, True... đọc giọng Anh (từ điển phiên âm chỉ là dự phòng) */
+  if(base.length<=2) return (base.length===2&&(VI_ENSTOP.has(base)||/^(go|up|us|am|no|so|oh|hi)$/.test(base)))?"S":"X";
+  if(viGeno(w)) return "X";
+  if(VI_FIX[w]&&VI_FIX[w][0]!==VI_FIX[w][0].toLowerCase()) return "R";   /* WHO → Tổ chức Y tế Thế giới, Hanoi → Hà Nội */
+  if(base.length>=3&&(VI_ENSTOP.has(base)||base==="where")&&/^[A-Za-z][a-z]+$/.test(w.replace(/['’].*$/,""))) return "S";   /* for, and, this, should, Why, Where: hư từ tiếng Anh (không tính WHO, DiD) */
+  if(VI_FIX[w]||VI_DICT[lw]) return (VI_FIX[w]&&VI_FIX[w][0]!==VI_FIX[w][0].toLowerCase())?"R":"D";   /* từ điển trước (YouTube, PowerPoint) */
+  if(/^[a-z]+[A-Z]|^[A-Z][a-z]+[A-Z][a-z]/.test(w)&&w.length>5) return (VI_IDV[lw]||viIsVnWord(lw))?"R":"F";   /* tên biến: soLuong, TenSach (Việt) / analogWrite, PageRank (Anh) */
+  if(VI_TERMK.has(w)||VI_FN[lw]||VI_UNITS[w]||(typeof VI_UW!=="undefined"&&VI_UW[w]!=null)||/^[A-Z]{2,6}$/.test(w)||viGeno(w)||viChemTok(w)||(/[A-Z]/.test(w.slice(1))&&w.length<=5)) return "X";
+  if(VI_FIX[w]&&VI_FIX[w][0]!==VI_FIX[w][0].toLowerCase()) return "R";   /* Nguyen → Nguyễn, Hanoi → Hà Nội: tên riêng Việt */
+  if(VI_LOANVN.has(base)||VI_FIX[w]||VI_DICT[lw]||VI_DICTV[lw]) return "D";
+  if(VI_ENSTOP.has(base)) return "S";
+  if(VI_ENFORCE.has(base)) return "F";
+  if(VI_VNNOD.has(base)||viIsSylA(base)) return "R";
+  if(viIsVnWord(base)&&(/^[a-z]/.test(w)||w.length<=4||VI_VNPLACE.has(base))) return "R";   /* chữ Việt ghép viết thường (kilomet, soluong); tên viết hoa nhiều âm tiết (Galileo, Kenya) là tên nước ngoài */
+  if(sci&&!/(tion|sion)$/.test(base)&&(/^[a-z]/.test(w)?VI_NOMEN:VI_NOMENU).test(base)) return "D";   /* môn khoa học: danh pháp (glycoside, metyl, Methanol, Penicillin) đọc kiểu Việt */
+  return "F";
+}
+/* tên phiên âm kiểu Việt có gạch nối (Bra-xin, Phran-xi, Xta-lin, Krem-li): đọc giọng Việt */
+function viIsVnHyph(w){
+  const ps=String(w).split("-"); if(ps.length<2||ps.some(p=>!p||p.length>5)) return false;
+  const syl=p=>{ p=p.toLowerCase(); return viIsSylA(p)||viIsSylA(p.slice(1))||viIsSylA(p.slice(2)); };
+  return ps.every(syl)&&(/x/i.test(w)||/^[A-Z][a-z]*(-[a-z]+)+$/.test(w)||ps.every(p=>p.length<=3));
+}
+/* từ tiếng Anh trông giống chữ Việt ghép (time, note, value...) hoặc thuật ngữ công nghệ trong bài khoa học (bootstrap, seed): vẫn đọc giọng Anh */
+const VI_VNPLACE=new Set("vietnam saigon danang haiphong hanoi hue halong nhatrang dalat cantho vungtau".split(" "));
+const VI_ENFORCE=new Set("item tuple random edit among anxiety seven today into only open cannot people value button setup cookie intro habit taken even exit undo unit domain maximum union ratio merit timely human develop contain navy bitmap packet caption daily quality audit likely delay mean span override translate console sabine eugene jane cochrane engine protocol operate yamane donella makespan timer".split(" "));
+/* Đọc một từ tiếng nước ngoài bằng giọng Việt (giọng AI KK, máy không có giọng tiếng Anh): từ điển trước, phiên âm tự động sau */
+function viEnWord(w){
+  w=String(w).replace(/['’].*$/,""); if(!w) return "";
+  if(/^\d+$/.test(w)) return viNum(w);
+  if(VI_FIX[w]) return VI_FIX[w];
+  const lw=w.toLowerCase(); if(VI_DICT[lw]) return VI_DICT[lw];
+  const t=VI_TERMS.find(x=>x[0]===w); if(t) return t[1];
+  if(VI_EN2[lw]) return VI_EN2[lw];
+  if(/^[A-Z]{2,6}$/.test(w)||w.length<=2||!/[aeiouy]/i.test(w)) return viSpell(w);
+  return viTranslit(w);
+}
+const VI_EN2={go:"gâu",up:"áp",us:"ớt",am:"em",is:"ít",it:"ít",in:"in",on:"on",at:"ét",to:"tu",do:"đu",so:"xâu",no:"nâu",my:"mai",by:"bai",be:"bi",he:"hi",we:"uy",me:"mi",of:"ốp",or:"o",if:"íp",as:"ét",an:"en",hi:"hai",oh:"âu",the:"đơ",and:"en",you:"diu",are:"a",was:"quơt"};
+function viEnMark(s,isTA,store,sci){
   const RE=/[A-Za-z][A-Za-z'’]*(?:-[A-Za-z]+)*(?![A-Za-zÀ-ỹĐđ])|\d+|[A-Za-zÀ-ỹĐđ]+/g;
   const toks=[]; let m;
   while((m=RE.exec(s))){ toks.push({t:m[0],a:m.index,b:m.index+m[0].length}); }
@@ -187,13 +297,17 @@ function viEnMark(s,isTA,store){
     if(!/^[A-Za-z][A-Za-z'’-]*$/.test(w)) return "V";
     const lw=w.toLowerCase().replace(/’/g,"'"), base=lw.replace(/'.*$/,"").replace(/-.*$/,"");
     if(/^[A-Za-z]$/.test(w)) return "L";
-    if(/['’]/.test(w)) return "E";                       /* don't, I'm, it's */
+    if(/[A-Za-z]['’][A-Za-z]/.test(w)) return "E";         /* don't, I'm, it's (dấu nháy đóng ở cuối thì không tính) */
+    if(VI_LOANVN.has(lw)||VI_SUFV.has(lw)) return "V";    /* compa, nilon, axit: từ mượn đã Việt hóa; inh, phun: cách đọc hậu tố */
+    if(/-/.test(w)&&lw.split("-").some(p=>p.length>2&&!viIsSyl(p))) return "E";   /* non-renewable, well-known */
     if(VI_ENAMB.has(base)) return (viIsSyl(base)&&VI_VNAMB.has(base))?"?":"E";  /* chỉ các từ rất hay gặp trong tiếng Việt (to, so, do, an, tin...) mới xét ngữ cảnh */
     if(VI_LOAN.has(base)) return "?";                     /* video, email...: theo ngữ cảnh */
     if(/^[A-Z]/.test(w)&&VI_VNFUNC.has(base)) return "V";  /* Sau, Trong, Cho... đầu câu tiếng Việt */
     if(/^[A-Z]/.test(w)&&(VI_VNNOD.has(base)||/^[A-Z]{2,}$/.test(w))) return "?";   /* tên riêng / viết tắt: Nam, Ha Long, AI */
     if(VI_VNNOD.has(base)) return "V";                    /* từ Việt không dấu: sau, cho, trong, hay... */
     if(!viIsSyl(base)||VI_ENVOC.has(lw)||VI_ENVOC.has(base)||VI_ENSTOP.has(base)) return "E";
+    if(/(p|t|c|ch)$/.test(base)) return "E";              /* âm tiết khép p, t, c, ch mà không có dấu thanh thì không phải chữ Việt: chop, trap, hip hop */
+    if(/io$/.test(base)) return "E";                       /* bio: không có vần "io" trong tiếng Việt */
     return "?";
   };
   toks.forEach(x=>{ x.k=kind(x); });
@@ -205,13 +319,18 @@ function viEnMark(s,isTA,store){
     cur.push(x);
   });
   if(cur.length) runs.push(cur);
-  const isVi=x=>x&&x.k==="V";
+  const isVi=x=>x&&x.k==="V", boolCtx=/(?:^|[^A-Za-z])(?:AND|NOT)(?![A-Za-z])/.test(s);
   const spans=[];
+  /* bài Tiếng Anh: cả câu/đáp án không có chữ Việt nào (me, sat, OBject (n)) thì đọc trọn bằng giọng tiếng Anh */
+  if(isTA&&toks.length&&toks.some(x=>x.k!=="V")&&!/[^A-Za-z0-9\s.,!?;:'’"“”()\-\/&]/.test(s)&&/[A-Za-z]{2}/.test(s)&&!/zq[a-z]/.test(s)){   /* trừ khi chỉ còn cách đọc hậu tố kiểu Việt (-ing → inh) */   /* chỉ chữ Latin, số, dấu câu (không có kí hiệu ≠ = + →) */
+    let e=toks[toks.length-1].b; const sub=s.slice(toks[0].a,e); if((sub.match(/\(/g)||[]).length>(sub.match(/\)/g)||[]).length&&s[e]===")") e++;
+    spans.push([toks[0].a,e]); runs.length=0;
+  }
   runs.forEach(run=>{
     if(isTA){
       /* từ mơ hồ ("song", "hay"...) ở mép: theo từ bên ngoài; ở giữa: tiếng Anh */
       const strong=run.some(x=>x.k==="E");
-      const FN=/^(to|the|a|an|in|on|at|it|is|am|be|by|me|he|we|so|no|go|do|my|up|us|i)$/i;
+      const FN=/^(to|the|a|an|in|on|at|it|is|am|be|by|me|he|we|so|no|go|do|my|up|us|i|than|can|may)$/i;
       run.forEach((x,i)=>{
         if(run.length===1&&(x.k==="?"||x.k==="E")){ /* to, no, in kẹp giữa hai từ Việt (nói to theo, đã no rồi, chữ in hoa): đọc tiếng Việt */
           const ti=toks.indexOf(x), pv=toks[ti-1], nx=toks[ti+1];
@@ -220,12 +339,16 @@ function viEnMark(s,isTA,store){
           if(/^(to|no|in)$/.test(x.t)&&pV&&nV&&!/^(chữ|từ)$/i.test(pv.t)&&!/^cộng$/i.test(nx.t)){ x.k="V2"; return; } }
         if(x.k!=="?") return;
         if(strong){
+          /* May I come in, Can you...: từ mở đầu câu hỏi tiếng Anh đứng ngay trước đại từ */
+          const nx2=run[i+1]; if(i===0&&/^[A-Z]/.test(x.t)&&nx2&&/^(I|you|we|he|she|they|it)$/i.test(nx2.t)){ x.k="E"; return; }
           /* ở mép cụm, sát ngay từ tiếng Việt (song ngữ, Nam đáp): đọc tiếng Việt - trừ hư từ tiếng Anh (used to cộng...) */
           const ti=toks.indexOf(x), prev=toks[ti-1], next=toks[ti+1];
           const adjL=i===0&&isVi(prev)&&/^\s+$/.test(s.slice(prev.b,x.a)), adjR=i===run.length-1&&isVi(next)&&/^\s+$/.test(s.slice(x.b,next.a));
           const nearPlus=(adjR&&/^cộng$/i.test(next.t))||(adjL&&/^cộng$/i.test(prev.t));
           x.k=((adjL||adjR)&&!nearPlus&&!FN.test(x.t)&&!/^[A-Z]{2,}$/.test(x.t))?"V2":"E"; return; }
         if(/^[A-Z]{2,}$/.test(x.t)&&VI_ENVOC.has(x.t.toLowerCase())){ x.k="E"; return; }
+        /* tên riêng Việt viết không dấu liền trước chữ Việt có dấu (Trung Quốc, Hoa Kỳ): đọc tiếng Việt */
+        { const ti=toks.indexOf(x), nx=toks[ti+1]; if(/^[A-Z][a-z]/.test(x.t)&&nx&&/[À-ỹĐđ]/.test(nx.t)&&/^\s+$/.test(s.slice(x.b,nx.a))){ x.k="V2"; return; } }
         /* đứng một mình giữa câu tiếng Việt: tiếng Anh chỉ khi có từ dẫn (chữ it, thêm to, nói hi...) */
         const before=s.slice(Math.max(0,x.a-14),x.a);
         const after=s.slice(x.b,x.b+8);
@@ -235,21 +358,54 @@ function viEnMark(s,isTA,store){
       const flush=()=>{ while(seg.length&&seg[seg.length-1].k==="N") seg.pop(); while(seg.length&&seg[0].k==="N") seg.shift();
         if(seg.length){ const ws=seg.filter(x=>x.k!=="N");
           const before=s.slice(Math.max(0,seg[0].a-12),seg[0].a);
-          const onlyLetters=ws.every(x=>x.k==="L")&&ws.length<2&&!/(chữ|chữ cái|kí tự|đánh vần)\s*$/i.test(before); const loan=ws.length===1&&VI_LOAN.has(ws[0].t.toLowerCase());
+          const onlyLetters=ws.every(x=>x.k==="L")&&ws.length<2&&!/(chữ|chữ cái|kí tự|ký tự|đánh vần|đổi|thành|gấp đôi|bỏ|thêm|có)\s*$/i.test(before); const loan=ws.length===1&&VI_LOAN.has(ws[0].t.toLowerCase());
           const caps=ws.every(x=>{ const l=x.t.toLowerCase().replace(/’/g,"'"); return /^[A-Z]{2,}/.test(x.t)&&!VI_ENVOC.has(l)&&!VI_ENVOC.has(l.replace(/'.*$/,"")); });
           if(!onlyLetters&&!loan&&!caps) spans.push([seg[0].a,seg[seg.length-1].b]); }
         seg=[]; };
       run.forEach(x=>{ if(x.k==="E"||x.k==="L"||x.k==="N") seg.push(x); else flush(); });
       flush();
     } else {
-      const ws=run.filter(x=>x.k!=="N"); if(ws.length<3) return;
-      const stop=ws.filter(x=>VI_ENSTOP.has(x.t.toLowerCase())).length, non=ws.filter(x=>!viIsSyl(x.t.replace(/['’].*$/,""))).length;
-      if(stop>=2&&non>=1) spans.push([run[0].a,run[run.length-1].b]);
+      const ws=run.filter(x=>x.k!=="N");
+      if(ws.length>=3){
+        const w2=ws.filter(x=>x.t.replace(/['’]/g,"").length>=2);   /* bỏ chữ cái đơn (A B A, C x i x A) */
+        const stop=w2.filter(x=>VI_ENSTOP.has(x.t.toLowerCase())).length, non=w2.filter(x=>!viIsSyl(x.t.replace(/['’].*$/,""))).length;
+        if(stop>=2&&non>=1){ spans.push([run[0].a,run[run.length-1].b]); return; }
+      }
+      /* v6: từ/cụm nước ngoài chưa có cách đọc Việt hóa → giọng tiếng Anh (odds, split, File Explorer, Naive Bayes).
+         Số và đơn vị dính số (200px, 15px) ngắt cụm: số đọc giọng Việt */
+      const subs=[]; let sub=[];
+      run.forEach((x,i)=>{ if(x.k==="N"||(i>0&&run[i-1].k==="N"&&run[i-1].b===x.a)){ if(sub.length) subs.push(sub); sub=[]; } else sub.push(x); });
+      if(sub.length) subs.push(sub);
+      subs.forEach(run=>{
+      const cl=run.map(x=>/^(?:AND|NOT|XOR|NAND|NOR)$/.test(x.t)||(x.t==="OR"&&boolCtx)?"F":s[x.a-1]==="."&&/^[a-z]{2,5}$/.test(x.t)?"X":viFgnCls(x.t,sci)), nF=cl.filter(c=>c==="F").length;   /* toán tử Boole AND, OR, NOT: giọng Anh (OR một mình = tỉ số chênh: đánh vần) */
+      if(!nF){   /* chỉ gồm hư từ tiếng Anh không trùng chữ Việt: Chữ 'Who', What, When → giọng tiếng Anh */
+        if(cl.every(c=>c==="S")&&run.some(x=>{ const w=x.t.replace(/['’]/g,"").toLowerCase(); return w.length>=3&&!viIsSyl(w)&&!VI_STRIM.has(w); })) spans.push([run[0].a,run[run.length-1].b]);
+        return; }
+      /* "I think...": đại từ I đứng đầu, ngay trước động từ tiếng Anh viết thường (không phải số La Mã: phần I, bài I) */
+      if(run[0].t==="I"&&run.length>1&&/[FDS]/.test(cl[1])&&/^[a-z]/.test(run[1].t)&&!/(phần|bài|chương|mục|loại|nhóm|cấp|kì|kỳ|tập|khóa|khoá|số|hình|bảng)\s*$/i.test(s.slice(Math.max(0,run[0].a-12),run[0].a))) cl[0]="F";
+      const nS=cl.filter(c=>c==="S").length, nR=cl.filter(c=>c==="R"||c==="X").length;
+      if(nF+nS>=nR){
+        /* cả cụm là tiếng nước ngoài: bỏ số, chữ Việt không dấu, kí hiệu ở hai đầu */
+        const cut=i=>/[NRX]/.test(cl[i])||(cl[i]==="S"&&VI_STRIM.has(run[i].t.toLowerCase()));
+        let a=0,b=run.length-1; while(a<=b&&cut(a)) a++; while(b>=a&&cut(b)) b--;
+        if(a<=b) spans.push([run[a].a,run[b].b]);
+      } else {
+        /* chỉ nhóm từ nước ngoài liền nhau (kèm từ có cách đọc Việt hóa, hư từ đứng sát): Nguyen Du School → School */
+        let i=0;
+        while(i<run.length){
+          if(cl[i]!=="F"){ i++; continue; }
+          let j=i; while(j+1<run.length&&/[FDS]/.test(cl[j+1])) j++;
+          let k=i; while(k-1>=0&&/[DS]/.test(cl[k-1])) k--; while(k<i&&cl[k]==="S"&&VI_STRIM.has(run[k].t.toLowerCase())) k++;
+          while(j>i&&cl[j]==="S"&&VI_STRIM.has(run[j].t.toLowerCase())) j--;
+          spans.push([run[k].a,run[j].b]); i=j+1;
+        }
+      }
+      });
     }
   });
   if(!spans.length) return s;
   let out="", p=0;
-  spans.forEach(([a,b])=>{ store.push(s.slice(a,b)); out+=s.slice(p,a)+" zqen"+viIdx(store.length-1)+"zq "; p=b; });
+  spans.forEach(([a,b])=>{ while(b>a+1&&/['’]$/.test(s.slice(a,b))&&!/s['’]$/.test(s.slice(a,b))) b--; store.push(s.slice(a,b)); out+=s.slice(p,a)+" zqen"+viIdx(store.length-1)+"zq "; p=b; });
   return out+s.slice(p);
 }
 function viIdx(n){ let s=""; do{ s=String.fromCharCode(97+n%26)+s; n=Math.floor(n/26)-1; }while(n>=0); return s; }
@@ -341,6 +497,8 @@ function viPre(s,isTA){
   s=s.replace(/\*(?=[\w]*\.[a-z]{2,4}\b)/g," dấu sao ");
   s=s.replace(/#DIV\/0!/g," lỗi chia cho 0 ").replace(/#N\/A/g," lỗi không có giá trị ").replace(/#VALUE!/g," lỗi giá trị ").replace(/#REF!/g," lỗi tham chiếu ").replace(/#NAME\?/g," lỗi tên ").replace(/#{2,}/g," dấu thăng dấu thăng ").replace(/#/g," dấu thăng ");
   s=s.replace(kkNB(/(\$?[A-Z]{1,2}\$?\d+):(\$?[A-Z]{1,2}\$?\d+)(?![\w])/g,/[A-Za-z0-9$]/),"$1 đến $2");
+  /* địa chỉ ô tuyệt đối/hỗn hợp: $C$14 → đô la C đô la 14, B$1 → B đô la 1 (không đọc "một đô la") */
+  s=s.replace(/(^|[^A-Za-z0-9$])(\$?)([A-Z]{1,3})(\$?)(\d{1,7})(?![A-Za-z0-9])/g,(m,p,d1,c,d2,n)=>(d1||d2)?p+(d1?" đô la ":" ")+c+(d2?" đô la ":" ")+n:m);
   s=s.replace(/\$(\d[\d.,]*)/g,"$1 đô la").replace(/\$/g," đô la ");
   s=s.replace(/@/g," a còng ").replace(/\s&\s/g," và ").replace(/¶/g," dấu đoạn văn ").replace(/✓|✔/g," đúng ").replace(/✗|✘/g," sai ");
   s=s.replace(/\s?\/\/=\s?/g," chia nguyên rồi gán ").replace(/(\w)\s+\/\/\s+(?=\w)/g,"$1 chia lấy phần nguyên ");
@@ -396,6 +554,7 @@ function viPre(s,isTA){
   /* giá trị tuyệt đối | số phần tử; vạch | còn lại là chỗ ngắt */
   s=s.replace(/\|([^|\n]{1,32})\|/g,(m,x)=>{
     if(/[À-ỹđĐ]/.test(x)||/[a-z]{3,}/i.test(x.replace(/sin|cos|tan|log|ln|sqrt/g,""))) return m;
+    if(/^\s*[A-Za-z](?:\s+[A-Za-z])+\s*$/.test(x)) return m;   /* A A A | A B A B | A B C: vạch ngăn mẫu, không phải giá trị tuyệt đối */
     if(/^\s*[A-Z](?:\s*[∩∪]\s*[A-Z])*\s*$/.test(x)) return " số phần tử của "+x+" ";
     return " giá trị tuyệt đối của "+x+", ";
   });
@@ -461,9 +620,21 @@ function viPre(s,isTA){
 }
 /* Chuẩn hóa văn bản để ĐỌC.
    opt.digits=false: giữ chữ số (giọng thiết bị tự đọc) · opt.en=true: giữ ⟪tiếng Anh⟫ để đọc bằng giọng tiếng Anh · opt.ta: ép coi là bài tiếng Anh */
+/* từ nằm sát kí hiệu mã lệnh: tong_the, df["doanhthu"], class="canhbao", .canhbao, x.y (dấu chấm cuối câu không tính) */
+function viCodeWords(s){
+  const set=new Set(), RE=/[A-Za-z]+/g; let m;
+  const code=(c,c2,side)=>/[_\[\]{}=<>\/\\#@0-9]/.test(c||"")||(c==="."&&/[A-Za-z0-9]/.test(c2||""))||(c==="("&&(side==="r"||/[A-Za-z0-9_]/.test(c2||"")))||(c===")"&&side==="r"&&/[.(\[;]/.test(c2||""));   /* f(x): lời gọi hàm; (langue) trong văn xuôi thì không */
+  while((m=RE.exec(s))){ const a=m.index, b=a+m[0].length; let l=s[a-1], l2=s[a-2], r=s[b], r2=s[b+1];
+    if(/["']/.test(l||"")){ l=l2; l2=s[a-3]; } if(/["']/.test(r||"")){ r=r2; r2=s[b+2]; }
+    if(code(l,l2,"l")||code(r,r2,"r")) set.add(m[0].toLowerCase()); }
+  return set;
+}
 function viNorm(raw,opt){
-  opt=opt||{}; const digits=opt.digits!==false, isTA=opt.ta!=null?!!opt.ta:viCurIsTA();
+  opt=opt||{}; const bk=String(opt.book||viCurBook()||""), digits=opt.digits!==false, isTA=opt.ta!=null?!!opt.ta:viCurIsTA(), sci=opt.sci!=null?!!opt.sci:viSciBook(bk);
   let s=String(raw==null?"":raw);
+  /* tên biến có gạch dưới: so_luong, dien_tich, la_nam_nhuan → đọc cụm tiếng Việt có dấu (trước khi bỏ kí tự _) */
+  s=s.replace(/(^|[^A-Za-z0-9_])([A-Za-z]+(?:_[A-Za-z]+)+)(?![A-Za-z0-9_])/g,(m,p,w)=>{ const j=w.replace(/_/g,"").toLowerCase(); return VI_IDV[j]?p+VI_IDV[j]:m; });
+  const VCODE=viCodeWords(s);   /* từ đứng trong ngữ cảnh mã lệnh (tong_the, ["doanhthu"], class="canhbao") - chỉ những từ này mới tách âm tiết Việt */
   s=s.replace(/&nbsp;/g," ").replace(/&amp;/g," và ").replace(/ /g," ").normalize("NFC");
   s=viPre(s,isTA);
   s=s.replace(/[*_`#~]+/g," ");
@@ -487,13 +658,55 @@ function viNorm(raw,opt){
     /* đánh dấu trọng âm kiểu DIS-count, cus-TO-mer → ghép lại thành từ để giọng Anh đọc đúng */
     s=s.replace(/(^|[^A-Za-zÀ-ỹ])([A-Za-z]+(?:-[A-Za-z]+)+)(?![A-Za-zÀ-ỹ])/g,(m,pre,w)=>{ const ps=w.split("-"); return (ps.length>=2&&ps.some(x=>x.length>=2&&x===x.toUpperCase())&&ps.some(x=>x!==x.toUpperCase()))? pre+ps.join("").toLowerCase() : m; });
     const SUF={ing:"inh",ed:"ét",s:"ét",es:"ét",er:"ơ",est:"ét",ly:"li",tion:"sần",ment:"mần",ful:"phun",less:"lét",ness:"nét",able:"ơ bồ",ous:"ợt"};
+    /* v6: -s/-es, s/es → "-s hoặc -es" (không đọc "chia") */
+    s=s.replace(/(^|[\s(,:])-?(s|es|ed|ing|er|est)\s*\/\s*-?(s|es|ed|ing|er|est)(?![A-Za-z])/g,(m,p,a,b)=>p+"-"+a+" hoặc -"+b);
     s=s.replace(/(đuôi|hậu tố|thêm|bỏ|dạng|đọc)(\s+)-(ing|ed|s|es|er|est|ly|tion|ment|ful|less|ness|able|ous)(?![A-Za-z])/g,(m,k,sp,x)=>k+sp+SUF[x]);
+    /* v6: hậu tố đứng riêng có gạch đầu (-tion, -ic, -ity, -ee...) đọc như giáo viên Việt đọc trên lớp */
+    const SUF2=Object.assign({},SUF,{es:"e ét",sion:"giần",ion:"i ơn",ic:"ích",ical:"i cồ",ity:"ơ ti",ee:"i",eer:"ia",ese:"i dơ",ise:"ai dơ",ize:"ai dơ",al:"ồ",ive:"íp",ism:"i dơm",ist:"ít",ance:"ần xơ",ence:"ần xơ",ant:"ần",ent:"ần",ship:"síp",hood:"hút",dom:"đờm",ure:"chơ",ary:"ơ ri",ory:"ơ ri",ian:"i ần",ify:"i phai",ible:"ơ bồ"});
+    s=s.replace(/(^|[\s(,:;])-(tion|sion|ical|ic|ity|ion|ment|eer|ee|ese|ise|ize|ing|ed|est|er|es|s|ly|ful|less|ness|able|ible|ous|ive|al|ism|ist|ance|ence|ant|ent|ship|hood|dom|ure|ary|ory|ian|ify)(?![A-Za-zÀ-ỹ])/g,(m,p,x)=>p+SUF2[x]);
+    /* tách âm tiết viết thường (bi-ol-o-gy, in-for-ma-tion) → ghép lại thành từ để giọng Anh đọc */
+    s=s.replace(/(^|[^A-Za-zÀ-ỹ])([a-z]{1,4}(?:-[a-z]{1,4}){2,})(?![A-Za-zÀ-ỹ])/g,(m,p,w)=>/-(?:and|or|to|of|by|the|in|on|at|with|a|an|n)-/.test(w)?m:p+w.replace(/-/g,""));   /* bi-ol-o-gy → biology; giữ hide-and-seek, face-to-face */
+    /* tiền tố nhắc riêng (eco-, bio-): bỏ gạch để giọng Anh đọc */
+    s=s.replace(/(^|[\s(,:])([A-Za-z]{2,6})-(?=[\s,.;:!?)]|$)/g,"$1$2");
+    /* trọng âm viết hoa giữa từ (eLECtric, OBject, pAIn, reDUCE) → chữ thường để giọng Anh đọc đúng một từ */
+    s=s.replace(/(^|[^A-Za-zÀ-ỹ])([a-z]*[A-Z]{2,}[a-z]+|[a-z]+[A-Z]{2,}[a-z]*)(?![A-Za-zÀ-ỹ])/g,(m,p,w)=>(((w.match(/[a-z]/g)||[]).length>=2||/^[a-z][A-Z]{3,}$/.test(w))&&!/^[A-Z]+s$/.test(w))?p+w.toLowerCase():m);
+    /* 8 p.m., 7 a.m. */
+    s=s.replace(/(\d\s*)([ap])\.\s?m(\.?)(?=[\s,;:!?)]|$)/gi,(m,d,x,dot,o,str)=>{ const r=str.slice(o+m.length), c=(r.match(/^\s+(\S)/)||[])[1]; return d+x.toUpperCase()+" M"+(dot&&(/^\s*$/.test(r)||(c&&c!==c.toLowerCase()))?". ":" "); });   /* 9 p.m. What time → 9 P M. What time */
+    s=s.replace(/\s+\/\s+/g,", ");   /* do / does / -s: các phương án, không đọc "chia" */
+    /* số kiểu Anh 80,000 / 1,700 → 80000 / 1700 (bài Tiếng Anh dùng dấu phẩy phân cách hàng nghìn) */
+    s=s.replace(/(^|[^\d,.])(\d{1,3})((?:,\d{3})+)(?![\d,])/g,(m,p,a,b)=>p+a+b.replace(/,/g,""));
+  }
+  /* tên tệp: data.csv, logo.jpg, Bai1.docx → "chấm" (không ngắt câu ở dấu chấm) */
+  s=s.replace(/([A-Za-z0-9_])\.(csv|jpe?g|png|gif|txt|pdf|docx?|xlsx?|pptx?|py|ipynb|html?|css|js|json|mp3|mp4|wav|zip|exe|md|sql|svg)(?![A-Za-z0-9])/gi,"$1 chấm $2");
+  s=s.replace(/(^|[^A-Za-zÀ-ỹĐđ])v\.\s?v(\.?)(?![A-Za-zÀ-ỹĐđ])/g,(m,p,dot,o,str)=>{ const r=str.slice(o+m.length); const c=(r.match(/^\s+(\S)/)||[])[1]; return p+"vân vân"+(dot&&(/^\s*$/.test(r)||(c&&c!==c.toLowerCase()))?".":""); });   /* v.v. (giữ dấu chấm khi hết câu) */
+  /* tên miền: chinhphu.vn, moh.gov.vn, site:gov.vn → "chính phủ chấm vê en" (nhãn ngắn đánh vần, nhãn tiếng Việt tách âm tiết) */
+  s=s.replace(/(^|[^A-Za-z0-9@\/._])((?:www\.)?(?:[a-z0-9]+(?:-[a-z0-9]+)*\.)+(?:vn|com|net|org|edu|gov|info|io))(?![A-Za-z0-9])(?!\.[A-Za-z0-9])/g,(m,p,d)=>{
+    if(/kk-edu/.test(d)) return m;   /* VI_TERMS: ca ca ê đu chấm com */
+    if(p==="-"){ p=" trừ "; }        /* toán tử tìm kiếm loại trừ: -gov.vn */
+    return p+" "+d.split(".").map(l=>l.split("-").map(x=>VI_DOM[x]||VI_IDV[x]||(/^\d+$/.test(x)||viIsSylA(x)?x:(viVnSplit(x)||(x.length<=3?viSpell(x):x)))).join(" gạch ngang ")).join(" chấm ")+" "; });
+  /* đường dẫn Unix: /var/log → gạch chéo var gạch chéo log (không đọc "chia") */
+  if(!isTA) s=s.replace(/(^|[\s(])((?:\/[A-Za-z0-9_.-]+){2,}\/?)(?=$|[\s,;:!?)]|\.(?:\s|$))/g,(m,p,x)=>p+x.replace(/\//g," gạch chéo ")+" ");
+  /* Tiếng Việt lớp 1 / mầm non: chữ cái, chữ ghép đứng riêng đọc theo âm (t → tờ, gh → gờ kép, ngh → ngờ kép) */
+  if(/^(?:TH-TV|MN-NN)(?:-|$)/.test(bk)){
+    s=s.replace(/\s+[-–]\s+/g,", ");   /* đánh vần: o - c - thanh hỏi, A - nờ - an (không phải phép trừ) */
+    s=s.replace(/(^|[^A-Za-zÀ-ỹĐđ])((?:ngh|gh|ng|nh|ch|th|tr|kh|ph|gi|qu|[a-zđ])(?:\/(?:ngh|gh|ng|nh|ch|th|tr|kh|ph|gi|qu|[a-zđ]))+)(?![A-Za-zÀ-ỹĐđ])/g,(m,p,x)=>p+x.split("/").join(", "));
+    s=s.replace(/(^|[^A-Za-zÀ-ỹĐđ])(ngh|gh|ng|nh|ch|th|tr|kh|ph|gi|qu|[bcdđghklmnpqrstvx])(?![A-Za-zÀ-ỹĐđ])(?!\.[A-Za-zÀ-ỹĐđ])/g,(m,p,x,o,str)=>(p==="."&&/[A-Za-zÀ-ỹĐđ]/.test(str[o-1]||""))?m:p+VI_PHON[x]);
   }
   /* 1. tiếng Anh (đặt chỗ trước khi biến đổi) */
-  const en=[]; s=viEnMark(s,isTA,en);
+  const en=[]; s=viEnMark(s,isTA,en,sci);
   /* 2. ngày tháng, thuật ngữ */
   s=s.replace(/\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/g,(m,d,mo,y)=>"ngày "+viNum(d)+" tháng "+viNum(mo)+" năm "+viNum(y));
-  VI_TERM_RES.forEach(t=>{ s=s.replace(t.re,(m,pre)=>pre+" "+t.v+" "); });
+  /* bằng chứng đặt tên đoạn thẳng: có cặp chữ in hoa khác không phải viết tắt (AM, MC, AB) */
+  const geo=VI_GEOW.test(s), seg=(s.match(/(?:^|[^A-Za-zÀ-ỹ0-9])[A-Z]{2}(?![A-Za-zÀ-ỹ0-9])/g)||[]).some(x=>!VI_TERMK.has(x.replace(/^[^A-Z]+/,"")));
+  VI_TERM_RES.forEach(t=>{ s=s.replace(t.re,(m,pre,o,str)=>{
+    if(t.geo){
+      const bef=str.slice(Math.max(0,o-16),o+pre.length), num=/\d\s*$/.test(bef);
+      const op=/^\s*(?:[=+<>≤≥≠⊥∥−]|\/\/)/.test(str.slice(o+m.length,o+m.length+4))||/[=+<>≤≥≠−]\s*$/.test(bef);
+      const isGeo=!num&&(geo||/(?:đoạn|cạnh|tia|đường thẳng|vectơ|véc tơ|dây|tiếp tuyến)\s*$/i.test(bef)||(seg&&(op||/,\s*$/.test(bef)))||(op&&VI_GEOOP.test(t.k)));
+      if(isGeo) return m;                                  /* MB = 4 cm, A = QR: tên đoạn thẳng/ma trận, không phải megabyte, mã QR */
+      if(t.k==="TB"&&!num) return pre+" trung bình ";      /* điểm TB, TB = Tổng : 12 → trung bình; 2 TB → tê ra bai */
+    }
+    return pre+" "+t.v+" "; }); });
   /* 3. số La Mã: sau từ khóa, hoặc kiểu copper(II) / dạng nhiều kí tự */
   s=s.replace(/(thế kỉ|thế kỷ|chương|phần|tập|khóa|khoá|bài|mục|học kì|học kỳ|kì|kỳ|quyển|đại hội|loại|nhóm|cấp|vua|giai đoạn|phiên bản)\s+([IVXLC]{1,6})(?![A-Za-zÀ-ỹ\u0300-\u036f])/gi,(m,k,r)=>{ if(r!==r.toUpperCase()) return m; const n=viRoman(r); return n?k+" "+viNum(String(n)):m; });
   s=s.replace(/\(\s*([IVX]{1,4})\s*\)/g,(m,r)=>{ const n=viRoman(r); return n?" "+viNum(String(n))+" ":m; });
@@ -501,7 +714,7 @@ function viNorm(raw,opt){
   /* 4a. nhóm nghìn viết cách: 100 000 → 100000 */
   s=s.replace(/(^|[^\d,.])(\d{1,3})((?: \d{3})+)(?![\d,.])/g,(m,pre,a,b)=>pre+a+b.replace(/ /g,""));
   /* 4b. phiên âm quốc tế trong bài tiếng Anh: /ɪd/ */
-  s=s.replace(/\/([^\/\s]{1,10})\//g,(m,ip)=>/[ɪəɜʃʒθðæŋɑɔʊʌː]/.test(ip)||isTA? " "+viIPA(ip)+" " : m);
+  s=s.replace(/\/([^\/\s]{1,10})\/(\s*dài(?![A-Za-zÀ-ỹ]))?/g,(m,ip,tail)=>{ if(!(/[ɪəɜʃʒθðæŋɑɔʊʌː]/.test(ip)||isTA)) return m; const v=viIPA(ip); /* /ɑː/ dài → "âm a dài" (không lặp "dài dài") */ return " "+v+" "+(tail&&!/ dài$/.test(v)?"dài ":""); });
   /* 4c. đơn vị dạng a/b */
   s=s.replace(/(\d\s?)(km|m|cm|kg|g|mol|l|ml)\/(h|s|giờ|giây|ha|l|m³|m3|kg|mol|lít)(?![A-Za-zÀ-ỹ])/g,(m,d,u,v)=>d+VI_UNITS[u]+" trên "+({h:"giờ",s:"giây",l:"lít",ha:"héc ta",m3:"mét khối","m³":"mét khối",kg:"ki lô gam",mol:"mon"}[v]||v));
   /* 4. số hiệu văn bản 13/2023 */
@@ -556,6 +769,11 @@ function viNorm(raw,opt){
     if(w.length===1) return m;
     if(/[A-Z]/.test(w.slice(1))&&w.length<=5) return pre+" "+viSpell(w)+" ";   /* AaBb, Vmax... */
     if(viIsSyl(w)) return m;
+    if(VI_IDV[lw]) return pre+" "+VI_IDV[lw]+" ";                 /* tên biến tiếng Việt không dấu: diem → điểm */
+    if(w.length>3&&!VI_LOANVN.has(lw)){ if(viIsSylA(lw)) return m; if(!/^[A-Z][a-z]+$/.test(w)&&(/[a-z][A-Z]/.test(w)||VCODE.has(lw))){ const sp=viVnSplit(w); if(sp&&(/[a-z][A-Z]/.test(w)||/(ng|nh|ch|tr|kh|uo|ie|uy|ua|gi|qu)/.test(lw))) return pre+" "+sp+" "; } }   /* tên biến Việt: soluong → so luong, tinhTong → tinh tong; từ mượn (modulo, momen) vẫn phiên âm */
+    if(/^[A-Z][a-z]{1,2}$/.test(w)&&/[aeiouy]$/.test(w)) return pre+" "+viTranslit(w.replace(/^X/,"S"))+" ";
+    if(!/[aeiouy]/i.test(w)) return pre+" "+viSpell(w)+" ";   /* pptx, csv: không có nguyên âm thì đánh vần */
+    if(/^[bcdfghklmnprstvxz]{2}[aeiouy]$/i.test(w)) return pre+" "+viTranslit(w.replace(/^X/,"S"))+" ";   /* spi, blu, bri: âm tiết có cụm phụ âm đầu → phiên âm, không đánh vần */   /* Bra-xin, Xta-lin: âm tiết phiên âm, không đánh vần */
     if(w.length<=3&&!/[aeiouy]{2}/i.test(w)) return pre+" "+viSpell(w)+" ";   /* ax, dx, bc */
     return pre+" "+viTranslit(w)+" ";
   });
@@ -567,7 +785,9 @@ function viNorm(raw,opt){
   s=s.replace(/[^\p{L}\p{N}\s,.?!;:]/gu," ");
   s=s.replace(/\s+([,.?!;:])/g,"$1").replace(/([,.?!;:]){2,}/g,"$1").replace(/^[,.;:\s]+/,"").replace(/\s+/g," ").trim();
   /* 11. trả lại tiếng Anh */
-  s=s.replace(/zqen([a-z]+)zq/g,(m,i)=>{ const t=en[viIdxN(i)]||""; return opt.en? "⟪"+t.replace(/[⟪⟫]/g,"")+"⟫" : t.split(/[\s,\-]+/).map(w=>/^\d+$/.test(w)?viNum(w):viTranslit(w.replace(/['’].*$/,""))).join(" "); });
+  s=s.replace(/zqen([a-z]+)zq/g,(m,i)=>{ let t=en[viIdxN(i)]||""; if(/^[a-z]$/.test(t.trim())) t=t.trim().toUpperCase(); /* chữ cái đơn (đổi y thành i): giọng Anh đọc tên chữ */
+    if(!isTA) t=t.replace(/\b[A-Z]{7,}\b/g,x=>x.toLowerCase());   /* SCAMPER, CONSORT: giọng Anh đọc thành từ */
+    return opt.en? "⟪"+t.replace(/[⟪⟫]/g,"")+"⟫" : viEnPlain(t); });
   return s.replace(/(^|\s)âm(\s+âm)+(?=\s|$)/g,"$1âm").replace(/(^|\s)(tích phân|tập hợp|giá trị tuyệt đối của|thẻ)(\s+\2)+(?=\s|$)/gi,"$1$2").replace(/\s+/g," ").trim();
 }
 /* Tách đoạn có đánh dấu ⟪tiếng Anh⟫ thành các phần {en,t} */
@@ -575,7 +795,15 @@ function ttsSegs(chunk){
   const out=[]; String(chunk).split(/(⟪[^⟫]*⟫)/).forEach(p=>{ if(!p||!p.trim()) return; const m=/^⟪([^⟫]*)⟫$/.exec(p); if(m){ if(m[1].trim()) out.push({en:true,t:m[1].trim()}); } else { if(/[\p{L}\p{N}]/u.test(p)) out.push({en:false,t:p.trim()}); } });
   return out;
 }
-function ttsPlain(chunk){ return ttsSegs(chunk).map(x=>x.en? x.t.split(/[\s,\-]+/).map(w=>/^\d+$/.test(w)?viNum(w):viTranslit(w.replace(/['’].*$/,""))).join(" ") : x.t).join(" "); }
+function ttsPlain(chunk){ return ttsSegs(chunk).map(x=>x.en? viEnPlain(x.t) : x.t).join(" "); }
+/* Đoạn tiếng nước ngoài đọc bằng giọng Việt: từng từ qua từ điển/phiên âm, giữ dấu câu để ngắt nghỉ */
+function viEnPlain(t){
+  return String(t).split(/\s+/).filter(Boolean).map(w=>{
+    const p=(w.match(/[.,;:!?]+$/)||[""])[0].slice(0,1);
+    const core=w.replace(/[^A-Za-z0-9'’\-]/g," ").trim();
+    return core.split(/[\s\-]+/).filter(Boolean).map(viEnWord).filter(Boolean).join(" ")+p;
+  }).filter(x=>x&&!/^[.,;:!?]$/.test(x)).join(" ");
+}
 
 /* Tách thành đoạn ngắn (<=130 ký tự) tại dấu câu để giọng AI ngắt nghỉ tự nhiên */
 function viChunks(spoken){
@@ -612,9 +840,9 @@ function kkSayEn(){
 function kkSayParts(texts,opt){
   opt=opt||{}; const parts=[]; const en=opt.enVoice!==undefined?opt.enVoice:kkSayEn();
   (Array.isArray(texts)?texts:[texts]).forEach(t=>{
-    if(t&&typeof t==="object"&&t.en){ const x=String(t.t||"").trim(); if(!x) return; if(en) parts.push({en:true,t:x}); else viChunks(viNorm(x,{digits:true,en:false,ta:true})).forEach(c=>parts.push({en:false,t:c})); parts.push({pause:true}); return; }
+    if(t&&typeof t==="object"&&t.en){ const x=String(t.t||"").trim(); if(!x) return; if(en) parts.push({en:true,t:x}); else viChunks(viNorm(x,{digits:true,en:false,ta:true,book:opt.book})).forEach(c=>parts.push({en:false,t:c})); parts.push({pause:true}); return; }
     if(t==null||!String(t).trim()) return;
-    viChunks(viNorm(String(t),{digits:true,en:true,ta:!!opt.ta})).forEach(c=>ttsSegs(c).forEach(g=>{
+    viChunks(viNorm(String(t),{digits:true,en:true,ta:!!opt.ta,book:opt.book})).forEach(c=>ttsSegs(c).forEach(g=>{
       if(g.en&&en) parts.push({en:true,t:g.t}); else parts.push({en:false,t:g.en?ttsPlain("⟪"+g.t+"⟫"):g.t});
     }));
     parts.push({pause:true});
@@ -633,7 +861,7 @@ function kkSay(texts,opt){
   const my=++KKSAY.sess; KKSAY.on=true; KKSAY.onstop=opt.onend||null;
   const run=()=>{
     if(my!==KKSAY.sess) return;
-    const vi=kkSayVi(), en=kkSayEn(), parts=kkSayParts(texts,{ta:opt.ta,enVoice:en}), rate=opt.rate||0.95; let k=0;
+    const vi=kkSayVi(), en=kkSayEn(), parts=kkSayParts(texts,{ta:opt.ta,book:opt.book,enVoice:en}), rate=opt.rate||0.95; let k=0;
     const fin=()=>{ if(my!==KKSAY.sess) return; KKSAY.on=false; const f=KKSAY.onstop; KKSAY.onstop=null; if(f){ try{ f(); }catch(e){} } };
     const next=()=>{
       if(my!==KKSAY.sess) return;
