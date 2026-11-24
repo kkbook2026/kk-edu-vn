@@ -3703,11 +3703,17 @@ const KK_PIN=/tất cả|đều đúng|đều sai|cả hai|cả ba|cả bốn|kh
 function kkOptSeed(){ if(window._kkOptSeed) return window._kkOptSeed; let v=0;
   try{ v=Number(localStorage.getItem("kkedu_optseed"))>>>0; if(!v){ v=(crypto.getRandomValues(new Uint32Array(1))[0]>>>0)||7; localStorage.setItem("kkedu_optseed",String(v)); } }catch(e){ v=((Math.random()*4294967295)>>>0)||7; }
   return (window._kkOptSeed=v); }
-function kkOptOrder(q){
+/* Hoán vị cố định cho câu KHÔNG được xáo (null = được phép xáo). Dùng chung cho bài học (kkOptOrder) và đề Kiểm tra (kkOptPerm) để hai nơi luôn một quy tắc. */
+function kkOptFixed(q){
   const o=(q.lua_chon||[]).map(x=>String(x)), id=o.map((_,i)=>i);
   if(q.loai!=="mcq"||o.length<2) return id;
   if(o.some(x=>/(^|[^A-Za-zÀ-ỹ])[A-D]\s*(,|và|hoặc|&|\/)\s*[A-D]($|[^A-Za-zÀ-ỹ0-9])|(Cả|cả|Chỉ|chỉ|Phương án|phương án|Đáp án|đáp án|Câu|câu|Ý|ý)\s+[A-D]($|[^A-Za-zÀ-ỹ0-9])|^\s*[A-D]\s*$/.test(x)||KK_PIN.test(x))||/(đáp án|phương án|chọn|câu|ý)\s*\(?[A-D]\)?($|[^A-Za-zÀ-ỹ0-9])/i.test(String(q.giai_thich||""))) return id;
   if(o.every(x=>/^\s*-?\d+([.,]\d+)?\s*$/.test(x))){ const v=x=>Number(x.trim().replace(",",".")); return id.sort((a,b)=>v(o[a])-v(o[b])||a-b); }
+  return null;
+}
+function kkOptOrder(q){
+  const fx=kkOptFixed(q); if(fx) return fx;
+  const id=(q.lua_chon||[]).map((_,i)=>i);
   let h=kkOptSeed()^0x811c9dc5; const k=String(q.id||"")+"|"+String(q.hoi||""); /* mã câu chỉ duy nhất trong bài -> ghép nội dung câu hỏi */ for(let i=0;i<k.length;i++){ h^=k.charCodeAt(i); h=Math.imul(h,16777619); }
   let a=h>>>0; const r=()=>{ a=(a+0x6d2b79f5)>>>0; let t=a; t=Math.imul(t^(t>>>15),t|1); t^=t+Math.imul(t^(t>>>7),t|61); return ((t^(t>>>14))>>>0)/4294967296; };
   for(let i=id.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); const t=id[i]; id[i]=id[j]; id[j]=t; }
@@ -4784,6 +4790,11 @@ function chapterOf(ma){ const m=(ma||"").match(/\.C(\d+)\./); return m?("C"+m[1]
 function seedHash(s){ let h=2166136261; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
 function rng(seed){ let a=seed; return function(){ a|=0; a=(a+0x6D2B79F5)|0; let t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
 function shuf(arr, r){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+/* --- đề Kiểm tra: xáo phương án có điều kiện (24/11/2026) ---
+   Trước đây đề Kiểm tra xáo MỌI câu trắc nghiệm, kể cả câu có lời giải nhắc chữ cái ("nên chọn đáp án A") hoặc phương án "Cả A và B", "Tất cả đều đúng"
+   -> lời giải lệch với thứ tự hiển thị. Nay dùng chung quy tắc kkOptFixed với bài học và Phòng thi thử: câu như vậy giữ nguyên thứ tự, phương án toàn số xếp tăng dần.
+   Vẫn rút số ngẫu nhiên đúng như trước để đề có hạt giống cố định không đổi thứ tự phương án ở các câu còn lại. */
+function kkOptPerm(q, r){ const sh=shuf((q.lua_chon||[]).map((_,i)=>i), r); return kkOptFixed(q)||sh; }
 /* --- gom ngân hàng câu hỏi từ gói bài học --- */
 function examBank(pack, lessonIdxs){
   const bank=[];
@@ -4817,7 +4828,7 @@ function draftExam(bank, N, seed){
   // trộn thứ tự câu + trộn phương án (giữ ánh xạ đáp án)
   return shuf(picked, r).map((it,ix)=>{
     const q=it.q; let opts=null, map=null;
-    if(q.loai==="mcq"){ map=shuf(q.lua_chon.map((_,i)=>i), r); opts=map.map(i=>q.lua_chon[i]); }
+    if(q.loai==="mcq"){ map=kkOptPerm(q, r); opts=map.map(i=>q.lua_chon[i]); }
     if(q.loai==="order"){ map=shuf(q.lua_chon.map((_,i)=>i), r); opts=map.map(i=>q.lua_chon[i]); }
     return {n:ix+1, it, opts, map, ans:null, flag:false};
   });
