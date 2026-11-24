@@ -1,6 +1,6 @@
 /* =====================================================================
    KK-DOC - Bộ đọc tiếng Việt dùng chung của KK-EDU (bài học, Thi thử, Hỏi đáp)
-   Bản quyền: Nguyễn Duy Điển (KK-2026) - www.kk-edu.com · www.kk-edu.vn
+   Bản quyền: Nguyễn Duy Điển - www.kk-edu.com · www.kk-edu.vn
    Chuẩn hóa văn bản trước khi đọc để giọng máy đọc ĐÚNG như giáo viên đọc trên lớp:
    số, phân số, số thập phân, số âm; kí hiệu toán (tập hợp, khoảng, giá trị tuyệt đối,
    chia hết, lũy thừa, căn, logic, xác suất); đơn vị đo; công thức và ion hóa học;
