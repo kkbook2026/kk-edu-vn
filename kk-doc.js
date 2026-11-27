@@ -1,6 +1,6 @@
 /* =====================================================================
    KK-DOC - Bộ đọc tiếng Việt dùng chung của KK-EDU (bài học, Thi thử, Hỏi đáp)
-   Bản quyền: Nguyễn Duy Điển (KK-2026) - www.kk-edu.com · www.kk-edu.vn
+   Bản quyền: Nguyễn Duy Điển - www.kk-edu.com · www.kk-edu.vn
    Chuẩn hóa văn bản trước khi đọc để giọng máy đọc ĐÚNG như giáo viên đọc trên lớp:
    số, phân số, số thập phân, số âm; kí hiệu toán (tập hợp, khoảng, giá trị tuyệt đối,
    chia hết, lũy thừa, căn, logic, xác suất); đơn vị đo; công thức và ion hóa học;
@@ -70,7 +70,7 @@ const VI_GREEK={"α":"an pha","β":"bê ta","γ":"gam ma","Γ":"gam ma","δ":"đ
 const VI_FN={sin:"sin",cos:"cốt",tan:"tang",tg:"tang",cot:"cô tang",cotg:"cô tang",log:"lốc",ln:"lốc nê pe",lg:"lốc",lim:"giới hạn",max:"mắc",min:"min",exp:"e mũ",det:"định thức",arcsin:"ác sin",arccos:"ác cốt",arctan:"ác tang",sqrt:"căn bậc hai"};
 /* Thuật ngữ nhiều chữ / phân biệt hoa thường (ưu tiên trước từ điển) */
 const VI_TERMS=[
- ["KK-EDU","ca ca ê đu"],["KK-Bot","ca ca bót"],["KK-TECH","ca ca téch"],["KK-2026","ca ca hai nghìn không trăm hai mươi sáu"],["KK","ca ca"],
+ ["KK-EDU","ca ca ê đu"],["KK-Bot","ca ca bót"],["KK-TECH","ca ca téch"],["KK","ca ca"],
  ["www.kk-edu.com","ca ca ê đu chấm com"],["kk-edu.com","ca ca ê đu chấm com"],["kk-edu.vn","ca ca ê đu chấm vê en"],
  ["Wi-Fi","quai phai"],["WiFi","quai phai"],["Google Meet","gu gồ mít"],["subnet mask","sáp nét mát"],["Microsoft","mai cờ rô sóp"],["PowerPoint","pao pơ poi"],["JavaScript","gia va xờ cờ ríp"],["Outlook","ao lúc"],["Linux","li nấc"],["iPhone","ai phôn"],
  ["pH","pê hát"],["mRNA","em a rờ en a"],["tRNA","tê a rờ en a"],["DNA","đê en a"],["RNA","a rờ en a"],["ADN","a đê en"],["ARN","a e rờ en"],["ATP","a tê pê"],["ADP","a đê pê"],["NADH","en a đê hát"],["NADPH","en a đê pê hát"],

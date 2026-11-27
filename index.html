@@ -4271,7 +4271,7 @@ function initTutor(){
 }
 </script>
 
-<script src="/kk-doc.js?v=20261123b"></script>
+<script src="/kk-doc.js?v=20261127"></script>
 <script>
 "use strict";
 /* =====================================================================
@@ -6626,7 +6626,7 @@ function openReceipt(oc){
     <span>Mã kích hoạt</span><b>${esc(o.license||"")}</b>
     ${bank?`<span>Bên nhận</span><b>${esc(bank.holder||"")} · ${esc(KKP.bankName(bank.bin))} ${esc(bank.account||"")}</b>`:""}
   </div>
-  <div class="note" style="margin-top:10px">Biên nhận điện tử do hệ thống ${esc(site)} lập tự động từ dữ liệu thanh toán. Nội dung và học liệu: bản quyền Nguyễn Duy Điển (KK-2026). Liên hệ: ${esc(S.settings.contactZalo?"Zalo "+S.settings.contactZalo:"")} ${esc(S.settings.contactEmail||"")}</div></div>
+  <div class="note" style="margin-top:10px">Biên nhận điện tử do hệ thống ${esc(site)} lập tự động từ dữ liệu thanh toán. Nội dung và học liệu: bản quyền Nguyễn Duy Điển. Liên hệ: ${esc(S.settings.contactZalo?"Zalo "+S.settings.contactZalo:"")} ${esc(S.settings.contactEmail||"")}</div></div>
   <div class="mrow noprint"><button class="btn pri" id="rcPrint">In / Lưu PDF</button><button class="btn ghost" id="rcNo">Đóng</button></div>`);
   $("#rcNo").onclick=closeModal;
   $("#rcPrint").onclick=()=>{ document.body.classList.add("rcprint"); const done=()=>{ document.body.classList.remove("rcprint"); window.removeEventListener("afterprint",done); }; window.addEventListener("afterprint",done); setTimeout(()=>window.print(),50); setTimeout(done,4000); };
