@@ -2461,6 +2461,7 @@ function viewHome(v){
   <section class="board"><div class="wrap hero">
     <div>
       <a class="examcta" id="hExam" href="/thi-thu/"><b>Mới</b><em><i>Thi thử miễn phí</i><s> · </s><i>Chấm ngay · Rõ điểm mạnh, yếu</i></em><span aria-hidden="true">→</span></a>
+      <a class="examcta" id="hNcq" href="#video" onclick="catalogFilter.type='NCQ';catalogFilter.level='';catalogFilter.grade='';catalogFilter.q='';"><b>Mới</b><em><i>12 bộ Nâng cao quốc tế</i><s> · </s><i>Lớp 1 đến Lớp 12</i></em><span aria-hidden="true">→</span></a>
       <div class="kicker">KK-EDU GIA SƯ SỐ · mô hình giáo dục số thử nghiệm · phiên bản 3.1</div>
       <h1 class="hero-title">Hệ sinh thái<br><span class="gold">giáo dục số</span> <span class="gold glow">trọn đời</span></h1>
       <p class="hero-sub">Gia sư số: học bằng Video tương tác và giáo trình số</p>
@@ -2586,15 +2587,16 @@ const catalogFilter = {level:"", grade:"", q:"", type:"", mine:false};
 function viewCatalog(v){
   const f = catalogFilter;
   let list = CATALOG.filter(b=> passMine(f,b) &&
-    (!f.level||b.level===f.level) && (!f.grade||b.grade===f.grade) && (!f.type||b.type===f.type) &&
+    (!f.level||b.level===f.level) && (!f.grade||b.grade===f.grade) && (!f.type||(f.type==="NCQ"?/^NCQ-/.test(b.code):f.type==="NC"?(b.type==="NC"&&!/^NCQ-/.test(b.code)):b.type===f.type)) &&
     (!f.q || (b.subject+" "+b.code+" "+(b.grade||"")).toLowerCase().includes(f.q.toLowerCase())));
   list = list.slice().sort((a,b)=> (LEVELS.findIndex(l=>l.key===a.level)-LEVELS.findIndex(l=>l.key===b.level)) || (gradeOrder(a.grade)-gradeOrder(b.grade)) || a.subject.localeCompare(b.subject,"vi"));
   v.innerHTML = `
   <div class="sec" style="margin-top:26px"><div><div class="eyebrow">Phân hệ 2 · Video Online</div><h2 style="margin:0">${f.level?esc(f.level):"Toàn bộ"} · ${list.length} sách video tương tác</h2></div></div>
+  ${f.type!=="NCQ"?`<div class="alertbox" style="margin:10px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span><b>Mới:</b> 12 bộ Nâng cao quốc tế (Toán - Khoa học - Tư duy liên môn), mỗi lớp 1 bộ từ Lớp 1 đến Lớp 12, đối chiếu 30 nền giáo dục hàng đầu.</span><button class="btn sm" id="fNcq">Xem 12 bộ</button></div>`:""}
   <div class="controls">
     <select id="fLevel"><option value="">Mọi cấp học</option>${LEVELS.map(L=>`<option ${f.level===L.key?"selected":""} value="${esc(L.key)}">${esc(L.short)}</option>`).join("")}</select>
     ${gradeSelectHTML(f,"fGrade")}
-    <select id="fType"><option value="">Tất cả bộ sách</option><option ${f.type==="Chuẩn"?"selected":""} value="Chuẩn">Bộ chuẩn</option><option ${f.type==="NC"?"selected":""} value="NC">Bộ Nâng cao</option><option ${f.type==="QT"?"selected":""} value="QT">Bộ Chuẩn quốc tế</option></select>
+    <select id="fType"><option value="">Tất cả bộ sách</option><option ${f.type==="Chuẩn"?"selected":""} value="Chuẩn">Bộ chuẩn</option><option ${f.type==="NC"?"selected":""} value="NC">Bộ Nâng cao</option><option ${f.type==="NCQ"?"selected":""} value="NCQ">Bộ Nâng cao quốc tế (mới)</option><option ${f.type==="QT"?"selected":""} value="QT">Bộ Chuẩn quốc tế</option></select>
     <input type="search" id="fQ" placeholder="Tìm môn học, mã sách..." value="${esc(f.q)}">
     ${mineBtnHTML(f,"fMine")}
     <button class="btn sm ghost" id="fQR" title="Quét mã QR in trong sách để mở đúng bài">📷 Quét mã QR</button>
@@ -2605,6 +2607,7 @@ function viewCatalog(v){
   bindMineBtn(f,"fMine",()=>viewCatalog(v));
   $("#fQR").onclick=openQRScan;
   $("#fType").onchange=e=>{f.type=e.target.value; viewCatalog(v);};
+  { const nb=$("#fNcq"); if(nb) nb.onclick=()=>{ f.type="NCQ"; f.level=""; f.grade=""; f.q=""; viewCatalog(v); }; }
   let qt; $("#fQ").oninput=e=>{clearTimeout(qt); qt=setTimeout(()=>{f.q=e.target.value; viewCatalog(v); const el=$("#fQ"); el.focus(); el.setSelectionRange(el.value.length,el.value.length);},300);};
   v.querySelectorAll(".bkcard").forEach(c=> c.onclick=()=>go({name:"book", code:c.dataset.code}));
 }
@@ -2613,7 +2616,7 @@ function bookCard(b){
   const pg = S.progress[b.code], pct = pg?Math.round((pg.pct||0)*100):0;
   const al = (!S.isAdmin&&myGrade())?bookAllowed(b):null;
   return `<div class="card click bkcard" data-code="${esc(b.code)}">
-    <div class="rowline"><span class="badge">${esc(levelOf(b)?levelOf(b).short:b.level)}</span>${b.type==="NC"?'<span class="badge gold">Nâng cao</span>':b.type==="QT"?'<span class="badge qt">Chuẩn quốc tế</span>':""}
+    <div class="rowline"><span class="badge">${esc(levelOf(b)?levelOf(b).short:b.level)}</span>${/^NCQ-/.test(b.code)?'<span class="badge gold">Nâng cao quốc tế</span><span class="badge ok">Mới</span>':b.type==="NC"?'<span class="badge gold">Nâng cao</span>':b.type==="QT"?'<span class="badge qt">Chuẩn quốc tế</span>':""}
     ${al?(al.ok?`<span class="badge ok">${al.granted?"Đã được duyệt":"Đúng lớp của bạn"}</span>`:(al.why==="hed"?'<span class="badge">🎓 Cần khai báo trình độ</span>':'<span class="badge">🔒 Cần ADMIN duyệt</span>')):""}
     ${unlocked?(pr? '<span class="badge ok">Trọn bộ</span>':'<span class="badge free">Miễn phí</span>'):`<span class="badge lock">Gói ${esc(KKP.tierShort(b))}</span>`}</div>
     <div class="sub">${esc(b.subject)}</div>
@@ -2636,7 +2639,7 @@ async function viewBook(v, code){
       <div class="eyebrow">${esc(b.level)} · ${esc(b.grade||"")}</div>
       <h1 style="margin:.15em 0 .3em">${esc(b.subject)}</h1>
       <div class="rowline">
-        <span class="badge">${esc(code)}</span>${b.type==="NC"?'<span class="badge gold">Bộ Nâng cao</span>':b.type==="QT"?'<span class="badge qt">Bộ Chuẩn quốc tế</span>':'<span class="badge">Bộ chuẩn</span>'}
+        <span class="badge">${esc(code)}</span>${/^NCQ-/.test(code)?'<span class="badge gold">Bộ Nâng cao quốc tế</span>':b.type==="NC"?'<span class="badge gold">Bộ Nâng cao</span>':b.type==="QT"?'<span class="badge qt">Bộ Chuẩn quốc tế</span>':'<span class="badge">Bộ chuẩn</span>'}
         <span class="badge">${b.lessons} bài học</span><span class="badge">${b.diagrams||0} sơ đồ</span>
       </div>
       <p class="note" style="max-width:40em;margin-top:10px">Giáo án và kịch bản video có minh họa, tương tác, đánh giá - lớp 2.0 gồm sơ đồ chuẩn, điểm dừng hỏi đáp trong video, ${b.masteryQuiz} câu kiểm tra thành thạo và câu suy ngẫm theo rubric.</p>${qtInfoHTML(code)}${ncqInfoHTML(code)}
@@ -2845,7 +2848,7 @@ function viewTaiLieu(v){
       c.scriptUrl?`<button class="btn sm" data-kb="${esc(b.code)}">🎬 Kịch bản${lk?" 🔒":""}</button>`:"",
       `<button class="btn sm ghost" data-code="${esc(b.code)}">Trang sách →</button>`
     ].filter(Boolean).join(" ");
-    return `<tr><td><b>${esc(b.subject)}</b>${b.type==="NC"?' <span class="badge gold">NC</span>':b.type==="QT"?' <span class="badge qt">QT</span>':""}<br><span class="note">${esc(b.code)}</span></td>
+    return `<tr><td><b>${esc(b.subject)}</b>${/^NCQ-/.test(b.code)?' <span class="badge gold">NCQ</span>':b.type==="NC"?' <span class="badge gold">NC</span>':b.type==="QT"?' <span class="badge qt">QT</span>':""}<br><span class="note">${esc(b.code)}</span></td>
     <td class="note">${esc(levelOf(b)?levelOf(b).short:b.level)}<br>${esc(b.grade||"")}</td>
     <td class="note">${b.lessons} bài · ${b.diagrams} sơ đồ</td>
     <td><div class="rowline">${btns}</div></td></tr>`;}).join("")}
